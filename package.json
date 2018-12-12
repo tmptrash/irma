@@ -1,0 +1,43 @@
+{
+  "name": "irma",
+  "version": "0.1.0",
+  "description": "irma - JavaScript digital organisms simulator",
+  "main": "irma.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "jasmine": "^2.99.0",
+    "panzoom": "^4.5.0",
+    "webpack": "^3.12.0"
+  },
+  "scripts": {
+    "test": "babel-node tests/run.js",
+    "build": "node_modules/.bin/webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmptrash/irma.git"
+  },
+  "keywords": [
+    "genetic algorithm",
+    "digital organisms",
+    "evolution",
+    "javascript",
+    "linear genetic programming",
+    "evolutionary programming"
+  ],
+  "author": "flatline",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tmptrash/irma/issues"
+  },
+  "homepage": "https://github.com/tmptrash/irma/issues#readme",
+  "devDependencies": {
+    "babel-register": "latest",
+    "clean-webpack-plugin": "^0.1.19",
+    "ignore-loader": "^0.1.2"
+  }
+}
