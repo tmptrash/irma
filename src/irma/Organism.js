@@ -4,10 +4,11 @@
  * @author flatline
  */
 class Organism {
-    constructor(x, y, item, energy, color) {
+    constructor(id, x, y, item, energy, color) {
         this.last   = 0;
         this.item   = item;
 
+        this.id     = id;
         this.x      = x;
         this.y      = y;
         /**

@@ -22,7 +22,7 @@
  *
  * @author flatline
  */
-const Config = require('./Config');
+const Config = require('./../Config');
 
 const DIRX = [0,  1,  1, 1, 0, -1, -1, -1];
 const DIRY = [-1, -1, 0, 1, 1,  1,  0, -1];
@@ -69,21 +69,28 @@ class VM {
                     if (++line >= len) {line = 0}
                     const intd = round(d);
                     switch (code[line]) {
-                        case 0:  // step
-                            const x   = org.x + DIRX[intd % 8];
-                            const y   = org.y + DIRY[intd % 8];
+                        case 0: { // step
+                            const x = org.x + DIRX[intd % 8];
+                            const y = org.y + DIRY[intd % 8];
                             const dot = world.getDot(x, y);
-                            if (!!dot && dot.constructor === Object || dot > 0 || world.outOf(x, y)) {d = 0; continue}
+                            if (!!dot && dot.constructor === Object || dot > 0 || world.outOf(x, y)) {
+                                d = 0;
+                                continue
+                            }
 
                             world.dot(org.x, org.y, 0);
                             world.dot(org.x = x, org.y = y, org.color);
                             d = 1;
                             break;
-                        case 1:  // eat
-                            const x   = org.x + DIRX[intd % 8];
-                            const y   = org.y + DIRY[intd % 8];
+                        }
+                        case 1: { // eat
+                            const x = org.x + DIRX[intd % 8];
+                            const y = org.y + DIRY[intd % 8];
                             const dot = world.getDot(x, y);
-                            if (world.outOf(x, y) || dot === 0) {d = 0; continue} // no energy or out of the world
+                            if (world.outOf(x, y) || dot === 0) {
+                                d = 0;
+                                continue
+                            } // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {            // other organism
                                 const energy = dot.energy <= intd ? dot.energy : intd;
                                 dot.energy -= energy;
@@ -96,6 +103,7 @@ class VM {
                             world.dot(x, y, dot - energy);
                             d = 1;
                             break
+                        }
                     }
                 }
                 org.last = line;

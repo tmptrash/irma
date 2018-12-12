@@ -1,6 +1,10 @@
 /**
  * Simple implementation of canvas based world, where all organisms leave.
+ *
+ * @author flatline
  */
+const Config = require('./../Config');
+
 class World {
     constructor() {
         this.width  = Config.worldWidth;
