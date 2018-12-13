@@ -5,7 +5,7 @@ const Config = {
     linesPerIteration: 10,
     iterationsPerRun : 100,
 
-    populationSize   : 1000,
+    orgAmount        : 1000,
     orgEnergy        : 1000,
     orgColor         : 0xff0000
 };

@@ -1,4 +1,5 @@
 const FastArray = require('./../common/FastArray');
+const Helper    = require('./../common/Helper');
 const Config    = require('./../Config');
 const Organism  = require('./Organism');
 const World     = require('./World');
@@ -7,7 +8,7 @@ const VM        = require('./VM');
 class Irma {
     constructor() {
         this.world  = new World();
-        this.orgs   = new FastArray(Config.populationSize);
+        this.orgs   = new FastArray(Config.orgAmount);
         this.vm     = new VM(this.world, this.orgs);
         this._runCb = this.run.bind(this);
         this._orgId = 0;
@@ -67,38 +68,36 @@ class Irma {
         return true;
     }
 
+    /**
+     * Creates organisms population according to Config.orgAmount amount.
+     * Organisms will be placed randomly in a world
+     */
     _createOrgs() {
-        // const world       = this.world;
-        // const positions   = OConfig.orgPosition;
-        // const posAmount   = positions.length / 4;
-        // const hasPosition = posAmount >= 1;
-        //
-        // this.reset();
-        // for (let i = 0, len = OConfig.orgStartAmount; i < len; i += posAmount) {
-        //     if (hasPosition) {
-        //         for (let j = 0; j < posAmount; j++) {
-        //             const x = Helper.rand(positions[j * 4 + 2]) + positions[j * 4]     - positions[j * 4 + 2] / 2;
-        //             const y = Helper.rand(positions[j * 4 + 3]) + positions[j * 4 + 1] - positions[j * 4 + 3] / 2;
-        //             if (world.isFree(x, y)) {
-        //                 this.createOrg(x, y)
-        //             }
-        //         }
-        //     } else {
-        //         this.createOrg(...world.getFreePos());
-        //     }
-        // }
-        // Console.info('Population has created');
+        const world     = this.world;
+        const orgAmount = Config.orgAmount;
+        const width     = world.width;
+        const height    = world.height;
+        const rand      = Helper.rand;
+
+        for (let i = 0; i < orgAmount; i++) {
+            const x = rand(width);
+            const y = rand(height);
+            world.getDot(x, y) === 0 && this._createOrg(x, y);
+        }
     }
 
-    _createOrg(x, y, parent = null) {
-        if (x === -1) {return false}
+    /**
+     * Creates one organism with default parameters and empty code
+     * @param {Number} x X coordinate
+     * @param {Number} y Y coordinate
+     * @returns {Object} Item in FastArray class
+     */
+    _createOrg(x, y) {
         const orgs = this.orgs;
         const org  = new Organism(++this._orgId + '', x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
 
         orgs.add(org);
         this.world.dot(x, y, org);
-
-        return org.item;
     }
 }
 

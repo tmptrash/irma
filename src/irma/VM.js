@@ -52,14 +52,15 @@ class VM {
             //
             for (let o = 0, olen = orgs.size; o < olen; o++) {
                 const org  = orgs.get(o);
+                if (org === null) {continue}
+                if (org.energy <= 0) {this._removeOrg(org); continue}
+
                 const code = org.code;
                 const len  = code.length;
                 let   line = org.last;
                 let   d    = org.d;
                 let   a    = org.a;
                 let   b    = org.b;
-
-                if (org.energy <= 0) {this._removeOrg(org); continue}
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading

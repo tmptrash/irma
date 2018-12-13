@@ -30,7 +30,7 @@ class Organism {
         /**
          * {Number} Amount of energy
          */
-        this.energy = 0;
+        this.energy = energy;
         /**
          * {Number} Color of organism
          */
