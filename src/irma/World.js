@@ -4,12 +4,14 @@
  * @author flatline
  */
 const Config = require('./../Config');
+const Canvas = require('./Canvas');
 
 class World {
     constructor() {
         this.width  = Config.worldWidth;
         this.height = Config.worldHeight;
         this.data   = [];
+        this.canvas = new Canvas(this.width, this.height);
 
         for (let x = 0; x < this.width; x++) {
             this.data[x] = (new Array(this.height)).fill(0);
@@ -18,10 +20,12 @@ class World {
 
     destroy() {
         this.data = null;
+        this.canvas.destroy();
     }
 
     dot(x, y, c) {
         this.data[x][y] = c;
+        this.canvas.dot(x, y, c.color);
     }
 
     getDot(x, y) {

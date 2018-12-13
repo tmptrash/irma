@@ -75,9 +75,9 @@ class Irma {
     _createOrgs() {
         const world     = this.world;
         const orgAmount = Config.orgAmount;
+        const rand      = Helper.rand;
         const width     = world.width;
         const height    = world.height;
-        const rand      = Helper.rand;
 
         for (let i = 0; i < orgAmount; i++) {
             const x = rand(width);
