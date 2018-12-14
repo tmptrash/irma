@@ -4,23 +4,25 @@
  *   1  - eat    - eats something using current direction, result in d
  *   2  - clone  - clones himself using current direction, result in d
  *   3  - see    - see using current direction, result in d
- *   4  - seta   - copy value from d to a
- *   5  - setb   - copy value from d to b
- *   6  - set0   - sets 0 to d
- *   7  - set1   - sets 1 to d
- *   8  - add    - d = a + b
- *   9  - sub    - d = a - b
- *   10 - mul    - d = a * b
- *   11 - div    - d = a / b
- *   12 - inc    - d++
- *   13 - dec    - d--
- *   14 - jump   - jump to d line
- *   15 - jumpg  - jump to d line if a > b
- *   16 - jumpl  - jump to d line if a <= b
- *   17 - jumpz  - jump to d line if a === 0
- *   18 - nop    - no operation
- *   19 - push   - push(d)
- *   20 - pop    - d = pop()
+ *   4  - dtoa   - copy value from d to a
+ *   5  - dtob   - copy value from d to b
+ *   6  - atod   - copy value from a to d
+ *   7  - btod   - copy value from b to d
+ *   8  - d0     - sets 0 to d
+ *   9  - d1     - sets 1 to d
+ *   10 - add    - d = a + b
+ *   11 - sub    - d = a - b
+ *   12 - mul    - d = a * b
+ *   13 - div    - d = a / b
+ *   14 - inc    - d++
+ *   15 - dec    - d--
+ *   16 - jump   - jump to d line
+ *   17 - jumpg  - jump to d line if a > b
+ *   18 - jumpl  - jump to d line if a <= b
+ *   19 - jumpz  - jump to d line if a === 0
+ *   20 - nop    - no operation
+ *   21 - get    - d = mem[a]
+ *   22 - put    - mem[a] = d
  *
  * @author flatline
  */
@@ -41,6 +43,10 @@ const EMPTY  = 0;
 const ORG    = 1;
 const ENERGY = 2;
 
+const round  = Math.round;
+const fin    = Number.isFinite;
+const abs    = Math.abs;
+
 class VM {
     constructor(world, orgs) {
         this.world = world;
@@ -58,7 +64,6 @@ class VM {
         let   lines = Config.linesPerIteration;
         const orgs  = this.orgs;
         const world = this.world;
-        const round = Math.round;
         //
         // Loop X times through population
         //
@@ -82,9 +87,16 @@ class VM {
                 // support pseudo multi threading
                 //
                 line = org.last;
+                //
+                // This is experimental hack. To speed up the code we check
+                // registers for Infinity only here - between code runs
+                //
+                d = fin(d) ? d : 0;
+                a = fin(a) ? a : 0;
+                b = fin(b) ? b : 0;
                 for (let l = 0; l < lines; l++) {
                     if (++line >= len) {line = 0}
-                    const intd = round(d);
+                    const intd = abs(round(d));
                     switch (code[line]) {
                         case 0: { // step
                             const x = org.x + DIRX[intd % 8];
@@ -131,14 +143,92 @@ class VM {
                             const x = org.x + DIRX[intd % 8];
                             const y = org.y + DIRY[intd % 8];
                             const dot = world.getDot(x, y);
-                            if (world.outOf(x, y) || dot === 0) {d = EMPTY; continue} // no energy or out of the world
-                            if (!!dot && dot.constructor === Object) {                // other organism
-                                d = ORG;
-                                continue;
-                            }
-                            d = ENERGY;                                               // just energy block
-                            break
+                            if (world.outOf(x, y) || dot === 0) {d = EMPTY; continue}    // no energy or out of the world
+                            if (!!dot && dot.constructor === Object) {d = ORG; continue} // other organism
+                            d = ENERGY;                                                  // just energy block
+                            break;
                         }
+
+                        case 4:   // dtoa
+                            a = d;
+                            break;
+
+                        case 5:   // dtob
+                            b = d;
+                            break;
+
+                        case 6:   // atod
+                            d = a;
+                            break;
+
+                        case 7:   // abod
+                            b = a;
+                            break;
+
+                        case 8:   // d0
+                            d = 0;
+                            break;
+
+                        case 9:   // d1
+                            d = 1;
+                            break;
+
+                        case 10:  // add
+                            d = a + b;
+                            break;
+
+                        case 11:  // sub
+                            d = a - b;
+                            break;
+
+                        case 12:  // mul
+                            d = a * b;
+                            break;
+
+                        case 13:  // div
+                            d = a / b;
+                            break;
+
+                        case 14:  // inc
+                            d++;
+                            break;
+
+                        case 15:  // dec
+                            d--;
+                            break;
+
+                        case 16:  // jump
+                            if (intd >= code.length) {continue}
+                            line = intd;
+                            break;
+
+                        case 17:  // jumpg
+                            if (intd >= code.length) {continue}
+                            if (a > b) {line = intd}
+                            break;
+
+                        case 18:  // jumpl
+                            if (intd >= code.length) {continue}
+                            if (a <= b) {line = intd}
+                            break;
+
+                        case 19:  // jumpz
+                            if (intd >= code.length) {continue}
+                            if (a === 0) {line = intd}
+                            break;
+
+                        case 20:  // nop
+                            break;
+
+                        case 21:  // get
+                            if (intd >= org.mem.length) {continue}
+                            d = org.mem[intd];
+                            break;
+
+                        case 22:  // put
+                            if (intd >= org.mem.length) {continue}
+                            org.mem[intd] = d;
+                            break;
                     }
                 }
                 org.last = line;
