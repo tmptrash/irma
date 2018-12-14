@@ -19,18 +19,34 @@
  *   16 - jumpl  - jump to d line if a <= b
  *   17 - jumpz  - jump to d line if a === 0
  *   18 - nop    - no operation
+ *   19 - push   - push(d)
+ *   20 - pop    - d = pop()
  *
  * @author flatline
  */
-const Config = require('./../Config');
-
-const DIRX = [0,  1,  1, 1, 0, -1, -1, -1];
-const DIRY = [-1, -1, 0, 1, 1,  1,  0, -1];
+const Config   = require('./../Config');
+const Helper   = require('./../common/Helper');
+const Organism = require('./Organism');
+/**
+ * {Array} Array of increments. Using it we may obtain coordinates of the
+ * point depending on one of 8 directions. We use these values in any command
+ * related to sight, moving and so on
+ */
+const DIRX   = [0,  1,  1, 1, 0, -1, -1, -1];
+const DIRY   = [-1, -1, 0, 1, 1,  1,  0, -1];
+/**
+ * {Number} Dot types in a world
+ */
+const EMPTY  = 0;
+const ORG    = 1;
+const ENERGY = 2;
 
 class VM {
     constructor(world, orgs) {
         this.world = world;
         this.orgs  = orgs;
+
+        this._createOrgs();
     }
 
     /**
@@ -74,24 +90,19 @@ class VM {
                             const x = org.x + DIRX[intd % 8];
                             const y = org.y + DIRY[intd % 8];
                             const dot = world.getDot(x, y);
-                            if (!!dot && dot.constructor === Object || dot > 0 || world.outOf(x, y)) {
-                                d = 0;
-                                continue
-                            }
+                            if (!!dot && dot.constructor === Object || dot > 0 || world.outOf(x, y)) {d = 0; continue}
 
                             world.dot(org.x, org.y, 0);
                             world.dot(org.x = x, org.y = y, org.color);
                             d = 1;
                             break;
                         }
+
                         case 1: { // eat
                             const x = org.x + DIRX[intd % 8];
                             const y = org.y + DIRY[intd % 8];
                             const dot = world.getDot(x, y);
-                            if (world.outOf(x, y) || dot === 0) {
-                                d = 0;
-                                continue
-                            } // no energy or out of the world
+                            if (world.outOf(x, y) || dot === 0) {d = 0; continue} // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {            // other organism
                                 const energy = dot.energy <= intd ? dot.energy : intd;
                                 dot.energy -= energy;
@@ -103,6 +114,29 @@ class VM {
                             org.energy += energy;
                             world.dot(x, y, dot - energy);
                             d = 1;
+                            break
+                        }
+
+                        case 2: { // clone
+                            if (orgs.full) {d = 0; continue}
+                            const clone = org.clone();
+                            this._createOrg(clone.x, clone.y, clone);
+                            clone.energy = Math.round(clone.energy / 2);
+                            clone.item = orgs.freeIndex;
+                            d = 1;
+                            break;
+                        }
+
+                        case 3: { // see
+                            const x = org.x + DIRX[intd % 8];
+                            const y = org.y + DIRY[intd % 8];
+                            const dot = world.getDot(x, y);
+                            if (world.outOf(x, y) || dot === 0) {d = EMPTY; continue} // no energy or out of the world
+                            if (!!dot && dot.constructor === Object) {                // other organism
+                                d = ORG;
+                                continue;
+                            }
+                            d = ENERGY;                                               // just energy block
                             break
                         }
                     }
@@ -122,6 +156,39 @@ class VM {
 
     _removeOrg(org) {
         this.orgs.del(org.item);
+    }
+
+    /**
+     * Creates organisms population according to Config.orgAmount amount.
+     * Organisms will be placed randomly in a world
+     */
+    _createOrgs() {
+        const world     = this.world;
+        const orgAmount = Config.orgAmount;
+        const rand      = Helper.rand;
+        const width     = world.width;
+        const height    = world.height;
+
+        for (let i = 0; i < orgAmount; i++) {
+            const x = rand(width);
+            const y = rand(height);
+            world.getDot(x, y) === 0 && this._createOrg(x, y);
+        }
+    }
+
+    /**
+     * Creates one organism with default parameters and empty code
+     * @param {Number} x X coordinate
+     * @param {Number} y Y coordinate
+     * @param {Organism=} parent Create from parent
+     * @returns {Object} Item in FastArray class
+     */
+    _createOrg(x, y, parent = null) {
+        const orgs = this.orgs;
+        const org  = parent || new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
+
+        orgs.add(org);
+        this.world.dot(x, y, org);
     }
 }
 

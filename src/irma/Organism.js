@@ -3,6 +3,9 @@
  *
  * @author flatline
  */
+const Config = require('./../Config');
+const Helper = require('./../common/Helper');
+
 class Organism {
     constructor(id, x, y, item, energy, color) {
         this.last   = 0;
@@ -39,6 +42,20 @@ class Organism {
          * {Array} Array of numbers. Code (DNA) of organism
          */
         this.code   = [];
+        this.mem    = new Array(Config.orgMemSize);
+    }
+
+    clone() {
+        const org = new Organism(Helper.id(), this.x, this.y, this.item, this.energy, this.color);
+
+        org.last = this.last;
+        org.d    = this.d;
+        org.a    = this.a;
+        org.b    = this.b;
+        org.code = this.code.slice();
+        org.mem  = this.mem.slice();
+
+        return org;
     }
 }
 

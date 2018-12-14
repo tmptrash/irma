@@ -26,6 +26,15 @@ class Helper {
 
         return el;
     }
+    /**
+     * Generates unique string identifier
+     * @return {String} Unique id
+     */
+    static id() {
+        return ++Helper._id + '';
+    }
 }
+
+Helper._id = 0;
 
 module.exports = Helper;

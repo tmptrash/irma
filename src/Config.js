@@ -7,7 +7,8 @@ const Config = {
 
     orgAmount        : 1000,
     orgEnergy        : 1000,
-    orgColor         : 0xff0000
+    orgColor         : 0xff0000,
+    orgMemSize       : 64
 };
 
 module.exports = Config;

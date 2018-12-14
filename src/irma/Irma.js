@@ -1,7 +1,5 @@
 const FastArray = require('./../common/FastArray');
-const Helper    = require('./../common/Helper');
 const Config    = require('./../Config');
-const Organism  = require('./Organism');
 const World     = require('./World');
 const VM        = require('./VM');
 
@@ -11,10 +9,8 @@ class Irma {
         this.orgs   = new FastArray(Config.orgAmount);
         this.vm     = new VM(this.world, this.orgs);
         this._runCb = this.run.bind(this);
-        this._orgId = 0;
 
         this._initLoop();
-        this._createOrgs();
     }
 
     /**
@@ -66,38 +62,6 @@ class Irma {
         })();
 
         return true;
-    }
-
-    /**
-     * Creates organisms population according to Config.orgAmount amount.
-     * Organisms will be placed randomly in a world
-     */
-    _createOrgs() {
-        const world     = this.world;
-        const orgAmount = Config.orgAmount;
-        const rand      = Helper.rand;
-        const width     = world.width;
-        const height    = world.height;
-
-        for (let i = 0; i < orgAmount; i++) {
-            const x = rand(width);
-            const y = rand(height);
-            world.getDot(x, y) === 0 && this._createOrg(x, y);
-        }
-    }
-
-    /**
-     * Creates one organism with default parameters and empty code
-     * @param {Number} x X coordinate
-     * @param {Number} y Y coordinate
-     * @returns {Object} Item in FastArray class
-     */
-    _createOrg(x, y) {
-        const orgs = this.orgs;
-        const org  = new Organism(++this._orgId + '', x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
-
-        orgs.add(org);
-        this.world.dot(x, y, org);
     }
 }
 

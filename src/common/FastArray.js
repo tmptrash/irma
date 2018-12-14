@@ -70,6 +70,14 @@ class FastArray {
     }
 
     /**
+     * Checks if array is full of items and you can't call add() on it
+     * @return {Boolean}
+     */
+    get full() {
+        return this._index < 0;
+    }
+
+    /**
      * Sets value to FastArray. You can't set value index due to
      * optimization reason. Only a value
      * @param {*|false} v Any value or false if value hasn't added
