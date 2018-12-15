@@ -28,6 +28,11 @@ class World {
         this.canvas.dot(x, y, c.color);
     }
 
+    move(x0, y0, x1, y1, color) {
+        this.data[x0][y0] = 0;
+        this.data[x1][y1] = color;
+    }
+
     getDot(x, y) {
         return this.data[x][y];
     }

@@ -30,6 +30,10 @@ const Config   = require('./../Config');
 const Helper   = require('./../common/Helper');
 const Organism = require('./Organism');
 /**
+ * {Number} Amount of supported commands in a code
+ */
+const COMMANDS = 23;
+/**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
@@ -43,14 +47,29 @@ const EMPTY  = 0;
 const ORG    = 1;
 const ENERGY = 2;
 
+const MAX    = Number.MAX_VALUE;
+
+const ceil   = Math.ceil;
 const round  = Math.round;
+const rand   = Helper.rand;
 const fin    = Number.isFinite;
 const abs    = Math.abs;
+const nan    = Number.isNaN;
 
 class VM {
     constructor(world, orgs) {
-        this.world = world;
-        this.orgs  = orgs;
+        this.world    = world;
+        this.orgs     = orgs;
+        this.probsCbs = [
+            this._onChange.bind(this),
+            this._onDel.bind(this),
+            this._onPeriod.bind(this),
+            this._onAmount.bind(this),
+            this._onProbs.bind(this),
+            this._onInsert.bind(this),
+            this._onCopy.bind(this),
+            this._onCut.bind(this)
+        ];
 
         this._createOrgs();
     }
@@ -64,6 +83,7 @@ class VM {
         let   lines = Config.linesPerIteration;
         const orgs  = this.orgs;
         const world = this.world;
+        const data  = world.data;
         //
         // Loop X times through population
         //
@@ -87,34 +107,28 @@ class VM {
                 // support pseudo multi threading
                 //
                 line = org.last;
-                //
-                // This is experimental hack. To speed up the code we check
-                // registers for Infinity only here - between code runs
-                //
-                d = fin(d) ? d : 0;
-                a = fin(a) ? a : 0;
-                b = fin(b) ? b : 0;
                 for (let l = 0; l < lines; l++) {
                     if (++line >= len) {line = 0}
-                    const intd = abs(round(d));
+                    const intd = abs(ceil(d));
                     switch (code[line]) {
                         case 0: { // step
-                            const x = org.x + DIRX[intd % 8];
-                            const y = org.y + DIRY[intd % 8];
-                            const dot = world.getDot(x, y);
-                            if (!!dot && dot.constructor === Object || dot > 0 || world.outOf(x, y)) {d = 0; continue}
+                            const x   = org.x + DIRX[intd % 8];
+                            const y   = org.y + DIRY[intd % 8];
+                            if (world.outOf(x, y)) {d = 0; continue}
+                            const dot = data[x][y];
+                            if (!!dot && dot.constructor === Object || dot > 0) {d = 0; continue}
 
-                            world.dot(org.x, org.y, 0);
-                            world.dot(org.x = x, org.y = y, org.color);
+                            world.move(org.x, org.y, org.x = x, org.y = y, org.color);
                             d = 1;
                             break;
                         }
 
                         case 1: { // eat
-                            const x = org.x + DIRX[intd % 8];
-                            const y = org.y + DIRY[intd % 8];
-                            const dot = world.getDot(x, y);
-                            if (world.outOf(x, y) || dot === 0) {d = 0; continue} // no energy or out of the world
+                            const x   = org.x + DIRX[intd % 8];
+                            const y   = org.y + DIRY[intd % 8];
+                            if (world.outOf(x, y)) {d = 0; continue}
+                            const dot = data[x][y];
+                            if (dot === 0) {d = 0; continue} // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {            // other organism
                                 const energy = dot.energy <= intd ? dot.energy : intd;
                                 dot.energy -= energy;
@@ -131,19 +145,20 @@ class VM {
 
                         case 2: { // clone
                             if (orgs.full) {d = 0; continue}
-                            const clone = org.clone();
-                            this._createOrg(clone.x, clone.y, clone);
-                            clone.energy = Math.round(clone.energy / 2);
-                            clone.item = orgs.freeIndex;
+                            const clone  = org.clone();
+                            this._createOrg(clone.x, clone.y, org);
+                            clone.energy = ceil(clone.energy / 2);
+                            clone.item   = orgs.freeIndex;
                             d = 1;
                             break;
                         }
 
                         case 3: { // see
-                            const x = org.x + DIRX[intd % 8];
-                            const y = org.y + DIRY[intd % 8];
-                            const dot = world.getDot(x, y);
-                            if (world.outOf(x, y) || dot === 0) {d = EMPTY; continue}    // no energy or out of the world
+                            const x   = org.x + DIRX[intd % 8];
+                            const y   = org.y + DIRY[intd % 8];
+                            if (world.outOf(x, y)) {d = 0; continue}
+                            const dot = data[x][y];
+                            if (dot === 0) {d = EMPTY; continue}                         // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {d = ORG; continue} // other organism
                             d = ENERGY;                                                  // just energy block
                             break;
@@ -175,26 +190,33 @@ class VM {
 
                         case 10:  // add
                             d = a + b;
+                            d = fin(d) ? d : MAX;
                             break;
 
                         case 11:  // sub
                             d = a - b;
+                            d = fin(d) ? d : -MAX;
                             break;
 
                         case 12:  // mul
                             d = a * b;
+                            d = fin(d) ? d : MAX;
                             break;
 
                         case 13:  // div
                             d = a / b;
+                            d = fin(d) ? d : 0;
+                            d = !nan(d) ? d : 0;
                             break;
 
                         case 14:  // inc
                             d++;
+                            d = fin(d) ? d : MAX;
                             break;
 
                         case 15:  // dec
                             d--;
+                            d = fin(d) ? d : -MAX;
                             break;
 
                         case 16:  // jump
@@ -235,6 +257,8 @@ class VM {
                 org.d    = d;
                 org.a    = a;
                 org.b    = b;
+                this._update(org);
+                org.age++;
             }
         }
     }
@@ -280,6 +304,29 @@ class VM {
         orgs.add(org);
         this.world.dot(x, y, org);
     }
+
+    _update(org) {
+        if (org.age % Config.orgMutationPeriod === 0) {
+            const code      = org.code;
+            const codeLen   = code.length;
+            const mutations = round(codeLen * Config.orgMutationPercent) || 1;
+            const prob      = Helper.probIndex;
+            for (let m = 0; m < mutations; m++) {this.probsCbs[prob(org.probs)](code, org)}
+        }
+        if (org.age % Config.orgEnergyPeriod === 0) {
+            org.energy--;
+        }
+    }
+
+    _onChange(code)      {code[rand(code.length)] = rand(COMMANDS)}
+    _onDel   (code)      {code.splice(rand(code.length), 1)}
+    _onPeriod(code, org) {org.period = rand(Config.ORG_MAX_PERIOD) + 1}
+    _onAmount(code, org) {org.percent = Math.random()}
+    _onProbs (code, org) {org.probs[rand(org.probs.length)] = rand(Config.PROB_MAX_VALUE)}
+    _onInsert(code)      {code.splice(rand(code.length), 0, rand(COMMANDS))}
+    _onCopy  (code)      {code.splice(rand(code.length), 0, ...code.slice())}
+    _onCut   (code)      {code.splice(rand(code.length), rand(code.length))}
+
 }
 
 module.exports = VM;
