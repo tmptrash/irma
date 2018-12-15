@@ -32,7 +32,11 @@ const Organism = require('./Organism');
 /**
  * {Number} Amount of supported commands in a code
  */
-const COMMANDS = 23;
+const COMMANDS = 23
+/**
+ * {Number} Maximum stack size, which may be used for recursion or function parameters
+ */
+const MAX_STACK_SIZE = 30000;
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
@@ -324,9 +328,37 @@ class VM {
     _onAmount(code, org) {org.percent = Math.random()}
     _onProbs (code, org) {org.probs[rand(org.probs.length)] = rand(Config.PROB_MAX_VALUE)}
     _onInsert(code)      {code.splice(rand(code.length), 0, rand(COMMANDS))}
-    _onCopy  (code)      {code.splice(rand(code.length), 0, ...code.slice())}
-    _onCut   (code)      {code.splice(rand(code.length), rand(code.length))}
+    /**
+     * Takes few lines from itself and inserts them before or after copied
+     * part. All positions are random.
+     * @return {Number} Amount of added/copied lines
+     */
+    _onCopy  (code) {
+        const codeLen = code.length;
+        const start   = rand(codeLen);
+        const end     = start + rand(codeLen - start);
+        //
+        // Because we use spread (...) operator stack size is important
+        // for amount of parameters and we shouldn't exceed it
+        //
+        if (end - start > MAX_STACK_SIZE) {return 0}
+        //
+        // Organism size should be less them codeMaxSize
+        //
+        if (codeLen + end - start >= Config.orgCodeMaxSize) {return 0}
+        //
+        // We may insert copied piece before "start" (0) or after "end" (1)
+        //
+        if (rand(2) === 0) {
+            code.splice(rand(start), 0, ...code.slice(start, end));
+            return end - start;
+        }
 
+        code.splice(end + rand(codeLen - end + 1), 0, ...code.slice(start, end));
+
+        return end - start;
+    }
+    _onCut   (code)      {code.splice(rand(code.length), rand(code.length))}
 }
 
 module.exports = VM;

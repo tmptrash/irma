@@ -23,7 +23,8 @@ const Config = {
     orgMutationPercent: .2,
     orgMutationPeriod : 4000,
     orgProbs          : [5,1,3,5,1,20,1,1], // change,del,period,amount,probs,insert,copy,cut
-    orgEnergyPeriod   : 50
+    orgEnergyPeriod   : 50,
+    orgCodeMaxSize    : 1000
 };
 
 module.exports = Config;
