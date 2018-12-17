@@ -59,8 +59,44 @@ class Canvas {
         this._onAnimate();
     }
 
+    /**
+     * Sets pixel to specified color with specified coordinates.
+     * Color should contain red, green and blue components in one
+     * decimal number. For example: 16777215 is #FFFFFF - white.
+     * In case of invalid coordinates 0 value for x, color and y will
+     * be used.
+     * @param {Number} x X coordinate
+     * @param {Number} y Y coordinate
+     * @param {Number} color Decimal color
+     */
     dot(x, y, color) {
-        this._dot(x, y, color);
+        const data = this._data;
+        const offs = (y * this._width + x) * 4;
+
+        data[offs    ] = (color >> 16) & 0xff;
+        data[offs + 1] = (color >> 8)  & 0xff;
+        data[offs + 2] = color & 0xff;
+    }
+
+    /**
+     * This method is optimized for speed. It contains code duplication
+     * with dot() method.
+     * @param {Number} x0 Start X position
+     * @param {Number} y0 Start Y position
+     * @param {Number} x1 End X position
+     * @param {Number} y1 End Y position
+     * @param {Number} color
+     */
+    move(x0, y0, x1, y1, color) {
+        const data  = this._data;
+        const offs0 = (y0 * this._width + x0) * 4;
+        const offs1 = (y1 * this._width + x1) * 4;
+
+        data[offs0] = data[offs0 + 1] = data[offs0 + 2] = 0;
+
+        data[offs1    ] = (color >> 16) & 0xff;
+        data[offs1 + 1] = (color >> 8)  & 0xff;
+        data[offs1 + 2] = color & 0xff;
     }
 
     /**
@@ -73,25 +109,6 @@ class Canvas {
         for (let i = 0; i < size; i += 4) {
             data[i + 3] = 0xff;
         }
-    }
-
-    /**
-     * Sets pixel to specified color with specified coordinates.
-     * Color should contain red, green and blue components in one
-     * decimal number. For example: 16777215 is #FFFFFF - white.
-     * In case of invalid coordinates 0 value for x, color and y will
-     * be used.
-     * @param {Number} x X coordinate
-     * @param {Number} y Y coordinate
-     * @param {Number} color Decimal color
-     */
-    _dot(x, y, color) {
-        const data = this._data;
-        const offs = (y * this._width + x) * 4;
-
-        data[offs    ] = (color >> 16) & 0xff;
-        data[offs + 1] = (color >> 8)  & 0xff;
-        data[offs + 2] = color & 0xff;
     }
 
     _createFullScreenBtn() {

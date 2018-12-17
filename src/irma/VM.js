@@ -1,28 +1,27 @@
 /**
  * Supported commands:
- *   0  - step   - moves organism using current direction, result in d
- *   1  - eat    - eats something using current direction, result in d
- *   2  - clone  - clones himself using current direction, result in d
- *   3  - see    - see using current direction, result in d
- *   4  - dtoa   - copy value from d to a
- *   5  - dtob   - copy value from d to b
- *   6  - atod   - copy value from a to d
- *   7  - btod   - copy value from b to d
- *   8  - d0     - sets 0 to d
- *   9  - d1     - sets 1 to d
- *   10 - add    - d = a + b
- *   11 - sub    - d = a - b
- *   12 - mul    - d = a * b
- *   13 - div    - d = a / b
- *   14 - inc    - d++
- *   15 - dec    - d--
- *   16 - jump   - jump to d line
- *   17 - jumpg  - jump to d line if a > b
- *   18 - jumpl  - jump to d line if a <= b
- *   19 - jumpz  - jump to d line if a === 0
- *   20 - nop    - no operation
- *   21 - get    - d = mem[a]
- *   22 - put    - mem[a] = d
+ *   N             - number - sets this number to d. number in range -CMD_OFFS...CMD_OFFS
+ *   CMD_OFFS + 0  - step   - moves organism using current direction, result in d
+ *   CMD_OFFS + 1  - eat    - eats something using current direction, result in d
+ *   CMD_OFFS + 2  - clone  - clones himself using current direction, result in d
+ *   CMD_OFFS + 3  - see    - see using current direction, result in d
+ *   CMD_OFFS + 4  - dtoa   - copy value from d to a
+ *   CMD_OFFS + 5  - dtob   - copy value from d to b
+ *   CMD_OFFS + 6  - atod   - copy value from a to d
+ *   CMD_OFFS + 7  - btod   - copy value from b to d
+ *   CMD_OFFS + 8  - add    - d = a + b
+ *   CMD_OFFS + 9  - sub    - d = a - b
+ *   CMD_OFFS + 10 - mul    - d = a * b
+ *   CMD_OFFS + 11 - div    - d = a / b
+ *   CMD_OFFS + 12 - inc    - d++
+ *   CMD_OFFS + 13 - dec    - d--
+ *   CMD_OFFS + 14 - jump   - jump to d line
+ *   CMD_OFFS + 15 - jumpg  - jump to d line if a > b
+ *   CMD_OFFS + 16 - jumpl  - jump to d line if a <= b
+ *   CMD_OFFS + 17 - jumpz  - jump to d line if a === 0
+ *   CMD_OFFS + 18 - nop    - no operation
+ *   CMD_OFFS + 19 - get    - d = mem[a]
+ *   CMD_OFFS + 20 - put    - mem[a] = d
  *
  * @author flatline
  */
@@ -32,7 +31,12 @@ const Organism = require('./Organism');
 /**
  * {Number} Amount of supported commands in a code
  */
-const COMMANDS = 23
+const COMMANDS = 21;
+/**
+ * {Number} This offset will be added to commands value. This is how we
+ * add an ability to use numbers in a code, just putting them as command
+ */
+const CMD_OFFS = 128;
 /**
  * {Number} Maximum stack size, which may be used for recursion or function parameters
  */
@@ -114,8 +118,18 @@ class VM {
                 for (let l = 0; l < lines; l++) {
                     if (++line >= len) {line = 0}
                     const intd = abs(ceil(d));
+                    //
+                    // This is a number command: d = N
+                    //
+                    if (code[line] > -CMD_OFFS && code[line] < CMD_OFFS) {
+                        d = code[line];
+                        continue;
+                    }
+                    //
+                    // This is ordinary command
+                    //
                     switch (code[line]) {
-                        case 0: { // step
+                        case CMD_OFFS: { // step
                             const x   = org.x + DIRX[intd % 8];
                             const y   = org.y + DIRY[intd % 8];
                             if (world.outOf(x, y)) {d = 0; continue}
@@ -127,27 +141,27 @@ class VM {
                             break;
                         }
 
-                        case 1: { // eat
+                        case CMD_OFFS + 1: { // eat
                             const x   = org.x + DIRX[intd % 8];
                             const y   = org.y + DIRY[intd % 8];
                             if (world.outOf(x, y)) {d = 0; continue}
                             const dot = data[x][y];
-                            if (dot === 0) {d = 0; continue} // no energy or out of the world
-                            if (!!dot && dot.constructor === Object) {            // other organism
+                            if (dot === 0) {d = 0; continue}                             // no energy or out of the world
+                            if (!!dot && dot.constructor === Object) {                   // other organism
                                 const energy = dot.energy <= intd ? dot.energy : intd;
                                 dot.energy -= energy;
                                 org.energy += energy;
                                 d = 1;
                                 continue;
                             }
-                            const energy = dot <= intd ? dot : intd;              // just energy block
+                            const energy = dot <= intd ? dot : intd;                     // just energy block
                             org.energy += energy;
                             world.dot(x, y, dot - energy);
                             d = 1;
                             break
                         }
 
-                        case 2: { // clone
+                        case CMD_OFFS + 2: { // clone
                             if (orgs.full) {d = 0; continue}
                             const clone  = org.clone();
                             this._createOrg(clone.x, clone.y, org);
@@ -157,7 +171,7 @@ class VM {
                             break;
                         }
 
-                        case 3: { // see
+                        case CMD_OFFS + 3: { // see
                             const x   = org.x + DIRX[intd % 8];
                             const y   = org.y + DIRY[intd % 8];
                             if (world.outOf(x, y)) {d = 0; continue}
@@ -168,90 +182,82 @@ class VM {
                             break;
                         }
 
-                        case 4:   // dtoa
+                        case CMD_OFFS + 4:   // dtoa
                             a = d;
                             break;
 
-                        case 5:   // dtob
+                        case CMD_OFFS + 5:   // dtob
                             b = d;
                             break;
 
-                        case 6:   // atod
+                        case CMD_OFFS + 6:   // atod
                             d = a;
                             break;
 
-                        case 7:   // abod
+                        case CMD_OFFS + 7:   // abod
                             b = a;
                             break;
 
-                        case 8:   // d0
-                            d = 0;
-                            break;
-
-                        case 9:   // d1
-                            d = 1;
-                            break;
-
-                        case 10:  // add
+                        case CMD_OFFS + 8:   // add
                             d = a + b;
                             d = fin(d) ? d : MAX;
                             break;
 
-                        case 11:  // sub
+                        case CMD_OFFS + 9:   // sub
                             d = a - b;
                             d = fin(d) ? d : -MAX;
                             break;
 
-                        case 12:  // mul
+                        case CMD_OFFS + 10:  // mul
                             d = a * b;
                             d = fin(d) ? d : MAX;
                             break;
 
-                        case 13:  // div
+                        case CMD_OFFS + 11:  // div
                             d = a / b;
                             d = fin(d) ? d : 0;
                             d = !nan(d) ? d : 0;
                             break;
 
-                        case 14:  // inc
+                        case CMD_OFFS + 12:  // inc
                             d++;
                             d = fin(d) ? d : MAX;
                             break;
 
-                        case 15:  // dec
+                        case CMD_OFFS + 13:  // dec
                             d--;
                             d = fin(d) ? d : -MAX;
                             break;
 
-                        case 16:  // jump
+                        case CMD_OFFS + 14:  // jump
                             if (intd >= code.length) {continue}
                             line = intd;
                             break;
 
-                        case 17:  // jumpg
+                        case CMD_OFFS + 15:  // jumpg
                             if (intd >= code.length) {continue}
                             if (a > b) {line = intd}
                             break;
 
-                        case 18:  // jumpl
+                        case CMD_OFFS + 16:  // jumpl
                             if (intd >= code.length) {continue}
                             if (a <= b) {line = intd}
                             break;
 
-                        case 19:  // jumpz
+                        case CMD_OFFS + 17:  // jumpz
                             if (intd >= code.length) {continue}
                             if (a === 0) {line = intd}
                             break;
 
-                        case 20:  // nop
+                        case CMD_OFFS + 18:  // nop
                             break;
 
-                        case 21:  // get
+                        case CMD_OFFS + 19:  // get
                             if (intd >= org.mem.length) {continue}
                             d = org.mem[intd];
                             break;
 
-                        case 22:  // put
+                        case CMD_OFFS + 20:  // put
                             if (intd >= org.mem.length) {continue}
                             org.mem[intd] = d;
                             break;
@@ -322,12 +328,12 @@ class VM {
         }
     }
 
-    _onChange(code)      {code[rand(code.length)] = rand(COMMANDS)}
+    _onChange(code)      {code[rand(code.length)] = rand(COMMANDS) === 0 ? rand(CMD_OFFS) : rand(COMMANDS) + CMD_OFFS}
     _onDel   (code)      {code.splice(rand(code.length), 1)}
     _onPeriod(code, org) {org.period = rand(Config.ORG_MAX_PERIOD) + 1}
     _onAmount(code, org) {org.percent = Math.random()}
     _onProbs (code, org) {org.probs[rand(org.probs.length)] = rand(Config.PROB_MAX_VALUE)}
-    _onInsert(code)      {code.splice(rand(code.length), 0, rand(COMMANDS))}
+    _onInsert(code)      {code.splice(rand(code.length), 0, rand(COMMANDS) === 0 ? rand(CMD_OFFS) : rand(COMMANDS) + CMD_OFFS)}
     /**
      * Takes few lines from itself and inserts them before or after copied
      * part. All positions are random.

@@ -21,6 +21,7 @@ class World {
     destroy() {
         this.data = null;
         this.canvas.destroy();
+        this.canvas = null;
     }
 
     dot(x, y, c) {
@@ -31,6 +32,7 @@ class World {
     move(x0, y0, x1, y1, color) {
         this.data[x0][y0] = 0;
         this.data[x1][y1] = color;
+        this.canvas.move(x0, y0, x1, y1, color);
     }
 
     getDot(x, y) {
