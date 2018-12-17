@@ -318,8 +318,7 @@ class VM {
     _update(org) {
         if (org.age % Config.orgMutationPeriod === 0) {
             const code      = org.code;
-            const codeLen   = code.length;
-            const mutations = round(codeLen * Config.orgMutationPercent) || 1;
+            const mutations = round(code.length * Config.orgMutationPercent) || 1;
             const prob      = Helper.probIndex;
             for (let m = 0; m < mutations; m++) {this.probsCbs[prob(org.probs)](code, org)}
         }

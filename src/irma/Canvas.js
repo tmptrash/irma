@@ -26,7 +26,6 @@ class Canvas {
         this._zoomObserver  = null;
         this._fullEl        = this._createFullScreenBtn();
         this._visualizeEl   = this._createVisualizeBtn();
-        this._isVisualizeOn = true;
         this._xDataOffs     = 0;
         this._yDataOffs     = 0;
         this._visibleWidth  = Config.worldWidth;
@@ -56,6 +55,7 @@ class Canvas {
 
     visualize(visualize = true) {
         this._visualize = visualize;
+        this._onVisualize(visualize);
         this._onAnimate();
     }
 
@@ -173,8 +173,10 @@ class Canvas {
         this._canvasEl.style.height = '100%';
     }
 
-    _onVisualize() {
-        this._visualizeEl.style.backgroundColor = this._isVisualizeOn ? '#FFEB3B' : '#000';
+    _onVisualize(visualize) {
+        this._visualize = typeof(visualize) === 'boolean' ? visualize : !this._visualize;
+        this._visualizeEl.style.backgroundColor = this._visualize ? '#FFEB3B' : '#000';
+        this._onAnimate();
     }
 
     _onAnimate() {
