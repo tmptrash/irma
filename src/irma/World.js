@@ -42,6 +42,10 @@ class World {
     outOf(x, y) {
         return x < 0 || x >= this.width || y < 0 || y >= this.height;
     }
+
+    speed(text) {
+        this.canvas.header(text);
+    }
 }
 
 module.exports = World;

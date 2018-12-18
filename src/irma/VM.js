@@ -1,10 +1,10 @@
 /**
  * Supported commands:
  *   N             - number - sets this number to d. number in range -CMD_OFFS...CMD_OFFS
- *   CMD_OFFS + 0  - step   - moves organism using current direction, result in d
- *   CMD_OFFS + 1  - eat    - eats something using current direction, result in d
- *   CMD_OFFS + 2  - clone  - clones himself using current direction, result in d
- *   CMD_OFFS + 3  - see    - see using current direction, result in d
+ *   CMD_OFFS + 0  - step   - moves organism using current d direction
+ *   CMD_OFFS + 1  - eat    - eats something using current d direction
+ *   CMD_OFFS + 2  - clone  - clones himself using current d direction
+ *   CMD_OFFS + 3  - see    - see using current d direction
  *   CMD_OFFS + 4  - dtoa   - copy value from d to a
  *   CMD_OFFS + 5  - dtob   - copy value from d to b
  *   CMD_OFFS + 6  - atod   - copy value from a to d
@@ -22,6 +22,8 @@
  *   CMD_OFFS + 18 - nop    - no operation
  *   CMD_OFFS + 19 - get    - d = mem[a]
  *   CMD_OFFS + 20 - put    - mem[a] = d
+ *   CMD_OFFS + 21 - x      - d = org.x
+ *   CMD_OFFS + 22 - y      - d = org.y
  *
  * @author flatline
  */
@@ -55,7 +57,10 @@ const EMPTY  = 0;
 const ORG    = 1;
 const ENERGY = 2;
 
+const WIDTH  = Config.worldWidth - 1;
+const HEIGHT = Config.worldHeight - 1;
 const MAX    = Number.MAX_VALUE;
+const EATED  = Config.worldEnergy;
 
 const ceil   = Math.ceil;
 const round  = Math.round;
@@ -92,6 +97,8 @@ class VM {
         const orgs  = this.orgs;
         const world = this.world;
         const data  = world.data;
+        let   ts    = Date.now();
+        let   i     = 0;
         //
         // Loop X times through population
         //
@@ -130,51 +137,43 @@ class VM {
                     //
                     switch (code[line]) {
                         case CMD_OFFS: { // step
-                            const x   = org.x + DIRX[intd % 8];
-                            const y   = org.y + DIRY[intd % 8];
-                            if (world.outOf(x, y)) {d = 0; continue}
-                            const dot = data[x][y];
-                            if (!!dot && dot.constructor === Object || dot > 0) {d = 0; continue}
-
+                            const x = org.x + DIRX[intd % 8];
+                            const y = org.y + DIRY[intd % 8];
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
                             world.move(org.x, org.y, org.x = x, org.y = y, org.color);
-                            d = 1;
                             break;
                         }
 
                         case CMD_OFFS + 1: { // eat
                             const x   = org.x + DIRX[intd % 8];
                             const y   = org.y + DIRY[intd % 8];
-                            if (world.outOf(x, y)) {d = 0; continue}
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {continue}
                             const dot = data[x][y];
-                            if (dot === 0) {d = 0; continue}                             // no energy or out of the world
+                            if (dot === 0) {continue}                                    // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {                   // other organism
                                 const energy = dot.energy <= intd ? dot.energy : intd;
                                 dot.energy -= energy;
                                 org.energy += energy;
-                                d = 1;
                                 continue;
                             }
-                            const energy = dot <= intd ? dot : intd;                     // just energy block
-                            org.energy += energy;
-                            world.dot(x, y, dot - energy);
-                            d = 1;
+                            org.energy += EATED;                                         // just energy block
+                            world.dot(x, y, 0);
                             break
                         }
 
                         case CMD_OFFS + 2: { // clone
-                            if (orgs.full) {d = 0; continue}
+                            if (orgs.full) {continue}
                             const clone  = org.clone();
                             this._createOrg(clone.x, clone.y, org);
                             clone.energy = ceil(clone.energy / 2);
                             clone.item   = orgs.freeIndex;
-                            d = 1;
                             break;
                         }
 
                         case CMD_OFFS + 3: { // see
                             const x   = org.x + DIRX[intd % 8];
                             const y   = org.y + DIRY[intd % 8];
-                            if (world.outOf(x, y)) {d = 0; continue}
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = EMPTY; continue}
                             const dot = data[x][y];
                             if (dot === 0) {d = EMPTY; continue}                         // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {d = ORG; continue} // other organism
@@ -261,6 +260,14 @@ class VM {
                             if (intd >= org.mem.length) {continue}
                             org.mem[intd] = d;
                             break;
+
+                        case CMD_OFFS + 21:  // x
+                            d = org.x;
+                            break;
+
+                        case CMD_OFFS + 22:  // y
+                            d = org.y;
+                            break;
                     }
                 }
                 org.last = line;
@@ -269,8 +276,10 @@ class VM {
                 org.b    = b;
                 this._update(org);
                 org.age++;
+                i += lines;
             }
         }
+        world.speed(`ips: ${round((i / (Date.now() - ts)) * 1000)}`);
     }
 
     destroy() {

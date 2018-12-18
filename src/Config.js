@@ -12,8 +12,9 @@ const Config = {
 
     worldWidth        : 300,
     worldHeight       : 300,
+    worldEnergy       : 100,
 
-    linesPerIteration : 10,
+    linesPerIteration : 30,
     iterationsPerRun  : 100,
 
     orgAmount         : 1000,

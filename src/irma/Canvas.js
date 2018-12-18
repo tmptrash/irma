@@ -17,6 +17,7 @@ class Canvas {
         this._width         = width;
         this._height        = height;
         this._canvasEl      = doc.querySelector('#' + id);
+        this._headerEl      = this._createHeader();
         this._ctx           = this._canvasEl.getContext('2d');
         this._imgData       = this._ctx.createImageData(this._width, this._height);
         this._data          = this._imgData.data;
@@ -45,6 +46,8 @@ class Canvas {
         parentNode.removeChild(this._canvasEl);
         parentNode.removeChild(this._fullEl);
         parentNode.removeChild(this._visualizeEl);
+        this._headerEl.parentNode.removeChild(this._headerEl);
+        this._headerEl    = null;
         this._canvasEl    = null;
         this._fullEl      = null;
         this._visualizeEl = null;
@@ -109,6 +112,10 @@ class Canvas {
         for (let i = 0; i < size; i += 4) {
             data[i + 3] = 0xff;
         }
+    }
+
+    header(text) {
+        this._headerEl.textContent = text;
     }
 
     _createFullScreenBtn() {
@@ -223,6 +230,17 @@ class Canvas {
         // Global keyup event handler
         //
         document.addEventListener('keydown', this._onKeyDown.bind(this));
+    }
+
+    _createHeader() {
+        return document.body.appendChild(Helper.setStyles('DIV', {
+            position  : 'absolute',
+            top       : '7px',
+            left      : '60px',
+            color     : '#fff',
+            fontSize  : '18px',
+            fontFamily: 'Consolas'
+        }));
     }
 
     _onKeyDown(event) {
