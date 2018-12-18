@@ -13,6 +13,9 @@ const Config = {
     worldWidth        : 300,
     worldHeight       : 300,
     worldEnergy       : 100,
+    worldEnegyPeriod  : 10000000,
+    worldEnergyPercent: .3,
+    worldEnergyColor  : 0x00ff00,
 
     linesPerIteration : 30,
     iterationsPerRun  : 100,

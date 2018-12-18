@@ -71,9 +71,10 @@ const nan    = Number.isNaN;
 
 class VM {
     constructor(world, orgs) {
-        this.world    = world;
-        this.orgs     = orgs;
-        this.probsCbs = [
+        this.world      = world;
+        this.orgs       = orgs;
+        this.iterations = 0;
+        this.probsCbs   = [
             this._onChange.bind(this),
             this._onDel.bind(this),
             this._onPeriod.bind(this),
@@ -157,7 +158,7 @@ class VM {
                                 continue;
                             }
                             org.energy += EATED;                                         // just energy block
-                            world.dot(x, y, 0);
+                            world.empty(x, y, 0);
                             break
                         }
 
@@ -278,6 +279,7 @@ class VM {
                 org.age++;
                 i += lines;
             }
+            this.iterations++;
         }
         world.speed(`ips: ${round((i / (Date.now() - ts)) * 1000)}`);
     }
@@ -289,6 +291,7 @@ class VM {
 
     _removeOrg(org) {
         this.orgs.del(org.item);
+        this.world.empty(org.x, org.y, 0);
     }
 
     /**
@@ -321,7 +324,7 @@ class VM {
         const org  = parent || new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
 
         orgs.add(org);
-        this.world.dot(x, y, org);
+        this.world.org(x, y, org);
     }
 
     _update(org) {
@@ -332,7 +335,26 @@ class VM {
             for (let m = 0; m < mutations; m++) {this.probsCbs[prob(org.probs)](code, org)}
         }
         if (org.age % Config.orgEnergyPeriod === 0) {
-            org.energy--;
+            org.energy -= (org.code.length || 1);
+        }
+        if (this.iterations % Config.worldEnegyPeriod === 0) {
+            this._addEnergy();
+        }
+    }
+
+    _addEnergy() {
+        const world  = this.world;
+        const width  = world.width;
+        const height = world.height;
+        const amount = width * height * Config.worldEnergyPercent;
+        const color  = Config.worldEnergyColor;
+        const data   = world.data;
+        const rand   = Helper.rand;
+
+        for (let i = 0; i < amount; i++) {
+            const x = rand(width);
+            const y = rand(height);
+            data[x][y] === 0 && world.dot(x, y, color);
         }
     }
 

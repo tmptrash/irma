@@ -26,7 +26,17 @@ class World {
 
     dot(x, y, c) {
         this.data[x][y] = c;
-        this.canvas.dot(x, y, c.color);
+        this.canvas.dot(x, y, c);
+    }
+
+    empty(x, y) {
+        this.data[x][y] = 0;
+        this.canvas.empty(x, y);
+    }
+
+    org(x, y, org) {
+        this.data[x][y] = org;
+        this.canvas.dot(x, y, org.color);
     }
 
     move(x0, y0, x1, y1, color) {

@@ -82,6 +82,17 @@ class Canvas {
     }
 
     /**
+     * Sets pixel with 0 color with specified coordinates.
+     * @param {Number} x X coordinate
+     * @param {Number} y Y coordinate
+     */
+    empty(x, y) {
+        const data = this._data;
+        const offs = (y * this._width + x) * 4;
+        data[offs] = data[offs + 1] = data[offs + 2] = 0;
+    }
+
+    /**
      * This method is optimized for speed. It contains code duplication
      * with dot() method.
      * @param {Number} x0 Start X position
