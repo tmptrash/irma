@@ -9,25 +9,31 @@ const Config = {
      * @constant
      */
     ORG_MAX_PERIOD    : 5000,
+    /**
+     * {Number} This offset will be added to commands value. This is how we
+     * add an ability to use numbers in a code, just putting them as command
+     */
+    CMD_OFFS          : 128,
 
     worldWidth        : 300,
     worldHeight       : 300,
     worldEnergy       : 100,
-    worldEnegyPeriod  : 10000000,
+    worldEnergyPeriod : 200000,
     worldEnergyPercent: .3,
     worldEnergyColor  : 0x00ff00,
 
-    linesPerIteration : 30,
-    iterationsPerRun  : 100,
+    linesPerIteration : 5,
+    iterationsPerRun  : 10,
 
-    orgAmount         : 1000,
+    orgAmount         : 20000,
+    orgMaxAge         : 100000,
     orgEnergy         : 1000,
+    orgEnergyPeriod   : 50,
     orgColor          : 0xff0000,
     orgMemSize        : 64,
     orgMutationPercent: .2,
     orgMutationPeriod : 4000,
     orgProbs          : [5,1,3,5,1,20,1,1], // change,del,period,amount,probs,insert,copy,cut
-    orgEnergyPeriod   : 50,
     orgCodeMaxSize    : 1000
 };
 

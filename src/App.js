@@ -3,5 +3,11 @@
  *
  * @author flatline
  */
-const Irma = require('./irma/Irma');
-(window.irma = new Irma()).run();
+const Irma       = require('./irma/Irma');
+const Bytes2Code = require('./irma/Bytes2Code');
+
+window.irma  = {
+    code: Bytes2Code.toCode,
+    app : new Irma()
+};
+irma.app.run();

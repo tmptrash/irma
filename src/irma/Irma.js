@@ -26,6 +26,9 @@ class Irma {
         this.orgs.destroy();
         this.world.destroy();
         this._runCb = null;
+        this.world  = null;
+        this.orgs   = null;
+        this.vm     = null;
     }
 
     /**

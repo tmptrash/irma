@@ -20,8 +20,8 @@
  *   CMD_OFFS + 16 - jumpl  - jump to d line if a <= b
  *   CMD_OFFS + 17 - jumpz  - jump to d line if a === 0
  *   CMD_OFFS + 18 - nop    - no operation
- *   CMD_OFFS + 19 - get    - d = mem[a]
- *   CMD_OFFS + 20 - put    - mem[a] = d
+ *   CMD_OFFS + 19 - get    - a = mem[d]
+ *   CMD_OFFS + 20 - put    - mem[d] = a
  *   CMD_OFFS + 21 - x      - d = org.x
  *   CMD_OFFS + 22 - y      - d = org.y
  *
@@ -38,7 +38,7 @@ const COMMANDS = 21;
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
  */
-const CMD_OFFS = 128;
+const CMD_OFFS = Config.CMD_OFFS;
 /**
  * {Number} Maximum stack size, which may be used for recursion or function parameters
  */
@@ -164,10 +164,14 @@ class VM {
 
                         case CMD_OFFS + 2: { // clone
                             if (orgs.full) {continue}
-                            const clone  = org.clone();
-                            this._createOrg(clone.x, clone.y, org);
+                            const x      = org.x + DIRX[intd % 8];
+                            const y      = org.y + DIRY[intd % 8];
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
+                            const clone  = org.clone(x, y);
+                            if (clone === null) {continue}
                             clone.energy = ceil(clone.energy / 2);
                             clone.item   = orgs.freeIndex;
+                            this._createOrg(x, y, clone);
                             break;
                         }
 
@@ -254,12 +258,12 @@ class VM {
 
                         case CMD_OFFS + 19:  // get
                             if (intd >= org.mem.length) {continue}
-                            d = org.mem[intd];
+                            a = org.mem[intd];
                             break;
 
                         case CMD_OFFS + 20:  // put
                             if (intd >= org.mem.length) {continue}
-                            org.mem[intd] = d;
+                            org.mem[intd] = a;
                             break;
 
                         case CMD_OFFS + 21:  // x
@@ -300,6 +304,7 @@ class VM {
      */
     _createOrgs() {
         const world     = this.world;
+        const data      = world.data;
         const orgAmount = Config.orgAmount;
         const rand      = Helper.rand;
         const width     = world.width;
@@ -308,7 +313,7 @@ class VM {
         for (let i = 0; i < orgAmount; i++) {
             const x = rand(width);
             const y = rand(height);
-            world.getDot(x, y) === 0 && this._createOrg(x, y);
+            data[x][y] === 0 && this._createOrg(x, y);
         }
     }
 
@@ -316,28 +321,32 @@ class VM {
      * Creates one organism with default parameters and empty code
      * @param {Number} x X coordinate
      * @param {Number} y Y coordinate
-     * @param {Organism=} parent Create from parent
+     * @param {Organism=} clone Create from parent
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(x, y, parent = null) {
+    _createOrg(x, y, clone = null) {
         const orgs = this.orgs;
-        const org  = parent || new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
+        const org  = clone || new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
 
         orgs.add(org);
         this.world.org(x, y, org);
     }
 
     _update(org) {
-        if (org.age % Config.orgMutationPeriod === 0) {
+        const age = org.age;
+        if (age % Config.orgMutationPeriod === 0) {
             const code      = org.code;
             const mutations = round(code.length * Config.orgMutationPercent) || 1;
             const prob      = Helper.probIndex;
             for (let m = 0; m < mutations; m++) {this.probsCbs[prob(org.probs)](code, org)}
         }
-        if (org.age % Config.orgEnergyPeriod === 0) {
+        if (age % Config.orgEnergyPeriod === 0) {
             org.energy -= (org.code.length || 1);
         }
-        if (this.iterations % Config.worldEnegyPeriod === 0) {
+        if (age % Config.orgMaxAge === 0 && age > 0) {
+            this._removeOrg(org);
+        }
+        if (this.iterations % Config.worldEnergyPeriod === 0) {
             this._addEnergy();
         }
     }

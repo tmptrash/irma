@@ -54,16 +54,18 @@ class Organism {
         for (let i = 0; i < memSize; i++) {this.mem[i] = rand(MAX)}
     }
 
-    clone() {
-        const org = new Organism(Helper.id(), this.x, this.y, this.item, this.energy, this.color);
+    clone(x, y) {
+        const org = new Organism(Helper.id(), x, y, this.item, this.energy, this.color);
 
-        org.probs = this.probs.slice();
-        org.last  = this.last;
-        org.d     = this.d;
-        org.a     = this.a;
-        org.b     = this.b;
-        org.code  = this.code.slice();
-        org.mem   = this.mem.slice();
+        org.probs   = this.probs.slice();
+        org.period  = this.period;
+        org.percent = this.percent;
+        org.last    = this.last;
+        org.d       = this.d;
+        org.a       = this.a;
+        org.b       = this.b;
+        org.code    = this.code.slice();
+        org.mem     = this.mem.slice();
 
         return org;
     }
