@@ -60,7 +60,7 @@ const ENERGY = 2;
 const WIDTH  = Config.worldWidth - 1;
 const HEIGHT = Config.worldHeight - 1;
 const MAX    = Number.MAX_VALUE;
-const EATED  = Config.worldEnergy;
+const EATED  = Config.energyValue;
 
 const ceil   = Math.ceil;
 const round  = Math.round;
@@ -137,7 +137,7 @@ class VM {
                     //
                     switch (code[line]) {
                         case CMD_OFFS: { // step
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             const x    = org.x + DIRX[intd % 8];
                             const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
@@ -146,7 +146,7 @@ class VM {
                         }
 
                         case CMD_OFFS + 1: { // eat
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             const x    = org.x + DIRX[intd % 8];
                             const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {continue}
@@ -165,7 +165,7 @@ class VM {
 
                         case CMD_OFFS + 2: { // clone
                             if (orgs.full) {continue}
-                            const intd   = abs(ceil(d));
+                            const intd   = abs(d << 0);
                             const x      = org.x + DIRX[intd % 8];
                             const y      = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
@@ -178,7 +178,7 @@ class VM {
                         }
 
                         case CMD_OFFS + 3: { // see
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             const x    = org.x + DIRX[intd % 8];
                             const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = EMPTY; continue}
@@ -237,14 +237,14 @@ class VM {
                             break;
 
                         case CMD_OFFS + 14: {// jump
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             line = intd;
                             break;
                         }
 
                         case CMD_OFFS + 15: {// jumpg
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             if (a > b) {
                                 line = intd
@@ -253,14 +253,14 @@ class VM {
                         }
 
                         case CMD_OFFS + 16: {// jumpl
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             if (a <= b) {line = intd}
                             break;
                         }
 
                         case CMD_OFFS + 17:  // jumpz
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             if (a === 0) {line = intd}
                             break;
@@ -269,14 +269,14 @@ class VM {
                             break;
 
                         case CMD_OFFS + 19: {// get
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             if (intd >= org.mem.length) {continue}
                             a = org.mem[intd];
                             break;
                         }
 
                         case CMD_OFFS + 20: {// put
-                            const intd = abs(ceil(d));
+                            const intd = abs(d << 0);
                             if (intd >= org.mem.length) {continue}
                             org.mem[intd] = a;
                             break;
@@ -362,7 +362,7 @@ class VM {
         if (age % Config.orgMaxAge === 0 && age > 0) {
             this._removeOrg(org);
         }
-        if (this.iterations % Config.worldEnergyPeriod === 0) {
+        if (this.iterations % Config.energyGrabPeriod === 0) {
             this._addEnergy();
         }
     }
@@ -372,7 +372,7 @@ class VM {
         const width  = world.width;
         const height = world.height;
         const amount = width * height * Config.worldEnergyPercent;
-        const color  = Config.worldEnergyColor;
+        const color  = Config.energyColor;
         const data   = world.data;
         const rand   = Helper.rand;
 

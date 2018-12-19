@@ -17,10 +17,11 @@ const Config = {
 
     worldWidth        : 300,
     worldHeight       : 300,
-    worldEnergy       : 100,
-    worldEnergyPeriod : 200000,
     worldEnergyPercent: .3,
-    worldEnergyColor  : 0x00ff00,
+
+    energyValue       : 100,
+    energyGrabPeriod  : 200000,
+    energyColor       : 0x00ff00,
 
     linesPerIteration : 5,
     iterationsPerRun  : 10,
