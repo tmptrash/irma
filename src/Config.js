@@ -26,7 +26,7 @@ const Config = {
     linesPerIteration   : 5,
     iterationsPerRun    : 10,
 
-    orgAmount           : 5000,
+    orgAmount           : 10000,
     orgMaxAge           : 100000,
     orgEnergy           : 1000,
     orgEnergyPeriod     : 50,

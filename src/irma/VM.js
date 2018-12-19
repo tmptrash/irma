@@ -172,7 +172,7 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
                             const clone  = org.clone(x, y);
                             if (clone === null) {continue}
-                            clone.energy = ceil(clone.energy / 2);
+                            org.energy   = clone.energy = ceil(org.energy / 2);
                             clone.item   = orgs.freeIndex;
                             this._createOrg(x, y, clone);
                             break;
