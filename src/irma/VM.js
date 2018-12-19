@@ -74,6 +74,7 @@ class VM {
         this.world      = world;
         this.orgs       = orgs;
         this.iterations = 0;
+        this.ts         = Date.now();
         this.probsCbs   = [
             this._onChange.bind(this),
             this._onDel.bind(this),
@@ -94,7 +95,7 @@ class VM {
      */
     run() {
         const times = Config.iterationsPerRun;
-        let   lines = Config.linesPerIteration;
+        const lines = Config.linesPerIteration;
         const orgs  = this.orgs;
         const world = this.world;
         const data  = world.data;
@@ -301,7 +302,10 @@ class VM {
             }
             this.iterations++;
         }
-        world.speed(`ips: ${round((i / (Date.now() - ts)) * 1000)}`);
+        if (ts - this.ts > 1000) {
+            world.speed(`ips: ${round((i / (Date.now() - ts)) * 1000)} orgs: ${orgs.length}`);
+            this.ts = ts;
+        }
     }
 
     destroy() {
@@ -362,7 +366,7 @@ class VM {
         if (age % Config.orgMaxAge === 0 && age > 0) {
             this._removeOrg(org);
         }
-        if (this.iterations % Config.energyGrabPeriod === 0) {
+        if (this.iterations % Config.worldEnergyAddPeriod === 0) {
             this._addEnergy();
         }
     }
