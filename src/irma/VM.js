@@ -125,7 +125,6 @@ class VM {
                 line = org.last;
                 for (let l = 0; l < lines; l++) {
                     if (++line >= len) {line = 0}
-                    const intd = abs(ceil(d));
                     //
                     // This is a number command: d = N
                     //
@@ -138,18 +137,20 @@ class VM {
                     //
                     switch (code[line]) {
                         case CMD_OFFS: { // step
-                            const x = org.x + DIRX[intd % 8];
-                            const y = org.y + DIRY[intd % 8];
+                            const intd = abs(ceil(d));
+                            const x    = org.x + DIRX[intd % 8];
+                            const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
                             world.move(org.x, org.y, org.x = x, org.y = y, org.color);
                             break;
                         }
 
                         case CMD_OFFS + 1: { // eat
-                            const x   = org.x + DIRX[intd % 8];
-                            const y   = org.y + DIRY[intd % 8];
+                            const intd = abs(ceil(d));
+                            const x    = org.x + DIRX[intd % 8];
+                            const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {continue}
-                            const dot = data[x][y];
+                            const dot  = data[x][y];
                             if (dot === 0) {continue}                                    // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {                   // other organism
                                 const energy = dot.energy <= intd ? dot.energy : intd;
@@ -164,6 +165,7 @@ class VM {
 
                         case CMD_OFFS + 2: { // clone
                             if (orgs.full) {continue}
+                            const intd   = abs(ceil(d));
                             const x      = org.x + DIRX[intd % 8];
                             const y      = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
@@ -176,10 +178,11 @@ class VM {
                         }
 
                         case CMD_OFFS + 3: { // see
-                            const x   = org.x + DIRX[intd % 8];
-                            const y   = org.y + DIRY[intd % 8];
+                            const intd = abs(ceil(d));
+                            const x    = org.x + DIRX[intd % 8];
+                            const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = EMPTY; continue}
-                            const dot = data[x][y];
+                            const dot  = data[x][y];
                             if (dot === 0) {d = EMPTY; continue}                         // no energy or out of the world
                             if (!!dot && dot.constructor === Object) {d = ORG; continue} // other organism
                             d = ENERGY;                                                  // just energy block
@@ -233,22 +236,31 @@ class VM {
                             d = fin(d) ? d : -MAX;
                             break;
 
-                        case CMD_OFFS + 14:  // jump
+                        case CMD_OFFS + 14: {// jump
+                            const intd = abs(ceil(d));
                             if (intd >= code.length) {continue}
                             line = intd;
                             break;
+                        }
 
-                        case CMD_OFFS + 15:  // jumpg
+                        case CMD_OFFS + 15: {// jumpg
+                            const intd = abs(ceil(d));
                             if (intd >= code.length) {continue}
-                            if (a > b) {line = intd}
+                            if (a > b) {
+                                line = intd
+                            }
                             break;
+                        }
 
-                        case CMD_OFFS + 16:  // jumpl
+                        case CMD_OFFS + 16: {// jumpl
+                            const intd = abs(ceil(d));
                             if (intd >= code.length) {continue}
                             if (a <= b) {line = intd}
                             break;
+                        }
 
                         case CMD_OFFS + 17:  // jumpz
+                            const intd = abs(ceil(d));
                             if (intd >= code.length) {continue}
                             if (a === 0) {line = intd}
                             break;
@@ -256,15 +268,19 @@ class VM {
                         case CMD_OFFS + 18:  // nop
                             break;
 
-                        case CMD_OFFS + 19:  // get
+                        case CMD_OFFS + 19: {// get
+                            const intd = abs(ceil(d));
                             if (intd >= org.mem.length) {continue}
                             a = org.mem[intd];
                             break;
+                        }
 
-                        case CMD_OFFS + 20:  // put
+                        case CMD_OFFS + 20: {// put
+                            const intd = abs(ceil(d));
                             if (intd >= org.mem.length) {continue}
                             org.mem[intd] = a;
                             break;
+                        }
 
                         case CMD_OFFS + 21:  // x
                             d = org.x;
