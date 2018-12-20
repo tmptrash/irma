@@ -1,3 +1,17 @@
+/**
+ * {Object} Global configuration of IRMA project. Very important idea
+ * behind these configs is total amount of energy in a world. It should
+ * be a luck of energy to provoke system to grow. To calculate percent
+ * of this energy we have to use formula:
+ *
+ *   energy = (orgCloneEnergy - 1) * orgAmount
+ *
+ *   worldEnergyPercent = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / (worldWidth * worldHeight * energyValue)
+ *
+ *   dots = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / energyValue
+ *
+ * @author flatline
+ */
 const Config = {
     /**
      * {Number} Maximum value of every element in orgProbs array
@@ -17,10 +31,10 @@ const Config = {
 
     worldWidth          : 300,
     worldHeight         : 300,
-    worldEnergyPercent  : .1,
-    worldEnergyAddPeriod: 500000,
+    worldEnergyPercent  : .44,
+    worldEnergyAddPeriod: 2000000,
 
-    energyValue         : 30,
+    energyValue         : 1000,
     energyColor         : 0x00ff00,
 
     linesPerIteration   : 5,
@@ -28,7 +42,7 @@ const Config = {
 
     orgAmount           : 20000,
     orgMaxAge           : 100000,
-    orgEnergy           : 3000,
+    orgEnergy           : 1000,
     orgEnergyPeriod     : 30,
     orgCloneEnergy      : 3000,
     orgColor            : 0xff0000,

@@ -142,7 +142,9 @@ class VM {
                             const x    = org.x + DIRX[intd % 8];
                             const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
-                            world.move(org.x, org.y, org.x = x, org.y = y, org.color);
+                            world.move(org, x, y);
+                            org.x = x;
+                            org.y = y;
                             break;
                         }
 
@@ -153,10 +155,11 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {continue}
                             const dot  = data[x][y];
                             if (dot === 0) {continue}                                    // no energy or out of the world
-                            if (!!dot && dot.constructor === Object) {                   // other organism
+                            if (!!dot && dot.constructor === Organism) {                 // other organism
                                 const energy = dot.energy <= intd ? dot.energy : intd;
                                 dot.energy -= energy;
                                 org.energy += energy;
+                                if (dot.energy <= 0) {this._removeOrg(dot)}
                                 continue;
                             }
                             org.energy += EATED;                                         // just energy block
@@ -184,9 +187,9 @@ class VM {
                             const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = EMPTY; continue}
                             const dot  = data[x][y];
-                            if (dot === 0) {d = EMPTY; continue}                         // no energy or out of the world
-                            if (!!dot && dot.constructor === Object) {d = ORG; continue} // other organism
-                            d = ENERGY;                                                  // just energy block
+                            if (dot === 0) {d = EMPTY; continue}                           // no energy or out of the world
+                            if (!!dot && dot.constructor === Organism) {d = ORG; continue} // other organism
+                            d = ENERGY;                                                    // just energy block
                             break;
                         }
 
@@ -319,7 +322,7 @@ class VM {
 
     _removeOrg(org) {
         this.orgs.del(org.item);
-        this.world.empty(org.x, org.y, 0);
+        this.world.empty(org.x, org.y);
     }
 
     /**
