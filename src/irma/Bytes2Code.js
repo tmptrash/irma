@@ -17,6 +17,10 @@ class Bytes2Code {
     static toCode(bytes) {
         let code = '\n';
         for (let b = 0; b < bytes.length; b++) {
+            if (Bytes2Code.MAP[bytes[b]] === undefined) {
+                code += `${b ? '\n' : ''}${bytes[b]}`;
+                continue;
+            }
             code += `${b ? '\n' : ''}${Bytes2Code.MAP[bytes[b]]}`;
         }
 

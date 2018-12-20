@@ -165,7 +165,7 @@ class VM {
                         }
 
                         case CMD_OFFS + 2: { // clone
-                            if (orgs.full) {continue}
+                            if (orgs.full || org.energy < Config.orgCloneEnergy) {continue}
                             const intd   = abs(d << 0);
                             const x      = org.x + DIRX[intd % 8];
                             const y      = org.y + DIRY[intd % 8];
@@ -300,10 +300,14 @@ class VM {
                 org.age++;
                 i += lines;
             }
+            if (this.iterations % Config.worldEnergyAddPeriod === 0) {
+                this._addEnergy();
+            }
+
             this.iterations++;
         }
         if (ts - this.ts > 1000) {
-            world.speed(`ips: ${round((i / (Date.now() - ts)) * 1000)} orgs: ${orgs.length}`);
+            world.speed(`inps: ${round(((i / orgs.length) / (Date.now() - ts)) * 1000)} orgs: ${orgs.length}`);
             this.ts = ts;
         }
     }
@@ -365,9 +369,6 @@ class VM {
         }
         if (age % Config.orgMaxAge === 0 && age > 0) {
             this._removeOrg(org);
-        }
-        if (this.iterations % Config.worldEnergyAddPeriod === 0) {
-            this._addEnergy();
         }
     }
 

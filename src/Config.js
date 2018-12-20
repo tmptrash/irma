@@ -17,19 +17,20 @@ const Config = {
 
     worldWidth          : 300,
     worldHeight         : 300,
-    worldEnergyPercent  : .3,
-    worldEnergyAddPeriod: 200000,
+    worldEnergyPercent  : .1,
+    worldEnergyAddPeriod: 500000,
 
-    energyValue         : 100,
+    energyValue         : 30,
     energyColor         : 0x00ff00,
 
     linesPerIteration   : 5,
     iterationsPerRun    : 10,
 
-    orgAmount           : 10000,
+    orgAmount           : 20000,
     orgMaxAge           : 100000,
-    orgEnergy           : 1000,
-    orgEnergyPeriod     : 50,
+    orgEnergy           : 3000,
+    orgEnergyPeriod     : 30,
+    orgCloneEnergy      : 3000,
     orgColor            : 0xff0000,
     orgMemSize          : 64,
     orgMutationPercent  : .2,
