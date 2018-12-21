@@ -4,11 +4,9 @@
  * be a luck of energy to provoke system to grow. To calculate percent
  * of this energy we have to use formula:
  *
- *   energy = (orgCloneEnergy - 1) * orgAmount
- *
+ *   energy             = (orgCloneEnergy - 1) * orgAmount
+ *   dots               = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / energyValue
  *   worldEnergyPercent = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / (worldWidth * worldHeight * energyValue)
- *
- *   dots = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / energyValue
  *
  * @author flatline
  */
@@ -29,12 +27,12 @@ const Config = {
      */
     CMD_OFFS            : 128,
 
-    worldWidth          : 300,
-    worldHeight         : 300,
-    worldEnergyPercent  : .44,
-    worldEnergyAddPeriod: 2000000,
+    worldWidth          : 3000,
+    worldHeight         : 3000,
+    worldEnergyPercent  : .043,
+    worldEnergyAddPeriod: 200000,
 
-    energyValue         : 1000,
+    energyValue         : 100,
     energyColor         : 0x00ff00,
 
     linesPerIteration   : 5,
