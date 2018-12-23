@@ -8,53 +8,60 @@ const Canvas = require('./Canvas');
 
 class World {
     constructor() {
-        this.width  = Config.worldWidth;
-        this.height = Config.worldHeight;
-        this.data   = [];
-        this.canvas = new Canvas(this.width, this.height);
-
-        for (let x = 0; x < this.width; x++) {
-            this.data[x] = (new Array(this.height)).fill(0);
-        }
+        this._canvas = new Canvas();
+        this._data   = this._createData();
     }
 
     destroy() {
-        this.data = null;
-        this.canvas.destroy();
-        this.canvas = null;
+        this._data = null;
+        this._canvas.destroy();
+        this._canvas = null;
+    }
+
+    get data() {
+        return this._data;
     }
 
     dot(x, y, c) {
-        this.data[x][y] = c;
-        this.canvas.dot(x, y, c);
+        this._data[x][y] = c;
+        this._canvas.dot(x, y, c);
     }
 
     empty(x, y) {
-        this.data[x][y] = 0;
-        this.canvas.empty(x, y);
+        this._data[x][y] = 0;
+        this._canvas.empty(x, y);
     }
 
     org(x, y, org) {
-        this.data[x][y] = org;
-        this.canvas.dot(x, y, org.color);
+        this._data[x][y] = org;
+        this._canvas.dot(x, y, org.color);
     }
 
     move(org, x, y) {
-        this.data[org.x][org.y] = 0;
-        this.data[x][y] = org;
-        this.canvas.move(org.x, org.y, x, y, org.color);
+        this._data[org.x][org.y] = 0;
+        this._data[x][y] = org;
+        this._canvas.move(org.x, org.y, x, y, org.color);
     }
 
-    getDot(x, y) {
-        return this.data[x][y];
+    title(text) {
+        this._canvas.header(text);
     }
+    /**
+     * Created world's data. Is a two dimensions array of dots, which
+     * contains dots and organisms of the world.
+     * @returns {Array} Data array
+     * @private
+     */
+    _createData() {
+        const data   = [];
+        const HEIGHT = Config.WORLD_HEIGHT;
+        const WIDTH  = Config.WORLD_WIDTH;
 
-    outOf(x, y) {
-        return x < 0 || x >= this.width || y < 0 || y >= this.height;
-    }
+        for (let x = 0; x < WIDTH; x++) {
+            data[x] = (new Array(HEIGHT)).fill(0);
+        }
 
-    speed(text) {
-        this.canvas.header(text);
+        return data;
     }
 }
 

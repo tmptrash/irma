@@ -1,13 +1,12 @@
-const FastArray = require('./../common/FastArray');
-const Config    = require('./../Config');
-const World     = require('./World');
-const VM        = require('./VM');
+const Bytes2Code = require('./irma/Bytes2Code');
+const Config     = require('./Config');
+const World      = require('./irma/World');
+const VM         = require('./irma/VM');
 
 class Irma {
     constructor() {
-        this.world  = new World();
-        this.orgs   = new FastArray(Config.orgAmount);
-        this.vm     = new VM(this.world, this.orgs);
+        this._world  = new World();
+        this.vm     = new VM(this._world);
         this._runCb = this.run.bind(this);
 
         this._initLoop();
@@ -23,11 +22,9 @@ class Irma {
 
     destroy() {
         this.vm.destroy();
-        this.orgs.destroy();
-        this.world.destroy();
+        this._world.destroy();
         this._runCb = null;
-        this.world  = null;
-        this.orgs   = null;
+        this._world  = null;
         this.vm     = null;
     }
 
@@ -68,4 +65,13 @@ class Irma {
     }
 }
 
-module.exports = Irma;
+//
+// This is entry point of application. Creates global objects
+// to have an access from the console.
+//
+window.irma  = {
+    code: Bytes2Code.toCode,
+    app : new Irma(),
+    cfg : Config
+};
+window.irma.app.run();

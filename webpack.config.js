@@ -2,7 +2,7 @@ const path    = require('path');
 const Cleaner = require('clean-webpack-plugin');
 
 module.exports = {
-    entry  : './src/App.js',
+    entry  : './src/Irma.js',
     devtool: 'source-map',
     output : {
         filename: 'irma.js',

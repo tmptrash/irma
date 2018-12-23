@@ -8,15 +8,15 @@ const Helper   = require('./../common/Helper');
 const Config   = require('./../Config');
 
 class Canvas {
-    constructor(width, height) {
+    constructor() {
         const id  = 'world';
         const doc = document;
 
-        doc.body.innerHTML += `<canvas id="${id}" width="${width}" height="${height}"></canvas>`;
+        doc.body.innerHTML += `<canvas id="${id}" width="${Config.WORLD_WIDTH}" height="${Config.WORLD_HEIGHT}"></canvas>`;
 
-        this._width         = width;
-        this._height        = height;
-        this._canvasEl      = doc.querySelector('#' + id);
+        this._width         = Config.WORLD_WIDTH;
+        this._height        = Config.WORLD_HEIGHT;
+        this._canvasEl      = doc.getElementById(id);
         this._headerEl      = this._createHeader();
         this._ctx           = this._canvasEl.getContext('2d');
         this._imgData       = this._ctx.createImageData(this._width, this._height);
@@ -29,8 +29,8 @@ class Canvas {
         this._visualizeEl   = this._createVisualizeBtn();
         this._xDataOffs     = 0;
         this._yDataOffs     = 0;
-        this._visibleWidth  = Config.worldWidth;
-        this._visibleHeight = Config.worldHeight;
+        this._visibleWidth  = Config.WORLD_WIDTH;
+        this._visibleHeight = Config.WORLD_HEIGHT;
 
         this._prepareDom();
         this._initPanZoomLib();
@@ -296,8 +296,8 @@ class Canvas {
         const windowHeight  = window.innerHeight;
         const viewWidth     = windowWidth  * coef;
         const viewHeight    = windowHeight * coef;
-        const xCoef         = Config.worldWidth  / windowWidth;
-        const yCoef         = Config.worldHeight / windowHeight;
+        const xCoef         = Config.WORLD_WIDTH  / windowWidth;
+        const yCoef         = Config.WORLD_HEIGHT / windowHeight;
 
         this._xDataOffs = (dx < 0 ? (coef > 1 ? -dx / coef : -dx * coef) : 0) * xCoef;
         this._yDataOffs = (dy < 0 ? (coef > 1 ? -dy / coef : -dy * coef) : 0) * yCoef;

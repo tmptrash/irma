@@ -7,7 +7,7 @@ const Config = require('./../Config');
 /**
  * {Number} Offset of the first command. Before it, just numbers
  */
-const CMD_OFFS = Config.CMD_OFFS;
+const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Bytes2Code {
     /**
@@ -29,29 +29,29 @@ class Bytes2Code {
 }
 
 Bytes2Code.MAP = {
-    [CMD_OFFS     ]: 'step  // d - direction',
-    [CMD_OFFS + 1 ]: 'eat   // d - direction',
-    [CMD_OFFS + 2 ]: 'clone // d - direction',
-    [CMD_OFFS + 3 ]: 'see   // d - direction',
-    [CMD_OFFS + 4 ]: 'dtoa  // a = d',
-    [CMD_OFFS + 5 ]: 'dtob  // b = d',
-    [CMD_OFFS + 6 ]: 'atod  // d = a',
-    [CMD_OFFS + 7 ]: 'btod  // d = b',
-    [CMD_OFFS + 8 ]: 'add   // d = a + b',
-    [CMD_OFFS + 9 ]: 'sub   // d = a - b',
-    [CMD_OFFS + 10]: 'mul   // d = a * b',
-    [CMD_OFFS + 11]: 'div   // d = a / b',
-    [CMD_OFFS + 12]: 'inc   // d++',
-    [CMD_OFFS + 13]: 'dec   // d--',
-    [CMD_OFFS + 14]: 'jump  // jump d',
-    [CMD_OFFS + 15]: 'jumpg // jump d if a > b',
-    [CMD_OFFS + 16]: 'jumpl // jump d if a <= b',
-    [CMD_OFFS + 17]: 'jumpz // jump d if a === 0',
-    [CMD_OFFS + 18]: 'nop',
-    [CMD_OFFS + 19]: 'get   // a = mem[d]',
-    [CMD_OFFS + 20]: 'put   // mem[d] = a',
-    [CMD_OFFS + 21]: 'x     // d = org.x',
-    [CMD_OFFS + 22]: 'y     // d = org.y',
+    [CODE_CMD_OFFS     ]: 'step  // d - direction',
+    [CODE_CMD_OFFS + 1 ]: 'eat   // d - direction',
+    [CODE_CMD_OFFS + 2 ]: 'clone // d - direction',
+    [CODE_CMD_OFFS + 3 ]: 'see   // d - direction',
+    [CODE_CMD_OFFS + 4 ]: 'dtoa  // a = d',
+    [CODE_CMD_OFFS + 5 ]: 'dtob  // b = d',
+    [CODE_CMD_OFFS + 6 ]: 'atod  // d = a',
+    [CODE_CMD_OFFS + 7 ]: 'btod  // d = b',
+    [CODE_CMD_OFFS + 8 ]: 'add   // d = a + b',
+    [CODE_CMD_OFFS + 9 ]: 'sub   // d = a - b',
+    [CODE_CMD_OFFS + 10]: 'mul   // d = a * b',
+    [CODE_CMD_OFFS + 11]: 'div   // d = a / b',
+    [CODE_CMD_OFFS + 12]: 'inc   // d++',
+    [CODE_CMD_OFFS + 13]: 'dec   // d--',
+    [CODE_CMD_OFFS + 14]: 'jump  // jump d',
+    [CODE_CMD_OFFS + 15]: 'jumpg // jump d if a > b',
+    [CODE_CMD_OFFS + 16]: 'jumpl // jump d if a <= b',
+    [CODE_CMD_OFFS + 17]: 'jumpz // jump d if a === 0',
+    [CODE_CMD_OFFS + 18]: 'nop',
+    [CODE_CMD_OFFS + 19]: 'get   // a = mem[d]',
+    [CODE_CMD_OFFS + 20]: 'put   // mem[d] = a',
+    [CODE_CMD_OFFS + 21]: 'x     // d = org.x',
+    [CODE_CMD_OFFS + 22]: 'y     // d = org.y',
 };
 
 module.exports = Bytes2Code;

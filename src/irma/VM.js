@@ -1,48 +1,42 @@
 /**
  * Supported commands:
- *   N             - number - sets this number to d. number in range -CMD_OFFS...CMD_OFFS
- *   CMD_OFFS + 0  - step   - moves organism using current d direction
- *   CMD_OFFS + 1  - eat    - eats something using current d direction
- *   CMD_OFFS + 2  - clone  - clones himself using current d direction
- *   CMD_OFFS + 3  - see    - see using current d direction
- *   CMD_OFFS + 4  - dtoa   - copy value from d to a
- *   CMD_OFFS + 5  - dtob   - copy value from d to b
- *   CMD_OFFS + 6  - atod   - copy value from a to d
- *   CMD_OFFS + 7  - btod   - copy value from b to d
- *   CMD_OFFS + 8  - add    - d = a + b
- *   CMD_OFFS + 9  - sub    - d = a - b
- *   CMD_OFFS + 10 - mul    - d = a * b
- *   CMD_OFFS + 11 - div    - d = a / b
- *   CMD_OFFS + 12 - inc    - d++
- *   CMD_OFFS + 13 - dec    - d--
- *   CMD_OFFS + 14 - jump   - jump to d line
- *   CMD_OFFS + 15 - jumpg  - jump to d line if a > b
- *   CMD_OFFS + 16 - jumpl  - jump to d line if a <= b
- *   CMD_OFFS + 17 - jumpz  - jump to d line if a === 0
- *   CMD_OFFS + 18 - nop    - no operation
- *   CMD_OFFS + 19 - get    - a = mem[d]
- *   CMD_OFFS + 20 - put    - mem[d] = a
- *   CMD_OFFS + 21 - x      - d = org.x
- *   CMD_OFFS + 22 - y      - d = org.y
+ *   N             - number - sets this number to d. number in range -CODE_CMD_OFFS...CODE_CMD_OFFS
+ *   CODE_CMD_OFFS + 0  - step   - moves organism using current d direction
+ *   CODE_CMD_OFFS + 1  - eat    - eats something using current d direction
+ *   CODE_CMD_OFFS + 2  - clone  - clones himself using current d direction
+ *   CODE_CMD_OFFS + 3  - see    - see using current d direction
+ *   CODE_CMD_OFFS + 4  - dtoa   - copy value from d to a
+ *   CODE_CMD_OFFS + 5  - dtob   - copy value from d to b
+ *   CODE_CMD_OFFS + 6  - atod   - copy value from a to d
+ *   CODE_CMD_OFFS + 7  - btod   - copy value from b to d
+ *   CODE_CMD_OFFS + 8  - add    - d = a + b
+ *   CODE_CMD_OFFS + 9  - sub    - d = a - b
+ *   CODE_CMD_OFFS + 10 - mul    - d = a * b
+ *   CODE_CMD_OFFS + 11 - div    - d = a / b
+ *   CODE_CMD_OFFS + 12 - inc    - d++
+ *   CODE_CMD_OFFS + 13 - dec    - d--
+ *   CODE_CMD_OFFS + 14 - jump   - jump to d line
+ *   CODE_CMD_OFFS + 15 - jumpg  - jump to d line if a > b
+ *   CODE_CMD_OFFS + 16 - jumpl  - jump to d line if a <= b
+ *   CODE_CMD_OFFS + 17 - jumpz  - jump to d line if a === 0
+ *   CODE_CMD_OFFS + 18 - nop    - no operation
+ *   CODE_CMD_OFFS + 19 - get    - a = mem[d]
+ *   CODE_CMD_OFFS + 20 - put    - mem[d] = a
+ *   CODE_CMD_OFFS + 21 - x      - d = org.x
+ *   CODE_CMD_OFFS + 22 - y      - d = org.y
  *
  * @author flatline
  */
-const Config   = require('./../Config');
-const Helper   = require('./../common/Helper');
-const Organism = require('./Organism');
-/**
- * {Number} Amount of supported commands in a code
- */
-const COMMANDS = 21;
+const Config    = require('./../Config');
+const FastArray = require('./../common/FastArray');
+const Helper    = require('./../common/Helper');
+const Organism  = require('./Organism');
+const Mutations = require('./Mutations');
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
  */
-const CMD_OFFS = Config.CMD_OFFS;
-/**
- * {Number} Maximum stack size, which may be used for recursion or function parameters
- */
-const MAX_STACK_SIZE = 30000;
+const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
@@ -56,35 +50,25 @@ const DIRY   = [-1, -1, 0, 1, 1,  1,  0, -1];
 const EMPTY  = 0;
 const ORG    = 1;
 const ENERGY = 2;
-
-const WIDTH  = Config.worldWidth - 1;
-const HEIGHT = Config.worldHeight - 1;
+/**
+ * {Number} World size. Pay attantion, that width and height is -1
+ */
+const WIDTH  = Config.WORLD_WIDTH - 1;
+const HEIGHT = Config.WORLD_HEIGHT - 1;
 const MAX    = Number.MAX_VALUE;
-const EATED  = Config.energyValue;
 
 const ceil   = Math.ceil;
 const round  = Math.round;
-const rand   = Helper.rand;
 const fin    = Number.isFinite;
 const abs    = Math.abs;
 const nan    = Number.isNaN;
 
 class VM {
-    constructor(world, orgs) {
-        this.world      = world;
-        this.orgs       = orgs;
-        this.iterations = 0;
-        this.ts         = Date.now();
-        this.probsCbs   = [
-            this._onChange.bind(this),
-            this._onDel.bind(this),
-            this._onPeriod.bind(this),
-            this._onAmount.bind(this),
-            this._onProbs.bind(this),
-            this._onInsert.bind(this),
-            this._onCopy.bind(this),
-            this._onCut.bind(this)
-        ];
+    constructor(world) {
+        this._world      = world;
+        this._orgs       = null;
+        this._iterations = 0;
+        this._ts         = Date.now();
 
         this._createOrgs();
     }
@@ -96,8 +80,8 @@ class VM {
     run() {
         const times = Config.iterationsPerRun;
         const lines = Config.linesPerIteration;
-        const orgs  = this.orgs;
-        const world = this.world;
+        const orgs  = this._orgs;
+        const world = this._world;
         const data  = world.data;
         let   ts    = Date.now();
         let   i     = 0;
@@ -129,7 +113,7 @@ class VM {
                     //
                     // This is a number command: d = N
                     //
-                    if (code[line] > -CMD_OFFS && code[line] < CMD_OFFS) {
+                    if (code[line] > -CODE_CMD_OFFS && code[line] < CODE_CMD_OFFS) {
                         d = code[line];
                         continue;
                     }
@@ -137,7 +121,7 @@ class VM {
                     // This is ordinary command
                     //
                     switch (code[line]) {
-                        case CMD_OFFS: { // step
+                        case CODE_CMD_OFFS: { // step
                             const intd = abs(d << 0);
                             const x    = org.x + DIRX[intd % 8];
                             const y    = org.y + DIRY[intd % 8];
@@ -148,7 +132,7 @@ class VM {
                             break;
                         }
 
-                        case CMD_OFFS + 1: { // eat
+                        case CODE_CMD_OFFS + 1: { // eat
                             const intd = abs(d << 0);
                             const x    = org.x + DIRX[intd % 8];
                             const y    = org.y + DIRY[intd % 8];
@@ -162,12 +146,12 @@ class VM {
                                 if (dot.energy <= 0) {this._removeOrg(dot)}
                                 continue;
                             }
-                            org.energy += EATED;                                         // just energy block
+                            org.energy += Config.energyValue;                            // just energy block
                             world.empty(x, y, 0);
                             break
                         }
 
-                        case CMD_OFFS + 2: { // clone
+                        case CODE_CMD_OFFS + 2: { // clone
                             if (orgs.full || org.energy < Config.orgCloneEnergy) {continue}
                             const intd   = abs(d << 0);
                             const x      = org.x + DIRX[intd % 8];
@@ -181,7 +165,7 @@ class VM {
                             break;
                         }
 
-                        case CMD_OFFS + 3: { // see
+                        case CODE_CMD_OFFS + 3: { // see
                             const intd = abs(d << 0);
                             const x    = org.x + DIRX[intd % 8];
                             const y    = org.y + DIRY[intd % 8];
@@ -193,61 +177,61 @@ class VM {
                             break;
                         }
 
-                        case CMD_OFFS + 4:   // dtoa
+                        case CODE_CMD_OFFS + 4:   // dtoa
                             a = d;
                             break;
 
-                        case CMD_OFFS + 5:   // dtob
+                        case CODE_CMD_OFFS + 5:   // dtob
                             b = d;
                             break;
 
-                        case CMD_OFFS + 6:   // atod
+                        case CODE_CMD_OFFS + 6:   // atod
                             d = a;
                             break;
 
-                        case CMD_OFFS + 7:   // abod
+                        case CODE_CMD_OFFS + 7:   // abod
                             b = a;
                             break;
 
-                        case CMD_OFFS + 8:   // add
+                        case CODE_CMD_OFFS + 8:   // add
                             d = a + b;
                             d = fin(d) ? d : MAX;
                             break;
 
-                        case CMD_OFFS + 9:   // sub
+                        case CODE_CMD_OFFS + 9:   // sub
                             d = a - b;
                             d = fin(d) ? d : -MAX;
                             break;
 
-                        case CMD_OFFS + 10:  // mul
+                        case CODE_CMD_OFFS + 10:  // mul
                             d = a * b;
                             d = fin(d) ? d : MAX;
                             break;
 
-                        case CMD_OFFS + 11:  // div
+                        case CODE_CMD_OFFS + 11:  // div
                             d = a / b;
                             d = fin(d) ? d : 0;
                             d = !nan(d) ? d : 0;
                             break;
 
-                        case CMD_OFFS + 12:  // inc
+                        case CODE_CMD_OFFS + 12:  // inc
                             d++;
                             d = fin(d) ? d : MAX;
                             break;
 
-                        case CMD_OFFS + 13:  // dec
+                        case CODE_CMD_OFFS + 13:  // dec
                             d--;
                             d = fin(d) ? d : -MAX;
                             break;
 
-                        case CMD_OFFS + 14: {// jump
+                        case CODE_CMD_OFFS + 14: {// jump
                             const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             line = intd;
                             break;
                         }
 
-                        case CMD_OFFS + 15: {// jumpg
+                        case CODE_CMD_OFFS + 15: {// jumpg
                             const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             if (a > b) {
@@ -256,41 +240,41 @@ class VM {
                             break;
                         }
 
-                        case CMD_OFFS + 16: {// jumpl
+                        case CODE_CMD_OFFS + 16: {// jumpl
                             const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             if (a <= b) {line = intd}
                             break;
                         }
 
-                        case CMD_OFFS + 17:  // jumpz
+                        case CODE_CMD_OFFS + 17:  // jumpz
                             const intd = abs(d << 0);
                             if (intd >= code.length) {continue}
                             if (a === 0) {line = intd}
                             break;
 
-                        case CMD_OFFS + 18:  // nop
+                        case CODE_CMD_OFFS + 18:  // nop
                             break;
 
-                        case CMD_OFFS + 19: {// get
+                        case CODE_CMD_OFFS + 19: {// get
                             const intd = abs(d << 0);
                             if (intd >= org.mem.length) {continue}
                             a = org.mem[intd];
                             break;
                         }
 
-                        case CMD_OFFS + 20: {// put
+                        case CODE_CMD_OFFS + 20: {// put
                             const intd = abs(d << 0);
                             if (intd >= org.mem.length) {continue}
                             org.mem[intd] = a;
                             break;
                         }
 
-                        case CMD_OFFS + 21:  // x
+                        case CODE_CMD_OFFS + 21:  // x
                             d = org.x;
                             break;
 
-                        case CMD_OFFS + 22:  // y
+                        case CODE_CMD_OFFS + 22:  // y
                             d = org.y;
                             break;
                     }
@@ -299,30 +283,34 @@ class VM {
                 org.d    = d;
                 org.a    = a;
                 org.b    = b;
-                this._update(org);
+                Mutations.update(org);
                 org.age++;
                 i += lines;
             }
-            if (this.iterations % Config.worldEnergyAddPeriod === 0) {
+            if (this._iterations % Config.worldEnergyAddPeriod === 0) {
                 this._addEnergy();
             }
 
-            this.iterations++;
+            this._iterations++;
         }
-        if (ts - this.ts > 1000) {
-            world.speed(`inps: ${round(((i / orgs.length) / (Date.now() - ts)) * 1000)} orgs: ${orgs.length}`);
-            this.ts = ts;
+        if (ts - this._ts > 1000) {
+            world.title(`inps: ${round(((i / orgs.length) / (Date.now() - ts)) * 1000)} orgs: ${orgs.length}`);
+            this._ts = ts;
+
+            if (orgs.length === 0) {this._createOrgs()}
         }
     }
 
     destroy() {
-        this.world = null;
-        this.orgs  = null;
+        this._orgs.destroy();
+        this._orgs  = null;
+        this._world = null;
+        this._orgs  = null;
     }
 
     _removeOrg(org) {
-        this.orgs.del(org.item);
-        this.world.empty(org.x, org.y);
+        this._orgs.del(org.item);
+        this._world.empty(org.x, org.y);
     }
 
     /**
@@ -330,13 +318,14 @@ class VM {
      * Organisms will be placed randomly in a world
      */
     _createOrgs() {
-        const world     = this.world;
+        const world     = this._world;
         const data      = world.data;
         const orgAmount = Config.orgAmount;
         const rand      = Helper.rand;
-        const width     = world.width;
-        const height    = world.height;
+        const width     = Config.WORLD_WIDTH;
+        const height    = Config.WORLD_HEIGHT;
 
+        this._orgs = new FastArray(Config.orgAmount);
         for (let i = 0; i < orgAmount; i++) {
             const x = rand(width);
             const y = rand(height);
@@ -352,33 +341,17 @@ class VM {
      * @returns {Object} Item in FastArray class
      */
     _createOrg(x, y, clone = null) {
-        const orgs = this.orgs;
+        const orgs = this._orgs;
         const org  = clone || new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
 
         orgs.add(org);
-        this.world.org(x, y, org);
-    }
-
-    _update(org) {
-        const age = org.age;
-        if (age % Config.orgMutationPeriod === 0) {
-            const code      = org.code;
-            const mutations = round(code.length * Config.orgMutationPercent) || 1;
-            const prob      = Helper.probIndex;
-            for (let m = 0; m < mutations; m++) {this.probsCbs[prob(org.probs)](code, org)}
-        }
-        if (age % Config.orgEnergyPeriod === 0) {
-            org.energy -= (org.code.length || 1);
-        }
-        if (age % Config.orgMaxAge === 0 && age > 0) {
-            this._removeOrg(org);
-        }
+        this._world.org(x, y, org);
     }
 
     _addEnergy() {
-        const world  = this.world;
-        const width  = world.width;
-        const height = world.height;
+        const world  = this._world;
+        const width  = Config.WORLD_WIDTH;
+        const height = Config.WORLD_HEIGHT;
         const amount = width * height * Config.worldEnergyPercent;
         const color  = Config.energyColor;
         const data   = world.data;
@@ -390,44 +363,6 @@ class VM {
             data[x][y] === 0 && world.dot(x, y, color);
         }
     }
-
-    _onChange(code)      {code[rand(code.length)] = rand(COMMANDS) === 0 ? rand(CMD_OFFS) : rand(COMMANDS) + CMD_OFFS}
-    _onDel   (code)      {code.splice(rand(code.length), 1)}
-    _onPeriod(code, org) {org.period = rand(Config.ORG_MAX_PERIOD) + 1}
-    _onAmount(code, org) {org.percent = Math.random()}
-    _onProbs (code, org) {org.probs[rand(org.probs.length)] = rand(Config.PROB_MAX_VALUE)}
-    _onInsert(code)      {code.splice(rand(code.length), 0, rand(COMMANDS) === 0 ? rand(CMD_OFFS) : rand(COMMANDS) + CMD_OFFS)}
-    /**
-     * Takes few lines from itself and inserts them before or after copied
-     * part. All positions are random.
-     * @return {Number} Amount of added/copied lines
-     */
-    _onCopy  (code) {
-        const codeLen = code.length;
-        const start   = rand(codeLen);
-        const end     = start + rand(codeLen - start);
-        //
-        // Because we use spread (...) operator stack size is important
-        // for amount of parameters and we shouldn't exceed it
-        //
-        if (end - start > MAX_STACK_SIZE) {return 0}
-        //
-        // Organism size should be less them codeMaxSize
-        //
-        if (codeLen + end - start >= Config.orgCodeMaxSize) {return 0}
-        //
-        // We may insert copied piece before "start" (0) or after "end" (1)
-        //
-        if (rand(2) === 0) {
-            code.splice(rand(start), 0, ...code.slice(start, end));
-            return end - start;
-        }
-
-        code.splice(end + rand(codeLen - end + 1), 0, ...code.slice(start, end));
-
-        return end - start;
-    }
-    _onCut   (code)      {code.splice(rand(code.length), rand(code.length))}
 }
 
 module.exports = VM;

@@ -6,13 +6,8 @@
 const Config = require('./../Config');
 const Helper = require('./../common/Helper');
 
-const rand   = Helper.rand;
-const MAX    = Number.MAX_VALUE;
-
 class Organism {
-    constructor(id, x, y, item, energy, color) {
-        const memSize = Config.orgMemSize;
-
+    constructor(id, x, y, item, energy, color, parent = null) {
         this.last     = 0;
         this.item     = item;
         this.probs    = Config.orgProbs.slice();
@@ -50,11 +45,12 @@ class Organism {
          * {Array} Array of numbers. Code (DNA) of organism
          */
         this.code     = [];
-        this.mem      = new Array(memSize);
-        for (let i = 0; i < memSize; i++) {this.mem[i] = rand(MAX)}
+        this.mem      = parent ? null: (new Array(Config.orgMemSize)).fill(0);
+
+        parent && this._clone();
     }
 
-    clone(x, y) {
+    _clone(x, y) {
         const org = new Organism(Helper.id(), x, y, this.item, this.energy, this.color);
 
         org.probs   = this.probs.slice();
