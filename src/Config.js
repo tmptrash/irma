@@ -45,15 +45,15 @@ const Config = {
     WORLD_HEIGHT        : 660,
 
     worldEnergyPercent  : .088,
-    worldEnergyAddPeriod: 200000,
+    worldEnergyAddPeriod: 100000,
 
     energyValue         : 50,
     energyColor         : 0x00ff00,
 
     linesPerIteration   : 4,
-    iterationsPerRun    : 10,
+    iterationsPerRun    : 1,
 
-    orgAmount           : 20000,
+    orgAmount           : 40000,
     orgMaxAge           : 1000000,
     orgEnergy           : 1000,
     orgEnergyPeriod     : 30,
@@ -61,7 +61,7 @@ const Config = {
     orgColor            : 0xff0000,
     orgMemSize          : 64,
     orgMutationPercent  : .2,
-    orgMutationPeriod   : 2000,
+    orgMutationPeriod   : 1000,
     orgCodeMaxSize      : 1000,
     /**
      * {Array}
