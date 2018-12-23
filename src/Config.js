@@ -37,12 +37,12 @@ const Config = {
      * World width in pixels
      * @constant
      */
-    WORLD_WIDTH         : 3000,
+    WORLD_WIDTH         : 1000,
     /**
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT        : 2000,
+    WORLD_HEIGHT        : 660,
 
     worldEnergyPercent  : .088,
     worldEnergyAddPeriod: 200000,
@@ -50,8 +50,8 @@ const Config = {
     energyValue         : 50,
     energyColor         : 0x00ff00,
 
-    linesPerIteration   : 5,
-    iterationsPerRun    : 40,
+    linesPerIteration   : 4,
+    iterationsPerRun    : 10,
 
     orgAmount           : 20000,
     orgMaxAge           : 1000000,
@@ -67,7 +67,7 @@ const Config = {
      * {Array}
      * change,del,period,amount,probs,insert,copy,cut
      */
-    orgProbs            : [5,1,3,5,1,20,1,1]
+    orgProbs            : [50,1,3,5,1,20,1,1]
 };
 
 module.exports = Config;

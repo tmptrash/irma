@@ -157,11 +157,8 @@ class VM {
                             const x      = org.x + DIRX[intd % 8];
                             const y      = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
-                            const clone  = org.clone(x, y);
-                            if (clone === null) {continue}
+                            const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy / 2);
-                            clone.item   = orgs.freeIndex;
-                            this._createOrg(x, y, clone);
                             break;
                         }
 
@@ -337,15 +334,17 @@ class VM {
      * Creates one organism with default parameters and empty code
      * @param {Number} x X coordinate
      * @param {Number} y Y coordinate
-     * @param {Organism=} clone Create from parent
+     * @param {Organism=} parent Create from parent
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(x, y, clone = null) {
+    _createOrg(x, y, parent = null) {
         const orgs = this._orgs;
-        const org  = clone || new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor);
+        const org  = new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor, parent);
 
         orgs.add(org);
         this._world.org(x, y, org);
+
+        return org;
     }
 
     _addEnergy() {
