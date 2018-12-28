@@ -42,9 +42,9 @@ const Config = {
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT          : 3000,
+    WORLD_HEIGHT          : 4000,
 
-    worldEnergyPercent    : 0.133,
+    worldEnergyPercent    : .099,
     worldEnergyCheckPeriod: 10000,
 
     energyValue           : 5,
@@ -53,15 +53,15 @@ const Config = {
     linesPerIteration     : 4,
     iterationsPerRun      : 4,
 
-    orgAmount             : 5000,
+    orgAmount             : 20000,
     orgMaxAge             : 1000000,
-    orgEnergy             : 1000,
+    orgEnergy             : 2500,
     orgEnergyPeriod       : 20,
     orgCloneEnergy        : 3000,
     orgColor              : 0xff0000,
     orgMemSize            : 64,
     orgMutationPercent    : .2,
-    orgMutationPeriod     : 1000,
+    orgMutationPeriod     : 500,
     orgCodeMaxSize        : 500,
     /**
      * {Array}
