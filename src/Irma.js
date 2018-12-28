@@ -5,8 +5,8 @@ const VM         = require('./irma/VM');
 
 class Irma {
     constructor() {
-        this._world  = new World();
-        this.vm     = new VM(this._world);
+        this._world = new World();
+        this._vm    = new VM(this._world);
         this._runCb = this.run.bind(this);
 
         this._initLoop();
@@ -16,16 +16,16 @@ class Irma {
      * Runs Config.iterationsPerRun iterations for all organisms and return
      */
     run() {
-        this.vm.run();
+        this._vm.run();
         this.zeroTimeout(this._runCb);
     }
 
     destroy() {
-        this.vm.destroy();
+        this._vm.destroy();
         this._world.destroy();
         this._runCb = null;
-        this._world  = null;
-        this.vm     = null;
+        this._world = null;
+        this._vm    = null;
     }
 
     /**

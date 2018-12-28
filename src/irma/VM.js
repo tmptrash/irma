@@ -32,6 +32,7 @@ const FastArray = require('./../common/FastArray');
 const Helper    = require('./../common/Helper');
 const Organism  = require('./Organism');
 const Mutations = require('./Mutations');
+const Energy    = require('./Energy');
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -284,14 +285,14 @@ class VM {
                 org.age++;
                 i += lines;
             }
-            if (this._iterations % Config.worldEnergyAddPeriod === 0) {
-                this._addEnergy();
+            if (this._iterations % Config.worldEnergyCheckPeriod === 0) {
+                Energy.add(world);
             }
 
             this._iterations++;
         }
         if (ts - this._ts > 1000) {
-            world.title(`inps: ${round(((i / orgs.length) / (Date.now() - ts)) * 1000)} orgs: ${orgs.length}`);
+            world.title(`inps: ${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs: ${orgs.length}`);
             this._ts = ts;
 
             if (orgs.length === 0) {this._createOrgs()}
@@ -345,22 +346,6 @@ class VM {
         this._world.org(x, y, org);
 
         return org;
-    }
-
-    _addEnergy() {
-        const world  = this._world;
-        const width  = Config.WORLD_WIDTH;
-        const height = Config.WORLD_HEIGHT;
-        const amount = width * height * Config.worldEnergyPercent;
-        const color  = Config.energyColor;
-        const data   = world.data;
-        const rand   = Helper.rand;
-
-        for (let i = 0; i < amount; i++) {
-            const x = rand(width);
-            const y = rand(height);
-            data[x][y] === 0 && world.dot(x, y, color);
-        }
     }
 }
 

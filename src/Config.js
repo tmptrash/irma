@@ -18,56 +18,56 @@ const Config = {
      * {Number} Maximum value of every element in orgProbs array
      * @constant
      */
-    ORG_PROB_MAX_VALUE  : 100,
+    ORG_PROB_MAX_VALUE    : 100,
     /**
      * {Number} Maximum period between mutations
      * @constant
      */
-    ORG_MAX_PERIOD      : 5000,
+    ORG_MAX_PERIOD        : 5000,
     /**
      * {Number} This offset will be added to commands value. This is how we
      * add an ability to use numbers in a code, just putting them as command
      */
-    CODE_CMD_OFFS       : 128,
+    CODE_CMD_OFFS         : 128,
     /**
      * {Number} Amount of supported commands in a code
      */
-    CODE_COMMANDS       : 21,
+    CODE_COMMANDS         : 21,
     /**
      * World width in pixels
      * @constant
      */
-    WORLD_WIDTH         : 1000,
+    WORLD_WIDTH           : 5000,
     /**
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT        : 660,
+    WORLD_HEIGHT          : 4000,
 
-    worldEnergyPercent  : .097,
-    worldEnergyAddPeriod: 10000,
+    worldEnergyPercent    : .099,
+    worldEnergyCheckPeriod: 10000,
 
-    energyValue         : 310,
-    energyColor         : 0x00ff00,
+    energyValue           : 5,
+    energyColor           : 0x00ff00,
 
-    linesPerIteration   : 4,
-    iterationsPerRun    : 1,
+    linesPerIteration     : 4,
+    iterationsPerRun      : 4,
 
-    orgAmount           : 100000,
-    orgMaxAge           : 1000000,
-    orgEnergy           : 1000,
-    orgEnergyPeriod     : 30,
-    orgCloneEnergy      : 3000,
-    orgColor            : 0xff0000,
-    orgMemSize          : 64,
-    orgMutationPercent  : .2,
-    orgMutationPeriod   : 1000,
-    orgCodeMaxSize      : 1000,
+    orgAmount             : 20000,
+    orgMaxAge             : 1000000,
+    orgEnergy             : 2500,
+    orgEnergyPeriod       : 20,
+    orgCloneEnergy        : 3000,
+    orgColor              : 0xff0000,
+    orgMemSize            : 64,
+    orgMutationPercent    : .2,
+    orgMutationPeriod     : 500,
+    orgCodeMaxSize        : 500,
     /**
      * {Array}
      * change,del,period,amount,probs,insert,copy,cut
      */
-    orgProbs            : [50,1,3,5,1,20,1,1]
+    orgProbs              : [50,1,3,5,1,20,1,1]
 };
 
 module.exports = Config;
