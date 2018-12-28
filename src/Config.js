@@ -44,16 +44,16 @@ const Config = {
      */
     WORLD_HEIGHT        : 660,
 
-    worldEnergyPercent  : .088,
-    worldEnergyAddPeriod: 100000,
+    worldEnergyPercent  : .097,
+    worldEnergyAddPeriod: 10000,
 
-    energyValue         : 50,
+    energyValue         : 310,
     energyColor         : 0x00ff00,
 
     linesPerIteration   : 4,
     iterationsPerRun    : 1,
 
-    orgAmount           : 40000,
+    orgAmount           : 100000,
     orgMaxAge           : 1000000,
     orgEnergy           : 1000,
     orgEnergyPeriod     : 30,
