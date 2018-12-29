@@ -340,7 +340,7 @@ class VM {
      */
     _createOrg(x, y, parent = null) {
         const orgs = this._orgs;
-        const org  = new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, Config.orgColor, parent);
+        const org  = new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, parent);
 
         orgs.add(org);
         this._world.org(x, y, org);

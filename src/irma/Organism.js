@@ -6,7 +6,7 @@
 const Config = require('./../Config');
 
 class Organism {
-    constructor(id, x, y, item, energy, color, parent = null) {
+    constructor(id, x, y, item, energy, parent = null) {
         this.id       = id;
         this.item     = item;
         this.x        = x;
@@ -15,10 +15,6 @@ class Organism {
          * {Number} Organism's age - amount of iteration from born
          */
         this.age      = 0;
-        /**
-         * {Number} Color of organism
-         */
-        this.color    = color;
         if (parent !== null) {
             this._clone(parent);
             return;

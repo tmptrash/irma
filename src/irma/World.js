@@ -34,13 +34,13 @@ class World {
 
     org(x, y, org) {
         this._data[x][y] = org;
-        this._canvas.dot(x, y, org.color);
+        this._canvas.dot(x, y, Config.orgColor);
     }
 
     move(org, x, y) {
         this._data[org.x][org.y] = 0;
         this._data[x][y] = org;
-        this._canvas.move(org.x, org.y, x, y, org.color);
+        this._canvas.move(org.x, org.y, x, y, Config.orgColor);
     }
 
     title(text) {
