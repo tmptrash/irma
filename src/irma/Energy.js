@@ -8,6 +8,12 @@ const Organism = require('./Organism');
 const Helper   = require('./../common/Helper');
 
 class Energy {
+    /**
+     * Adds energy to the world according to worldEnergyPercent
+     * configuration. Total amount of energy should be less then
+     * specified percent.
+     * @param {World} world
+     */
     static add(world) {
         const width  = Config.WORLD_WIDTH;
         const height = Config.WORLD_HEIGHT;

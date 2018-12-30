@@ -32,7 +32,7 @@ const Config = {
     /**
      * {Number} Amount of supported commands in a code
      */
-    CODE_COMMANDS         : 21,
+    CODE_COMMANDS         : 23,
     /**
      * World width in pixels
      * @constant
@@ -54,7 +54,7 @@ const Config = {
     iterationsPerRun      : 4,
 
     orgAmount             : 20000,
-    orgMaxAge             : 1000000,
+    orgMaxAge             : 1000000 ,
     orgEnergy             : 2500,
     orgEnergyPeriod       : 20,
     orgCloneEnergy        : 3000,
@@ -62,7 +62,7 @@ const Config = {
     orgMemSize            : 64,
     orgMutationPercent    : .2,
     orgMutationPeriod     : 500,
-    orgCodeMaxSize        : 500,
+    orgCodeMaxSize        : 1024,
     /**
      * {Array}
      * change,del,period,amount,probs,insert,copy,cut

@@ -32,7 +32,7 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS     ]: 'step  // d - direction',
     [CODE_CMD_OFFS + 1 ]: 'eat   // d - direction',
     [CODE_CMD_OFFS + 2 ]: 'clone // d - direction',
-    [CODE_CMD_OFFS + 3 ]: 'see   // d - direction',
+    [CODE_CMD_OFFS + 3 ]: 'see   // d - offset',
     [CODE_CMD_OFFS + 4 ]: 'dtoa  // a = d',
     [CODE_CMD_OFFS + 5 ]: 'dtob  // b = d',
     [CODE_CMD_OFFS + 6 ]: 'atod  // d = a',

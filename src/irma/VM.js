@@ -1,10 +1,10 @@
 /**
  * Supported commands:
- *   N             - number - sets this number to d. number in range -CODE_CMD_OFFS...CODE_CMD_OFFS
+ *   N                  - number - sets this number to d. number in range -CODE_CMD_OFFS...CODE_CMD_OFFS
  *   CODE_CMD_OFFS + 0  - step   - moves organism using current d direction
  *   CODE_CMD_OFFS + 1  - eat    - eats something using current d direction
  *   CODE_CMD_OFFS + 2  - clone  - clones himself using current d direction
- *   CODE_CMD_OFFS + 3  - see    - see using current d direction
+ *   CODE_CMD_OFFS + 3  - see    - see using current d offset
  *   CODE_CMD_OFFS + 4  - dtoa   - copy value from d to a
  *   CODE_CMD_OFFS + 5  - dtob   - copy value from d to b
  *   CODE_CMD_OFFS + 6  - atod   - copy value from a to d
@@ -43,26 +43,22 @@ const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX   = [0,  1,  1, 1, 0, -1, -1, -1];
-const DIRY   = [-1, -1, 0, 1, 1,  1,  0, -1];
-/**
- * {Number} Dot types in a world
- */
-const EMPTY  = 0;
-const ORG    = 1;
-const ENERGY = 2;
+const DIRX    = [0,  1,  1, 1, 0, -1, -1, -1];
+const DIRY    = [-1, -1, 0, 1, 1,  1,  0, -1];
 /**
  * {Number} World size. Pay attantion, that width and height is -1
  */
-const WIDTH  = Config.WORLD_WIDTH - 1;
-const HEIGHT = Config.WORLD_HEIGHT - 1;
-const MAX    = Number.MAX_VALUE;
+const WIDTH   = Config.WORLD_WIDTH - 1;
+const HEIGHT  = Config.WORLD_HEIGHT - 1;
+const WIDTH1  = WIDTH + 1;
+const HEIGHT1 = HEIGHT + 1;
+const MAX     = Number.MAX_VALUE;
 
-const ceil   = Math.ceil;
-const round  = Math.round;
-const fin    = Number.isFinite;
-const abs    = Math.abs;
-const nan    = Number.isNaN;
+const ceil    = Math.ceil;
+const round   = Math.round;
+const fin     = Number.isFinite;
+const abs     = Math.abs;
+const nan     = Number.isNaN;
 
 class VM {
     constructor(world) {
@@ -163,15 +159,14 @@ class VM {
                             break;
                         }
 
-                        case CODE_CMD_OFFS + 3: { // see
-                            const intd = abs(d << 0);
-                            const x    = org.x + DIRX[intd % 8];
-                            const y    = org.y + DIRY[intd % 8];
-                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = EMPTY; continue}
+                        case CODE_CMD_OFFS + 3: { // see d
+                            const offs = org.y * WIDTH1 + org.x + (d << 0);
+                            const x    = offs % WIDTH1;
+                            const y    = offs / WIDTH1 << 0;
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = 0; continue}
                             const dot  = data[x][y];
-                            if (dot === 0) {d = EMPTY; continue}                           // no energy or out of the world
-                            if (!!dot && dot.constructor === Organism) {d = ORG; continue} // other organism
-                            d = ENERGY;                                                    // just energy block
+                            if (!!dot && dot.constructor === Organism) {d = dot.energy; continue}  // other organism
+                            d = dot;                                                               // some world object
                             break;
                         }
 
