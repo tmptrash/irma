@@ -32,7 +32,6 @@ const FastArray = require('./../common/FastArray');
 const Helper    = require('./../common/Helper');
 const Organism  = require('./Organism');
 const Mutations = require('./Mutations');
-const Energy    = require('./Energy');
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -51,8 +50,13 @@ const DIRY    = [-1, -1, 0, 1, 1,  1,  0, -1];
 const WIDTH   = Config.WORLD_WIDTH - 1;
 const HEIGHT  = Config.WORLD_HEIGHT - 1;
 const WIDTH1  = WIDTH + 1;
-const HEIGHT1 = HEIGHT + 1;
 const MAX     = Number.MAX_VALUE;
+
+const ENERGY_MASK  = 0x40000000;
+/**
+ * {Number} Max amount of supported surfaces
+ */
+const SURFACES     = 16;
 
 const ceil    = Math.ceil;
 const round   = Math.round;
@@ -61,8 +65,11 @@ const abs     = Math.abs;
 const nan     = Number.isNaN;
 
 class VM {
-    constructor(world) {
+    constructor(world, surfaces) {
         this._world      = world;
+        this._surfaces   = surfaces;
+        this._SURFS      = surfaces.length;
+        this._ENERGY     = surfaces[0];
         this._orgs       = null;
         this._iterations = 0;
         this._ts         = Date.now();
@@ -75,13 +82,13 @@ class VM {
      * times value may slow down user and browser interaction
      */
     run() {
-        const times = Config.iterationsPerRun;
-        const lines = Config.linesPerIteration;
-        const orgs  = this._orgs;
-        const world = this._world;
-        const data  = world.data;
-        let   ts    = Date.now();
-        let   i     = 0;
+        const times      = Config.iterationsPerRun;
+        const lines      = Config.linesPerIteration;
+        const orgs       = this._orgs;
+        const world      = this._world;
+        const data       = world.data;
+        let   ts         = Date.now();
+        let   i          = 0;
         //
         // Loop X times through population
         //
@@ -89,6 +96,7 @@ class VM {
             //
             // Loop through population
             //
+            let orgsEnergy = 0;
             for (let o = 0, olen = orgs.size; o < olen; o++) {
                 const org  = orgs.get(o);
                 if (org === null) {continue}
@@ -119,40 +127,57 @@ class VM {
                     //
                     switch (code[line]) {
                         case CODE_CMD_OFFS: { // step
-                            const intd = abs(d << 0);
-                            const x    = org.x + DIRX[intd % 8];
-                            const y    = org.y + DIRY[intd % 8];
-                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
-                            world.move(org, x, y);
+                            let   dot;
+                            const oldDot = org.dot;
+                            let   inc;
+                            if (oldDot !== 0) {
+                                const surface = (oldDot & ENERGY_MASK) !== 0 ? this._ENERGY : this._surfaces[oldDot % SURFACES];
+                                org.energy   -= surface.energy;
+                                inc           = surface.step;
+                            } else {
+                                inc = 1;
+                            }
+                            const intd   = abs(d << 0) % 8;
+                            const x      = org.x + DIRX[intd] * inc;
+                            const y      = org.y + DIRY[intd] * inc;
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & 0x80000000) !== 0) {continue}
+
+                            org.dot = dot;
+                            world.moveOrg(org, x << 0, y << 0);
+                            (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x << 0, org.y << 0, oldDot) : world.dot(org.x << 0, org.y << 0, oldDot);
                             org.x = x;
                             org.y = y;
                             break;
                         }
 
                         case CODE_CMD_OFFS + 1: { // eat
-                            const intd = abs(d << 0);
-                            const x    = org.x + DIRX[intd % 8];
-                            const y    = org.y + DIRY[intd % 8];
+                            const intd = abs(d << 0) % 8;
+                            const x    = (org.x + DIRX[intd]) << 0;
+                            const y    = (org.y + DIRY[intd]) << 0;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {continue}
                             const dot  = data[x][y];
                             if (dot === 0) {continue}                                    // no energy or out of the world
-                            if (!!dot && dot.constructor === Organism) {                 // other organism
-                                const energy = dot.energy <= intd ? dot.energy : intd;
-                                dot.energy -= energy;
-                                org.energy += energy;
-                                if (dot.energy <= 0) {this._removeOrg(dot)}
+                            if ((dot & 0x80000000) !== 0) {                              // other organism
+                                const nearOrg   = orgs.get(dot & 0x7fffffff);
+                                const energy    = nearOrg.energy <= intd ? nearOrg.energy : intd;
+                                nearOrg.energy -= energy;
+                                org.energy     += energy;
+                                if (nearOrg.energy <= 0) {this._removeOrg(nearOrg)}
                                 continue;
                             }
-                            org.energy += Config.energyValue;                            // just energy block
-                            world.empty(x, y, 0);
+                            if ((dot & ENERGY_MASK) !== 0) {
+                                org.energy += Config.energyValue;                        // just energy block
+                                world.empty(x, y, 0);
+                                this._ENERGY.clear(dot & 0x3fffffff);
+                            }
                             break
                         }
 
                         case CODE_CMD_OFFS + 2: { // clone
                             if (orgs.full || org.energy < Config.orgCloneEnergy) {continue}
-                            const intd   = abs(d << 0);
-                            const x      = org.x + DIRX[intd % 8];
-                            const y      = org.y + DIRY[intd % 8];
+                            const intd   = abs(d << 0) % 8;
+                            const x      = (org.x + DIRX[intd]) << 0;
+                            const y      = (org.y + DIRY[intd]) << 0;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy / 2);
@@ -160,13 +185,13 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 3: { // see d
-                            const offs = org.y * WIDTH1 + org.x + (d << 0);
+                            const offs = (org.y << 0) * WIDTH1 + (org.x << 0) + (d << 0);
                             const x    = offs % WIDTH1;
                             const y    = offs / WIDTH1 << 0;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = 0; continue}
                             const dot  = data[x][y];
-                            if (!!dot && dot.constructor === Organism) {d = dot.energy; continue}  // other organism
-                            d = dot;                                                               // some world object
+                            if ((dot & 0x80000000) !== 0) {d = (orgs.get(dot & 0x7fffffff)).energy; continue}    // other organism
+                            d = dot;                                                    // some world object
                             break;
                         }
 
@@ -276,14 +301,26 @@ class VM {
                 org.d    = d;
                 org.a    = a;
                 org.b    = b;
+
                 Mutations.update(org);
+                if (org.age % Config.orgMaxAge === 0 && org.age > 0) {
+                    this._removeOrg(org);
+                }
+                if (org.age % Config.orgEnergyPeriod === 0) {
+                    org.energy--;//= (org.code.length || 1);
+                }
                 org.age++;
                 i += lines;
+                orgsEnergy += org.energy;
             }
-            if (this._iterations % Config.worldEnergyCheckPeriod === 0) {
-                Energy.add(world);
-            }
-
+            //
+            // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
+            //
+            this._ENERGY.move(orgsEnergy);
+            for (let surf = 1; surf < this._SURFS; surf++) {this._surfaces[surf].move()}
+            //
+            // This code moves surfaces (sand, water,...)
+            //
             this._iterations++;
         }
         if (ts - this._ts > 1000) {
@@ -303,7 +340,8 @@ class VM {
 
     _removeOrg(org) {
         this._orgs.del(org.item);
-        this._world.empty(org.x, org.y);
+        this._world.empty(org.x << 0, org.y << 0);
+        this._world.dot(org.x << 0, org.y << 0, org.dot);
     }
 
     /**
@@ -313,16 +351,19 @@ class VM {
     _createOrgs() {
         const world     = this._world;
         const data      = world.data;
-        const orgAmount = Config.orgAmount;
         const rand      = Helper.rand;
         const width     = Config.WORLD_WIDTH;
         const height    = Config.WORLD_HEIGHT;
+        let   orgAmount = Config.orgAmount;
 
-        this._orgs = new FastArray(Config.orgAmount);
-        for (let i = 0; i < orgAmount; i++) {
+        this._orgs = new FastArray(orgAmount);
+        while (orgAmount > 0) {
             const x = rand(width);
             const y = rand(height);
-            data[x][y] === 0 && this._createOrg(x, y);
+            if (data[x][y] === 0) {
+                this._createOrg(x, y);
+                orgAmount--;
+            }
         }
     }
 

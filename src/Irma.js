@@ -2,12 +2,15 @@ const Bytes2Code = require('./irma/Bytes2Code');
 const Config     = require('./Config');
 const World      = require('./irma/World');
 const VM         = require('./irma/VM');
+const Surface    = require('./irma/Surface');
+const Energy     = require('./irma/Energy');
 
 class Irma {
     constructor() {
-        this._world = new World();
-        this._vm    = new VM(this._world);
-        this._runCb = this.run.bind(this);
+        this._world    = new World();
+        this._surfaces = this._createSurfaces();
+        this._vm       = new VM(this._world, this._surfaces);
+        this._runCb    = this.run.bind(this);
 
         this._initLoop();
     }
@@ -23,9 +26,11 @@ class Irma {
     destroy() {
         this._vm.destroy();
         this._world.destroy();
-        this._runCb = null;
-        this._world = null;
-        this._vm    = null;
+        for (let i = 0; i < this._surfaces.length; i++) {this._surfaces[i].destroy()}
+        this._surfaces = null;
+        this._runCb    = null;
+        this._world    = null;
+        this._vm       = null;
     }
 
     /**
@@ -62,6 +67,19 @@ class Irma {
         })();
 
         return true;
+    }
+
+    _createSurfaces() {
+        const SURFS  = Config.worldSurfaces;
+        const AMOUNT = SURFS.length + 1;
+
+        const surfaces = new Array(AMOUNT);
+        surfaces[0] = new Energy(this._world);
+        for (let i = 1; i < AMOUNT; i++) {
+            surfaces[i] = new Surface(SURFS[i - 1], this._world);
+        }
+
+        return surfaces;
     }
 }
 

@@ -15,6 +15,7 @@ class Organism {
          * {Number} Organism's age - amount of iteration from born
          */
         this.age      = 0;
+        this.dot      = 0x000000;
         if (parent !== null) {
             this._clone(parent);
             return;

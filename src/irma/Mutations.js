@@ -47,15 +47,9 @@ class Mutations {
             const probs     = Mutations._probsCbs;
             for (let m = 0; m < mutations; m++) {probs[prob(org.probs)](code, org)}
         }
-        if (age % Config.orgEnergyPeriod === 0) {
-            org.energy--;//= (org.code.length || 1);
-        }
-        if (age % Config.orgMaxAge === 0 && age > 0) {
-            Mutations._removeOrg(org);
-        }
     }
 
-    static _onChange(code)      {code[rand(code.length)] = rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
+    static _onChange(code)      {code[rand(code.length)] = rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
     static _onDel   (code)      {code.splice(rand(code.length), 1)}
     static _onPeriod(code, org) {org.period = rand(ORG_MAX_PERIOD) + 1}
     static _onAmount(code, org) {org.percent = Math.random()}

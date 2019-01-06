@@ -27,20 +27,37 @@ class World {
         this._canvas.dot(x, y, c);
     }
 
+    energy(x, y, index) {
+        this._data[x][y] = index;
+        this._canvas.dot(x, y, Config.energyColor);
+    }
+
     empty(x, y) {
         this._data[x][y] = 0;
         this._canvas.empty(x, y);
     }
 
     org(x, y, org) {
-        this._data[x][y] = org;
+        this._data[x][y] = 0x80000000 | org.item;
         this._canvas.dot(x, y, Config.orgColor);
     }
 
-    move(org, x, y) {
-        this._data[org.x][org.y] = 0;
-        this._data[x][y] = org;
-        this._canvas.move(org.x, org.y, x, y, Config.orgColor);
+    moveOrg(org, x, y) {
+        this._data[org.x << 0][org.y << 0] = 0;
+        this._data[x][y] = 0x80000000 | org.item;
+        this._canvas.move(org.x << 0, org.y << 0, x, y, Config.orgColor);
+    }
+
+    moveDot(x0, y0, x1, y1, color) {
+        this._data[x0][y0] = 0;
+        this._data[x1][y1] = color;
+        this._canvas.move(x0, y0, x1, y1, color);
+    }
+
+    moveEnergy(x0, y0, x1, y1, index) {
+        this._data[x0][y0] = 0;
+        this._data[x1][y1] = index;
+        this._canvas.move(x0, y0, x1, y1, Config.energyColor);
     }
 
     title(text) {

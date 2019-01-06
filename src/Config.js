@@ -37,25 +37,46 @@ const Config = {
      * World width in pixels
      * @constant
      */
-    WORLD_WIDTH           : 5000,
+    WORLD_WIDTH           : 1800,
     /**
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT          : 4000,
+    WORLD_HEIGHT          : 1200,
 
     worldEnergyPercent    : .099,
-    worldEnergyCheckPeriod: 10000,
+    worldSurfaces         : [{     // lava
+        color : 0xff8881 ,
+        energy: 10,
+        step  : .5,
+        amount: 50000
+    }, {                           // water
+        color : 0x0000f2,
+        energy: 0,
+        step  : .8,
+        amount: 1000000
+    }, {                           // hole
+        color : 0xaaaaa3,
+        energy: 10000,
+        step  : 0,
+        amount: 5000
+    }, {                           // sand
+        color : 0xFFFF04,
+        energy: 3,
+        step  : .3,
+        amount: 50000
+    }],
 
-    energyValue           : 5,
     energyColor           : 0x00ff00,
+    energyValue           : 100,
+    energyAmount          : 199900,
 
     linesPerIteration     : 4,
     iterationsPerRun      : 4,
 
-    orgAmount             : 20000,
-    orgMaxAge             : 1000000 ,
-    orgEnergy             : 2500,
+    orgAmount             : 10000,
+    orgMaxAge             : 10000,
+    orgEnergy             : 1000,
     orgEnergyPeriod       : 20,
     orgCloneEnergy        : 3000,
     orgColor              : 0xff0000,
