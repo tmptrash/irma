@@ -89,7 +89,7 @@ const Config = {
      * {Array}
      * change,del,period,amount,probs,insert,copy,cut
      */
-    orgProbs              : [50,1,3,5,1,20,1,1]
+    orgProbs              : [50,1,3,5,1,60,10,1]
 };
 
 module.exports = Config;

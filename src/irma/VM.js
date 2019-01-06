@@ -140,6 +140,11 @@ class VM {
                             const intd   = abs(d << 0) % 8;
                             const x      = org.x + DIRX[intd] * inc;
                             const y      = org.y + DIRY[intd] * inc;
+                            if (x << 0 === org.x << 0 && y << 0 === org.y << 0) {
+                                org.x = x;
+                                org.y = y;
+                                continue;
+                            }
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & 0x80000000) !== 0) {continue}
 
                             org.dot = dot;
