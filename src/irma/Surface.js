@@ -15,7 +15,7 @@ const HEIGHT      = Config.WORLD_HEIGHT - 1;
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX    = [0,  1,  1, 1, 0, -1, -1, -1];
+const DIRX    = [0,   1, 1, 1, 0, -1, -1, -1];
 const DIRY    = [-1, -1, 0, 1, 1,  1,  0, -1];
 
 const rand    = Helper.rand;
@@ -92,12 +92,11 @@ class Surface {
      * @private
      */
     _initDots() {
-        const world  = this.world;
         const width  = Config.WORLD_WIDTH;
         const height = Config.WORLD_HEIGHT;
         const amount = this.amount;
         const color  = this.color;
-        const data   = world.data;
+        const data   = this.world.data;
         const dots   = this.dots;
         const rand   = Helper.rand;
 

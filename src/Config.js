@@ -45,6 +45,7 @@ const Config = {
     WORLD_HEIGHT          : 1200,
 
     worldEnergyPercent    : .099,
+    worldSurfacesDelay    : 1000,
     worldSurfaces         : [{     // lava
         color : 0xff8881 ,
         energy: 10,

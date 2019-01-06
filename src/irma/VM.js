@@ -309,15 +309,18 @@ class VM {
                 if (org.age % Config.orgEnergyPeriod === 0) {
                     org.energy--;//= (org.code.length || 1);
                 }
+                //
+                // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
+                //
+                if (o % Config.worldSurfacesDelay === 0) {
+                    this._ENERGY.move(orgsEnergy);
+                    for (let surf = 1; surf < this._SURFS; surf++) {this._surfaces[surf].move()}
+                }
+
                 org.age++;
                 i += lines;
                 orgsEnergy += org.energy;
             }
-            //
-            // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
-            //
-            this._ENERGY.move(orgsEnergy);
-            for (let surf = 1; surf < this._SURFS; surf++) {this._surfaces[surf].move()}
             //
             // This code moves surfaces (sand, water,...)
             //
