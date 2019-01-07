@@ -69,21 +69,21 @@ const Config = {
     }],
 
     energyColor           : 0x00ff00,
-    energyValue           : 20,
-    energyAmount          : 99500,
+    energyValue           : 100,
+    energyAmount          : 599800,
 
     linesPerIteration     : 4,
     iterationsPerRun      : 4,
 
-    orgAmount             : 10000,
+    orgAmount             : 20000,
     orgMaxAge             : 100000,
     orgEnergy             : 2800,
-    orgEnergyPeriod       : 100,
+    orgEnergyPeriod       : 200,
     orgCloneEnergy        : 3000,
     orgColor              : 0xff0000,
     orgMemSize            : 64,
     orgMutationPercent    : .2,
-    orgMutationPeriod     : 500,
+    orgMutationPeriod     : 50000,
     orgMaxCodeSize        : 1024,
     orgStartCodeSize      : 32,
     /**

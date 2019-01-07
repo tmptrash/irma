@@ -68,13 +68,14 @@ const nan     = Number.isNaN;
 
 class VM {
     constructor(world, surfaces) {
-        this._world      = world;
-        this._surfaces   = surfaces;
-        this._SURFS      = surfaces.length;
-        this._ENERGY     = surfaces[0];
-        this._orgs       = null;
-        this._iterations = 0;
-        this._ts         = Date.now();
+        this._world           = world;
+        this._surfaces        = surfaces;
+        this._SURFS           = surfaces.length;
+        this._ENERGY          = surfaces[0];
+        this._orgs            = null;
+        this._iterations      = 0;
+        this._ts              = Date.now();
+        this._totalOrgsEnergy = 0;
 
         this._createOrgs();
     }
@@ -84,13 +85,13 @@ class VM {
      * times value may slow down user and browser interaction
      */
     run() {
-        const times      = Config.iterationsPerRun;
-        const lines      = Config.linesPerIteration;
-        const orgs       = this._orgs;
-        const world      = this._world;
-        const data       = world.data;
-        let   ts         = Date.now();
-        let   i          = 0;
+        const times   = Config.iterationsPerRun;
+        const lines   = Config.linesPerIteration;
+        const orgs    = this._orgs;
+        const world   = this._world;
+        const data    = world.data;
+        let   ts      = Date.now();
+        let   i       = 0;
         //
         // Loop X times through population
         //
@@ -331,7 +332,7 @@ class VM {
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
                 if (o % Config.worldSurfacesDelay === 0) {
-                    this._ENERGY.move(orgsEnergy);
+                    this._ENERGY.move(this._totalOrgsEnergy);
                     for (let surf = 1; surf < this._SURFS; surf++) {this._surfaces[surf].move()}
                 }
 
@@ -339,13 +340,14 @@ class VM {
                 i += lines;
                 orgsEnergy += org.energy;
             }
+            this._totalOrgsEnergy = orgsEnergy;
             //
             // This code moves surfaces (sand, water,...)
             //
             this._iterations++;
         }
         if (ts - this._ts > 1000) {
-            world.title(`inps: ${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs: ${orgs.length}`);
+            world.title(`inps:${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.length} onrg:${(this._totalOrgsEnergy / orgs.length) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index}`);
             this._ts = ts;
 
             if (orgs.length === 0) {this._createOrgs()}
@@ -377,6 +379,10 @@ class VM {
         let   orgAmount = Config.orgAmount;
 
         this._orgs = new FastArray(orgAmount);
+        //
+        // Only half of the population will be created on the beginning
+        //
+        orgAmount >>= 1;
         while (orgAmount > 0) {
             const x = rand(width);
             const y = rand(height);

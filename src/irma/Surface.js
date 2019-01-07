@@ -100,7 +100,7 @@ class Surface {
         const dots   = this.dots;
         const rand   = Helper.rand;
 
-        if (amount >> 1 > width * height) {
+        if ((amount >> 1) > width * height) {
             throw new Error('Amount of dots of surface is bigger then world size');
         }
         let i = 0;
