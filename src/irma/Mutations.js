@@ -40,7 +40,7 @@ class Mutations {
      */
     static update(org) {
         const age = org.age;
-        if (age % org.period === 0) {
+        if (age % org.period === 0 && age > 0) {
             const code      = org.code;
             const mutations = round(code.length * org.percent) || 1;
             const prob      = Helper.probIndex;

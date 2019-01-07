@@ -46,13 +46,12 @@ class Energy extends Surface {
         this.world.energy(x, y, 0x40000000 | i);
     }
 
-    move(orgsEnergy) {
+    update(orgsEnergy) {
         if (orgsEnergy + ((this.amount >> 1) - this._index) * Config.energyValue < MAX_ENERGY && this._index >= 0) {
             const x = rand(WIDTH);
             const y = rand(HEIGHT);
             this.data[x][y] === 0 && this.dot(x, y, this.color);
         }
-        super.move();
     }
 
     /**

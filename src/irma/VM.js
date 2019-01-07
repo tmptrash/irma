@@ -331,8 +331,8 @@ class VM {
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
+                this._ENERGY.update(this._totalOrgsEnergy);
                 if (o % Config.worldSurfacesDelay === 0) {
-                    this._ENERGY.move(this._totalOrgsEnergy);
                     for (let surf = 1; surf < this._SURFS; surf++) {this._surfaces[surf].move()}
                 }
 

@@ -45,7 +45,7 @@ const Config = {
     WORLD_HEIGHT          : 1200,
 
     worldEnergyPercent    : .099,
-    worldSurfacesDelay    : 1000,
+    worldSurfacesDelay    : 300,
     worldSurfaces         : [{     // lava
         color : 0xff8881 ,
         energy: 3,
@@ -70,7 +70,7 @@ const Config = {
 
     energyColor           : 0x00ff00,
     energyValue           : 100,
-    energyAmount          : 599800,
+    energyAmount          : 300000,
 
     linesPerIteration     : 4,
     iterationsPerRun      : 4,
@@ -82,8 +82,8 @@ const Config = {
     orgCloneEnergy        : 3000,
     orgColor              : 0xff0000,
     orgMemSize            : 64,
-    orgMutationPercent    : .2,
-    orgMutationPeriod     : 50000,
+    orgMutationPercent    : .02,
+    orgMutationPeriod     : 20000,
     orgMaxCodeSize        : 1024,
     orgStartCodeSize      : 32,
     /**
