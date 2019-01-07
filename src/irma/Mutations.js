@@ -49,7 +49,11 @@ class Mutations {
         }
     }
 
-    static _onChange(code)      {code[rand(code.length)] = rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
+``    static getRandCmd() {
+        return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS;
+    }
+
+    static _onChange(code)      {code[rand(code.length)] = Mutations.getRandCmd()}
     static _onDel   (code)      {code.splice(rand(code.length), 1)}
     static _onPeriod(code, org) {org.period = rand(ORG_MAX_PERIOD) + 1}
     static _onAmount(code, org) {org.percent = Math.random()}
@@ -72,7 +76,7 @@ class Mutations {
         //
         // Organism size should be less them codeMaxSize
         //
-        if (codeLen + end - start >= Config.orgCodeMaxSize) {return 0}
+        if (codeLen + end - start >= Config.orgMaxCodeSize) {return 0}
         //
         // We may insert copied piece before "start" (0) or after "end" (1)
         //

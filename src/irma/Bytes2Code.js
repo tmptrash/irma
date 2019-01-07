@@ -52,6 +52,7 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 20]: 'put   // mem[d] = a',
     [CODE_CMD_OFFS + 21]: 'x     // d = org.x',
     [CODE_CMD_OFFS + 22]: 'y     // d = org.y',
+    [CODE_CMD_OFFS + 23]: `rand  // d = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`
 };
 
 module.exports = Bytes2Code;

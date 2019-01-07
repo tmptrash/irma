@@ -3,7 +3,8 @@
  *
  * @author flatline
  */
-const Config = require('./../Config');
+const Config    = require('./../Config');
+const Mutations = require('./Mutations');
 
 class Organism {
     constructor(id, x, y, item, energy, parent = null) {
@@ -44,8 +45,17 @@ class Organism {
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
-        this.code     = [];
+        this.code     = this._getRandomCode();
         this.mem      = (new Array(Config.orgMemSize)).fill(0);
+    }
+
+    _getRandomCode() {
+        const size = Config.orgStartCodeSize;
+        const code = new Array(size);
+
+        for (let i = 0; i < size; i++) {code[i] = Mutations.getRandCmd()}
+
+        return code;
     }
 
     _clone(parent) {

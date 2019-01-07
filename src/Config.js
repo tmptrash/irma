@@ -32,7 +32,7 @@ const Config = {
     /**
      * {Number} Amount of supported commands in a code
      */
-    CODE_COMMANDS         : 23,
+    CODE_COMMANDS         : 24,
     /**
      * World width in pixels
      * @constant
@@ -48,7 +48,7 @@ const Config = {
     worldSurfacesDelay    : 1000,
     worldSurfaces         : [{     // lava
         color : 0xff8881 ,
-        energy: 10,
+        energy: 3,
         step  : .5,
         amount: 50000
     }, {                           // water
@@ -63,7 +63,7 @@ const Config = {
         amount: 5000
     }, {                           // sand
         color : 0xFFFF04,
-        energy: 3,
+        energy: .1,
         step  : .3,
         amount: 50000
     }],
@@ -77,14 +77,15 @@ const Config = {
 
     orgAmount             : 10000,
     orgMaxAge             : 10000,
-    orgEnergy             : 1000,
-    orgEnergyPeriod       : 20,
+    orgEnergy             : 2800,
+    orgEnergyPeriod       : 100,
     orgCloneEnergy        : 3000,
     orgColor              : 0xff0000,
     orgMemSize            : 64,
     orgMutationPercent    : .2,
     orgMutationPeriod     : 500,
-    orgCodeMaxSize        : 1024,
+    orgMaxCodeSize        : 1024,
+    orgStartCodeSize      : 32,
     /**
      * {Array}
      * change,del,period,amount,probs,insert,copy,cut

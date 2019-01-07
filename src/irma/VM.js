@@ -24,6 +24,7 @@
  *   CODE_CMD_OFFS + 20 - put    - mem[d] = a
  *   CODE_CMD_OFFS + 21 - x      - d = org.x
  *   CODE_CMD_OFFS + 22 - y      - d = org.y
+ *   CODE_CMD_OFFS + 23 - rand   - d = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
  *
  * @author flatline
  */
@@ -60,6 +61,7 @@ const SURFACES     = 16;
 
 const ceil    = Math.ceil;
 const round   = Math.round;
+const rand    = Helper.rand;
 const fin     = Number.isFinite;
 const abs     = Math.abs;
 const nan     = Number.isNaN;
@@ -127,12 +129,12 @@ class VM {
                     //
                     switch (code[line]) {
                         case CODE_CMD_OFFS: { // step
-                            let   dot;
                             const oldDot = org.dot;
                             let   inc;
                             if (oldDot !== 0) {
                                 const surface = (oldDot & ENERGY_MASK) !== 0 ? this._ENERGY : this._surfaces[oldDot % SURFACES];
                                 org.energy   -= surface.energy;
+                                if (org.energy <= 0) {this._removeOrg(org); continue}
                                 inc           = surface.step;
                             } else {
                                 inc = 1;
@@ -145,6 +147,7 @@ class VM {
                                 org.y = y;
                                 continue;
                             }
+                            let   dot;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & 0x80000000) !== 0) {continue}
 
                             org.dot = dot;
@@ -185,7 +188,7 @@ class VM {
                             const y      = (org.y + DIRY[intd]) << 0;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {continue}
                             const clone  = this._createOrg(x, y, org);
-                            org.energy   = clone.energy = ceil(org.energy / 2);
+                            org.energy   = clone.energy = ceil(org.energy >> 1);
                             break;
                         }
 
@@ -300,6 +303,10 @@ class VM {
                         case CODE_CMD_OFFS + 22:  // y
                             d = org.y;
                             break;
+
+                        case CODE_CMD_OFFS + 23:  // rand
+                            d = rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS;
+                            break;
                     }
                 }
                 org.last = line;
@@ -359,7 +366,6 @@ class VM {
     _createOrgs() {
         const world     = this._world;
         const data      = world.data;
-        const rand      = Helper.rand;
         const width     = Config.WORLD_WIDTH;
         const height    = Config.WORLD_HEIGHT;
         let   orgAmount = Config.orgAmount;

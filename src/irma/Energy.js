@@ -20,7 +20,7 @@ class Energy extends Surface {
     constructor(world) {
         super({
             color : Config.energyColor,
-            energy: Config.energyValue,
+            energy: 0,
             step  : 1,
             amount: Config.energyAmount}, world
         );
@@ -47,7 +47,7 @@ class Energy extends Surface {
     }
 
     move(orgsEnergy) {
-        if (orgsEnergy + (this.amount >> 1) * this.energy < MAX_ENERGY && this._index >= 0) {
+        if (orgsEnergy + (this.amount >> 1) * Config.energyValue < MAX_ENERGY && this._index >= 0) {
             const x = rand(WIDTH);
             const y = rand(HEIGHT);
             this.data[x][y] === 0 && this.dot(x, y, this.color);
