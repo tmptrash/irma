@@ -47,7 +47,7 @@ class Energy extends Surface {
     }
 
     move(orgsEnergy) {
-        if (orgsEnergy + (this.amount >> 1) * Config.energyValue < MAX_ENERGY && this._index >= 0) {
+        if (orgsEnergy + ((this.amount >> 1) - this._index) * Config.energyValue < MAX_ENERGY && this._index >= 0) {
             const x = rand(WIDTH);
             const y = rand(HEIGHT);
             this.data[x][y] === 0 && this.dot(x, y, this.color);
