@@ -58,9 +58,9 @@ const Config = {
         amount: 1000000
     }, {                           // hole
         color : 0xaaaaa3,
-        energy: 10000,
+        energy: 100,
         step  : 0,
-        amount: 5000
+        amount: 1000
     }, {                           // sand
         color : 0xFFFF04,
         energy: .1,
@@ -69,14 +69,14 @@ const Config = {
     }],
 
     energyColor           : 0x00ff00,
-    energyValue           : 100,
-    energyAmount          : 199900,
+    energyValue           : 20,
+    energyAmount          : 99500,
 
     linesPerIteration     : 4,
     iterationsPerRun      : 4,
 
     orgAmount             : 10000,
-    orgMaxAge             : 10000,
+    orgMaxAge             : 100000,
     orgEnergy             : 2800,
     orgEnergyPeriod       : 100,
     orgCloneEnergy        : 3000,
@@ -90,7 +90,7 @@ const Config = {
      * {Array}
      * change,del,period,amount,probs,insert,copy,cut
      */
-    orgProbs              : [50,1,3,5,1,60,10,1]
+    orgProbs              : [20,1,3,5,1,10,1,1]
 };
 
 module.exports = Config;

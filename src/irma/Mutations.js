@@ -40,16 +40,16 @@ class Mutations {
      */
     static update(org) {
         const age = org.age;
-        if (age % Config.orgMutationPeriod === 0) {
+        if (age % org.period === 0) {
             const code      = org.code;
-            const mutations = round(code.length * Config.orgMutationPercent) || 1;
+            const mutations = round(code.length * org.percent) || 1;
             const prob      = Helper.probIndex;
             const probs     = Mutations._probsCbs;
             for (let m = 0; m < mutations; m++) {probs[prob(org.probs)](code, org)}
         }
     }
 
-``    static getRandCmd() {
+    static getRandCmd() {
         return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS;
     }
 

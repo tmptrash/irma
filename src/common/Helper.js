@@ -36,7 +36,7 @@ class Helper {
      * @return {String} Unique id
      */
     static id() {
-        return ++Helper._id + '';
+        return ++Helper._id;
     }
 
     /**
