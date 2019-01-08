@@ -28,10 +28,6 @@ const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
  * {Number} Maximum stack size, which may be used for recursion or function parameters
  */
 const MAX_STACK_SIZE = 30000;
-/**
- * {Number} Maximum period of mutation for one organism
- */
-const ORG_MAX_PERIOD = Config.ORG_MAX_PERIOD;
 
 class Mutations {
     /**
@@ -55,9 +51,9 @@ class Mutations {
 
     static _onChange(code)      {code[rand(code.length)] = Mutations.getRandCmd()}
     static _onDel   (code)      {code.splice(rand(code.length), 1)}
-    static _onPeriod(code, org) {org.period = rand(ORG_MAX_PERIOD) + 1}
+    static _onPeriod(code, org) {org.period = rand(Config.orgMaxAge) + 1}
     static _onAmount(code, org) {org.percent = Math.random()}
-    static _onProbs (code, org) {org.probs[rand(PROBS)] = rand(ORG_PROB_MAX_VALUE)}
+    static _onProbs (code, org) {org.probs[rand(PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
     static _onInsert(code)      {code.splice(rand(code.length), 0, rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS)}
     /**
      * Takes few lines from itself and inserts them before or after copied

@@ -1,12 +1,10 @@
 /**
  * {Object} Global configuration of IRMA project. Very important idea
  * behind these configs is total amount of energy in a world. It should
- * be a luck of energy to provoke system to grow. To calculate percent
- * of this energy we have to use formula:
+ * be a luck of energy to provoke system to grow. To calculate amount of
+ * energy dots we have to use formula:
  *
- *   energy             = (orgCloneEnergy - 1) * orgAmount
- *   dots               = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / energyValue
- *   worldEnergyPercent = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / (WORLD_WIDTH * WORLD_HEIGHT * energyValue)
+ *   dots = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / energyValue
  *
  * Some of these configuration parameters may be changed during app work.
  * Some of them - not. See "@constant" mark in a comment.
@@ -15,24 +13,20 @@
  */
 const Config = {
     /**
-     * {Number} Maximum value of every element in orgProbs array
-     * @constant
-     */
-    ORG_PROB_MAX_VALUE    : 100,
-    /**
-     * {Number} Maximum period between mutations
-     * @constant
-     */
-    ORG_MAX_PERIOD        : 5000,
-    /**
      * {Number} This offset will be added to commands value. This is how we
      * add an ability to use numbers in a code, just putting them as command
+     * @constant
      */
     CODE_CMD_OFFS         : 128,
     /**
-     * {Number} Amount of supported commands in a code
+     * {Number} Amount of supported commands in a code. This value must be
+     * synchronized with real commands amount. See VM.js for details.
+     * @constant
      */
     CODE_COMMANDS         : 24,
+    codeLinesPerIteration : 4,
+    codeTimesPerRun       : 4,
+
     /**
      * World width in pixels
      * @constant
@@ -43,8 +37,6 @@ const Config = {
      * @constant
      */
     WORLD_HEIGHT          : 1200,
-
-    worldEnergyPercent    : .099,
     worldSurfacesDelay    : 300,
     worldSurfaces         : [{     // lava
         color : 0xff8881 ,
@@ -70,11 +62,13 @@ const Config = {
 
     energyColor           : 0x00ff00,
     energyValue           : 100,
-    energyAmount          : 300000,
+    energyAmount          : 50000,
 
-    linesPerIteration     : 4,
-    iterationsPerRun      : 4,
-
+    /**
+     * {Number} Maximum value of every element in orgProbs array
+     * @constant
+     */
+    ORG_PROB_MAX_VALUE    : 100,
     orgAmount             : 20000,
     orgMaxAge             : 100000,
     orgEnergy             : 2800,
@@ -84,11 +78,12 @@ const Config = {
     orgMemSize            : 64,
     orgMutationPercent    : .02,
     orgMutationPeriod     : 20000,
-    orgMaxCodeSize        : 1024,
+    orgMaxCodeSize        : 512,
     orgStartCodeSize      : 32,
     /**
-     * {Array}
-     * change,del,period,amount,probs,insert,copy,cut
+     * {Array} change,del,period,amount,probs,insert,copy,cut
+     * Is used for new created organisms. During cloning, all
+     * organism properties will be inherited.
      */
     orgProbs              : [20,1,3,5,1,10,1,1]
 };

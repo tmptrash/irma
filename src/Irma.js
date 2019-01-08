@@ -16,7 +16,7 @@ class Irma {
     }
 
     /**
-     * Runs Config.iterationsPerRun iterations for all organisms and return
+     * Runs Config.codeTimesPerRun iterations for all organisms and return
      */
     run() {
         this._vm.run();

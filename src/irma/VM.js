@@ -37,34 +37,37 @@ const Mutations = require('./Mutations');
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
  */
-const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
+const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX    = [0,  1,  1, 1, 0, -1, -1, -1];
-const DIRY    = [-1, -1, 0, 1, 1,  1,  0, -1];
+const DIRX              = [0,  1,  1, 1, 0, -1, -1, -1];
+const DIRY              = [-1, -1, 0, 1, 1,  1,  0, -1];
 /**
  * {Number} World size. Pay attantion, that width and height is -1
  */
-const WIDTH   = Config.WORLD_WIDTH - 1;
-const HEIGHT  = Config.WORLD_HEIGHT - 1;
-const WIDTH1  = WIDTH + 1;
-const MAX     = Number.MAX_VALUE;
+const WIDTH             = Config.WORLD_WIDTH - 1;
+const HEIGHT            = Config.WORLD_HEIGHT - 1;
+const WIDTH1            = WIDTH + 1;
+const MAX               = Number.MAX_VALUE;
 
-const ENERGY_MASK  = 0x40000000;
+const ENERGY_MASK       = 0x40000000;
+const ENERGY_INDEX_MASK = 0x3fffffff
+const ORG_MASK          = 0x80000000;
+const ORG_INDEX_MASK    = 0x7fffffff;
 /**
  * {Number} Max amount of supported surfaces
  */
-const SURFACES     = 16;
+const SURFACES          = 16;
 
-const ceil    = Math.ceil;
-const round   = Math.round;
-const rand    = Helper.rand;
-const fin     = Number.isFinite;
-const abs     = Math.abs;
-const nan     = Number.isNaN;
+const ceil              = Math.ceil;
+const round             = Math.round;
+const rand              = Helper.rand;
+const fin               = Number.isFinite;
+const abs               = Math.abs;
+const nan               = Number.isNaN;
 
 class VM {
     constructor(world, surfaces) {
@@ -81,12 +84,12 @@ class VM {
     }
 
     /**
-     * Runs code of all organisms Config.iterationsPerRun time and return. Big
+     * Runs code of all organisms Config.codeTimesPerRun time and return. Big
      * times value may slow down user and browser interaction
      */
     run() {
-        const times   = Config.iterationsPerRun;
-        const lines   = Config.linesPerIteration;
+        const times   = Config.codeTimesPerRun;
+        const lines   = Config.codeLinesPerIteration;
         const orgs    = this._orgs;
         const world   = this._world;
         const data    = world.data;
@@ -147,7 +150,7 @@ class VM {
                                 break;
                             }
                             let   dot;
-                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & 0x80000000) !== 0) {break}
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & ORG_MASK) !== 0) {break}
 
                             org.dot = dot;
                             world.moveOrg(org, x << 0, y << 0);
@@ -164,8 +167,8 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {break}
                             const dot  = data[x][y];
                             if (dot === 0) {break}                                       // no energy or out of the world
-                            if ((dot & 0x80000000) !== 0) {                              // other organism
-                                const nearOrg   = orgs.get(dot & 0x7fffffff);
+                            if ((dot & ORG_MASK) !== 0) {                                // other organism
+                                const nearOrg   = orgs.get(dot & ORG_INDEX_MASK);
                                 const energy    = nearOrg.energy <= intd ? nearOrg.energy : intd;
                                 nearOrg.energy -= energy;
                                 org.energy     += energy;
@@ -175,7 +178,7 @@ class VM {
                             if ((dot & ENERGY_MASK) !== 0) {
                                 org.energy += Config.energyValue;                        // just energy block
                                 world.empty(x, y, 0);
-                                this._ENERGY.clear(dot & 0x3fffffff);
+                                this._ENERGY.clear(dot & ENERGY_INDEX_MASK);
                             }
                             break
                         }
@@ -197,7 +200,7 @@ class VM {
                             const y    = offs / WIDTH1 << 0;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = 0; break}
                             const dot  = data[x][y];
-                            if ((dot & 0x80000000) !== 0) {d = (orgs.get(dot & 0x7fffffff)).energy; break}    // other organism
+                            if ((dot & ORG_MASK) !== 0) {d = (orgs.get(dot & ORG_INDEX_MASK)).energy; break}    // other organism
                             d = dot;                                                    // some world object
                             break;
                         }
@@ -214,7 +217,7 @@ class VM {
                             d = a;
                             break;
 
-                        case CODE_CMD_OFFS + 7:   // abod
+                        case CODE_CMD_OFFS + 7:   // atob
                             b = a;
                             break;
 
@@ -347,7 +350,7 @@ class VM {
             this._iterations++;
         }
         if (ts - this._ts > 1000) {
-            world.title(`inps:${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.length} onrg:${(this._totalOrgsEnergy / orgs.length) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index}`);
+            world.title(`inps:${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.length} onrg:${(this._totalOrgsEnergy / orgs.length) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1}`);
             this._ts = ts;
 
             if (orgs.length === 0) {this._createOrgs()}
