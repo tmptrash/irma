@@ -4,7 +4,6 @@
 const Config = require('./../Config');
 const Helper = require('./../common/Helper');
 
-const round  = Math.round;
 const rand   = Helper.rand;
 
 /**
@@ -38,7 +37,7 @@ class Mutations {
         const age = org.age;
         if (age % org.period === 0 && age > 0) {
             const code      = org.code;
-            const mutations = round(code.length * org.percent) || 1;
+            const mutations = ((code.length * org.percent) << 0) || 1;
             const prob      = Helper.probIndex;
             const probs     = Mutations._probsCbs;
             for (let m = 0; m < mutations; m++) {probs[prob(org.probs)](code, org)}

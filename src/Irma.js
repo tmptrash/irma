@@ -4,7 +4,7 @@ const World      = require('./irma/World');
 const VM         = require('./irma/VM');
 const Surface    = require('./irma/Surface');
 const Energy     = require('./irma/Energy');
-
+// TODO: we don't need this class and VM. Should be only one main class
 class Irma {
     constructor() {
         this._world    = new World();

@@ -48,13 +48,13 @@ const Config = {
         energy: 0,
         step  : .8,
         amount: 1000000
-    }, {                           // hole
+    }/*, {                           // hole
         color : 0xaaaaa3,
         energy: 100,
         step  : 0,
         amount: 1000
-    }, {                           // sand
-        color : 0xFFFF04,
+    }*/, {                           // sand
+        color : 0xFFFF03,
         energy: .1,
         step  : .3,
         amount: 50000
@@ -62,16 +62,16 @@ const Config = {
 
     energyColor           : 0x00ff00,
     energyValue           : 100,
-    energyAmount          : 50000,
+    energyAmount          : 800000,
 
     /**
      * {Number} Maximum value of every element in orgProbs array
      * @constant
      */
     ORG_PROB_MAX_VALUE    : 100,
-    orgAmount             : 20000,
+    orgAmount             : 50000,
     orgMaxAge             : 100000,
-    orgEnergy             : 2800,
+    orgEnergy             : 1000,
     orgEnergyPeriod       : 200,
     orgCloneEnergy        : 3000,
     orgColor              : 0xff0000,
