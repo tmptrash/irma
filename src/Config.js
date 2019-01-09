@@ -31,13 +31,23 @@ const Config = {
      * World width in pixels
      * @constant
      */
-    WORLD_WIDTH           : 1800,
+    WORLD_WIDTH           : 1920,
     /**
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT          : 1200,
+    WORLD_HEIGHT          : 1080,
     worldSurfacesDelay    : 300,
+    /**
+     * {Array} Array of surfaces. These surfaces are analogs of water, sand
+     * lava and other stuff. They are moving to some randomly selected point
+     * in a world all the time like water tides, earth layers moving and so on.
+     * Every surface has 4 parameters:
+     *  color  - dots color. % 16 with this color should get index of surface starting from 1
+     *  energy - amount of energy, which grabs if organism above the surface
+     *  step   - coefficient of speed (slow down) if organism above the surface
+     *  amount - amount of surface dots
+     */
     worldSurfaces         : [{     // lava
         color : 0xff8881 ,
         energy: 3,
@@ -48,13 +58,13 @@ const Config = {
         energy: 0,
         step  : .8,
         amount: 1000000
-    }, {                           // hole
+    }, /*{                           // hole
         color : 0xaaaaa3,
         energy: 100,
         step  : 0,
         amount: 1000
-    }, {                           // sand
-        color : 0xFFFF04,
+    },*/ {                           // sand
+        color : 0xFFFF03,
         energy: .1,
         step  : .3,
         amount: 50000
@@ -62,24 +72,24 @@ const Config = {
 
     energyColor           : 0x00ff00,
     energyValue           : 100,
-    energyAmount          : 50000,
+    energyAmount          : 250000,
 
     /**
      * {Number} Maximum value of every element in orgProbs array
      * @constant
      */
     ORG_PROB_MAX_VALUE    : 100,
-    orgAmount             : 20000,
+    orgAmount             : 50000,
     orgMaxAge             : 100000,
-    orgEnergy             : 2800,
+    orgEnergy             : 1000,
     orgEnergyPeriod       : 200,
-    orgCloneEnergy        : 3000,
+    orgCloneEnergy        : 2000,
     orgColor              : 0xff0000,
     orgMemSize            : 64,
     orgMutationPercent    : .02,
-    orgMutationPeriod     : 20000,
+    orgMutationPeriod     : 30000,
     orgMaxCodeSize        : 512,
-    orgStartCodeSize      : 32,
+    orgStartCodeSize      : 64,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

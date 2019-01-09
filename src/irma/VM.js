@@ -124,6 +124,7 @@ class VM {
                     //
                     if (code[line] > -CODE_CMD_OFFS && code[line] < CODE_CMD_OFFS) {
                         d = code[line++];
+                        if (line >= len) {line = 0}
                         continue;
                     }
                     //
