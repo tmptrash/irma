@@ -117,8 +117,8 @@ class FastArray {
      */
     resize(size) {
         if (size <= 0) {return}
-        const oldArr      = this._arr.slice();
-        const oldSize     = Math.min(this._size, size);
+        const oldArr  = this._arr.slice();
+        const oldSize = Math.min(this._size, size);
 
         this.constructor(size);
         for (let i = 0; i < oldSize; i++) {

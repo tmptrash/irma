@@ -50,7 +50,7 @@ const Config = {
      */
     worldSurfaces         : [{     // lava
         color : 0xff8881 ,
-        energy: 3,
+        energy: .2,
         step  : .5,
         amount: 50000
     }, {                           // water
@@ -65,8 +65,8 @@ const Config = {
         amount: 1000
     },*/ {                           // sand
         color : 0xFFFF03,
-        energy: .1,
-        step  : .3,
+        energy: .01,
+        step  : .9,
         amount: 50000
     }],
 

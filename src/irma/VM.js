@@ -43,7 +43,7 @@ const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX              = [0,  1,  1, 1, 0, -1, -1, -1];
+const DIRX              = [0,   1, 1, 1, 0, -1, -1, -1];
 const DIRY              = [-1, -1, 0, 1, 1,  1,  0, -1];
 /**
  * {Number} World size. Pay attantion, that width and height is -1
@@ -54,7 +54,7 @@ const WIDTH1            = WIDTH + 1;
 const MAX               = Number.MAX_VALUE;
 
 const ENERGY_MASK       = 0x40000000;
-const ENERGY_INDEX_MASK = 0x3fffffff
+const ENERGY_INDEX_MASK = 0x3fffffff;
 const ORG_MASK          = 0x80000000;
 const ORG_INDEX_MASK    = 0x7fffffff;
 /**
@@ -77,6 +77,7 @@ class VM {
         this._ENERGY          = surfaces[0];
         this._orgs            = null;
         this._iterations      = 0;
+        this._population      = 0;
         this._ts              = Date.now();
         this._totalOrgsEnergy = 0;
 
@@ -114,6 +115,8 @@ class VM {
                 let   a    = org.a;
                 let   b    = org.b;
                 let   line = org.last;
+                // TODO: remove this debug code
+                //if ((data[org.x << 0][org.y << 0] & ORG_MASK) !== 0 && orgs.get(data[org.x << 0][org.y << 0] & ORG_INDEX_MASK) === null) {debugger}
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
@@ -162,9 +165,9 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 1: { // eat
-                            const intd = abs(d << 0) % 8;
-                            const x    = (org.x + DIRX[intd]) << 0;
-                            const y    = (org.y + DIRY[intd]) << 0;
+                            const intd = abs(d << 0);
+                            const x    = (org.x + DIRX[intd % 8]) << 0;
+                            const y    = (org.y + DIRY[intd % 8]) << 0;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {break}
                             const dot  = data[x][y];
                             if (dot === 0) {break}                                       // no energy or out of the world
@@ -351,7 +354,7 @@ class VM {
             this._iterations++;
         }
         if (ts - this._ts > 1000) {
-            world.title(`inps:${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.length} onrg:${(this._totalOrgsEnergy / orgs.length) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1}`);
+            world.title(`inps:${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.length} onrg:${(this._totalOrgsEnergy / orgs.length) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
             this._ts = ts;
 
             if (orgs.length === 0) {this._createOrgs()}
@@ -395,6 +398,7 @@ class VM {
                 orgAmount--;
             }
         }
+        this._population++;
     }
 
     /**
