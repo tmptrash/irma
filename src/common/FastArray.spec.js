@@ -25,6 +25,7 @@ describe('src/common/FastArray', () => {
     });
 
     it('Checking length getter', () => {
+        expect(fa.length).toEqual(0);
         fa.add({});
         expect(fa.length).toEqual(1);
         fa.get(size - 1);
@@ -40,6 +41,9 @@ describe('src/common/FastArray', () => {
         fa.add({});
         fa.add({});
         expect(fa.length).toEqual(2);
+        fa.del(size - 1);
+        fa.del(size - 2);
+        expect(fa.length).toEqual(0);
     });
 
     it('Checking size getter', () => {
