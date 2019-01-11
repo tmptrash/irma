@@ -8,3 +8,8 @@ Steps to run:
 4. npm run build
 5. cd dist
 6. run index.html in Chrome
+
+Steps to run tests:
+1. cd irma
+2. npm test
+3. npm run cover (run tests with coverage)

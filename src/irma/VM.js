@@ -354,10 +354,10 @@ class VM {
             this._iterations++;
         }
         if (ts - this._ts > 1000) {
-            world.title(`inps:${round(((i / orgs.length) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.length} onrg:${(this._totalOrgsEnergy / orgs.length) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
+            world.title(`inps:${round(((i / orgs.items) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.items} onrg:${(this._totalOrgsEnergy / orgs.items) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
             this._ts = ts;
 
-            if (orgs.length === 0) {this._createOrgs()}
+            if (orgs.items === 0) {this._createOrgs()}
         }
     }
 

@@ -14,6 +14,7 @@
   },
   "scripts": {
     "test": "babel-node tests/run.js",
+    "cover": "istanbul cover tests/run.js",
     "build": "node_modules/.bin/webpack"
   },
   "repository": {
@@ -38,6 +39,7 @@
     "babel-register": "latest",
     "clean-webpack-plugin": "^0.1.19",
     "ignore-loader": "^0.1.2",
-    "jasmine": "^2.99.0"
+    "istanbul": "^0.4.5",
+    "jasmine": "^3.3.1"
   }
 }

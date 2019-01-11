@@ -14,30 +14,7 @@ class FastArray {
      * @param {Number} size Max elements in a array
      */
     constructor(size) {
-        /**
-         * {Array} Source container for custom objects
-         */
-        this._arr         = new Array(size);
-        /**
-         * {Array} Array of free indexes in _arr. Every time
-         * user calls del() method _arr obtains hole in it.
-         * Index of this hole wil be stored in this array
-         */
-        this._freeIndexes = new Array(size);
-        /**
-         * {Number} Index of last free index in _freeIndexes array
-         */
-        this._index       = size - 1;
-        /**
-         * {Number} Allocated size of array. This is maximum amount
-         * of elements, which may be stored in FastArray
-         */
-        this._size        = size;
-
-        for (let i = 0; i < size; i++) {
-            this._freeIndexes[i] = i;
-            this._arr[i]         = null;
-        }
+        this._constructor(size);
     }
 
     destroy() {
@@ -53,7 +30,7 @@ class FastArray {
      * Not all cells in an array may be filled by values. 0 or less
      * then zero means no items in an array.
      */
-    get length() {return this._size - this._index - 1}
+    get items() {return this._size - this._index - 1}
 
     /**
      * Returns allocated size
@@ -120,9 +97,42 @@ class FastArray {
         const oldArr  = this._arr.slice();
         const oldSize = Math.min(this._size, size);
 
-        this.constructor(size);
+        this._constructor(size);
         for (let i = 0; i < oldSize; i++) {
             oldArr[i] !== null && this.add(oldArr[i]);
+        }
+    }
+
+    /**
+     * We can't call constructor directly. It triggers error during
+     * jasmine tests.
+     * @param {Number} size Array size
+     * @private
+     */
+    _constructor(size) {
+        /**
+         * {Array} Source container for custom objects
+         */
+        this._arr         = new Array(size);
+        /**
+         * {Array} Array of free indexes in _arr. Every time
+         * user calls del() method _arr obtains hole in it.
+         * Index of this hole wil be stored in this array
+         */
+        this._freeIndexes = new Array(size);
+        /**
+         * {Number} Index of last free index in _freeIndexes array
+         */
+        this._index       = size - 1;
+        /**
+         * {Number} Allocated size of array. This is maximum amount
+         * of elements, which may be stored in FastArray
+         */
+        this._size        = size;
+
+        for (let i = 0; i < size; i++) {
+            this._freeIndexes[i] = i;
+            this._arr[i]         = null;
         }
     }
 }
