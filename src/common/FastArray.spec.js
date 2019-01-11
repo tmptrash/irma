@@ -158,5 +158,6 @@ describe('src/common/FastArray', () => {
             fa.add(i);
             expect(fa.get(i)).toEqual(i);
         }
+        expect(fa.items).toEqual(size);
     });
 });
