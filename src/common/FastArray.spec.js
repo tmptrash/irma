@@ -148,4 +148,15 @@ describe('src/common/FastArray', () => {
         }
         expect(sum).toEqual(sum1);
     });
+
+    it('Checking loop through array items with add/remove items', () => {
+        for (let i = 0; i < size; i++) {fa.add(i)}
+        expect(fa.items).toEqual(size);
+
+        for (let i = 0; i < size; i++) {
+            fa.del(i);
+            fa.add(i);
+            expect(fa.get(i)).toEqual(i);
+        }
+    });
 });
