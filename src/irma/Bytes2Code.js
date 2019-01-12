@@ -1,5 +1,5 @@
 /**
- * Converts byte code to human readable code
+ * Converts byte code to human readable assembler like language.
  *
  * @author flatline
  */

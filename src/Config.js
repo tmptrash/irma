@@ -13,6 +13,13 @@
  */
 const Config = {
     /**
+     * {Array} Array of increments. Using it we may obtain coordinates of the
+     * point depending on one of 8 directions. We use these values in any command
+     * related to sight, move, eating and so on
+     */
+    DIRX                  : [0,   1, 1, 1, 0, -1, -1, -1],
+    DIRY                  : [-1, -1, 0, 1, 1,  1,  0, -1],
+    /**
      * {Number} This offset will be added to commands value. This is how we
      * add an ability to use numbers in a code, just putting them as command
      * @constant
@@ -73,7 +80,11 @@ const Config = {
         step  : .9,
         amount: 50000
     }],
-
+    /**
+     * {Number} Mask to check if some dot is an energy. We use second bit
+     * for this. First bit is used to check if it's an organism
+     */
+    ENERGY_MASK           : 0x40000000,
     energyColor           : 0x00ff00,
     energyValue           : 100,
     energyAmount          : 250000,
@@ -86,8 +97,8 @@ const Config = {
     orgAmount             : 50000,
     orgMaxAge             : 100000,
     orgEnergy             : 1000,
-    orgEnergyPeriod       : 200,
     orgCloneEnergy        : 2000,
+    orgEnergyPeriod       : 200,
     orgColor              : 0xff0000,
     orgMemSize            : 64,
     orgMutationPercent    : .02,

@@ -4,18 +4,23 @@
  *
  * @author flatline
  */
-// TODO: API of this class is ugly!
-const Config     = require('./../Config');
-const Surface    = require('./Surface');
-const Helper     = require('./../common/Helper');
+const Config      = require('./../Config');
+const Surface     = require('./Surface');
+const Helper      = require('./../common/Helper');
 
-const REMOVED    = -2;
-const MAX_ENERGY = (Config.orgCloneEnergy - 1) * Config.orgAmount;
+const REMOVED     = -2;
+/**
+ * {Number} This value very important. This is amount of total energy in a world
+ * (organisms + energy). This value organisms must not exceed. This is how we
+ * create a lack of resources in a world.
+ */
+const MAX_ENERGY  = (Config.orgCloneEnergy >> 1) * Config.orgAmount;
+const ENERGY_MASK = Config.ENERGY_MASK;
 
-const WIDTH      = Config.WORLD_WIDTH;
-const HEIGHT     = Config.WORLD_HEIGHT;
+const WIDTH       = Config.WORLD_WIDTH;
+const HEIGHT      = Config.WORLD_HEIGHT;
 
-const rand       = Helper.rand;
+const rand        = Helper.rand;
 
 class Energy extends Surface {
     constructor(world) {
@@ -25,9 +30,14 @@ class Energy extends Surface {
             step  : 1,
             amount: Config.energyAmount}, world
         );
+    }
 
+    initDots() {
         this._indexes = new Array(this.amount >> 1);
-        this._index   = -1;
+        const indexes = this._indexes;
+        for (let i = 0, j = 0, len = this.amount; i < len; i += 2) {indexes[j++] = i}
+        this._index   = (this.amount >> 1) - 1;
+        super.initDots();
     }
 
     clear(index) {
@@ -39,12 +49,7 @@ class Energy extends Surface {
         const index = this._indexes[this._index--];
         this.dots[index]     = x;
         this.dots[index + 1] = y;
-        this.world.energy(x, y, 0x40000000 | index);
-        super.dot(x, y, color);
-    }
-
-    onDot(x, y, color, i) {
-        this.world.energy(x, y, 0x40000000 | i);
+        this.world.energy(x, y, ENERGY_MASK | index);
     }
 
     update(orgsEnergy) {
@@ -64,46 +69,8 @@ class Energy extends Surface {
      * @param {Number} y1 Final Y coordinate of energy
      */
     onMove(x0, y0, x1, y1) {
-        this.world.moveEnergy(x0, y0, x1, y1, 0x40000000 | (this._i - 2));
+        this.world.moveEnergy(x0, y0, x1, y1, ENERGY_MASK | (this._i - 2));
     }
-
-    // /**
-    //  * Adds energy to the world according to worldEnergyPercent
-    //  * configuration. Total amount of energy should be less then
-    //  * specified percent.
-    //  * @param {World} world
-    //  */
-    // static add(world) {
-    //     const width  = Config.WORLD_WIDTH;
-    //     const height = Config.WORLD_HEIGHT;
-    //     const amount = width * height * Config.worldEnergyPercent;
-    //     const color  = Config.energyColor;
-    //     const data   = world.data;
-    //     const rand   = Helper.rand;
-    //     const cur    = this.amount(world);
-    //
-    //     for (let i = 0, add = amount - cur; i < add; i++) {
-    //         const x = rand(width);
-    //         const y = rand(height);
-    //         data[x][y] === 0 && world.dot(x, y, color);
-    //     }
-    // }
-    //
-    // static amount(world) {
-    //     const width  = Config.WORLD_WIDTH;
-    //     const height = Config.WORLD_HEIGHT;
-    //     const data   = world.data;
-    //     let   energy = 0;
-    //
-    //     for (let x = 0; x < width; x++) {
-    //         for (let y = 0; y < height; y++) {
-    //             const dot = data[x][y];
-    //             dot !== 0 && dot.constructor !== Organism && energy++;
-    //         }
-    //     }
-    //
-    //     return energy;
-    // }
 }
 
 module.exports = Energy;

@@ -46,8 +46,8 @@ const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX              = [0,   1, 1, 1, 0, -1, -1, -1];
-const DIRY              = [-1, -1, 0, 1, 1,  1,  0, -1];
+const DIRX              = Config.DIRX;
+const DIRY              = Config.DIRY;
 /**
  * {Number} World size. Pay attention, that width and height is -1
  */
@@ -56,7 +56,7 @@ const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
 const MAX               = Number.MAX_VALUE;
 
-const ENERGY_MASK       = 0x40000000;
+const ENERGY_MASK       = Config.ENERGY_MASK;
 const ENERGY_INDEX_MASK = 0x3fffffff;
 const ORG_MASK          = 0x80000000;
 const ORG_INDEX_MASK    = 0x7fffffff;

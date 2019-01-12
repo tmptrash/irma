@@ -1,5 +1,5 @@
 /**
- * Class, which creates and moves dots of specified surface (e.g.: lava, water, send,...)
+ * Class, which creates and moves dots of specified surface (e.g.: lava, water, sand,...)
  * in time. It moves all dots in special random chosen direction. This is analog of earth
  * planes moving or water move.
  *
@@ -7,16 +7,16 @@
  */
 const Helper  = require('./../common/Helper');
 const Config  = require('./../Config');
-
-const WIDTH       = Config.WORLD_WIDTH  - 1;
-const HEIGHT      = Config.WORLD_HEIGHT - 1;
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX    = [0,   1, 1, 1, 0, -1, -1, -1];
-const DIRY    = [-1, -1, 0, 1, 1,  1,  0, -1];
+const DIRX    = Config.DIRX;
+const DIRY    = Config.DIRY;
+
+const WIDTH   = Config.WORLD_WIDTH  - 1;
+const HEIGHT  = Config.WORLD_HEIGHT - 1;
 
 const rand    = Helper.rand;
 
@@ -35,9 +35,9 @@ class Surface {
         this._diry       = Helper.rand(Config.WORLD_HEIGHT);
         this._i          = 0;
         this._blocked    = 0;
-        this._blockLimit = cfg.amount / 2 << 0;
+        this._blockLimit = (cfg.amount >> 1) << 0;
 
-        this._initDots();
+        this.initDots();
     }
 
     destroy() {
@@ -82,16 +82,11 @@ class Surface {
         this.world.dot(x, y, color);
     }
 
-    onDot(x, y, color) {
-        this.dot(x, y, color);
-    }
-
     /**
      * This method should draw all energy dots according to this.amount
      * without spaces. this.dots array should be filled.
-     * @private
      */
-    _initDots() {
+    initDots() {
         const width  = Config.WORLD_WIDTH;
         const height = Config.WORLD_HEIGHT;
         const amount = this.amount;
@@ -108,9 +103,9 @@ class Surface {
             const x = rand(width);
             const y = rand(height);
             if (data[x][y] === 0) {
-                this.onDot(x, y, color, i);
                 dots[i++] = x;
                 dots[i++] = y;
+                this.dot(x, y, color);
             }
         }
     }
