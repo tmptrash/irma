@@ -1,10 +1,12 @@
 /**
- * Implementation of fast array. Meaning of this class is in fast access to custom
+ * Implementation of fast array. Purpose of this class is in fast access to custom
  * element of array, ability to add/remove elements. First, this class uses fixed
- * array size. Second, get() method will be called must of the time, then set() or
- * del() or resize(). Resize is possible, but should be rare to keep it fast. Is
- * used for storing organisms population. Removing element means setting null to
- * specified index.
+ * array size. Second, get(), add(), del() methods will be called must of the time,
+ * then resize(). Resize is possible, but should be rare to keep it fast. Is used
+ * for storing organisms population. Removing element means setting null to
+ * specified index. This is how del() method works. Difference between items and
+ * size is: items - returns amount of elements in a array, size - returns amount
+ * of cells allocated for this array.
  *
  * @author flatline
  */
@@ -14,7 +16,7 @@ class FastArray {
      * @param {Number} size Max elements in a array
      */
     constructor(size) {
-        this._constructor(size);
+        this._init(size);
     }
 
     destroy() {
@@ -97,7 +99,7 @@ class FastArray {
         const oldArr  = this._arr.slice();
         const oldSize = Math.min(this._size, size);
 
-        this._constructor(size);
+        this._init(size);
         for (let i = 0; i < oldSize; i++) {
             oldArr[i] !== null && this.add(oldArr[i]);
         }
@@ -109,7 +111,7 @@ class FastArray {
      * @param {Number} size Array size
      * @private
      */
-    _constructor(size) {
+    _init(size) {
         /**
          * {Array} Source container for custom objects
          */
