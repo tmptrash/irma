@@ -1,5 +1,5 @@
 # irma
-Digital organisms ecology system experiment
+Digital organisms ecology system experiment. This is optimized 2D ecosystem with ability to run 100 000 and more agents in parallel. Uses assembler like language as a DNA, which runs under self maded simple VM. Supports different surfaces like water, lava, sand, holes and so on (depending on configuration). You may use mouse scroll and zoom during experiment, turns off visualization and so on. Real time configurable. Uses pure JS. Enjoy our research!
 
 Steps to run:
 1. git clone https://github.com/tmptrash/irma
