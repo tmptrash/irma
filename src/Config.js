@@ -39,6 +39,10 @@ const Config = {
     WORLD_HEIGHT          : 1080,
     worldSurfacesDelay    : 300,
     /**
+     * {Number} Zoom speed 0..1
+     */
+    worldZoomSpeed        : 0.1,
+    /**
      * {Array} Array of surfaces. These surfaces are analogs of water, sand
      * lava and other stuff. They are moving to some randomly selected point
      * in a world all the time like water tides, earth layers moving and so on.

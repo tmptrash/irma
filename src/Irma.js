@@ -1,23 +1,21 @@
+/**
+ * This is application class. Entry point of irma project. Instance of this class
+ * should be created in index.html file. Creates main (infinite) loop of application
+ * and creates main (manager) object - Virtual Machine (VM.js). The only thing you
+ * have to do with this class is call run() method to run VM and all inner stuff.
+ */
 const Bytes2Code = require('./irma/Bytes2Code');
 const Config     = require('./Config');
-const World      = require('./irma/World');
 const VM         = require('./irma/VM');
-const Surface    = require('./irma/Surface');
-const Energy     = require('./irma/Energy');
-// TODO: we don't need this class and VM. Should be only one main class
+
 class Irma {
     constructor() {
-        this._world    = new World();
-        this._surfaces = this._createSurfaces();
-        this._vm       = new VM(this._world, this._surfaces);
-        this._runCb    = this.run.bind(this);
+        this._vm    = new VM();
+        this._runCb = this.run.bind(this);
 
         this._initLoop();
     }
 
-    /**
-     * Runs Config.codeTimesPerRun iterations for all organisms and return
-     */
     run() {
         this._vm.run();
         this.zeroTimeout(this._runCb);
@@ -25,12 +23,8 @@ class Irma {
 
     destroy() {
         this._vm.destroy();
-        this._world.destroy();
-        for (let i = 0; i < this._surfaces.length; i++) {this._surfaces[i].destroy()}
-        this._surfaces = null;
-        this._runCb    = null;
-        this._world    = null;
         this._vm       = null;
+        this._runCb    = null;
     }
 
     /**
@@ -68,28 +62,12 @@ class Irma {
 
         return true;
     }
-
-    _createSurfaces() {
-        const SURFS  = Config.worldSurfaces;
-        const AMOUNT = SURFS.length + 1;
-
-        const surfaces = new Array(AMOUNT);
-        surfaces[0] = new Energy(this._world);
-        for (let i = 1; i < AMOUNT; i++) {
-            surfaces[i] = new Surface(SURFS[i - 1], this._world);
-        }
-
-        return surfaces;
-    }
 }
-
 //
-// This is entry point of application. Creates global objects
-// to have an access from the console.
+// Creates global objects to have an access to app from browser's console
 //
 window.irma  = {
     code: Bytes2Code.toCode,
     app : new Irma(),
     cfg : Config
 };
-window.irma.app.run();

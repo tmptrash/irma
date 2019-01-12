@@ -48,8 +48,8 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 16]: 'jumpl // jump d if a <= b',
     [CODE_CMD_OFFS + 17]: 'jumpz // jump d if a === 0',
     [CODE_CMD_OFFS + 18]: 'nop',
-    [CODE_CMD_OFFS + 19]: 'get   // a = mem[d]',
-    [CODE_CMD_OFFS + 20]: 'put   // mem[d] = a',
+    [CODE_CMD_OFFS + 19]: 'mget  // a = mem[d]',
+    [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
     [CODE_CMD_OFFS + 21]: 'x     // d = org.x',
     [CODE_CMD_OFFS + 22]: 'y     // d = org.y',
     [CODE_CMD_OFFS + 23]: `rand  // d = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`

@@ -13,7 +13,7 @@ const CODE_COMMANDS = Config.CODE_COMMANDS;
 /**
  * {Number} Amount of probability elements
  */
-const PROBS    = Config.orgProbs.length;
+const PROBS = Config.orgProbs.length;
 /**
  * {Number} Maximum probability value for array of probabilities
  */

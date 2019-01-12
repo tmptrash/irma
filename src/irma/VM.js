@@ -20,8 +20,8 @@
  *   CODE_CMD_OFFS + 16 - jumpl  - jump to d line if a <= b
  *   CODE_CMD_OFFS + 17 - jumpz  - jump to d line if a === 0
  *   CODE_CMD_OFFS + 18 - nop    - no operation
- *   CODE_CMD_OFFS + 19 - get    - a = mem[d]
- *   CODE_CMD_OFFS + 20 - put    - mem[d] = a
+ *   CODE_CMD_OFFS + 19 - mget   - a = mem[d]
+ *   CODE_CMD_OFFS + 20 - mput   - mem[d] = a
  *   CODE_CMD_OFFS + 21 - x      - d = org.x
  *   CODE_CMD_OFFS + 22 - y      - d = org.y
  *   CODE_CMD_OFFS + 23 - rand   - d = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
@@ -33,6 +33,9 @@ const FastArray = require('./../common/FastArray');
 const Helper    = require('./../common/Helper');
 const Organism  = require('./Organism');
 const Mutations = require('./Mutations');
+const World     = require('./World');
+const Surface   = require('./Surface');
+const Energy    = require('./Energy');
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -46,7 +49,7 @@ const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
 const DIRX              = [0,   1, 1, 1, 0, -1, -1, -1];
 const DIRY              = [-1, -1, 0, 1, 1,  1,  0, -1];
 /**
- * {Number} World size. Pay attantion, that width and height is -1
+ * {Number} World size. Pay attention, that width and height is -1
  */
 const WIDTH             = Config.WORLD_WIDTH - 1;
 const HEIGHT            = Config.WORLD_HEIGHT - 1;
@@ -70,11 +73,11 @@ const abs               = Math.abs;
 const nan               = Number.isNaN;
 
 class VM {
-    constructor(world, surfaces) {
-        this._world           = world;
-        this._surfaces        = surfaces;
-        this._SURFS           = surfaces.length;
-        this._ENERGY          = surfaces[0];
+    constructor() {
+        this._world           = new World();
+        this._surfaces        = this._createSurfaces();
+        this._SURFS           = this._surfaces.length;
+        this._ENERGY          = this._surfaces[0];
         this._orgs            = null;
         this._iterations      = 0;
         this._population      = 0;
@@ -82,6 +85,17 @@ class VM {
         this._totalOrgsEnergy = 0;
 
         this._createOrgs();
+    }
+
+    destroy() {
+        this._world.destroy();
+        this._orgs.destroy();
+        for (let i = 0; i < this._surfaces.length; i++) {this._surfaces[i].destroy()}
+        this._surfaces = null;
+        this._world    = null;
+        this._orgs     = null;
+        this._world    = null;
+        this._orgs     = null;
     }
 
     /**
@@ -361,13 +375,6 @@ class VM {
         }
     }
 
-    destroy() {
-        this._orgs.destroy();
-        this._orgs  = null;
-        this._world = null;
-        this._orgs  = null;
-    }
-
     _removeOrg(org) {
         this._orgs.del(org.item);
         this._world.empty(org.x << 0, org.y << 0);
@@ -416,6 +423,19 @@ class VM {
         this._world.org(x, y, org);
 
         return org;
+    }
+
+    _createSurfaces() {
+        const SURFS  = Config.worldSurfaces;
+        const AMOUNT = SURFS.length + 1;
+
+        const surfaces = new Array(AMOUNT);
+        surfaces[0] = new Energy(this._world);
+        for (let i = 1; i < AMOUNT; i++) {
+            surfaces[i] = new Surface(SURFS[i - 1], this._world);
+        }
+
+        return surfaces;
     }
 }
 
