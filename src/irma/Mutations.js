@@ -4,49 +4,42 @@
 const Config = require('./../Config');
 const Helper = require('./../common/Helper');
 
-const rand   = Helper.rand;
-
-/**
- * {Number} Amount of supported commands in a code
- */
-const CODE_COMMANDS = Config.CODE_COMMANDS;
+const rand                = Helper.rand;
 /**
  * {Number} Amount of probability elements
  */
-const PROBS = Config.orgProbs.length;
+const PROBS               = Config.orgProbs.length;
 /**
  * {Number} Maximum probability value for array of probabilities
  */
-const ORG_PROB_MAX_VALUE = Config.ORG_PROB_MAX_VALUE;
+const ORG_PROB_MAX_VALUE  = Config.ORG_PROB_MAX_VALUE;
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
  */
-const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
+const CODE_CMD_OFFS       = Config.CODE_CMD_OFFS;
+/**
+ * {Number} Amount of supported commands in a code
+ */
+const CODE_COMMANDS       = Config.CODE_COMMANDS;
 /**
  * {Number} Maximum stack size, which may be used for recursion or function parameters
  */
-const MAX_STACK_SIZE = 30000;
+const CODE_MAX_STACK_SIZE = 30000;
 
 class Mutations {
     /**
      * Updates mutations for specified organism
-     * @param org
+     * @param {Organism} org
      */
-    static update(org) {
-        const age = org.age;
-        if (age % org.period === 0 && age > 0) {
-            const code      = org.code;
-            const mutations = ((code.length * org.percent) << 0) || 1;
-            const prob      = Helper.probIndex;
-            const probs     = Mutations._probsCbs;
-            for (let m = 0; m < mutations; m++) {probs[prob(org.probs)](code, org)}
-        }
+    static mutate(org) {
+        const mutations = ((org.code.length * org.percent) << 0) || 1;
+        const prob      = Helper.probIndex;
+        const probs     = Mutations._probsCbs;
+        for (let m = 0; m < mutations; m++) {probs[prob(org.probs)](org.code, org)}
     }
 
-    static getRandCmd() {
-        return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS;
-    }
+    static getRandCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
 
     static _onChange(code)      {code[rand(code.length)] = Mutations.getRandCmd()}
     static _onDel   (code)      {code.splice(rand(code.length), 1)}
@@ -67,7 +60,7 @@ class Mutations {
         // Because we use spread (...) operator stack size is important
         // for amount of parameters and we shouldn't exceed it
         //
-        if (end - start > MAX_STACK_SIZE) {return 0}
+        if (end - start > CODE_MAX_STACK_SIZE) {return 0}
         //
         // Organism size should be less them codeMaxSize
         //
@@ -86,9 +79,8 @@ class Mutations {
     }
     static _onCut   (code)      {code.splice(rand(code.length), rand(code.length))}
 }
-
 /**
- * Static mutation methods binding. Is used for running specified mutatio type
+ * Static mutation methods binding. Is used for running specified mutation type
  * @private
  */
 Mutations._probsCbs   = [
@@ -101,6 +93,5 @@ Mutations._probsCbs   = [
     Mutations._onCopy.bind(this),
     Mutations._onCut.bind(this)
 ];
-
 
 module.exports = Mutations;
