@@ -5,7 +5,6 @@
  */
 const Config    = require('./../Config');
 const Mutations = require('./Mutations');
-const Helper    = require('./../common/Helper');
 
 class Organism {
     constructor(id, x, y, item, energy, parent = null) {
