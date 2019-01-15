@@ -341,14 +341,13 @@ class VM {
                 org.d    = d;
                 org.a    = a;
                 org.b    = b;
-
-                Mutations.update(org);
-                if (org.age % Config.orgMaxAge === 0 && org.age > 0) {
-                    this._removeOrg(org);
-                }
-                if (org.age % Config.orgEnergyPeriod === 0) {
-                    org.energy--;//= (org.code.length || 1);
-                }
+                //
+                // Organism age related updates
+                //
+                const age = org.age;
+                if (age % org.period === 0 && age > 0) {Mutations.mutate(org)}
+                if (age % Config.orgMaxAge === 0 && age > 0) {this._removeOrg(org)}
+                if (age % Config.orgEnergyPeriod === 0) {org.energy--;/*= (org.code.length || 1);*/}
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
