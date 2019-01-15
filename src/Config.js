@@ -60,7 +60,7 @@ const Config = {
      *  amount - amount of surface dots
      */
     worldSurfaces         : [{     // lava
-        color : 0xff8881 ,
+        color : 0xff8881,
         energy: .2,
         step  : .5,
         amount: 50000
@@ -68,7 +68,7 @@ const Config = {
         color : 0x0000f2,
         energy: 0,
         step  : .8,
-        amount: 1000000
+        amount: 500000
     }, /*{                           // hole
         color : 0xaaaaa3,
         energy: 100,

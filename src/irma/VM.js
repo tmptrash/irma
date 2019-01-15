@@ -354,7 +354,7 @@ class VM {
                 //
                 this._ENERGY.update(this._totalOrgsEnergy);
                 if (o % Config.worldSurfacesDelay === 0) {
-                    for (let surf = 1; surf < this._SURFS; surf++) {this._surfaces[surf].move()}
+                    for (let s = 0; s < this._SURFS; s++) {this._surfaces[s].move()}
                 }
 
                 org.age++;

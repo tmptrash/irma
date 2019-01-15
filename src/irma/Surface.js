@@ -49,24 +49,27 @@ class Surface {
     move() {
         if (this._i >= this.amount) {this._i = this._blocked = 0}
         const dots = this.dots;
-        const x0   = dots[this._i];
-        const y0   = dots[this._i+1];
-        let   x1   = x0 + (this._dirx > x0 ? 1 : -1);
-        let   y1   = y0 + (this._diry > y0 ? 1 : -1);
-        this._i   += 2;
+        const x0   = dots[this._i++];
+        const y0   = dots[this._i++];
+        const x1   = x0 + (this._dirx > x0 ? 1 : -1);
+        const y1   = y0 + (this._diry > y0 ? 1 : -1);
 
-        if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT) {return}     // out of the world
-        if (this.data[x1][y1] !== 0 || rand(2) === 0) {                 // something on a way
-            const intd = rand(8);
-            x1 = x0 + DIRX[intd];
-            y1 = y0 + DIRY[intd];
-            if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || this.data[x1][y1] !== 0) {
-                if (++this._blocked > this._blockLimit) {
-                    this._dirx = rand(Config.WORLD_WIDTH);
-                    this._diry = rand(Config.WORLD_HEIGHT);
-                }
-                return;
+        if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || this.data[x1][y1] !== 0) {
+            if (++this._blocked > this._blockLimit) {
+                this._dirx = rand(Config.WORLD_WIDTH);
+                this._diry = rand(Config.WORLD_HEIGHT);
             }
+            if (rand(2) === 0) {
+                const intd = rand(8);
+                const x2 = x0 + DIRX[intd];
+                const y2 = y0 + DIRY[intd];
+                if (x2 >= 0 && x2 <= WIDTH && y2 >= 0 && y2 <= HEIGHT && this.data[x2][y2] === 0) {
+                    this.onMove(x0, y0, x2, y2, this.color);
+                    dots[this._i - 2] = x2;
+                    dots[this._i - 1] = y2;
+                }
+            }
+            return;
         }
 
         this.onMove(x0, y0, x1, y1, this.color);
@@ -89,22 +92,21 @@ class Surface {
     initDots() {
         const width  = Config.WORLD_WIDTH;
         const height = Config.WORLD_HEIGHT;
-        const amount = this.amount;
         const color  = this.color;
         const data   = this.world.data;
         const dots   = this.dots;
         const rand   = Helper.rand;
+        let   amount = this.amount - 1;
 
-        if ((amount >> 1) > width * height) {
+        if ((this.amount >> 1) > width * height) {
             throw new Error('Amount of dots of surface is bigger then world size');
         }
-        let i = 0;
-        while (i < amount) {
+        while (amount > 0) {
             const x = rand(width);
             const y = rand(height);
             if (data[x][y] === 0) {
-                dots[i++] = x;
-                dots[i++] = y;
+                dots[amount--] = x;
+                dots[amount--] = y;
                 this.dot(x, y, color);
             }
         }
