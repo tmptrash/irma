@@ -54,7 +54,7 @@ class Organism {
         const size = Config.orgStartCodeSize;
         const code = new Array(size);
 
-        for (let i = 0; i < size; i++) {code[i] = Helper.rand(2) === 0 ? 129 : 151}//Mutations.getRandCmd()}
+        for (let i = 0; i < size; i++) {code[i] = Helper.rand(2) === 0 ? 129 : Mutations.getRandCmd()}
 
         return code;
     }

@@ -4,7 +4,7 @@ describe('src/irma/Mutations', () => {
     const Organism  = require('./Organism');
     const Helper    = require('./../common/Helper');
 
-    let   index     = 0;
+    let   pIndex    = 0;
     let   probIndex;
     let   random;
     let   getRand;
@@ -12,14 +12,14 @@ describe('src/irma/Mutations', () => {
     let   randCmd;
 
     beforeEach(() => {
-        index     = 0;
+        pIndex    = 0;
         randVal   = 1;
         randCmd   = Config.CODE_CMD_OFFS;
         probIndex = Helper.probIndex;
         random    = Math.random;
         getRand   = Mutations.getRandCmd;
 
-        Helper.probIndex     = () => index;
+        Helper.probIndex     = () => pIndex;
         Math.random          = () => randVal;
         Mutations.getRandCmd = () => randCmd;
     });
@@ -29,14 +29,25 @@ describe('src/irma/Mutations', () => {
         Mutations.getRandCmd = getRand;
     });
 
-    it('Checks mutate() method with "change" mutation', () => {
-        const cmd   = Mutations.getRandCmd;
+    it('Checks mutate() method with "change" mutation 1', () => {
         const org   = new Organism(1, 2, 3, 0, 1000);
         org.code    = [Config.CODE_CMD_OFFS, Config.CODE_CMD_OFFS + 1];
         org.percent = .5;
+        randVal     = 0;
         randCmd     = 123;
 
         Mutations.mutate(org);
-        expect(org.code[1]).toBe(randCmd);
+        expect(org.code[0]).toBe(randCmd);
+    });
+
+    it('Checks mutate() method with "change" mutation 2', () => {
+        const org   = new Organism(1, 2, 3, 0, 1000);
+        org.code    = [Config.CODE_CMD_OFFS];
+        org.percent = .5;
+        randVal     = 0;
+        randCmd     = 123;
+
+        Mutations.mutate(org);
+        expect(org.code[0]).toBe(randCmd);
     });
 });

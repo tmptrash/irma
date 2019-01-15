@@ -6,16 +6,13 @@
 // TODO: remove this dependency from here and from package.json also
 const _each  = require('lodash/each');
 
-const trunc  = Math.trunc;
-const random = Math.random;
-
 class Helper {
     /**
      * Generates random Int number in range 0:n-1
      * @param {Number} n Right number value in a range
      * @return {Number}
      */
-    static rand(n) {return trunc(random() * n)}
+    static rand(n) {return Math.trunc(Math.random() * n)}
 
     /**
      * Apply styles packed in object. key: style name, val: style value
