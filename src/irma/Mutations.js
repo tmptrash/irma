@@ -6,7 +6,7 @@ const Helper = require('./../common/Helper');
 
 const rand                = Helper.rand;
 /**
- * {Number} Amount of mutations probability values.
+ * {Number} Amount of mutation probabilities values.
  */
 const ORG_PROBS           = Config.orgProbs.length;
 /**
@@ -33,9 +33,9 @@ class Mutations {
      * @param {Organism} org
      */
     static mutate(org) {
-        const mutCbs    = Mutations._probsCbs;
-        const probArr   = org.probArr;
-        const pLen      = probArr.length;
+        const mutCbs  = Mutations._probsCbs;
+        const probArr = org.probArr;
+        const pLen    = probArr.length;
         for (let m = 0, mLen = ((org.code.length * org.percent) << 0) || 1; m < mLen; m++) {
             mutCbs[probArr[rand(pLen)]](org.code, org)
         }
