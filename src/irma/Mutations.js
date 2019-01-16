@@ -6,7 +6,7 @@ const Helper = require('./../common/Helper');
 
 const rand                = Helper.rand;
 /**
- * {Number} Amount of probability elements
+ * {Number} Amount of mutations probability values.
  */
 const ORG_PROBS           = Config.orgProbs.length;
 /**
@@ -33,10 +33,12 @@ class Mutations {
      * @param {Organism} org
      */
     static mutate(org) {
-        const mutations = ((org.code.length * org.percent) << 0) || 1;
-        const prob      = Helper.probIndex;
-        const probs     = Mutations._probsCbs;
-        for (let m = 0; m < mutations; m++) {probs[prob(org.probs)](org.code, org)}
+        const mutCbs    = Mutations._probsCbs;
+        const probArr   = org.probArr;
+        const pLen      = probArr.length;
+        for (let m = 0, mLen = ((org.code.length * org.percent) << 0) || 1; m < mLen; m++) {
+            mutCbs[probArr[rand(pLen)]](org.code, org)
+        }
     }
 
     static getRandCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
@@ -45,7 +47,7 @@ class Mutations {
     static _onDel   (code)      {code.splice(rand(code.length), 1)}
     static _onPeriod(code, org) {org.period = rand(Config.orgMaxAge) + 1}
     static _onAmount(code, org) {org.percent = Math.random()}
-    static _onProbs (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
+    static _onProbs (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.probArr = org.createProbArr()}
     static _onInsert(code)      {code.splice(rand(code.length), 0, rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS)}
     /**
      * Takes few lines from itself and inserts them before or after copied
