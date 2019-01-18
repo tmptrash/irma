@@ -29,21 +29,21 @@ const CODE_MAX_STACK_SIZE = 30000;
 
 class Mutations {
     /**
-     * Updates mutations for specified organism
+     * Apply mutations to specified organism
      * @param {Organism} org
      */
     static mutate(org) {
-        const mutCbs  = Mutations._probsCbs;
+        const mutCbs  = Mutations._MUTATION_CBS;
         const probArr = org.probArr;
         const pLen    = probArr.length;
-        for (let m = 0, mLen = ((org.code.length * org.percent) << 0) || 1; m < mLen; m++) {
-            mutCbs[probArr[rand(pLen)]](org.code, org)
+        for (let m = 0, len = ((org.code.length * org.percent) << 0) || 1; m < len; m++) {
+            mutCbs[probArr[rand(pLen)]](org.code, org);
         }
     }
 
-    static getRandCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
+    static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
 
-    static _onChange(code)      {code[rand(code.length)] = Mutations.getRandCmd()}
+    static _onChange(code)      {code[rand(code.length)] = Mutations.randCmd()}
     static _onDel   (code)      {code.splice(rand(code.length), 1)}
     static _onPeriod(code, org) {org.period = rand(Config.orgMaxAge) + 1}
     static _onAmount(code, org) {org.percent = Math.random()}
@@ -85,7 +85,7 @@ class Mutations {
  * Static mutation methods binding. Is used for running specified mutation type
  * @private
  */
-Mutations._probsCbs   = [
+Mutations._MUTATION_CBS = [
     Mutations._onChange.bind(this),
     Mutations._onDel.bind(this),
     Mutations._onPeriod.bind(this),

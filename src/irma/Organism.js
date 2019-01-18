@@ -53,9 +53,9 @@ class Organism {
     createProbArr() {
         const probs  = this.probs;
         let   amount = 0;
-        for (let i = 0, len = probs.length; i < len; i++) {amount += probs[i]}
+        for (let i = 0, iLen = probs.length; i < iLen; i++) {amount += probs[i]}
         const arr    = new Array(amount);
-        for (let i = 0, c = 0, len = probs.length; i < len; i++) {
+        for (let i = 0, c = 0, iLen = probs.length; i < iLen; i++) {
             for (let j = 0, jLen = probs[i]; j < jLen; j++) {
                 arr[c++] = i;
             }
@@ -68,7 +68,7 @@ class Organism {
         const size = Config.orgStartCodeSize;
         const code = new Array(size);
 
-        for (let i = 0; i < size; i++) {code[i] = Mutations.getRandCmd()}
+        for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
 
         return code;
     }

@@ -29,13 +29,14 @@ class Surface {
         this.energy      = cfg.energy;
         this.step        = cfg.step;
         this.amount      = cfg.amount * 2;
+        this.block       = cfg.block;
         this.dots        = new Array(this.amount);
 
         this._dirx       = Helper.rand(Config.WORLD_WIDTH);
         this._diry       = Helper.rand(Config.WORLD_HEIGHT);
         this._i          = 0;
         this._blocked    = 0;
-        this._blockLimit = (cfg.amount >> 1) << 0;
+        this._blockLimit = (cfg.amount * cfg.block) << 0;
 
         this.initDots();
     }
@@ -51,6 +52,8 @@ class Surface {
         const dots = this.dots;
         const x0   = dots[this._i++];
         const y0   = dots[this._i++];
+        if (x0 < -1) {return}
+        if (!this.isSurfaceDot(x0, y0)) {++this._blocked; return}
         const x1   = x0 + (this._dirx > x0 ? 1 : -1);
         const y1   = y0 + (this._diry > y0 ? 1 : -1);
 
@@ -58,6 +61,7 @@ class Surface {
             if (++this._blocked > this._blockLimit) {
                 this._dirx = rand(Config.WORLD_WIDTH);
                 this._diry = rand(Config.WORLD_HEIGHT);
+                this._blocked = 0;
             }
             if (rand(2) === 0) {
                 const intd = rand(8);
@@ -75,6 +79,10 @@ class Surface {
         this.onMove(x0, y0, x1, y1, this.color);
         dots[this._i - 2] = x1;
         dots[this._i - 1] = y1;
+    }
+
+    isSurfaceDot(x, y) {
+        return this.world.data[x][y] === this.color;
     }
 
     onMove(x0, y0, x1, y1, color) {
@@ -105,8 +113,8 @@ class Surface {
             const x = rand(width);
             const y = rand(height);
             if (data[x][y] === 0) {
-                dots[amount--] = x;
                 dots[amount--] = y;
+                dots[amount--] = x;
                 this.dot(x, y, color);
             }
         }

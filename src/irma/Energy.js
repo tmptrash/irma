@@ -28,7 +28,8 @@ class Energy extends Surface {
             color : Config.energyColor,
             energy: 0,
             step  : 1,
-            amount: Config.energyAmount}, world
+            amount: Config.energyAmount,
+            block : Config.energyBlockPercent}, world
         );
     }
 
@@ -50,6 +51,10 @@ class Energy extends Surface {
         this.dots[index]     = x;
         this.dots[index + 1] = y;
         this.world.energy(x, y, ENERGY_MASK | index);
+    }
+
+    isSurfaceDot(x, y) {
+        return (this.world.data[x][y] & ENERGY_MASK) !== 0;
     }
 
     update(orgsEnergy) {

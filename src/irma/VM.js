@@ -83,6 +83,7 @@ class VM {
         this._population      = 0;
         this._ts              = Date.now();
         this._totalOrgsEnergy = 0;
+        this._i               = 0;
 
         this._createOrgs();
     }
@@ -108,8 +109,6 @@ class VM {
         const orgs    = this._orgs;
         const world   = this._world;
         const data    = world.data;
-        let   ts      = Date.now();
-        let   i       = 0;
         //
         // Loop X times through population
         //
@@ -118,7 +117,7 @@ class VM {
             // Loop through population
             //
             let orgsEnergy = 0;
-            for (let o = 0, olen = orgs.size; o < olen; o++) {
+            for (let o = 0, oLen = orgs.size; o < oLen; o++) {
                 const org  = orgs.get(o);
                 if (org === null) {continue}
                 if (org.energy <= 0) {this._removeOrg(org); continue}
@@ -129,8 +128,6 @@ class VM {
                 let   a    = org.a;
                 let   b    = org.b;
                 let   line = org.last;
-                // TODO: remove this debug code
-                //if ((data[org.x << 0][org.y << 0] & ORG_MASK) !== 0 && orgs.get(data[org.x << 0][org.y << 0] & ORG_INDEX_MASK) === null) {debugger}
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
@@ -353,22 +350,25 @@ class VM {
                 //
                 this._ENERGY.update(this._totalOrgsEnergy);
                 if (o % Config.worldSurfacesDelay === 0) {
-                    for (let s = 0; s < this._SURFS; s++) {this._surfaces[s].move()}
+                    for (let s = 0, sLen = this._SURFS; s < sLen; s++) {this._surfaces[s].move()}
                 }
 
                 org.age++;
-                i += lines;
+                this._i += lines;
                 orgsEnergy += org.energy;
             }
             this._totalOrgsEnergy = orgsEnergy;
-            //
-            // This code moves surfaces (sand, water,...)
-            //
             this._iterations++;
         }
+        //
+        // Updates status line at the top of screen
+        //
+        const ts = Date.now();
         if (ts - this._ts > 1000) {
-            world.title(`inps:${round(((i / orgs.items) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.items} onrg:${(this._totalOrgsEnergy / orgs.items) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
+            const orgAmount = orgs.items;
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this._totalOrgsEnergy / orgAmount) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
             this._ts = ts;
+            this._i  = 0;
 
             if (orgs.items === 0) {this._createOrgs()}
         }

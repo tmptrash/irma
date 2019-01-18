@@ -44,7 +44,7 @@ const Config = {
      * @constant
      */
     WORLD_HEIGHT          : 1080,
-    worldSurfacesDelay    : 300,
+    worldSurfacesDelay    : 30,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -63,22 +63,26 @@ const Config = {
         color : 0xff8881,
         energy: .2,
         step  : .5,
-        amount: 50000
+        amount: 50000,
+        block : .9
     }, {                           // water
         color : 0x0000f2,
         energy: 0,
         step  : .8,
-        amount: 500000
-    }, /*{                           // hole
+        amount: 500000,
+        block : .9
+    }, {                           // hole
         color : 0xaaaaa3,
         energy: 100,
         step  : 0,
-        amount: 1000
-    },*/ {                           // sand
+        amount: 1000,
+        block : .9
+    }, {                           // sand
         color : 0xFFFF03,
         energy: .01,
         step  : .9,
-        amount: 50000
+        amount: 50000,
+        block : .9
     }],
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit
@@ -87,14 +91,15 @@ const Config = {
     ENERGY_MASK           : 0x40000000,
     energyColor           : 0x00ff00,
     energyValue           : 100,
-    energyAmount          : 250000,
+    energyAmount          : 9990,
+    energyBlockPercent    : .8,
 
     /**
      * {Number} Maximum value of every element in orgProbs array
      * @constant
      */
     ORG_PROB_MAX_VALUE    : 100,
-    orgAmount             : 50000,
+    orgAmount             : 1000,
     orgMaxAge             : 100000,
     orgEnergy             : 1000,
     orgCloneEnergy        : 2000,
