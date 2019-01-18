@@ -5,7 +5,6 @@ describe('src/irma/Mutations', () => {
     const Helper    = require('./../common/Helper');
 
     const CMD_OFFS  = Config.CODE_CMD_OFFS;
-    let   pIndex    = 0;
     let   probIndex;
     let   org;
     let   trunc;
@@ -15,10 +14,9 @@ describe('src/irma/Mutations', () => {
     let   randCmd;
 
     beforeEach(() => {
-        pIndex      = 0;
         randVal     = [0,1,2,3,4,5];
         randI       = 0;
-        randCmd     = CMD_OFFS;
+        randCmd     = CMD_OFFS + 3;
         probIndex   = Helper.probIndex;
         trunc       = Math.trunc;
         getRand     = Mutations.randCmd;
@@ -28,7 +26,6 @@ describe('src/irma/Mutations', () => {
         org.probArr = [0,1,2,3,4,5,6,7];
         org.percent = .5;
 
-        Helper.probIndex  = () => pIndex;
         Math.trunc        = () => randVal[randI++];
         Mutations.randCmd = () => randCmd;
     });
@@ -39,29 +36,26 @@ describe('src/irma/Mutations', () => {
         org                  = null;
     });
 
-    xdescribe('Checks amount of mutations depending on mutation percent', () => {
-        it('Checks mutate() method with "change" mutation 1', () => {
-            randCmd = CMD_OFFS + 3;
-            Mutations.mutate(org);
-            expect(org.code).toEqual([randCmd, CMD_OFFS + 1]);
-        });
-    });
-
-    xdescribe('"change" mutation tests', () => {
-        it('Checks mutate() method with "change" mutation 1', () => {
-            randCmd = CMD_OFFS + 3;
+    describe('Checks amount of mutations depending on mutation percent', () => {
+        xit('Checks mutate() method with "change" mutation 1', () => {
             Mutations.mutate(org);
             expect(org.code).toEqual([CMD_OFFS, randCmd]);
         });
-        it('Checks mutate() method with "change" mutation 11', () => {
-            randCmd     = CMD_OFFS + 3;
+    });
+
+    describe('"change" mutation tests', () => {
+        it('Checks mutate() method with "change" mutation 1', () => {
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS, randCmd]);
+        });
+        it('Checks mutate() method with "change" mutation 2', () => {
             randVal     = [0,0,2,3,4,5];
             org.probArr = [0,0,2,3,4,5,6,7];
 
             Mutations.mutate(org);
             expect(org.code).toEqual([randCmd, CMD_OFFS + 1]);
         });
-        it('Checks mutate() method with "change" mutation 12', () => {
+        it('Checks mutate() method with "change" mutation 3', () => {
             org.percent = 1;
             randVal     = [0,0,0,1];
             randCmd     = CMD_OFFS + 3;
@@ -70,7 +64,7 @@ describe('src/irma/Mutations', () => {
             Mutations.mutate(org);
             expect(org.code).toEqual([randCmd, randCmd]);
         });
-        it('Checks mutate() method with "change" mutation 13', () => {
+        it('Checks mutate() method with "change" mutation 4', () => {
             org.percent = .1;
             randVal     = [0,0];
             randCmd     = CMD_OFFS + 3;
@@ -80,23 +74,17 @@ describe('src/irma/Mutations', () => {
         });
     });
 
-    xdescribe('"del" mutation tests', () => {
+    describe('"del" mutation tests', () => {
         it('Checks mutate() method with "del" mutation 1', () => {
-            org.probArr = [0,1,2,3,4,5,6,7];
-            randVal     = 1;
-            org.percent = .5;
-
+            org.probArr = [1,1,2,3,4,5,6,7];
             Mutations.mutate(org);
             expect(org.code).toEqual([CMD_OFFS]);
         });
         it('Checks mutate() method with "del" mutation 11', () => {
-            org.probArr = [0,1,2,3,4,5,6,7];
-            randVal     = 1;
-            org.percent = .5;
-            org.code    = [CMD_OFFS, CMD_OFFS + 1, CMD_OFFS + 2];
-
+            org.probArr = [1,1,2,3,4,5,6,7];
+            randVal     = [0,0,2,3,4,5];
             Mutations.mutate(org);
-            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS + 2]);
+            expect(org.code).toEqual([CMD_OFFS + 1]);
         });
     });
 });

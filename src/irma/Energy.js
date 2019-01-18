@@ -53,8 +53,15 @@ class Energy extends Surface {
         this.world.energy(x, y, ENERGY_MASK | index);
     }
 
-    isSurfaceDot(x, y) {
-        return (this.world.data[x][y] & ENERGY_MASK) !== 0;
+    /**
+     * Checks if specified dot is a dot of Energy surface. The dot may be grabbed by
+     * the organism, so we can't move it at this moment
+     * @param {Number} x dot X
+     * @param {Number} y dot Y
+     * @returns {Boolean}
+     */
+    notSurfaceDot(x, y) {
+        return (this.world.data[x][y] & ENERGY_MASK) === 0;
     }
 
     update(orgsEnergy) {

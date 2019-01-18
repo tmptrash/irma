@@ -52,8 +52,8 @@ class Surface {
         const dots = this.dots;
         const x0   = dots[this._i++];
         const y0   = dots[this._i++];
-        if (x0 < -1) {return}
-        if (!this.isSurfaceDot(x0, y0)) {++this._blocked; return}
+        if (x0 < 0) {return}
+        if (this.notSurfaceDot(x0, y0)) {++this._blocked; return}
         const x1   = x0 + (this._dirx > x0 ? 1 : -1);
         const y1   = y0 + (this._diry > y0 ? 1 : -1);
 
@@ -63,7 +63,7 @@ class Surface {
                 this._diry = rand(Config.WORLD_HEIGHT);
                 this._blocked = 0;
             }
-            if (rand(2) === 0) {
+            if (rand(3) < 2) {
                 const intd = rand(8);
                 const x2 = x0 + DIRX[intd];
                 const y2 = y0 + DIRY[intd];
@@ -81,8 +81,15 @@ class Surface {
         dots[this._i - 1] = y1;
     }
 
-    isSurfaceDot(x, y) {
-        return this.world.data[x][y] === this.color;
+    /**
+     * Checks if specified dot is a dot of current surface. The dot may be grabbed by
+     * the organism, so we can't move it at this moment
+     * @param {Number} x dot X
+     * @param {Number} y dot Y
+     * @returns {Boolean}
+     */
+    notSurfaceDot(x, y) {
+        return this.world.data[x][y] !== this.color;
     }
 
     onMove(x0, y0, x1, y1, color) {
