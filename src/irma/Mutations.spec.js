@@ -163,8 +163,8 @@ describe('src/irma/Mutations', () => {
         });
     });
 
-    describe('"amount" mutation tests', () => {
-        it('Checks mutate() method with "amount" mutation 1', () => {
+    describe('"percent" mutation tests', () => {
+        it('Checks mutate() method with "percent" mutation 1', () => {
             const random = Math.random;
             Math.random = () => .1;
             org.probArr = [3,1,2,3,4,5,6,7];
@@ -172,13 +172,39 @@ describe('src/irma/Mutations', () => {
             expect(org.percent).toEqual(.1);
             Math.random = random;
         });
-        it('Checks mutate() method with "amount" mutation 2', () => {
+        it('Checks mutate() method with "percent" mutation 2', () => {
             const random = Math.random;
             Math.random = () => 0;
             org.probArr = [3,1,2,3,4,5,6,7];
             Mutations.mutate(org);
             expect(org.percent).toEqual(.02);
             Math.random = random;
+        });
+    });
+
+    describe('"probs" mutation tests', () => {
+        it('Checks mutate() method with "probs" mutation 1', () => {
+            org.probArr = [4,1,2,3,4,5,6,7];
+            randVal     = [0,0,0,3,4,5];
+            const probs = org.probs.slice();
+            probs[0]    = 1;
+            Mutations.mutate(org);
+            expect(org.probs).toEqual(probs);
+        });
+    });
+
+    describe('"insert" mutation tests', () => {
+        it('Checks mutate() method with "insert" mutation 1', () => {
+            org.probArr = [5,1,2,3,4,5,6,7];
+            randVal     = [0,0,0,1,4,5];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([1, CMD_OFFS, CMD_OFFS + 1]);
+        });
+        it('Checks mutate() method with "insert" mutation 2', () => {
+            org.probArr = [5,1,2,3,4,5,6,7];
+            randVal     = [0,1,1,0,4,5];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS, CMD_OFFS + 1]);
         });
     });
 });
