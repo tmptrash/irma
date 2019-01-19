@@ -159,12 +159,14 @@ class VM {
                             const intd   = abs(d << 0) % 8;
                             const x      = org.x + DIRX[intd] * inc;
                             const y      = org.y + DIRY[intd] * inc;
-                            if (x << 0 === org.x << 0 && y << 0 === org.y << 0) {org.x = x; org.y = y; break}
+                            const x1     = x << 0;
+                            const y1     = y << 0;
+                            if (x1 === org.x << 0 && y1 === org.y << 0) {org.x = x; org.y = y; break}
                             let   dot;
-                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & ORG_MASK) !== 0) {break}
+                            if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || ((dot = data[x1][y1]) & ORG_MASK) !== 0) {break}
 
                             org.dot = dot;
-                            world.moveOrg(org, x << 0, y << 0);
+                            world.moveOrg(org, x1, y1);
                             (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x << 0, org.y << 0, oldDot) : world.dot(org.x << 0, org.y << 0, oldDot);
                             org.x = x;
                             org.y = y;
