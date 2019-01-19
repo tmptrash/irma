@@ -162,4 +162,23 @@ describe('src/irma/Mutations', () => {
             expect(org.period).toEqual(1);
         });
     });
+
+    describe('"amount" mutation tests', () => {
+        it('Checks mutate() method with "amount" mutation 1', () => {
+            const random = Math.random;
+            Math.random = () => .1;
+            org.probArr = [3,1,2,3,4,5,6,7];
+            Mutations.mutate(org);
+            expect(org.percent).toEqual(.1);
+            Math.random = random;
+        });
+        it('Checks mutate() method with "amount" mutation 2', () => {
+            const random = Math.random;
+            Math.random = () => 0;
+            org.probArr = [3,1,2,3,4,5,6,7];
+            Mutations.mutate(org);
+            expect(org.percent).toEqual(.02);
+            Math.random = random;
+        });
+    });
 });

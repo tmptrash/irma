@@ -31,8 +31,8 @@ const Config = {
      * @constant
      */
     CODE_COMMANDS         : 24,
-    codeLinesPerIteration : 4,
-    codeTimesPerRun       : 4,
+    codeLinesPerIteration : 6,
+    codeTimesPerRun       : 20,
 
     /**
      * World width in pixels
@@ -59,7 +59,7 @@ const Config = {
      *  step   - coefficient of speed (slow down) if organism above the surface
      *  amount - amount of surface dots
      */
-    worldSurfaces         : [{     // lava
+    worldSurfaces         : [/*{     // lava
         color : 0xff8881,
         energy: .2,
         step  : .5,
@@ -83,7 +83,7 @@ const Config = {
         step  : .9,
         amount: 50000,
         block : .9
-    }],
+    }*/],
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit
      * for this. First bit is used to check if it's an organism
@@ -107,7 +107,7 @@ const Config = {
     orgColor              : 0xff0000,
     orgMemSize            : 64,
     orgMutationPercent    : .02,
-    orgMutationPeriod     : 30000,
+    orgMutationPeriod     : 10000,
     orgMaxCodeSize        : 512,
     orgStartCodeSize      : 64,
     /**

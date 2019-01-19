@@ -151,7 +151,7 @@ class VM {
                             if (oldDot !== 0) {
                                 const surface = (oldDot & ENERGY_MASK) !== 0 ? this._ENERGY : this._surfaces[oldDot % SURFACES];
                                 org.energy   -= surface.energy;
-                                if (org.energy <= 0) {this._removeOrg(org); break}
+                                if (org.energy <= 0) {this._removeOrg(org); l = lines; break}
                                 inc           = surface.step;
                             } else {
                                 inc = 1;
@@ -159,11 +159,7 @@ class VM {
                             const intd   = abs(d << 0) % 8;
                             const x      = org.x + DIRX[intd] * inc;
                             const y      = org.y + DIRY[intd] * inc;
-                            if (x << 0 === org.x << 0 && y << 0 === org.y << 0) {
-                                org.x = x;
-                                org.y = y;
-                                break;
-                            }
+                            if (x << 0 === org.x << 0 && y << 0 === org.y << 0) {org.x = x; org.y = y; break}
                             let   dot;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & ORG_MASK) !== 0) {break}
 
@@ -187,7 +183,7 @@ class VM {
                                 const energy    = nearOrg.energy <= intd ? nearOrg.energy : intd;
                                 nearOrg.energy -= energy;
                                 org.energy     += energy;
-                                if (nearOrg.energy <= 0) {this._removeOrg(nearOrg)}
+                                if (nearOrg.energy <= 0) {this._removeOrg(nearOrg); l = lines}
                                 break;
                             }
                             if ((dot & ENERGY_MASK) !== 0) {
@@ -206,6 +202,7 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
+                            Mutations.mutate(clone);
                             break;
                         }
 
@@ -306,14 +303,14 @@ class VM {
                         case CODE_CMD_OFFS + 18:  // nop
                             break;
 
-                        case CODE_CMD_OFFS + 19: {// get
+                        case CODE_CMD_OFFS + 19: {// mget
                             const intd = abs(d << 0);
                             if (intd >= org.mem.length) {break}
                             a = org.mem[intd];
                             break;
                         }
 
-                        case CODE_CMD_OFFS + 20: {// put
+                        case CODE_CMD_OFFS + 20: {// mput
                             const intd = abs(d << 0);
                             if (intd >= org.mem.length) {break}
                             org.mem[intd] = a;

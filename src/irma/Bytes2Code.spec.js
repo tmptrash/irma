@@ -17,6 +17,4 @@ describe('src/irma/Bytes2Code', () => {
             expect(Bytes2Code.toCode([CODE_CMD_OFFS + i, CODE_CMD_OFFS + i])).toBe(`\n${Bytes2Code.MAP[CODE_CMD_OFFS + i]}\n${Bytes2Code.MAP[CODE_CMD_OFFS + i]}`);
         }
     });
-
-    // TODO: add mixed command combinations
 });

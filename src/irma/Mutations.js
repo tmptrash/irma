@@ -4,28 +4,32 @@
 const Config = require('./../Config');
 const Helper = require('./../common/Helper');
 
-const rand                = Helper.rand;
+const rand                 = Helper.rand;
 /**
  * {Number} Amount of mutation probabilities values.
  */
-const ORG_PROBS           = Config.orgProbs.length;
+const ORG_PROBS            = Config.orgProbs.length;
 /**
  * {Number} Maximum probability value for array of probabilities
  */
-const ORG_PROB_MAX_VALUE  = Config.ORG_PROB_MAX_VALUE;
+const ORG_PROB_MAX_VALUE   = Config.ORG_PROB_MAX_VALUE;
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
  */
-const CODE_CMD_OFFS       = Config.CODE_CMD_OFFS;
+const CODE_CMD_OFFS        = Config.CODE_CMD_OFFS;
 /**
  * {Number} Amount of supported commands in a code
  */
-const CODE_COMMANDS       = Config.CODE_COMMANDS;
+const CODE_COMMANDS        = Config.CODE_COMMANDS;
 /**
  * {Number} Maximum stack size, which may be used for recursion or function parameters
  */
-const CODE_MAX_STACK_SIZE = 30000;
+const CODE_MAX_STACK_SIZE  = 30000;
+/**
+ * {Number} Default amount of mutations
+ */
+const CODE_MUTATION_AMOUNT = .02;
 
 class Mutations {
     /**
@@ -43,18 +47,18 @@ class Mutations {
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
 
-    static _onChange(code)      {code[rand(code.length)] = Mutations.randCmd()}
-    static _onDel   (code)      {code.splice(rand(code.length), 1)}
-    static _onPeriod(code, org) {org.period = rand(Config.orgMaxAge) + 1}
-    static _onAmount(code, org) {org.percent = Math.random()}
-    static _onProbs (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.probArr = org.createProbArr()}
-    static _onInsert(code)      {code.splice(rand(code.length), 0, rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS)}
+    static _onChange (code)      {code[rand(code.length)] = Mutations.randCmd()}
+    static _onDel    (code)      {code.splice(rand(code.length), 1)}
+    static _onPeriod (code, org) {org.period = rand(Config.orgMaxAge) + 1}
+    static _onPercent(code, org) {org.percent = Math.random() || CODE_MUTATION_AMOUNT}
+    static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.probArr = org.createProbArr()}
+    static _onInsert (code)      {code.splice(rand(code.length), 0, rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS)}
     /**
      * Takes few lines from itself and inserts them before or after copied
      * part. All positions are random.
      * @return {Number} Amount of added/copied lines
      */
-    static _onCopy  (code)      {
+    static _onCopy   (code)      {
         const codeLen = code.length;
         const start   = rand(codeLen);
         const end     = start + rand(codeLen - start);
@@ -79,7 +83,7 @@ class Mutations {
 
         return end - start;
     }
-    static _onCut   (code)      {code.splice(rand(code.length), rand(code.length))}
+    static _onCut    (code)      {code.splice(rand(code.length), rand(code.length))}
 }
 /**
  * Static mutation methods binding. Is used for running specified mutation type
@@ -89,7 +93,7 @@ Mutations._MUTATION_CBS = [
     Mutations._onChange.bind(this),
     Mutations._onDel.bind(this),
     Mutations._onPeriod.bind(this),
-    Mutations._onAmount.bind(this),
+    Mutations._onPercent.bind(this),
     Mutations._onProbs.bind(this),
     Mutations._onInsert.bind(this),
     Mutations._onCopy.bind(this),
