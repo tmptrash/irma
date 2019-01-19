@@ -37,9 +37,65 @@ describe('src/irma/Mutations', () => {
     });
 
     describe('Checks amount of mutations depending on mutation percent', () => {
-        xit('Checks mutate() method with "change" mutation 1', () => {
+        it('Checks mutate() method with one mutation', () => {
+            let i = 0;
+            org.probArr = [0,0,0,0,0,0,0,0];
+            randVal     = [0,0,0,0,0,0,0,0];
+            org.code    = [CMD_OFFS];
+            org.percent = 1;
+            Mutations.randCmd = () => i++;
             Mutations.mutate(org);
-            expect(org.code).toEqual([CMD_OFFS, randCmd]);
+            expect(i).toBe(1);
+        });
+        it('Checks mutate() method with two mutations', () => {
+            let i = 0;
+            org.probArr = [0,0,0,0,0,0,0,0];
+            randVal     = [0,0,0,0,0,0,0,0];
+            org.code    = [CMD_OFFS, CMD_OFFS];
+            org.percent = 1;
+            Mutations.randCmd = () => i++;
+            Mutations.mutate(org);
+            expect(i).toBe(2);
+        });
+        it('Checks mutate() method with one mutation', () => {
+            let i = 0;
+            org.probArr = [0,0,0,0,0,0,0,0];
+            randVal     = [0,0,0,0,0,0,0,0];
+            org.code    = [CMD_OFFS, CMD_OFFS];
+            org.percent = .5;
+            Mutations.randCmd = () => i++;
+            Mutations.mutate(org);
+            expect(i).toBe(1);
+        });
+        it('Checks mutate() method with one mutation', () => {
+            let i = 0;
+            org.probArr = [0,0,0,0,0,0,0,0];
+            randVal     = [0,0,0,0,0,0,0,0];
+            org.code    = [CMD_OFFS, CMD_OFFS];
+            org.percent = .1;
+            Mutations.randCmd = () => i++;
+            Mutations.mutate(org);
+            expect(i).toBe(1);
+        });
+        it('Checks mutate() method with two mutations', () => {
+            let i = 0;
+            org.probArr = [0,0,0,0,0,0,0,0];
+            randVal     = [0,0,0,0,0,0,0,0];
+            org.code    = [CMD_OFFS, CMD_OFFS];
+            org.percent = 0;
+            Mutations.randCmd = () => i++;
+            Mutations.mutate(org);
+            expect(i).toBe(1);
+        });
+        it('Checks mutate() method with one mutation', () => {
+            let i = 0;
+            org.probArr = [0,0,0,0,0,0,0,0];
+            randVal     = [0,0,0,0,0,0,0,0];
+            org.code    = [CMD_OFFS];
+            org.percent = 1;
+            Mutations.randCmd = () => i++;
+            Mutations.mutate(org);
+            expect(i).toBe(1);
         });
     });
 
@@ -58,7 +114,6 @@ describe('src/irma/Mutations', () => {
         it('Checks mutate() method with "change" mutation 3', () => {
             org.percent = 1;
             randVal     = [0,0,0,1];
-            randCmd     = CMD_OFFS + 3;
             org.probArr = [0,0,2,3,4,5,6,7];
 
             Mutations.mutate(org);
@@ -67,7 +122,6 @@ describe('src/irma/Mutations', () => {
         it('Checks mutate() method with "change" mutation 4', () => {
             org.percent = .1;
             randVal     = [0,0];
-            randCmd     = CMD_OFFS + 3;
 
             Mutations.mutate(org);
             expect(org.code).toEqual([randCmd, CMD_OFFS + 1]);
@@ -80,11 +134,32 @@ describe('src/irma/Mutations', () => {
             Mutations.mutate(org);
             expect(org.code).toEqual([CMD_OFFS]);
         });
-        it('Checks mutate() method with "del" mutation 11', () => {
+        it('Checks mutate() method with "del" mutation 2', () => {
             org.probArr = [1,1,2,3,4,5,6,7];
             randVal     = [0,0,2,3,4,5];
             Mutations.mutate(org);
             expect(org.code).toEqual([CMD_OFFS + 1]);
+        });
+        it('Checks mutate() method with "del" mutation 3', () => {
+            org.probArr = [1,1,2,3,4,5,6,7];
+            randVal     = [0,0,2,3,4,5];
+            org.code    = [];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([]);
+        });
+    });
+
+    describe('"period" mutation tests', () => {
+        it('Checks mutate() method with "period" mutation 1', () => {
+            org.probArr = [2,1,2,3,4,5,6,7];
+            Mutations.mutate(org);
+            expect(org.period).toEqual(2);
+        });
+        it('Checks mutate() method with "period" mutation 2', () => {
+            org.probArr = [2,1,2,3,4,5,6,7];
+            randVal     = [0,0,2,3,4,5];
+            Mutations.mutate(org);
+            expect(org.period).toEqual(1);
         });
     });
 });
