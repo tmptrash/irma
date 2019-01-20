@@ -32,10 +32,10 @@ class Surface {
         this.block       = cfg.block;
         this.dots        = new Array(this.amount);
 
-        this._dirx       = Helper.rand(Config.WORLD_WIDTH);
-        this._diry       = Helper.rand(Config.WORLD_HEIGHT);
-        this._i          = 0;
-        this._blocked    = 0;
+        this.dirx        = Helper.rand(Config.WORLD_WIDTH);
+        this.diry        = Helper.rand(Config.WORLD_HEIGHT);
+        this.i           = 0;
+        this.blocked     = 0;
         this._blockLimit = (cfg.amount * cfg.block) << 0;
 
         this.initDots();
@@ -48,37 +48,37 @@ class Surface {
     }
 
     move() {
-        if (this._i >= this.amount) {this._i = this._blocked = 0}
+        if (this.i >= this.amount) {this.i = this.blocked = 0}
         const dots = this.dots;
-        const x0   = dots[this._i++];
-        const y0   = dots[this._i++];
+        const x0   = dots[this.i++];
+        const y0   = dots[this.i++];
         if (x0 < 0) {return}
-        if (this.notSurfaceDot(x0, y0)) {++this._blocked; return}
-        const x1   = x0 + (this._dirx > x0 ? 1 : -1);
-        const y1   = y0 + (this._diry > y0 ? 1 : -1);
+        if (this.notSurfaceDot(x0, y0)) {++this.blocked; return}
+        const x1   = x0 + (this.dirx > x0 ? 1 : -1);
+        const y1   = y0 + (this.diry > y0 ? 1 : -1);
 
         if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || this.data[x1][y1] !== 0) {
-            if (++this._blocked > this._blockLimit) {
-                this._dirx = rand(Config.WORLD_WIDTH);
-                this._diry = rand(Config.WORLD_HEIGHT);
-                this._blocked = 0;
+            if (++this.blocked > this._blockLimit) {
+                this.dirx    = rand(Config.WORLD_WIDTH);
+                this.diry    = rand(Config.WORLD_HEIGHT);
+                this.blocked = 0;
             }
-            if (rand(3) < 2) {
+            if (rand(10) < 9) {
                 const intd = rand(8);
                 const x2 = x0 + DIRX[intd];
                 const y2 = y0 + DIRY[intd];
                 if (x2 >= 0 && x2 <= WIDTH && y2 >= 0 && y2 <= HEIGHT && this.data[x2][y2] === 0) {
                     this.onMove(x0, y0, x2, y2, this.color);
-                    dots[this._i - 2] = x2;
-                    dots[this._i - 1] = y2;
+                    dots[this.i - 2] = x2;
+                    dots[this.i - 1] = y2;
                 }
             }
             return;
         }
 
         this.onMove(x0, y0, x1, y1, this.color);
-        dots[this._i - 2] = x1;
-        dots[this._i - 1] = y1;
+        dots[this.i - 2] = x1;
+        dots[this.i - 1] = y1;
     }
 
     /**

@@ -32,7 +32,7 @@ const Config = {
      */
     CODE_COMMANDS         : 24,
     codeLinesPerIteration : 6,
-    codeTimesPerRun       : 20,
+    codeTimesPerRun       : 50,
 
     /**
      * World width in pixels
@@ -44,7 +44,7 @@ const Config = {
      * @constant
      */
     WORLD_HEIGHT          : 1080,
-    worldSurfacesDelay    : 30,
+    worldSurfacesDelay    : 1,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -62,25 +62,25 @@ const Config = {
     worldSurfaces         : [/*{     // lava
         color : 0xff8881,
         energy: .2,
-        step  : .5,
+        step  : 3,
         amount: 50000,
         block : .9
-    }, {                           // water
-        color : 0x0000f2,
+    },*/ {                           // water
+        color : 0x0000f1,
         energy: 0,
-        step  : .8,
+        step  : 3,
         amount: 500000,
         block : .9
-    }, {                           // hole
+    }/*, {                           // hole
         color : 0xaaaaa3,
         energy: 100,
         step  : 0,
         amount: 1000,
         block : .9
     }, {                           // sand
-        color : 0xFFFF03,
+        color : 0xFFFF04,
         energy: .01,
-        step  : .9,
+        step  : 2,
         amount: 50000,
         block : .9
     }*/],
@@ -90,9 +90,9 @@ const Config = {
      */
     ENERGY_MASK           : 0x40000000,
     energyColor           : 0x00ff00,
-    energyValue           : 100,
-    energyAmount          : 9990,
-    energyBlockPercent    : .8,
+    energyValue           : 50,
+    energyAmount          : 16000,
+    energyBlockPercent    : .9,
 
     /**
      * {Number} Maximum value of every element in orgProbs array

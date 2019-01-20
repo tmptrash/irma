@@ -17,6 +17,7 @@ class Organism {
          */
         this.age      = 0;
         this.dot      = 0x000000;
+        this.steps    = 0;
         if (parent !== null) {
             this._clone(parent);
             return;

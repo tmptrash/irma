@@ -147,27 +147,22 @@ class VM {
                     switch (code[line]) {
                         case CODE_CMD_OFFS: { // step
                             const oldDot = org.dot;
-                            let   inc;
                             if (oldDot !== 0) {
                                 const surface = (oldDot & ENERGY_MASK) !== 0 ? this._ENERGY : this._surfaces[oldDot % SURFACES];
                                 org.energy   -= surface.energy;
                                 if (org.energy <= 0) {this._removeOrg(org); l = lines; break}
-                                inc           = surface.step;
-                            } else {
-                                inc = 1;
+                                if (++org.steps < surface.step) {break}
+                                org.steps = 0;
                             }
                             const intd   = abs(d << 0) % 8;
-                            const x      = org.x + DIRX[intd] * inc;
-                            const y      = org.y + DIRY[intd] * inc;
-                            const x1     = x << 0;
-                            const y1     = y << 0;
-                            if (x1 === org.x << 0 && y1 === org.y << 0) {org.x = x; org.y = y; break}
+                            const x      = org.x + DIRX[intd];
+                            const y      = org.y + DIRY[intd];
                             let   dot;
-                            if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || ((dot = data[x1][y1]) & ORG_MASK) !== 0) {break}
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x][y]) & ORG_MASK) !== 0) {break}
 
                             org.dot = dot;
-                            world.moveOrg(org, x1, y1);
-                            (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x << 0, org.y << 0, oldDot) : world.dot(org.x << 0, org.y << 0, oldDot);
+                            world.moveOrg(org, x, y);
+                            (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
                             org.x = x;
                             org.y = y;
                             break;
@@ -175,8 +170,8 @@ class VM {
 
                         case CODE_CMD_OFFS + 1: { // eat
                             const intd = abs(d << 0);
-                            const x    = (org.x + DIRX[intd % 8]) << 0;
-                            const y    = (org.y + DIRY[intd % 8]) << 0;
+                            const x    = org.x + DIRX[intd % 8];
+                            const y    = org.y + DIRY[intd % 8];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {break}
                             const dot  = data[x][y];
                             if (dot === 0) {break}                                       // no energy or out of the world
@@ -199,8 +194,8 @@ class VM {
                         case CODE_CMD_OFFS + 2: { // clone
                             if (orgs.full || org.energy < Config.orgCloneEnergy) {break}
                             const intd   = abs(d << 0) % 8;
-                            const x      = (org.x + DIRX[intd]) << 0;
-                            const y      = (org.y + DIRY[intd]) << 0;
+                            const x      = org.x + DIRX[intd];
+                            const y      = org.y + DIRY[intd];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
@@ -209,7 +204,7 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 3: { // see
-                            const offs = (org.y << 0) * WIDTH1 + (org.x << 0) + (d << 0);
+                            const offs = org.y * WIDTH1 + org.x+ (d << 0);
                             const x    = offs % WIDTH1;
                             const y    = offs / WIDTH1 << 0;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = 0; break}
@@ -375,8 +370,8 @@ class VM {
 
     _removeOrg(org) {
         this._orgs.del(org.item);
-        this._world.empty(org.x << 0, org.y << 0);
-        this._world.dot(org.x << 0, org.y << 0, org.dot);
+        this._world.empty(org.x, org.y);
+        this._world.dot(org.x, org.y, org.dot);
     }
 
     /**
