@@ -24,6 +24,7 @@ class Organism {
 
         this.last     = 0;
         this.probs    = Config.orgProbs.slice();
+        this.probArr  = this.createProbArr();
         this.period   = Config.orgMutationPeriod;
         this.percent  = Config.orgMutationPercent;
         /**
@@ -49,17 +50,32 @@ class Organism {
         this.mem      = (new Array(Config.orgMemSize)).fill(0);
     }
 
+    createProbArr() {
+        const probs  = this.probs;
+        let   amount = 0;
+        for (let i = 0, iLen = probs.length; i < iLen; i++) {amount += probs[i]}
+        const arr    = new Array(amount);
+        for (let i = 0, c = 0, iLen = probs.length; i < iLen; i++) {
+            for (let j = 0, jLen = probs[i]; j < jLen; j++) {
+                arr[c++] = i;
+            }
+        }
+
+        return arr;
+    }
+
     _getRandomCode() {
         const size = Config.orgStartCodeSize;
         const code = new Array(size);
 
-        for (let i = 0; i < size; i++) {code[i] = Mutations.getRandCmd()}
+        for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
 
         return code;
     }
 
     _clone(parent) {
         this.probs   = parent.probs.slice();
+        this.probArr = parent.probArr.slice();
         this.period  = parent.period;
         this.percent = parent.percent;
         this.last    = parent.last;

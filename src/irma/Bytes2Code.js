@@ -11,8 +11,9 @@ const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Bytes2Code {
     /**
-     * Does bytes to code conversion
+     * Converts bytes array to array of asm like strings
      * @param {Array} bytes Array of numbers (bytes)
+     * @return {Array} Array of asm like strings
      */
     static toCode(bytes) {
         let code = '\n';

@@ -74,9 +74,7 @@ class World {
         const HEIGHT = Config.WORLD_HEIGHT;
         const WIDTH  = Config.WORLD_WIDTH;
 
-        for (let x = 0; x < WIDTH; x++) {
-            data[x] = (new Array(HEIGHT)).fill(0);
-        }
+        for (let x = 0; x < WIDTH; x++) {data[x] = (new Array(HEIGHT)).fill(0)}
 
         return data;
     }

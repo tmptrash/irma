@@ -83,6 +83,7 @@ class VM {
         this._population      = 0;
         this._ts              = Date.now();
         this._totalOrgsEnergy = 0;
+        this._i               = 0;
 
         this._createOrgs();
     }
@@ -108,8 +109,6 @@ class VM {
         const orgs    = this._orgs;
         const world   = this._world;
         const data    = world.data;
-        let   ts      = Date.now();
-        let   i       = 0;
         //
         // Loop X times through population
         //
@@ -118,7 +117,7 @@ class VM {
             // Loop through population
             //
             let orgsEnergy = 0;
-            for (let o = 0, olen = orgs.size; o < olen; o++) {
+            for (let o = 0, oLen = orgs.size; o < oLen; o++) {
                 const org  = orgs.get(o);
                 if (org === null) {continue}
                 if (org.energy <= 0) {this._removeOrg(org); continue}
@@ -129,8 +128,6 @@ class VM {
                 let   a    = org.a;
                 let   b    = org.b;
                 let   line = org.last;
-                // TODO: remove this debug code
-                //if ((data[org.x << 0][org.y << 0] & ORG_MASK) !== 0 && orgs.get(data[org.x << 0][org.y << 0] & ORG_INDEX_MASK) === null) {debugger}
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
@@ -154,7 +151,7 @@ class VM {
                             if (oldDot !== 0) {
                                 const surface = (oldDot & ENERGY_MASK) !== 0 ? this._ENERGY : this._surfaces[oldDot % SURFACES];
                                 org.energy   -= surface.energy;
-                                if (org.energy <= 0) {this._removeOrg(org); break}
+                                if (org.energy <= 0) {this._removeOrg(org); l = lines; break}
                                 inc           = surface.step;
                             } else {
                                 inc = 1;
@@ -162,16 +159,14 @@ class VM {
                             const intd   = abs(d << 0) % 8;
                             const x      = org.x + DIRX[intd] * inc;
                             const y      = org.y + DIRY[intd] * inc;
-                            if (x << 0 === org.x << 0 && y << 0 === org.y << 0) {
-                                org.x = x;
-                                org.y = y;
-                                break;
-                            }
+                            const x1     = x << 0;
+                            const y1     = y << 0;
+                            if (x1 === org.x << 0 && y1 === org.y << 0) {org.x = x; org.y = y; break}
                             let   dot;
-                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x << 0][y << 0]) & ORG_MASK) !== 0) {break}
+                            if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || ((dot = data[x1][y1]) & ORG_MASK) !== 0) {break}
 
                             org.dot = dot;
-                            world.moveOrg(org, x << 0, y << 0);
+                            world.moveOrg(org, x1, y1);
                             (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x << 0, org.y << 0, oldDot) : world.dot(org.x << 0, org.y << 0, oldDot);
                             org.x = x;
                             org.y = y;
@@ -190,7 +185,7 @@ class VM {
                                 const energy    = nearOrg.energy <= intd ? nearOrg.energy : intd;
                                 nearOrg.energy -= energy;
                                 org.energy     += energy;
-                                if (nearOrg.energy <= 0) {this._removeOrg(nearOrg)}
+                                if (nearOrg.energy <= 0) {this._removeOrg(nearOrg); l = lines}
                                 break;
                             }
                             if ((dot & ENERGY_MASK) !== 0) {
@@ -209,6 +204,7 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
+                            Mutations.mutate(clone);
                             break;
                         }
 
@@ -309,14 +305,14 @@ class VM {
                         case CODE_CMD_OFFS + 18:  // nop
                             break;
 
-                        case CODE_CMD_OFFS + 19: {// get
+                        case CODE_CMD_OFFS + 19: {// mget
                             const intd = abs(d << 0);
                             if (intd >= org.mem.length) {break}
                             a = org.mem[intd];
                             break;
                         }
 
-                        case CODE_CMD_OFFS + 20: {// put
+                        case CODE_CMD_OFFS + 20: {// mput
                             const intd = abs(d << 0);
                             if (intd >= org.mem.length) {break}
                             org.mem[intd] = a;
@@ -341,35 +337,37 @@ class VM {
                 org.d    = d;
                 org.a    = a;
                 org.b    = b;
-
-                Mutations.update(org);
-                if (org.age % Config.orgMaxAge === 0 && org.age > 0) {
-                    this._removeOrg(org);
-                }
-                if (org.age % Config.orgEnergyPeriod === 0) {
-                    org.energy--;//= (org.code.length || 1);
-                }
+                //
+                // Organism age related updates
+                //
+                const age = org.age;
+                if (age % org.period === 0 && age > 0) {Mutations.mutate(org)}
+                if (age % Config.orgMaxAge === 0 && age > 0) {this._removeOrg(org)}
+                if (age % Config.orgEnergyPeriod === 0) {org.energy--;/*= (org.code.length || 1);*/}
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
                 this._ENERGY.update(this._totalOrgsEnergy);
                 if (o % Config.worldSurfacesDelay === 0) {
-                    for (let surf = 1; surf < this._SURFS; surf++) {this._surfaces[surf].move()}
+                    for (let s = 0, sLen = this._SURFS; s < sLen; s++) {this._surfaces[s].move()}
                 }
 
                 org.age++;
-                i += lines;
+                this._i += lines;
                 orgsEnergy += org.energy;
             }
             this._totalOrgsEnergy = orgsEnergy;
-            //
-            // This code moves surfaces (sand, water,...)
-            //
             this._iterations++;
         }
+        //
+        // Updates status line at the top of screen
+        //
+        const ts = Date.now();
         if (ts - this._ts > 1000) {
-            world.title(`inps:${round(((i / orgs.items) / ((Date.now() - ts) || 1)) * 1000)} orgs:${orgs.items} onrg:${(this._totalOrgsEnergy / orgs.items) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
+            const orgAmount = orgs.items;
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this._totalOrgsEnergy / orgAmount) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
             this._ts = ts;
+            this._i  = 0;
 
             if (orgs.items === 0) {this._createOrgs()}
         }
