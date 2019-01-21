@@ -12,6 +12,32 @@ describe("common/src/share/Helper", () => {
         expect(Helper.rand(1)).toEqual(0);
     });
 
+    // it("Checking setStyles() method", () => {
+    //     let testElement = null;
+    //     let testStyles = {};
+    //
+    //     expect(Helper.setStyles(testElement, testStyles)).toEqual(null);
+    // });
+
+    it("Checking setStyles() method2", () => {
+        // let testElement = "DIV";
+        // let testStyles = {width: '100px', height: '100px'};
+        //
+        // let resultElement = '<DIV style="width: "100px", height: "100px"">';
+        //
+        // expect(Helper.setStyles(testElement, testStyles)).toContainElement('DIV');
+
+        // var dummyElement = document.createElement('div');;
+        // spyOn(document, "createElement").and.returnValue(dummyElement);
+
+        let myObject = {};
+        spyOn(document, "createElement").and.returnValue(myObject);
+    });
+
+    it("Checking id() method", () => {
+        expect(Helper.id()).toEqual(1);
+    });
+
     it("Checking probIndex() method", () => {
         expect(Helper.probIndex([1])).toEqual(0);
     });
@@ -27,5 +53,13 @@ describe("common/src/share/Helper", () => {
             }
         }
         expect(Math.round(one / zero)).toEqual(2);
+    });
+
+    it("Checking probIndex() method 3", () => {
+        expect(Helper.probIndex([])).toEqual(-1);
+    });
+
+    it("Checking probIndex() method 4", () => {
+        expect(Helper.probIndex([0])).toEqual(-1);
     });
 })

@@ -3,8 +3,6 @@
  *
  * @author flatline
  */
-// TODO: remove this dependency from here and from package.json also
-const _each  = require('lodash/each');
 
 class Helper {
     /**
