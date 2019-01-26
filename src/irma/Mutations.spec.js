@@ -207,4 +207,55 @@ describe('src/irma/Mutations', () => {
             expect(org.code).toEqual([CMD_OFFS, CMD_OFFS, CMD_OFFS + 1]);
         });
     });
+
+    describe('"copy" mutation tests', () => {
+        it('Checks mutate() method with "copy" mutation 1', () => {
+            org.probArr = [6,1,2,3,4,5,6,7];
+            randVal     = [0,0,1,0,0];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS, CMD_OFFS + 1]);
+        });
+        it('Checks mutate() method with "copy" mutation 2', () => {
+            org.probArr = [6,1,2,3,4,5,6,7];
+            randVal     = [0,0,1,1,1];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS + 1, CMD_OFFS]);
+        });
+        it('Checks mutate() method with "copy" mutation 3 (CODE_MAX_STACK_SIZE)', () => {
+            org.probArr = [6,1,2,3,4,5,6,7];
+            randVal     = [0,0,30001,1,1];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS + 1]);
+        });
+        it('Checks mutate() method with "copy" mutation 4 (orgMaxCodeSize)', () => {
+            const size  = Config.orgMaxCodeSize;
+            Config.orgMaxCodeSize = 64;
+            org.probArr = [6,1,2,3,4,5,6,7];
+            randVal     = [0,0,65,1,1];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS + 1]);
+            Config.orgMaxCodeSize = size;
+        });
+    });
+    describe('"cut" mutation tests', () => {
+        it('Checks mutate() method with "cut" mutation 1', () => {
+            org.probArr = [7, 1, 2, 3, 4, 5, 6, 7];
+            randVal     = [0, 0, 1];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS + 1]);
+        });
+        it('Checks mutate() method with "cut" mutation 2', () => {
+            org.probArr = [7, 1, 2, 3, 4, 5, 6, 7];
+            randVal     = [0, 1, 1];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS]);
+        });
+        it('Checks mutate() method with "cut" mutation 3', () => {
+            org.code    = [CMD_OFFS, CMD_OFFS + 1, CMD_OFFS + 2];
+            org.probArr = [7, 1, 2, 3, 4, 5, 6, 7];
+            randVal     = [0, 1, 2];
+            Mutations.mutate(org);
+            expect(org.code).toEqual([CMD_OFFS]);
+        });
+    });
 });

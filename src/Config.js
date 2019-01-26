@@ -64,25 +64,25 @@ const Config = {
         energy: .2,
         step  : 3,
         amount: 50000,
-        block : .9
+        block : .96
     },*/ {                           // water
         color : 0x0000f1,
-        energy: 0,
-        step  : 3,
+        energy: .005,
+        step  : 15,
         amount: 500000,
-        block : .9
+        block : .99
     }/*, {                           // hole
         color : 0xaaaaa3,
         energy: 100,
         step  : 0,
         amount: 1000,
-        block : .9
+        block : .96
     }, {                           // sand
         color : 0xFFFF04,
         energy: .01,
         step  : 2,
         amount: 50000,
-        block : .9
+        block : .96
     }*/],
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit
@@ -92,7 +92,7 @@ const Config = {
     energyColor           : 0x00ff00,
     energyValue           : 50,
     energyAmount          : 16000,
-    energyBlockPercent    : .9,
+    energyBlockPercent    : .99,
 
     /**
      * {Number} Maximum value of every element in orgProbs array

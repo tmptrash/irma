@@ -58,11 +58,6 @@ class Surface {
         const y1   = y0 + (this.diry > y0 ? 1 : -1);
 
         if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || this.data[x1][y1] !== 0) {
-            if (++this.blocked > this._blockLimit) {
-                this.dirx    = rand(Config.WORLD_WIDTH);
-                this.diry    = rand(Config.WORLD_HEIGHT);
-                this.blocked = 0;
-            }
             if (rand(10) < 9) {
                 const intd = rand(8);
                 const x2 = x0 + DIRX[intd];
@@ -71,7 +66,15 @@ class Surface {
                     this.onMove(x0, y0, x2, y2, this.color);
                     dots[this.i - 2] = x2;
                     dots[this.i - 1] = y2;
+                } else if (++this.blocked > this._blockLimit) {
+                    this.dirx    = rand(Config.WORLD_WIDTH);
+                    this.diry    = rand(Config.WORLD_HEIGHT);
+                    this.blocked = 0;
                 }
+            } else if (++this.blocked > this._blockLimit) {
+                this.dirx    = rand(Config.WORLD_WIDTH);
+                this.diry    = rand(Config.WORLD_HEIGHT);
+                this.blocked = 0;
             }
             return;
         }
