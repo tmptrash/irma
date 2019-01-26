@@ -26,11 +26,12 @@ const rand        = Helper.rand;
 class Energy extends Surface {
     constructor(world) {
         super({
-            color : Config.energyColor,
-            energy: 0,
-            step  : 1,
-            amount: Config.energyAmount,
-            block : Config.energyBlockPercent}, world
+            color    : Config.energyColor,
+            energy   : 0,
+            step     : 1,
+            radiation: 0,
+            amount   : Config.energyAmount,
+            block    : Config.energyBlockPercent}, world
         );
         this._dirIndex = 0;
     }

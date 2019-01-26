@@ -28,6 +28,7 @@ class Surface {
         this.color       = cfg.color;
         this.energy      = cfg.energy;
         this.step        = cfg.step;
+        this.radiation   = cfg.radiation;
         this.amount      = cfg.amount * 2;
         this.block       = cfg.block;
         this.dots        = new Array(this.amount);

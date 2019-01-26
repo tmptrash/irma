@@ -152,6 +152,7 @@ class VM {
                                 org.energy   -= surface.energy;
                                 if (org.energy <= 0) {this._removeOrg(org); l = lines; break}
                                 if (++org.steps < surface.step) {break}
+                                if ((org.radiation += surface.radiation) > 1) {org.radiation = 0; Mutations.mutate(org)}
                                 org.steps = 0;
                             }
                             const intd   = abs(d << 0) % 8;

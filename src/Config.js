@@ -31,8 +31,8 @@ const Config = {
      * @constant
      */
     CODE_COMMANDS         : 24,
-    codeLinesPerIteration : 6,
-    codeTimesPerRun       : 50,
+    codeLinesPerIteration : 10,
+    codeTimesPerRun       : 100,
 
     /**
      * World width in pixels
@@ -44,7 +44,7 @@ const Config = {
      * @constant
      */
     WORLD_HEIGHT          : 1080,
-    worldSurfacesDelay    : 1,
+    worldSurfacesDelay    : 10,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -59,31 +59,42 @@ const Config = {
      *  step   - coefficient of speed (slow down) if organism above the surface
      *  amount - amount of surface dots
      */
-    worldSurfaces         : [/*{     // lava
-        color : 0xff8881,
-        energy: .2,
-        step  : 3,
-        amount: 50000,
-        block : .96
-    },*/ {                           // water
-        color : 0x0000f1,
-        energy: .005,
-        step  : 15,
-        amount: 500000,
-        block : .99
-    }/*, {                           // hole
-        color : 0xaaaaa3,
-        energy: 100,
-        step  : 0,
-        amount: 1000,
-        block : .96
+    worldSurfaces         : [{     // lava
+        color    : 0xff8881,
+        energy   : .2,
+        step     : 3,
+        radiation: .1,
+        amount   : 50000,
+        block    : .96
+    }, {                           // water
+        color    : 0x0000f2,
+        energy   : .005,
+        step     : 15,
+        radiation: 0,
+        amount   : 500000,
+        block    : .99
+    }, {                           // hole
+        color    : 0xaaaaa3,
+        energy   : 100,
+        step     : 0,
+        radiation: 0,
+        amount   : 1000,
+        block    : .96
     }, {                           // sand
-        color : 0xFFFF04,
-        energy: .01,
-        step  : 2,
-        amount: 50000,
-        block : .96
-    }*/],
+        color    : 0xFFFF04,
+        energy   : .01,
+        step     : 2,
+        radiation: 0,
+        amount   : 50000,
+        block    : .96
+    }, {                           // radiation
+        color    : 0xFFFFF5,
+        energy   : 0,
+        step     : 1,
+        radiation: .1,
+        amount   : 10000,
+        block    : .96
+    }],
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit
      * for this. First bit is used to check if it's an organism
@@ -102,7 +113,7 @@ const Config = {
     orgAmount             : 1000,
     orgMaxAge             : 100000,
     orgEnergy             : 1000,
-    orgStepEnergy         : .1,
+    orgStepEnergy         : .01,
     orgCloneEnergy        : 2000,
     orgEnergyPeriod       : 200,
     orgColor              : 0xff0000,
