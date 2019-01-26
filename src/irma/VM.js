@@ -165,6 +165,7 @@ class VM {
                             (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
                             org.x = x;
                             org.y = y;
+                            if ((org.energy -= Config.orgStepEnergy) <= 0) {this._removeOrg(org); l = lines; break}
                             break;
                         }
 

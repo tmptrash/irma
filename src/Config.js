@@ -102,6 +102,7 @@ const Config = {
     orgAmount             : 1000,
     orgMaxAge             : 100000,
     orgEnergy             : 1000,
+    orgStepEnergy         : .1,
     orgCloneEnergy        : 2000,
     orgEnergyPeriod       : 200,
     orgColor              : 0xff0000,

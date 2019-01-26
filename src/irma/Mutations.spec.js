@@ -237,6 +237,7 @@ describe('src/irma/Mutations', () => {
             Config.orgMaxCodeSize = size;
         });
     });
+
     describe('"cut" mutation tests', () => {
         it('Checks mutate() method with "cut" mutation 1', () => {
             org.probArr = [7, 1, 2, 3, 4, 5, 6, 7];
