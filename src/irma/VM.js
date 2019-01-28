@@ -133,18 +133,19 @@ class VM {
                 // support pseudo multi threading
                 //
                 for (let l = 0; l < lines; l++) {
+                    const cmd = code[line];
                     //
                     // This is a number command: d = N
                     //
-                    if (code[line] > -CODE_CMD_OFFS && code[line] < CODE_CMD_OFFS) {
-                        d = code[line++];
-                        if (line >= len) {line = 0}
+                    if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {
+                        d = cmd;
+                        if (++line >= len) {line = 0}
                         continue;
                     }
                     //
                     // This is ordinary command
                     //
-                    switch (code[line]) {
+                    switch (cmd) {
                         case CODE_CMD_OFFS: { // step
                             const oldDot = org.dot;
                             if (oldDot !== 0) {
