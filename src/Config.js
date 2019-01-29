@@ -102,7 +102,7 @@ const Config = {
     ENERGY_MASK           : 0x40000000,
     energyColor           : 0x00ff00,
     energyValue           : 50,
-    energyAmount          : 16000,
+    energyAmount          : 30000,
     energyBlockPercent    : .99,
 
     /**

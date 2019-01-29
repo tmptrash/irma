@@ -120,7 +120,6 @@ class VM {
             for (let o = 0, oLen = orgs.size; o < oLen; o++) {
                 const org  = orgs.get(o);
                 if (org === null) {continue}
-                if (org.energy <= 0) {this._removeOrg(org); continue}
 
                 const code = org.code;
                 const len  = code.length;
@@ -202,6 +201,7 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
+                            if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines}
                             Mutations.mutate(clone);
                             break;
                         }
@@ -341,7 +341,10 @@ class VM {
                 const age = org.age;
                 if (age % org.period === 0 && age > 0) {Mutations.mutate(org)}
                 if (age % Config.orgMaxAge === 0 && age > 0) {this._removeOrg(org)}
-                if (age % Config.orgEnergyPeriod === 0) {org.energy--;/*= (org.code.length || 1);*/}
+                if (age % Config.orgEnergyPeriod === 0) {
+                    org.energy--;/*= (org.code.length || 1);*/
+                    if (org.energy <= 0) {this._removeOrg(org)}
+                }
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
