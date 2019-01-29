@@ -102,7 +102,7 @@ const Config = {
     ENERGY_MASK           : 0x40000000,
     energyColor           : 0x00ff00,
     energyValue           : 50,
-    energyAmount          : 30000,
+    energyAmount          : 20000,
     energyBlockPercent    : .99,
 
     /**
@@ -110,7 +110,7 @@ const Config = {
      * @constant
      */
     ORG_PROB_MAX_VALUE    : 100,
-    orgAmount             : 1000,
+    orgAmount             : 2000,
     orgMaxAge             : 100000,
     orgEnergy             : 1000,
     orgStepEnergy         : .01,
