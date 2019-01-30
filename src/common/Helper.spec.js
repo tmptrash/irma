@@ -1,4 +1,4 @@
-describe("common/src/share/Helper", () => {
+describe("src/share/Helper", () => {
     let Helper = require('./Helper');
 
     beforeEach(function() {
@@ -48,32 +48,22 @@ describe("common/src/share/Helper", () => {
         expect(Helper.setStyles(testElement, testStyles).style).toEqual(resultElement);
     });
 
+
+
+    it("Checking setStyles() method3", () => {
+        let testElement = {
+            style : {}
+        }
+        let testStyles = {
+                            top: '7px'
+                         };
+
+        let resultElement = {top: '7px'};
+
+        expect(Helper.setStyles(testElement, testStyles).style).toEqual(resultElement);
+    });
+
     it("Checking id() method", () => {
         expect(Helper.id()).toEqual(1);
-    });
-
-    it("Checking probIndex() method", () => {
-        expect(Helper.probIndex([1])).toEqual(0);
-    });
-    it("Checking probIndex() method 2", () => {
-        let zero = 0;
-        let one = 0;
-
-        for (let i = 0; i < 5000000; i++) {
-            if (Helper.probIndex([2, 4]) === 0) {
-                zero++;
-            } else {
-                one++;
-            }
-        }
-        expect(Math.round(one / zero)).toEqual(2);
-    });
-
-    it("Checking probIndex() method 3", () => {
-        expect(Helper.probIndex([])).toEqual(-1);
-    });
-
-    it("Checking probIndex() method 4", () => {
-        expect(Helper.probIndex([0])).toEqual(-1);
     });
 })

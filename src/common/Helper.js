@@ -3,7 +3,6 @@
  *
  * @author flatline
  */
-
 class Helper {
     /**
      * Generates random Int number in range 0:n-1
