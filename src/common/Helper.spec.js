@@ -1,6 +1,21 @@
 describe("common/src/share/Helper", () => {
     let Helper = require('./Helper');
 
+    beforeEach(function() {
+        let newElement = {
+            style : {}
+        }
+        global.document = {
+            createElement: function () {
+                return newElement;
+            }
+        };
+    });
+
+    afterEach(function() {
+        delete global.document;
+    });
+
     it("Checking rand(2)", () => {
         let val = Helper.rand(2);
         expect(val === 0 || val === 1).toEqual(true);
@@ -12,26 +27,25 @@ describe("common/src/share/Helper", () => {
         expect(Helper.rand(1)).toEqual(0);
     });
 
-    // it("Checking setStyles() method", () => {
-    //     let testElement = null;
-    //     let testStyles = {};
-    //
-    //     expect(Helper.setStyles(testElement, testStyles)).toEqual(null);
-    // });
+    it("Checking setStyles() method", () => {
+        let testElement = null;
+        let testStyles = {};
+
+        expect(Helper.setStyles(testElement, testStyles)).toBeNull();
+    });
 
     it("Checking setStyles() method2", () => {
-        // let testElement = "DIV";
-        // let testStyles = {width: '100px', height: '100px'};
-        //
-        // let resultElement = '<DIV style="width: "100px", height: "100px"">';
-        //
-        // expect(Helper.setStyles(testElement, testStyles)).toContainElement('DIV');
+        let testElement = "DIV";
+        let testStyles = {
+                            position       : 'absolute',
+                            width          : '20px',
+                            height         : '20px',
+                            top            : '7px'
+                        };
 
-        // var dummyElement = document.createElement('div');;
-        // spyOn(document, "createElement").and.returnValue(dummyElement);
+        let resultElement = {position: 'absolute', width: '20px', height: '20px', top: '7px'};
 
-        let myObject = {};
-        spyOn(document, "createElement").and.returnValue(myObject);
+        expect(Helper.setStyles(testElement, testStyles).style).toEqual(resultElement);
     });
 
     it("Checking id() method", () => {

@@ -19,10 +19,14 @@ class Helper {
      * @return {Element} Element with applied styles
      */
     static setStyles(el, styles) {
-        el = typeof el === 'string' ? document.createElement(el) : el;
-        const style = el.style;
+        if (!el || !styles) {return null};
 
-        _each(styles, (val, name) => style[name] = val);
+        el = typeof el === 'string' ? document.createElement(el) : el;
+        const elStyle = el.style;
+
+        for (var style in styles) {
+            elStyle[style] = styles[style];
+        }
 
         return el;
     }
