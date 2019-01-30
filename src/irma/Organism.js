@@ -8,46 +8,48 @@ const Mutations = require('./Mutations');
 
 class Organism {
     constructor(id, x, y, item, energy, parent = null) {
-        this.id       = id;
-        this.item     = item;
-        this.x        = x;
-        this.y        = y;
+        this.id        = id;
+        this.item      = item;
+        this.x         = x;
+        this.y         = y;
         /**
          * {Number} Organism's age - amount of iteration from born
          */
-        this.age      = 0;
-        this.dot      = 0x000000;
+        this.age       = 0;
+        this.dot       = 0x000000;
+        this.steps     = 0;
+        this.radiation = 0;
         if (parent !== null) {
             this._clone(parent);
             return;
         }
 
-        this.last     = 0;
-        this.probs    = Config.orgProbs.slice();
-        this.probArr  = this.createProbArr();
-        this.period   = Config.orgMutationPeriod;
-        this.percent  = Config.orgMutationPercent;
+        this.last      = 0;
+        this.probs     = Config.orgProbs.slice();
+        this.probArr   = this.createProbArr();
+        this.period    = Config.orgMutationPeriod;
+        this.percent   = Config.orgMutationPercent;
         /**
          * {Number} Data register
          */
-        this.d        = 0;
+        this.d         = 0;
         /**
          * {Number} Additional register a
          */
-        this.a        = 0;
+        this.a         = 0;
         /**
          * {Number} Additional register b
          */
-        this.b        = 0;
+        this.b         = 0;
         /**
          * {Number} Amount of energy
          */
-        this.energy   = energy;
+        this.energy    = energy;
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
-        this.code     = this._getRandomCode();
-        this.mem      = (new Array(Config.orgMemSize)).fill(0);
+        this.code      = this._getRandomCode();
+        this.mem       = (new Array(Config.orgMemSize)).fill(0);
     }
 
     createProbArr() {

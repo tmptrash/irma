@@ -4,11 +4,12 @@
  *
  * @author flatline
  */
-const Config      = require('./../Config');
-const Surface     = require('./Surface');
-const Helper      = require('./../common/Helper');
+const Config        = require('./../Config');
+const Surface       = require('./Surface');
+const Helper        = require('./../common/Helper');
 
-const REMOVED     = -2;
+const REMOVED       = -2;
+const NEW_DIR_AFTER = 10000000;
 /**
  * {Number} This value very important. This is amount of total energy in a world
  * (organisms + energy). This value organisms must not exceed. This is how we
@@ -25,12 +26,14 @@ const rand        = Helper.rand;
 class Energy extends Surface {
     constructor(world) {
         super({
-            color : Config.energyColor,
-            energy: 0,
-            step  : 1,
-            amount: Config.energyAmount,
-            block : Config.energyBlockPercent}, world
+            color    : Config.energyColor,
+            energy   : 0,
+            step     : 1,
+            radiation: 0,
+            amount   : Config.energyAmount,
+            block    : Config.energyBlockPercent}, world
         );
+        this._dirIndex = 0;
     }
 
     initDots() {
@@ -81,7 +84,13 @@ class Energy extends Surface {
      * @param {Number} y1 Final Y coordinate of energy
      */
     onMove(x0, y0, x1, y1) {
-        this.world.moveEnergy(x0, y0, x1, y1, ENERGY_MASK | (this._i - 2));
+        this.world.moveEnergy(x0, y0, x1, y1, ENERGY_MASK | (this.i - 2));
+        if (++this._dirIndex > NEW_DIR_AFTER) {
+            this.dirx      = rand(Config.WORLD_WIDTH);
+            this.diry      = rand(Config.WORLD_HEIGHT);
+            this._dirIndex = 0;
+            this.blocked   = 0;
+        }
     }
 }
 

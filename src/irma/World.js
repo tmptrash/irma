@@ -3,8 +3,10 @@
  *
  * @author flatline
  */
-const Config = require('./../Config');
-const Canvas = require('./Canvas');
+const Config   = require('./../Config');
+const Canvas   = require('./Canvas');
+
+const ORG_MASK = 0x80000000;
 
 class World {
     constructor() {
@@ -38,14 +40,14 @@ class World {
     }
 
     org(x, y, org) {
-        this._data[x][y] = 0x80000000 | org.item;
+        this._data[x][y] = ORG_MASK | org.item;
         this._canvas.dot(x, y, Config.orgColor);
     }
 
     moveOrg(org, x, y) {
-        this._data[org.x << 0][org.y << 0] = 0;
-        this._data[x][y] = 0x80000000 | org.item;
-        this._canvas.move(org.x << 0, org.y << 0, x, y, Config.orgColor);
+        this._data[org.x][org.y] = 0;
+        this._data[x][y] = ORG_MASK | org.item;
+        this._canvas.move(org.x, org.y, x, y, Config.orgColor);
     }
 
     moveDot(x0, y0, x1, y1, color) {
