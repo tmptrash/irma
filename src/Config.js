@@ -38,12 +38,12 @@ const Config = {
      * World width in pixels
      * @constant
      */
-    WORLD_WIDTH           : 1920,
+    WORLD_WIDTH           : 1920 * 2,
     /**
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT          : 1080,
+    WORLD_HEIGHT          : 1080 * 2,
     worldSurfacesDelay    : 10,
     /**
      * {Number} Zoom speed 0..1
@@ -61,7 +61,7 @@ const Config = {
      */
     worldSurfaces         : [{     // lava
         color    : 0xff8881,
-        energy   : .2,
+        energy   : 1,
         step     : 3,
         radiation: .1,
         amount   : 50000,
@@ -78,14 +78,14 @@ const Config = {
         energy   : 100,
         step     : 0,
         radiation: 0,
-        amount   : 1000,
+        amount   : 5000,
         block    : .96
     }, {                           // sand
         color    : 0xFFFF04,
-        energy   : .01,
+        energy   : .001,
         step     : 2,
         radiation: 0,
-        amount   : 50000,
+        amount   : 100000,
         block    : .96
     }, {                           // radiation
         color    : 0xFFFFF5,
@@ -113,7 +113,7 @@ const Config = {
     orgAmount             : 2000,
     orgMaxAge             : 100000,
     orgEnergy             : 1000,
-    orgStepEnergy         : .01,
+    orgStepEnergy         : .02,
     orgCloneEnergy        : 2000,
     orgEnergyPeriod       : 200,
     orgColor              : 0xff0000,

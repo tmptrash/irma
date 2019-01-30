@@ -2,10 +2,8 @@ describe('src/irma/Mutations', () => {
     const Mutations = require('./Mutations');
     const Config    = require('./../Config');
     const Organism  = require('./Organism');
-    const Helper    = require('./../common/Helper');
 
     const CMD_OFFS  = Config.CODE_CMD_OFFS;
-    let   probIndex;
     let   org;
     let   trunc;
     let   getRand;
@@ -17,7 +15,6 @@ describe('src/irma/Mutations', () => {
         randVal     = [0,1,2,3,4,5];
         randI       = 0;
         randCmd     = CMD_OFFS + 3;
-        probIndex   = Helper.probIndex;
         trunc       = Math.trunc;
         getRand     = Mutations.randCmd;
 
@@ -30,7 +27,6 @@ describe('src/irma/Mutations', () => {
         Mutations.randCmd = () => randCmd;
     });
     afterEach (() => {
-        Helper.probIndex     = probIndex;
         Math.trunc           = trunc;
         Mutations.randCmd = getRand;
         org                  = null;
