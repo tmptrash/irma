@@ -9,7 +9,9 @@ class Helper {
      * @param {Number} n Right number value in a range
      * @return {Number}
      */
-    static rand(n) {return Math.trunc(Math.random() * n)}
+    static rand(n) {
+        return Math.trunc(Math.random() * n)
+    }
 
     /**
      * Apply styles packed in object. key: style name, val: style value
@@ -18,15 +20,18 @@ class Helper {
      * @return {Element} Element with applied styles
      */
     static setStyles(el, styles) {
-        if (!el || !styles) {return null};
+        if (!el || !styles) {
+            return null
+        };
 
         el = typeof el === 'string' ? document.createElement(el) : el;
         const elStyle = el.style;
 
-        for (var style in styles) {
-            elStyle[style] = styles[style];
+        for (let style in styles) {
+            if (styles.hasOwnProperty(style)) {
+                elStyle[style] = styles[style]
+            }
         }
-
         return el;
     }
 
