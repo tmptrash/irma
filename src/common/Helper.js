@@ -9,9 +9,7 @@ class Helper {
      * @param {Number} n Right number value in a range
      * @return {Number}
      */
-    static rand(n) {
-        return Math.trunc(Math.random() * n)
-    }
+    static rand(n) {return Math.trunc(Math.random() * n)}
 
     /**
      * Apply styles packed in object. key: style name, val: style value

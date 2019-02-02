@@ -2,14 +2,12 @@ describe("src/share/Helper", () => {
     const Helper = require('./Helper');
 
     beforeEach(function() {
-        let newElement = {
-            style: {}
-        }
+        let newElement = {style: {}}
         global.document = {
             createElement: function() {
                 return newElement;
             }
-        };
+        }
     });
 
     afterEach(function() {
@@ -21,9 +19,11 @@ describe("src/share/Helper", () => {
             let val = Helper.rand(2);
             expect(val === 0 || val === 1).toBe(true);
         });
+
         it("Checking rand(0)", () => {
             expect(Helper.rand(0)).toBe(0);
         });
+
         it("Checking rand(1)", () => {
             expect(Helper.rand(1)).toBe(0);
         });
@@ -34,7 +34,7 @@ describe("src/share/Helper", () => {
             let testElement = null;
             let testStyles = {};
             expect(Helper.setStyles(testElement, testStyles)).toBeNull();
-        });
+        })
 
         it("Checking setStyles() method2", () => {
             let testElement = "DIV";
@@ -43,31 +43,27 @@ describe("src/share/Helper", () => {
                 width: '20px',
                 height: '20px',
                 top: '7px'
-            };
+            }
 
-            let resultElement = {
-                position: 'absolute',
-                width: '20px',
-                height: '20px',
-                top: '7px'
-            };
-
-            expect(Helper.setStyles(testElement, testStyles).style).toEqual(resultElement);
+            expect(Helper.setStyles(testElement, testStyles).style).toEqual(testStyles);
         });
 
         it("Checking setStyles() method3", () => {
-            let testElement = {
-                style: {}
-            }
+            let testElement = {style: {}}
             let testStyles = {top: '7px'};
-
             let resultElement = {top: '7px'};
 
             expect(Helper.setStyles(testElement, testStyles).style).toEqual(resultElement);
         });
+    });
 
+    describe('Checks generating ids', () => {
         it("Checking id() method", () => {
             expect(Helper.id()).toBe(1);
+            expect(Helper.id()).toBe(2);
+            expect(Helper.id()).toBe(3);
+            expect(Helper.id()).toBe(4);
+            expect(Helper.id()).toBe(5);
         });
     });
 })
