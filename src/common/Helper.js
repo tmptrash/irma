@@ -11,16 +11,14 @@ class Helper {
      */
     static rand(n) {return Math.trunc(Math.random() * n)}
 
-    /** 
+    /**
      * Apply styles packed in object. key: style name, val: style value
      * @param {Element|String} el Element to apply styles or tag name to create
      * @param {Object} styles Styles object
      * @return {Element} Element with applied styles
      */
     static setStyles(el, styles) {
-        if (!el || !styles) {
-            return null
-        };
+        if (!el || !styles) {return null}
 
         el = typeof el === 'string' ? document.createElement(el) : el;
         const elStyle = el.style;
