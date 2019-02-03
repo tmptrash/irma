@@ -52,7 +52,7 @@ class Mutations {
     static _onPeriod (code, org) {org.period = rand(Config.orgMaxAge) + 1}
     static _onPercent(code, org) {org.percent = Math.random() || CODE_MUTATION_AMOUNT}
     static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.probArr = org.createProbArr()}
-    static _onInsert (code)      {code.splice(rand(code.length), 0, rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS)}
+    static _onInsert (code)      {code.splice(rand(code.length), 0, Mutations.randCmd())}
     /**
      * Takes few lines from itself and inserts them before or after copied
      * part. All positions are random.

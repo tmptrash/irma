@@ -194,13 +194,13 @@ describe('src/irma/Mutations', () => {
             org.probArr = [5,1,2,3,4,5,6,7];
             randVal     = [0,0,0,1,4,5];
             Mutations.mutate(org);
-            expect(org.code).toEqual([1, CMD_OFFS, CMD_OFFS + 1]);
+            expect(org.code).toEqual([CMD_OFFS + 3, CMD_OFFS, CMD_OFFS + 1]);
         });
         it('Checks mutate() method with "insert" mutation 2', () => {
             org.probArr = [5,1,2,3,4,5,6,7];
             randVal     = [0,1,1,0,4,5];
             Mutations.mutate(org);
-            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS, CMD_OFFS + 1]);
+            expect(org.code).toEqual([CMD_OFFS, CMD_OFFS + 3, CMD_OFFS + 1]);
         });
     });
 

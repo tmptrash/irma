@@ -91,7 +91,7 @@ const Config = {
         color    : 0xFFFFF5,
         energy   : 0,
         step     : 1,
-        radiation: .1,
+        radiation: 1,
         amount   : 10000,
         block    : .96
     }],
