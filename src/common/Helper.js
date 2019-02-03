@@ -3,9 +3,6 @@
  *
  * @author flatline
  */
-// TODO: remove this dependency from here and from package.json also
-const _each  = require('lodash/each');
-
 class Helper {
     /**
      * Generates random Int number in range 0:n-1
@@ -21,11 +18,16 @@ class Helper {
      * @return {Element} Element with applied styles
      */
     static setStyles(el, styles) {
+        if (!el || !styles) {return null}
+
         el = typeof el === 'string' ? document.createElement(el) : el;
-        const style = el.style;
+        const elStyle = el.style;
 
-        _each(styles, (val, name) => style[name] = val);
-
+        for (let style in styles) {
+            if (styles.hasOwnProperty(style)) {
+                elStyle[style] = styles[style]
+            }
+        }
         return el;
     }
 
