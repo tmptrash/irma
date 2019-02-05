@@ -202,7 +202,12 @@ class VM {
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines}
-                            Mutations.mutate(clone);
+                            if (rand(Config.codeCrossoverEveryClone) === 0) {
+                                Mutations.crossover(clone, org);
+                            } else {
+                                Mutations.mutate(clone);
+                            }
+
                             break;
                         }
 
@@ -265,40 +270,28 @@ class VM {
                             break;
 
                         case CODE_CMD_OFFS + 14: {// jump
-                            const intd = abs(d << 0);
-                            if (intd >= code.length) {break}
-                            line = intd;
+                            line = (d << 0) + line;
+                            if (line < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 15: {// jumpg
-                            const intd = abs(d << 0);
-                            if (intd >= code.length) {break}
-                            if (a > b) {
-                                line = intd;
-                                continue;
-                            }
-                            break;
+                            if (a <= b) {break}
+                            if ((line = (d << 0) + line) < 0 || line >= code.length) {line = 0}
+                            continue;
                         }
 
                         case CODE_CMD_OFFS + 16: {// jumpl
-                            const intd = abs(d << 0);
-                            if (intd >= code.length) {break}
-                            if (a <= b) {
-                                line = intd;
-                                continue;
-                            }
-                            break;
+                            if (a >= b) {break}
+                            if ((line = (d << 0) + line) < 0 || line >= code.length) {line = 0}
+                            continue;
                         }
 
-                        case CODE_CMD_OFFS + 17:  // jumpz
-                            const intd = abs(d << 0);
-                            if (intd >= code.length) {break}
-                            if (a === 0) {
-                                line = intd;
-                                continue;
-                            }
-                            break;
+                        case CODE_CMD_OFFS + 17: {// jumpz
+                            if (a !== 0) {break}
+                            if ((line = (d << 0) + line) < 0 || line >= code.length) {line = 0}
+                            continue;
+                        }
 
                         case CODE_CMD_OFFS + 18:  // nop
                             break;

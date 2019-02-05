@@ -47,6 +47,16 @@ class Mutations {
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
 
+    static crossover(destOrg, srcOrg) {
+        const destCode = destOrg.code;
+        const srcCode  = srcOrg.code;
+        const codeLen  = destCode.length < srcCode.length ? destCode.length : srcCode.length;
+        const start    = rand(codeLen);
+        const end      = start + rand(codeLen - start);
+
+        destCode.splice(start, end - start + 1, ...srcCode.slice(start, end + 1));
+    }
+
     static _onChange (code)      {code[rand(code.length)] = Mutations.randCmd()}
     static _onDel    (code)      {code.splice(rand(code.length), 1)}
     static _onPeriod (code, org) {org.period = rand(Config.orgMaxAge) + 1}

@@ -17,38 +17,39 @@ const Config = {
      * point depending on one of 8 directions. We use these values in any command
      * related to sight, move, eating and so on
      */
-    DIRX                  : [0,   1, 1, 1, 0, -1, -1, -1],
-    DIRY                  : [-1, -1, 0, 1, 1,  1,  0, -1],
+    DIRX                   : [0,   1, 1, 1, 0, -1, -1, -1],
+    DIRY                   : [-1, -1, 0, 1, 1,  1,  0, -1],
     /**
      * {Number} This offset will be added to commands value. This is how we
      * add an ability to use numbers in a code, just putting them as command
      * @constant
      */
-    CODE_CMD_OFFS         : 128,
+    CODE_CMD_OFFS          : 128,
     /**
      * {Number} Amount of supported commands in a code. This value must be
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS         : 24,
-    codeLinesPerIteration : 10,
-    codeTimesPerRun       : 100,
+    CODE_COMMANDS          : 24,
+    codeLinesPerIteration  : 10,
+    codeTimesPerRun        : 100,
+    codeCrossoverEveryClone: 10,
 
     /**
      * World width in pixels
      * @constant
      */
-    WORLD_WIDTH           : 1920 * 2,
+    WORLD_WIDTH            : 1920 * 2,
     /**
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT          : 1080 * 2,
-    worldSurfacesDelay    : 10,
+    WORLD_HEIGHT           : 1080 * 2,
+    worldSurfacesDelay     : 10,
     /**
      * {Number} Zoom speed 0..1
      */
-    worldZoomSpeed        : 0.1,
+    worldZoomSpeed         : 0.1,
     /**
      * {Array} Array of surfaces. These surfaces are analogs of water, sand
      * lava and other stuff. They are moving to some randomly selected point
@@ -59,75 +60,75 @@ const Config = {
      *  step   - coefficient of speed (slow down) if organism above the surface
      *  amount - amount of surface dots
      */
-    worldSurfaces         : [{     // lava
+    worldSurfaces          : [{     // lava
         color    : 0xff8881,
         energy   : 1,
         step     : 3,
         radiation: .1,
-        amount   : 50000,
+        amount   : 100000,
         block    : .96
     }, {                           // water
         color    : 0x0000f2,
         energy   : .005,
         step     : 15,
         radiation: 0,
-        amount   : 500000,
+        amount   : 1000000,
         block    : .99
     }, {                           // hole
         color    : 0xaaaaa3,
         energy   : 100,
         step     : 0,
         radiation: 0,
-        amount   : 5000,
+        amount   : 10000,
         block    : .96
     }, {                           // sand
         color    : 0xFFFF04,
         energy   : .001,
         step     : 2,
         radiation: 0,
-        amount   : 100000,
+        amount   : 200000,
         block    : .96
     }, {                           // radiation
         color    : 0xFFFFF5,
         energy   : 0,
         step     : 1,
         radiation: 1,
-        amount   : 10000,
+        amount   : 20000,
         block    : .96
     }],
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit
      * for this. First bit is used to check if it's an organism
      */
-    ENERGY_MASK           : 0x40000000,
-    energyColor           : 0x00ff00,
-    energyValue           : 50,
-    energyAmount          : 20000,
-    energyBlockPercent    : .99,
+    ENERGY_MASK            : 0x40000000,
+    energyColor            : 0x00ff00,
+    energyValue            : 50,
+    energyAmount           : 20000,
+    energyBlockPercent     : .99,
 
     /**
      * {Number} Maximum value of every element in orgProbs array
      * @constant
      */
-    ORG_PROB_MAX_VALUE    : 100,
-    orgAmount             : 2000,
-    orgMaxAge             : 100000,
-    orgEnergy             : 1000,
-    orgStepEnergy         : .02,
-    orgCloneEnergy        : 2000,
-    orgEnergyPeriod       : 200,
-    orgColor              : 0xff0000,
-    orgMemSize            : 64,
-    orgMutationPercent    : .02,
-    orgMutationPeriod     : 10000,
-    orgMaxCodeSize        : 512,
-    orgStartCodeSize      : 64,
+    ORG_PROB_MAX_VALUE     : 100,
+    orgAmount              : 2000,
+    orgMaxAge              : 100000,
+    orgEnergy              : 1000,
+    orgStepEnergy          : .02,
+    orgCloneEnergy         : 2000,
+    orgEnergyPeriod        : 200,
+    orgColor               : 0xff0000,
+    orgMemSize             : 64,
+    orgMutationPercent     : .02,
+    orgMutationPeriod      : 10000,
+    orgMaxCodeSize         : 512,
+    orgStartCodeSize       : 64,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs              : [20,1,3,5,1,10,1,1]
+    orgProbs               : [20,1,3,5,1,10,1,1]
 };
 
 module.exports = Config;
