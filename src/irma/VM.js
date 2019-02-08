@@ -25,6 +25,10 @@
  *   CODE_CMD_OFFS + 21 - x      - d = org.x
  *   CODE_CMD_OFFS + 22 - y      - d = org.y
  *   CODE_CMD_OFFS + 23 - rand   - d = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
+ *   CODE_CMD_OFFS + 24 - call   - calls function with name/index d % funcAmount
+ *   CODE_CMD_OFFS + 25 - func   - function begin operator
+ *   CODE_CMD_OFFS + 26 - ret    - returns from function. d will be return value
+ *   CODE_CMD_OFFS + 27 - fend   - function finish operator. no return value
  *
  * @author flatline
  */
@@ -133,14 +137,6 @@ class VM {
                 //
                 for (let l = 0; l < lines; l++) {
                     const cmd = code[line];
-                    //
-                    // This is a number command: d = N
-                    //
-                    if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {
-                        d = cmd;
-                        if (++line >= len) {line = 0}
-                        continue;
-                    }
                     //
                     // This is ordinary command
                     //
@@ -271,25 +267,25 @@ class VM {
 
                         case CODE_CMD_OFFS + 14: {// jump
                             line = ((d << 0) || 1) + line;
-                            if (line < 0 || line >= code.length) {line = 0}
+                            if (line < 0 || line >= code.length) {line = len; break}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 15: {// jumpg
                             if (a <= b) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = len; break}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 16: {// jumpl
                             if (a >= b) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = len; break}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 17: {// jumpz
                             if (a !== 0) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = len; break}
                             continue;
                         }
 
@@ -321,8 +317,63 @@ class VM {
                         case CODE_CMD_OFFS + 23:  // rand
                             d = rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS;
                             break;
+
+                        case CODE_CMD_OFFS + 24: {// call
+                            if (org.fCount === 0) {break}
+                            if (org.stackIndex >= Config.CODE_STACK_SIZE * 4) {break}
+                            const stack = org.stack;
+                            stack[++org.stackIndex] = line + 1;
+                            stack[++org.stackIndex] = d;
+                            stack[++org.stackIndex] = a;
+                            stack[++org.stackIndex] = b;
+                            line = org.funcs[(d << 0) % org.fCount];
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 25:  // func
+                            line = org.offs[line];
+                            continue;
+
+                        case CODE_CMD_OFFS + 26: {// ret
+                            const stack = org.stack;
+                            b    = stack[org.stackIndex--];
+                            a    = stack[org.stackIndex--];
+                            org.stackIndex--;     // we have to skip d register to return it
+                            line = stack[org.stackIndex--];
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 27: {// fend
+                            const stack = org.stack;
+                            b    = stack[org.stackIndex--];
+                            a    = stack[org.stackIndex--];
+                            d    = stack[org.stackIndex--];
+                            line = stack[org.stackIndex--];
+                            continue;
+                        }
+
+                        default:
+                            //
+                            // This is a number command: d = N
+                            //
+                            if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {d = cmd}
+                            break;
                     }
-                    if (++line >= len) {line = 0}
+                    //
+                    // We are on the last code line. Have to jump to the first
+                    //
+                    if (++line >= len) {
+                        if (org.stackIndex >= 0) {
+                            const stack = org.stack;
+                            b    = stack[3];
+                            a    = stack[2];
+                            d    = stack[1];
+                            line = stack[0];
+                            org.stackIndex = -1;
+                        } else {
+                            line = 0;
+                        }
+                    }
                 }
                 org.last = line;
                 org.d    = d;

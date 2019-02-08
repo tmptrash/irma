@@ -57,18 +57,22 @@ class Mutations {
         destCode.splice(start, end - start + 1, ...srcCode.slice(start, end + 1));
     }
 
-    static _onChange (code)      {code[rand(code.length)] = Mutations.randCmd()}
-    static _onDel    (code)      {code.splice(rand(code.length), 1)}
+    static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.preprocess()}
+    static _onDel    (code, org) {code.splice(rand(code.length), 1); org.preprocess()}
     static _onPeriod (code, org) {org.period = rand(Config.orgMaxAge) + 1}
     static _onPercent(code, org) {org.percent = Math.random() || CODE_MUTATION_AMOUNT}
     static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.probArr = org.createProbArr()}
-    static _onInsert (code)      {code.splice(rand(code.length), 0, Mutations.randCmd())}
+    static _onInsert (code, org) {
+        if (code.length >= Config.orgMaxCodeSize) {return}
+        code.splice(rand(code.length), 0, Mutations.randCmd());
+        org.preprocess();
+    }
     /**
      * Takes few lines from itself and inserts them before or after copied
      * part. All positions are random.
      * @return {Number} Amount of added/copied lines
      */
-    static _onCopy   (code)      {
+    static _onCopy   (code, org)  {
         const codeLen = code.length;
         const start   = rand(codeLen);
         const end     = start + rand(codeLen - start);
@@ -86,14 +90,16 @@ class Mutations {
         //
         if (rand(2) === 0) {
             code.splice(rand(start), 0, ...code.slice(start, end));
+            org.preprocess();
             return end - start;
         }
 
         code.splice(end + rand(codeLen - end + 1), 0, ...code.slice(start, end));
+        org.preprocess();
 
         return end - start;
     }
-    static _onCut    (code)      {code.splice(rand(code.length), rand(code.length))}
+    static _onCut    (code, org)  {code.splice(rand(code.length), rand(code.length)); org.preprocess()}
 }
 /**
  * Static mutation methods binding. Is used for running specified mutation type

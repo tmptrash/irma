@@ -30,7 +30,11 @@ const Config = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS          : 24,
+    CODE_COMMANDS          : 28,
+    /**
+     * {Number} Functions call stack size
+     */
+    CODE_STACK_SIZE        : 10000,
     codeLinesPerIteration  : 10,
     codeTimesPerRun        : 100,
     codeCrossoverEveryClone: 10,
