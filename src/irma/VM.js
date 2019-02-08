@@ -270,26 +270,26 @@ class VM {
                             break;
 
                         case CODE_CMD_OFFS + 14: {// jump
-                            line = (d << 0) + line;
+                            line = ((d << 0) || 1) + line;
                             if (line < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 15: {// jumpg
                             if (a <= b) {break}
-                            if ((line = (d << 0) + line) < 0 || line >= code.length) {line = 0}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 16: {// jumpl
                             if (a >= b) {break}
-                            if ((line = (d << 0) + line) < 0 || line >= code.length) {line = 0}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 17: {// jumpz
                             if (a !== 0) {break}
-                            if ((line = (d << 0) + line) < 0 || line >= code.length) {line = 0}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
