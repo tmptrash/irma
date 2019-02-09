@@ -17,12 +17,20 @@ class Bytes2Code {
      */
     static toCode(bytes) {
         let code = '\n';
+        let span = '';
         for (let b = 0; b < bytes.length; b++) {
-            if (Bytes2Code.MAP[bytes[b]] === undefined) {
-                code += `${b ? '\n' : ''}${bytes[b]}`;
+            console.log(bytes[b]);
+            if (bytes[b] === CODE_CMD_OFFS + 25) { // func
+                code += `${b ? '\n' : ''}${span}${Bytes2Code.MAP[bytes[b]]}`;
+                span += '  ';
+                continue;
+            } else if (bytes[b] === CODE_CMD_OFFS + 27) { // fend
+                span = span.substr(0, span.length - 2);
+            } else if (Bytes2Code.MAP[bytes[b]] === undefined) {
+                code += `${b ? '\n' : ''}${span}${bytes[b]}`;
                 continue;
             }
-            code += `${b ? '\n' : ''}${Bytes2Code.MAP[bytes[b]]}`;
+            code += `${b ? '\n' : ''}${span}${Bytes2Code.MAP[bytes[b]]}`;
         }
 
         return code;
@@ -53,7 +61,11 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
     [CODE_CMD_OFFS + 21]: 'x     // d = org.x',
     [CODE_CMD_OFFS + 22]: 'y     // d = org.y',
-    [CODE_CMD_OFFS + 23]: `rand  // d = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`
+    [CODE_CMD_OFFS + 23]: `rand  // d = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
+    [CODE_CMD_OFFS + 24]: `call  // fn name: d % fCount`,
+    [CODE_CMD_OFFS + 25]: `func  // fn name - it's position`,
+    [CODE_CMD_OFFS + 26]: `ret d`,
+    [CODE_CMD_OFFS + 27]: `fend  // end function`
 };
 
 module.exports = Bytes2Code;

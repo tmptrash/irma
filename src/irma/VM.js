@@ -320,12 +320,14 @@ class VM {
 
                         case CODE_CMD_OFFS + 24: {// call
                             if (org.fCount === 0) {break}
-                            if (org.stackIndex >= Config.CODE_STACK_SIZE * 4) {break}
+                            let   index = org.stackIndex;
+                            if (index >= Config.CODE_STACK_SIZE * 4) {break}
                             const stack = org.stack;
-                            stack[++org.stackIndex] = line + 1;
-                            stack[++org.stackIndex] = d;
-                            stack[++org.stackIndex] = a;
-                            stack[++org.stackIndex] = b;
+                            stack[++index] = line + 1;
+                            stack[++index] = d;
+                            stack[++index] = a;
+                            stack[++index] = b;
+                            org.stackIndex = index;
                             line = org.funcs[(d << 0) % org.fCount];
                             continue;
                         }
@@ -336,19 +338,23 @@ class VM {
 
                         case CODE_CMD_OFFS + 26: {// ret
                             const stack = org.stack;
-                            b    = stack[org.stackIndex--];
-                            a    = stack[org.stackIndex--];
-                            org.stackIndex--;     // we have to skip d register to return it
-                            line = stack[org.stackIndex--];
+                            let   index = org.stackIndex;
+                            b    = stack[index--];
+                            a    = stack[index--];
+                            index--;              // we have to skip d register to return it
+                            line = stack[index--];
+                            org.stackIndex = index;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 27: {// fend
                             const stack = org.stack;
-                            b    = stack[org.stackIndex--];
-                            a    = stack[org.stackIndex--];
-                            d    = stack[org.stackIndex--];
-                            line = stack[org.stackIndex--];
+                            let   index = org.stackIndex;
+                            b    = stack[index--];
+                            a    = stack[index--];
+                            d    = stack[index--];
+                            line = stack[index--];
+                            org.stackIndex = index;
                             continue;
                         }
 
