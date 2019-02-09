@@ -28,7 +28,7 @@
  *   CODE_CMD_OFFS + 24 - call   - calls function with name/index d % funcAmount
  *   CODE_CMD_OFFS + 25 - func   - function begin operator
  *   CODE_CMD_OFFS + 26 - ret    - returns from function. d will be return value
- *   CODE_CMD_OFFS + 27 - fend   - function finish operator. no return value
+ *   CODE_CMD_OFFS + 27 - end    - function finish operator. no return value
  *
  * @author flatline
  */
@@ -339,6 +339,7 @@ class VM {
                         case CODE_CMD_OFFS + 26: {// ret
                             const stack = org.stack;
                             let   index = org.stackIndex;
+                            if (index < 0) {break}
                             b    = stack[index--];
                             a    = stack[index--];
                             index--;              // we have to skip d register to return it
@@ -347,9 +348,10 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 27: {// fend
+                        case CODE_CMD_OFFS + 27: {// end
                             const stack = org.stack;
                             let   index = org.stackIndex;
+                            if (index < 0) {break}
                             b    = stack[index--];
                             a    = stack[index--];
                             d    = stack[index--];

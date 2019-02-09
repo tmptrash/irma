@@ -106,7 +106,8 @@ class Organism {
                     stack[++sCount] = i;
                     break;
 
-                case CODE_CMD_OFFS + 27: // fend
+                case CODE_CMD_OFFS + 27: // end
+                    if (sCount < 0) {break}
                     offs[stack[sCount--]] = i + 1;
                     break;
             }
