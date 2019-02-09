@@ -121,11 +121,11 @@ class Organism {
         const size = Config.orgStartCodeSize;
         const code = new Array(size);
 
-        //for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
-        code[0] = CODE_CMD_OFFS + 24;
-        code[1] = CODE_CMD_OFFS + 25;
-        code[2] = CODE_CMD_OFFS + 26;
-        code[3] = CODE_CMD_OFFS + 27;
+        for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
+        // code[0] = CODE_CMD_OFFS + 24;
+        // code[1] = CODE_CMD_OFFS + 25;
+        // code[2] = CODE_CMD_OFFS + 26;
+        // code[3] = CODE_CMD_OFFS + 27;
 
         return code;
     }
