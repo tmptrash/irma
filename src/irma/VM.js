@@ -212,9 +212,9 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 3: { // see
-                            const offs = org.y * WIDTH1 + org.x+ (d << 0);
-                            const x    = offs % WIDTH1;
-                            const y    = offs / WIDTH1 << 0;
+                            const intd = abs(d << 0) % 8;
+                            const x    = org.x + DIRX[intd] + (a << 0);
+                            const y    = org.y + DIRY[intd] + (b << 0);
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = 0; break}
                             const dot  = data[x][y];
                             if ((dot & ORG_MASK) !== 0) {d = (orgs.get(dot & ORG_INDEX_MASK)).energy; break}    // other organism
@@ -401,18 +401,16 @@ class VM {
                     org.energy--;/*= (org.code.length || 1);*/
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
-                //
-                // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
-                //
-                this._ENERGY.update(this._totalOrgsEnergy);
-                if (o % Config.worldSurfacesDelay === 0) {
-                    for (let s = 0, sLen = this._SURFS; s < sLen; s++) {this._surfaces[s].move()}
-                }
 
                 org.age++;
                 this._i += lines;
                 orgsEnergy += org.energy;
             }
+            //
+            // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
+            //
+            this._ENERGY.update(this._totalOrgsEnergy);
+            for (let s = 0, sLen = this._SURFS; s < sLen; s++) {this._surfaces[s].move()}
             this._totalOrgsEnergy = orgsEnergy;
             this._iterations++;
         }

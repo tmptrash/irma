@@ -128,7 +128,7 @@ const Config = {
     orgEnergy              : 1000,
     orgStepEnergy          : .02,
     orgCloneEnergy         : 2000,
-    orgEnergyPeriod        : 200,
+    orgEnergyPeriod        : 400,
     orgColor               : 0xff0000,
     orgMemSize             : 64,
     orgMutationPercent     : .02,
