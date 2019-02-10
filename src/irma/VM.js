@@ -46,6 +46,10 @@ const Energy    = require('./Energy');
  */
 const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
 /**
+ * {Number} Maximum random generated value
+ */
+const CODE_MAX_RAND     = CODE_CMD_OFFS + Config.CODE_COMMANDS;
+/**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
@@ -130,7 +134,7 @@ class VM {
                 let   d    = org.d;
                 let   a    = org.a;
                 let   b    = org.b;
-                let   line = org.last;
+                let   line = org.line;
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
@@ -267,25 +271,25 @@ class VM {
 
                         case CODE_CMD_OFFS + 14: {// jump
                             line = ((d << 0) || 1) + line;
-                            if (line < 0 || line >= code.length) {line = len; break}
+                            if (line < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 15: {// jumpg
                             if (a <= b) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = len; break}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 16: {// jumpl
                             if (a >= b) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = len; break}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 17: {// jumpz
                             if (a !== 0) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = len; break}
+                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
                             continue;
                         }
 
@@ -315,7 +319,7 @@ class VM {
                             break;
 
                         case CODE_CMD_OFFS + 23:  // rand
-                            d = rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS;
+                            d = rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND;
                             break;
 
                         case CODE_CMD_OFFS + 24: {// call
@@ -328,7 +332,7 @@ class VM {
                             stack[++index] = a;
                             stack[++index] = b;
                             org.stackIndex = index;
-                            line = org.funcs[(d << 0) % org.fCount];
+                            line = org.funcs[abs(d << 0) % org.fCount];
                             continue;
                         }
 
@@ -383,7 +387,7 @@ class VM {
                         }
                     }
                 }
-                org.last = line;
+                org.line = line;
                 org.d    = d;
                 org.a    = a;
                 org.b    = b;
@@ -391,7 +395,7 @@ class VM {
                 // Organism age related updates
                 //
                 const age = org.age;
-                if (age % org.period === 0 && age > 0) {Mutations.mutate(org)}
+                if (age % org.period === 0 && age > 0 && Config.orgMutationPeriod > 0) {Mutations.mutate(org)}
                 if (age % Config.orgMaxAge === 0 && age > 0) {this._removeOrg(org)}
                 if (age % Config.orgEnergyPeriod === 0) {
                     org.energy--;/*= (org.code.length || 1);*/

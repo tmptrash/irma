@@ -11,6 +11,13 @@
  *
  * @author flatline
  */
+/**
+ * {Number} This offset will be added to commands value. This is how we
+ * add an ability to use numbers in a code, just putting them as command
+ * @constant
+ */
+const CMD_OFFS = 128;
+
 const Config = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
@@ -24,7 +31,7 @@ const Config = {
      * add an ability to use numbers in a code, just putting them as command
      * @constant
      */
-    CODE_CMD_OFFS          : 128,
+    CODE_CMD_OFFS          : CMD_OFFS,
     /**
      * {Number} Amount of supported commands in a code. This value must be
      * synchronized with real commands amount. See VM.js for details.
@@ -36,8 +43,9 @@ const Config = {
      */
     CODE_STACK_SIZE        : 10000,
     codeLinesPerIteration  : 10,
-    codeTimesPerRun        : 100,
+    codeTimesPerRun        : 300,
     codeCrossoverEveryClone: 10,
+    codeDefault            : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
      * World width in pixels
@@ -124,7 +132,7 @@ const Config = {
     orgColor               : 0xff0000,
     orgMemSize             : 64,
     orgMutationPercent     : .02,
-    orgMutationPeriod      : 10000,
+    orgMutationPeriod      : 0,
     orgMaxCodeSize         : 512,
     orgStartCodeSize       : 64,
     /**

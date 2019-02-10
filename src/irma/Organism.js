@@ -33,7 +33,7 @@ class Organism {
             return;
         }
 
-        this.last       = 0;
+        this.line       = 0;
         this.probs      = Config.orgProbs.slice();
         this.probArr    = this.createProbArr();
         this.period     = Config.orgMutationPeriod;
@@ -69,7 +69,7 @@ class Organism {
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
-        this.code       = this._getRandomCode();
+        this.code       = this._generateCode();
         this.preprocess();
     }
 
@@ -113,22 +113,20 @@ class Organism {
             }
         }
 
-        if (sCount >= 0) {for (let i = sCount - 1; i >= 0; i--) {offs[stack[i]] = 0}}
+        if (sCount >= 0) {for (let i = sCount; i >= 0; i--) {offs[stack[i]] = 0}}
 
-        this.fCount = fCount;
+        this.fCount     = fCount;
+        this.stackIndex = -1;
+        this.line       = 0;
     }
 
-    _getRandomCode() {
-        const size = Config.orgStartCodeSize;
-        const code = new Array(size);
+    _generateCode() {
+        const size    = Config.orgStartCodeSize;
+        const code    = new Array(size);
+        const codeLen = Config.codeDefault.length;
 
-        for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
-        // code[0] = CODE_CMD_OFFS + 24;
-        // code[1] = CODE_CMD_OFFS + 24;
-        // code[2] = CODE_CMD_OFFS + 25;
-        // code[3] = 5;
-        // code[4] = CODE_CMD_OFFS + 26;
-        // code[5] = CODE_CMD_OFFS + 27;
+        code.splice(0, codeLen, ...Config.codeDefault);
+        for (let i = codeLen; i < size; i++) {code[i] = CODE_CMD_OFFS + 18} // nop
 
         return code;
     }
@@ -138,7 +136,7 @@ class Organism {
         this.probArr    = parent.probArr.slice();
         this.period     = parent.period;
         this.percent    = parent.percent;
-        this.last       = parent.last;
+        this.line       = parent.line;
         this.d          = parent.d;
         this.a          = parent.a;
         this.b          = parent.b;
