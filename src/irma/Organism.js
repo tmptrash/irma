@@ -126,7 +126,7 @@ class Organism {
         const codeLen = Config.codeDefault.length;
 
         code.splice(0, codeLen, ...Config.codeDefault);
-        for (let i = codeLen; i < size; i++) {code[i] = Mutations.randCmd()} // nop
+        for (let i = codeLen; i < size; i++) {code[i] = Mutations.randCmd()}
 
         return code;
     }
