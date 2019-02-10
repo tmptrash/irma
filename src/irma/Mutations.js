@@ -55,7 +55,7 @@ class Mutations {
         const end      = start + rand(codeLen - start);
 
         destCode.splice(start, end - start + 1, ...srcCode.slice(start, end + 1));
-        destCode.preprocess();
+        destOrg.preprocess();
     }
 
     static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.preprocess()}
