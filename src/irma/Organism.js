@@ -126,7 +126,11 @@ class Organism {
         const codeLen = Config.codeDefault.length;
 
         code.splice(0, codeLen, ...Config.codeDefault);
-        for (let i = codeLen; i < size; i++) {code[i] = Mutations.randCmd()}
+        if (Config.orgRandCodeOnStart) {
+            for (let i = codeLen; i < size; i++) {code[i] = Mutations.randCmd()}
+        } else {
+            for (let i = codeLen; i < size; i++) {code[i] = CODE_CMD_OFFS + 18}
+        }
 
         return code;
     }

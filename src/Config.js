@@ -41,10 +41,11 @@ const Config = {
     /**
      * {Number} Functions call stack size
      */
-    CODE_STACK_SIZE        : 10000,
+    CODE_STACK_SIZE        : 1000,
     codeLinesPerIteration  : 10,
     codeTimesPerRun        : 300,
     codeCrossoverEveryClone: 10,
+    codeMutateOnClone      : false,
     codeDefault            : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
@@ -72,36 +73,36 @@ const Config = {
      *  step   - coefficient of speed (slow down) if organism above the surface
      *  amount - amount of surface dots
      */
-    worldSurfaces          : [{     // lava
+    worldSurfaces          : [/*{     // lava
         color    : 0xff8881,
         energy   : 1,
         step     : 3,
         radiation: .1,
         amount   : 100000,
         block    : .96
-    }, {                           // water
-        color    : 0x0000f2,
+    },*/ {                           // water
+        color    : 0x0000f1,
         energy   : .005,
         step     : 15,
         radiation: 0,
         amount   : 1000000,
         block    : .99
-    }, {                           // hole
+    },/* {                           // hole
         color    : 0xaaaaa3,
         energy   : 100,
         step     : 0,
         radiation: 0,
         amount   : 10000,
         block    : .96
-    }, {                           // sand
-        color    : 0xFFFF04,
+    },*/ {                           // sand
+        color    : 0xFFFF02,
         energy   : .001,
         step     : 2,
         radiation: 0,
         amount   : 200000,
         block    : .96
     }, {                           // radiation
-        color    : 0xFFFFF5,
+        color    : 0xFFFFF3,
         energy   : 0,
         step     : 1,
         radiation: 1,
@@ -115,7 +116,7 @@ const Config = {
     ENERGY_MASK            : 0x40000000,
     energyColor            : 0x00ff00,
     energyValue            : 50,
-    energyAmount           : 20000,
+    energyAmount           : 160000,
     energyBlockPercent     : .99,
 
     /**
@@ -123,18 +124,19 @@ const Config = {
      * @constant
      */
     ORG_PROB_MAX_VALUE     : 100,
-    orgAmount              : 2000,
-    orgMaxAge              : 100000,
+    orgAmount              : 10000,
+    orgMaxAge              : 500000,
     orgEnergy              : 1000,
     orgStepEnergy          : .02,
     orgCloneEnergy         : 2000,
-    orgEnergyPeriod        : 400,
+    orgEnergyPeriod        : 1000,
     orgColor               : 0xff0000,
     orgMemSize             : 64,
     orgMutationPercent     : .02,
-    orgMutationPeriod      : 0,
+    orgMutationPeriod      : 250000,
     orgMaxCodeSize         : 512,
     orgStartCodeSize       : 64,
+    orgRandCodeOnStart     : false,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

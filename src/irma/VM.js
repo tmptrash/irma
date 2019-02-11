@@ -201,13 +201,9 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
-                            if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines}
-                            if (rand(Config.codeCrossoverEveryClone) === 0) {
-                                Mutations.crossover(clone, org);
-                            } else {
-                                Mutations.mutate(clone);
-                            }
-
+                            if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
+                            if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
+                            else if (Config.codeMutateOnClone) {Mutations.mutate(clone)}
                             break;
                         }
 
