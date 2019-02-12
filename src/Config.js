@@ -45,7 +45,7 @@ const Config = {
     codeLinesPerIteration  : 10,
     codeTimesPerRun        : 300,
     codeCrossoverEveryClone: 10,
-    codeMutateOnClone      : false,
+    codeMutateEveryClone   : 5,
     codeDefault            : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
@@ -82,7 +82,7 @@ const Config = {
         block    : .96
     },*/ {                           // water
         color    : 0x0000f1,
-        energy   : .005,
+        energy   : 0,
         step     : 15,
         radiation: 0,
         amount   : 1000000,

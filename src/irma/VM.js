@@ -203,7 +203,7 @@ class VM {
                             org.energy   = clone.energy = ceil(org.energy >> 1);
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
                             if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
-                            else if (Config.codeMutateOnClone) {Mutations.mutate(clone)}
+                            else if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
                             break;
                         }
 
