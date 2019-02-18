@@ -321,7 +321,7 @@ class VM {
                         case CODE_CMD_OFFS + 24: {// call
                             if (org.fCount === 0) {break}
                             let   index = org.stackIndex;
-                            if (index >= Config.CODE_STACK_SIZE * 4) {break}
+                            if (index >= Config.CODE_STACK_SIZE * 4) {index = -1}
                             const stack = org.stack;
                             stack[++index] = line + 1;
                             stack[++index] = d;
