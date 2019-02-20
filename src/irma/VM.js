@@ -266,26 +266,37 @@ class VM {
                             break;
 
                         case CODE_CMD_OFFS + 14: {// jump
-                            line = ((d << 0) || 1) + line;
-                            if (line < 0 || line >= code.length) {line = 0}
+                            const newLine = ((d << 0) || 1) + line;
+                            if (newLine < 0 || newLine >= code.length) {line = 0}
+                            else if (newLine > org.stack[org.stackIndex]) {line = org.stack[org.stackIndex] - 1}
+                            else {line = newLine}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 15: {// jumpg
                             if (a <= b) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
+                            const newLine = ((d << 0) || 1) + line;
+                            if (newLine < 0 || newLine >= code.length) {line = 0}
+                            else if (newLine > org.stack[org.stackIndex]) {line = org.stack[org.stackIndex] - 1}
+                            else {line = newLine}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 16: {// jumpl
-                            if (a >= b) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
+                            if (a > b) {break}
+                            const newLine = ((d << 0) || 1) + line;
+                            if (newLine < 0 || newLine >= code.length) {line = 0}
+                            else if (newLine > org.stack[org.stackIndex]) {line = org.stack[org.stackIndex] - 1}
+                            else {line = newLine}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 17: {// jumpz
                             if (a !== 0) {break}
-                            if ((line = ((d << 0) || 1) + line) < 0 || line >= code.length) {line = 0}
+                            const newLine = ((d << 0) || 1) + line;
+                            if (newLine < 0 || newLine >= code.length) {line = 0}
+                            else if (newLine > org.stack[org.stackIndex]) {line = org.stack[org.stackIndex] - 1}
+                            else {line = newLine}
                             continue;
                         }
 
@@ -321,14 +332,18 @@ class VM {
                         case CODE_CMD_OFFS + 24: {// call
                             if (org.fCount === 0) {break}
                             let   index = org.stackIndex;
-                            if (index >= Config.CODE_STACK_SIZE * 4) {index = -1}
+                            if (index >= Config.CODE_STACK_SIZE * 5) {index = -1}
+                            const func  = abs(d << 0) % org.fCount;
                             const stack = org.stack;
                             stack[++index] = line + 1;
                             stack[++index] = d;
                             stack[++index] = a;
                             stack[++index] = b;
+                            const end = org.offs[org.funcs[func] - 1] - 1;
+                            stack[++index] = end < 0 ? 0 : end;
+                            line = org.funcs[func];
                             org.stackIndex = index;
-                            line = org.funcs[abs(d << 0) % org.fCount];
+
                             continue;
                         }
 
@@ -340,6 +355,7 @@ class VM {
                             const stack = org.stack;
                             let   index = org.stackIndex;
                             if (index < 0) {break}
+                            index--;              // we have to skip func end line
                             b    = stack[index--];
                             a    = stack[index--];
                             index--;              // we have to skip d register to return it
@@ -352,6 +368,7 @@ class VM {
                             const stack = org.stack;
                             let   index = org.stackIndex;
                             if (index < 0) {break}
+                            index--;
                             b    = stack[index--];
                             a    = stack[index--];
                             d    = stack[index--];

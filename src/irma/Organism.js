@@ -64,7 +64,7 @@ class Organism {
         this.stackIndex = -1;
         this.offs       = new Array(Config.orgMaxCodeSize);
         this.funcs      = new Array(Config.orgMaxCodeSize);
-        this.stack      = new Array(Config.CODE_STACK_SIZE * 4); // 3 registers + back line
+        this.stack      = new Array(Config.CODE_STACK_SIZE * 5); // 3 registers + back line + func end line
         this.mem        = (new Array(Config.orgMemSize)).fill(0);
         /**
          * {Array} Array of numbers. Code (DNA) of organism
