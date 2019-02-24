@@ -274,8 +274,8 @@ class VM {
 
                         case CODE_CMD_OFFS + 14: {// jump
                             const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            else if (newLine < 0 || newLine >= code.length) {line = 0}
                             else {line = newLine}
                             continue;
                         }
@@ -283,8 +283,8 @@ class VM {
                         case CODE_CMD_OFFS + 15: {// jumpg
                             if (a <= b) {break}
                             const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            else if (newLine < 0 || newLine >= code.length) {line = 0}
                             else {line = newLine}
                             continue;
                         }
@@ -292,8 +292,8 @@ class VM {
                         case CODE_CMD_OFFS + 16: {// jumpl
                             if (a > b) {break}
                             const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            else if (newLine < 0 || newLine >= code.length) {line = 0}
                             else {line = newLine}
                             continue;
                         }
@@ -301,8 +301,8 @@ class VM {
                         case CODE_CMD_OFFS + 17: {// jumpz
                             if (a !== 0) {break}
                             const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
+                            else if (newLine < 0 || newLine >= code.length) {line = 0}
                             else {line = newLine}
                             continue;
                         }
