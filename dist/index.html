@@ -5,6 +5,10 @@
     </head>
     <body>
         <script src="irma.js"></script>
-        <script>irma.app.run()</script>
+        <script>
+            irma.app.ready
+                .then(() => irma.app.run())
+                .catch(e => console.error(e))
+        </script>
     </body>
 </html>

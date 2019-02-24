@@ -10,6 +10,7 @@ const VM         = require('./irma/VM');
 
 class Irma {
     constructor() {
+        this._pause = false;
         this._vm    = new VM();
         this._runCb = this.run.bind(this);
 
@@ -17,8 +18,22 @@ class Irma {
     }
 
     run() {
+        if (this._pause) {return}
         this._vm.run();
         this.zeroTimeout(this._runCb);
+    }
+
+    get pause() {
+        return this._pause;
+    }
+
+    set pause(val) {
+        this._pause = val;
+        this.run();
+    }
+
+    get ready() {
+        return this._vm.ready;
     }
 
     destroy() {

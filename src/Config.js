@@ -43,7 +43,7 @@ const Config = {
      */
     CODE_STACK_SIZE        : 1000,
     codeLinesPerIteration  : 10,
-    codeTimesPerRun        : 300,
+    codeTimesPerRun        : 3,
     codeCrossoverEveryClone: 10,
     codeMutateEveryClone   : 5,
     codeDefault            : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
@@ -109,6 +109,12 @@ const Config = {
         amount   : 20000,
         block    : .96
     }],
+    /**
+     * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
+     * @constant
+     */
+    DB_ON                  : false,
+    DB_CHUNK_SIZE          : 200,
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit
      * for this. First bit is used to check if it's an organism

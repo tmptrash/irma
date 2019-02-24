@@ -35,6 +35,7 @@
 const Config    = require('./../Config');
 const FastArray = require('./../common/FastArray');
 const Helper    = require('./../common/Helper');
+const Db        = require('./../common/Db');
 const Organism  = require('./Organism');
 const Mutations = require('./Mutations');
 const World     = require('./World');
@@ -92,19 +93,27 @@ class VM {
         this._ts              = Date.now();
         this._totalOrgsEnergy = 0;
         this._i               = 0;
-
-        this._createOrgs();
+        if (Config.DB_ON) {
+            this._db          = new Db();
+            this._db.ready.then(() => this._createOrgs());
+        }
     }
 
     destroy() {
         this._world.destroy();
         this._orgs.destroy();
+        this._db && this._db.destroy();
         for (let i = 0; i < this._surfaces.length; i++) {this._surfaces[i].destroy()}
         this._surfaces = null;
         this._world    = null;
         this._orgs     = null;
         this._world    = null;
         this._orgs     = null;
+        this._db       = null;
+    }
+
+    get ready() {
+        return this._db.ready;
     }
 
     /**
@@ -201,6 +210,7 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
+                            this._db && this._db.putEdge(org.id, clone.id);
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
                             if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
                             else if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
@@ -236,33 +246,30 @@ class VM {
 
                         case CODE_CMD_OFFS + 8:   // add
                             d = a + b;
-                            d = fin(d) ? d : MAX;
+                            if (!fin(d)) {d = MAX}
                             break;
 
                         case CODE_CMD_OFFS + 9:   // sub
                             d = a - b;
-                            d = fin(d) ? d : -MAX;
+                            if (!fin(d)) {d = -MAX}
                             break;
 
                         case CODE_CMD_OFFS + 10:  // mul
                             d = a * b;
-                            d = fin(d) ? d : MAX;
+                            if (!fin(d)) {d = MAX}
                             break;
 
                         case CODE_CMD_OFFS + 11:  // div
                             d = a / b;
-                            d = fin(d) ? d : 0;
-                            d = !nan(d) ? d : 0;
+                            if (!fin(d) || nan(d)) {d = 0}
                             break;
 
                         case CODE_CMD_OFFS + 12:  // inc
-                            d++;
-                            d = fin(d) ? d : MAX;
+                            if (!fin(++d)) {d = MAX}
                             break;
 
                         case CODE_CMD_OFFS + 13:  // dec
-                            d--;
-                            d = fin(d) ? d : -MAX;
+                            if (!fin(--d)) {d = -MAX}
                             break;
 
                         case CODE_CMD_OFFS + 14: {// jump
@@ -348,7 +355,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 25:  // func
                             line = org.offs[line];
-                            if (line === 0) {
+                            if (line === 0 && org.stackIndex >= 0) {
                                 const stack = org.stack;
                                 b    = stack[3];
                                 a    = stack[2];
@@ -493,6 +500,7 @@ class VM {
         const org  = new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, parent);
 
         orgs.add(org);
+        this._db && this._db.putOrg(org);
         this._world.org(x, y, org);
 
         return org;
