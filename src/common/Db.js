@@ -11,42 +11,34 @@ const Config = require('./../Config');
 
 class Db {
     constructor() {
-        this._db           = null;
-        this._promise      = this._createDb();
-        this._orgBuf       = new Array(Config.DB_CHUNK_SIZE);
-        this._orgBufIndex  = 0;
-        this._edgeBuf      = new Array(Config.DB_CHUNK_SIZE);
-        this._edgeBufIndex = 0;
+        this._db       = null;
+        this._promise  = this._createDb();
+        this._buf      = new Array(Config.DB_CHUNK_SIZE);
+        this._bufIndex = 0;
     }
 
     destroy() {
         this._db.close(); // no promise needed
-        this._db      = null;
-        this._orgBuf  = null;
-        this._edgeBuf = null;
-        this._promise = null;
+        this._db  = null;
+        this._buf = null;
     }
 
     get ready() {
         return this._promise;
     }
 
-    putOrg(org) {
-        if (this._orgBufIndex >= Config.DB_CHUNK_SIZE) {
-            this._db.orgs.put({orgs: this._orgBuf, edges: this._edgeBuf.slice(0, this._edgeBufIndex)});
-            this._orgBufIndex  = 0;
-            this._edgeBufIndex = 0;
+    /**
+     * Puts array of organisms to the database. It stores organisms in a local
+     * array till it reaches some limit and then put all these records to DB
+     * @param {Organism} org organism we are putting
+     * @param {Organism|null} parent Parent organism. null if no parent first)
+     */
+    put(org, parent = null) {
+        if (this._bufIndex >= Config.DB_CHUNK_SIZE) {
+            this._db.orgs.bulkPut(this._buf);
+            this._bufIndex = 0;
         }
-        this._orgBuf[this._orgBufIndex++] = {data: {id: org.id + '', code: org.code.slice()}};
-    }
-
-    putEdge(source, target) {
-        if (this._edgeBufIndex >= Config.DB_CHUNK_SIZE) {
-            this._db.orgs.put({orgs: this._orgBuf.slice(0 ,this._orgBufIndex), edges: this._edgeBuf});
-            this._orgBufIndex  = 0;
-            this._edgeBufIndex = 0;
-        }
-        this._edgeBuf[this._edgeBufIndex++] = {data: {source:  source + '', target: target + ''}};
+        this._buf[this._bufIndex++] = {id: org.id, code: org.code.slice(), parent: parent && parent.id || null};
     }
 
     /**
@@ -57,7 +49,7 @@ class Db {
     _createDb() {
         return new Promise((resolve, reject) => {
             const db = this._db = new Dexie('irma');
-            db.version(1).stores({orgs: '++id'});
+            db.version(1).stores({orgs: '&id,parent'});
             try {db.orgs.clear().then(resolve).catch(reject)} catch(e) {reject(e)}
         });
     }

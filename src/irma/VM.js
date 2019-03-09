@@ -96,7 +96,7 @@ class VM {
         if (Config.DB_ON) {
             this._db          = new Db();
             this._db.ready.then(() => this._createOrgs());
-        }
+        } else {this._createOrgs()}
     }
 
     destroy() {
@@ -113,7 +113,10 @@ class VM {
     }
 
     get ready() {
-        return this._db.ready;
+        if (this._db) {
+            return this._db.ready;
+        }
+        return new Promise(resolve => resolve());
     }
 
     /**
@@ -210,7 +213,6 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone  = this._createOrg(x, y, org);
                             org.energy   = clone.energy = ceil(org.energy >> 1);
-                            this._db && this._db.putEdge(org.id, clone.id);
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
                             if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
                             else if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
@@ -500,7 +502,7 @@ class VM {
         const org  = new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, parent);
 
         orgs.add(org);
-        this._db && this._db.putOrg(org);
+        this._db && this._db.put(org, parent);
         this._world.org(x, y, org);
 
         return org;
