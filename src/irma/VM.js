@@ -216,6 +216,7 @@ class VM {
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
                             if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
                             else if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
+                            this._db && this._db.put(clone, org);
                             break;
                         }
 
@@ -483,7 +484,8 @@ class VM {
             const x = rand(width);
             const y = rand(height);
             if (data[x][y] === 0) {
-                this._createOrg(x, y);
+                const org = this._createOrg(x, y);
+                this._db && this._db.put(org);
                 orgAmount--;
             }
         }
@@ -502,7 +504,6 @@ class VM {
         const org  = new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, parent);
 
         orgs.add(org);
-        this._db && this._db.put(org, parent);
         this._world.org(x, y, org);
 
         return org;
