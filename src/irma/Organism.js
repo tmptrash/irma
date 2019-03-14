@@ -25,7 +25,7 @@ class Organism {
         this.steps      = 0;
         this.radiation  = 0;
         /**
-         * {Array} Temporary offsets array. Is used durinf preprocessing
+         * {Array} Temporary offsets array. Is used during preprocessing
          */
         this._offs      = new Array(Config.orgMaxCodeSize);
         if (parent !== null) {
@@ -33,6 +33,7 @@ class Organism {
             return;
         }
 
+        this.generation = 0;
         this.line       = 0;
         this.probs      = Config.orgProbs.slice();
         this.probArr    = this.createProbArr();
@@ -151,6 +152,7 @@ class Organism {
         this.stack      = parent.stack.slice();
         this.mem        = parent.mem.slice();
         this.code       = parent.code.slice();
+        this.generation = parent.generation + 1;
     }
 }
 

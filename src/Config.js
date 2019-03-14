@@ -45,7 +45,7 @@ const Config = {
     codeLinesPerIteration  : 10,
     codeTimesPerRun        : 3,
     codeCrossoverEveryClone: 10,
-    codeMutateEveryClone   : 5,
+    codeMutateEveryClone   : 3,
     codeDefault            : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
@@ -101,19 +101,19 @@ const Config = {
         radiation: 0,
         amount   : 200000,
         block    : .96
-    }, {                           // radiation
+    }/*, {                           // radiation
         color    : 0xFFFFF3,
         energy   : 0,
         step     : 1,
         radiation: 1,
         amount   : 20000,
         block    : .96
-    }],
+    }*/],
     /**
      * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
      * @constant
      */
-    DB_ON                  : false,
+    DB_ON                  : true,
     DB_CHUNK_SIZE          : 200,
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit

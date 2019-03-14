@@ -215,7 +215,7 @@ class VM {
                             org.energy   = clone.energy = ceil(org.energy >> 1);
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
                             if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
-                            else if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
+                            if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
                             this._db && this._db.put(clone, org);
                             break;
                         }
@@ -514,7 +514,7 @@ class VM {
         const AMOUNT = SURFS.length + 1;
 
         const surfaces = new Array(AMOUNT);
-        surfaces[0] = new Energy(this._world);
+        surfaces[0]    = new Energy(this._world);
         for (let i = 1; i < AMOUNT; i++) {
             surfaces[i] = new Surface(SURFS[i - 1], this._world);
         }

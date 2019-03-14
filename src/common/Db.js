@@ -38,7 +38,7 @@ class Db {
             this._db.orgs.bulkPut(this._buf);
             this._bufIndex = 0;
         }
-        this._buf[this._bufIndex++] = {id: org.id, code: org.code.slice(), parent: parent && parent.id || null};
+        this._buf[this._bufIndex++] = {id: org.id, code: org.code.slice(), parent: parent && parent.id || null, generation: org.generation};
     }
 
     /**
@@ -49,7 +49,7 @@ class Db {
     _createDb() {
         return new Promise((resolve, reject) => {
             const db = this._db = new Dexie('irma');
-            db.version(1).stores({orgs: '&id,parent'});
+            db.version(1).stores({orgs: '&id,parent,generation'});
             try {db.orgs.clear().then(resolve).catch(reject)} catch(e) {reject(e)}
         });
     }
