@@ -24,6 +24,7 @@ class Organism {
         this.dot        = 0x000000;
         this.steps      = 0;
         this.radiation  = 0;
+        this.mutations  = 0;
         /**
          * {Array} Temporary offsets array. Is used during preprocessing
          */

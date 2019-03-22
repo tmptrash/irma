@@ -75,6 +75,7 @@ const Config = {
      */
     worldSurfaces          : [/*{     // lava
         color    : 0xff8881,
+        barrier  : false,
         energy   : 1,
         step     : 3,
         radiation: .1,
@@ -82,6 +83,7 @@ const Config = {
         block    : .96
     },*/ {                           // water
         color    : 0x0000f1,
+        barrier  : false,
         energy   : 0,
         step     : 15,
         radiation: 0,
@@ -89,31 +91,42 @@ const Config = {
         block    : .99
     },/* {                           // hole
         color    : 0xaaaaa3,
+        barrier  : false,
         energy   : 100,
         step     : 0,
         radiation: 0,
         amount   : 10000,
         block    : .96
-    },*/ {                           // sand
+    }, {                           // sand
         color    : 0xFFFF02,
+        barrier  : false,
         energy   : .001,
         step     : 2,
         radiation: 0,
         amount   : 200000,
         block    : .96
-    }/*, {                           // radiation
+    }, {                           // radiation
         color    : 0xFFFFF3,
+        barrier  : false,
         energy   : 0,
         step     : 1,
         radiation: 1,
         amount   : 20000,
         block    : .96
-    }*/],
+    },*/ {
+        color    : 0xBBBBB2,         // stones
+        barrier  : true,
+        energy   : 0,
+        step     : 0,
+        radiation: 0,
+        amount   : 200000,
+        block    : .96
+    }],
     /**
      * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
      * @constant
      */
-    DB_ON                  : true,
+    DB_ON                  : false,
     DB_CHUNK_SIZE          : 200,
     /**
      * {Number} Mask to check if some dot is an energy. We use second bit
@@ -122,7 +135,7 @@ const Config = {
     ENERGY_MASK            : 0x40000000,
     energyColor            : 0x00ff00,
     energyValue            : 50,
-    energyAmount           : 160000,
+    energyAmount           : 100000,
     energyBlockPercent     : .99,
 
     /**
@@ -142,7 +155,7 @@ const Config = {
     orgMutationPeriod      : 250000,
     orgMaxCodeSize         : 512,
     orgStartCodeSize       : 64,
-    orgRandCodeOnStart     : false,
+    orgRandCodeOnStart     : true,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

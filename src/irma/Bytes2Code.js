@@ -15,8 +15,8 @@ class Bytes2Code {
      * @param {Array} bytes Array of numbers (bytes)
      * @return {String} Array of asm like strings
      */
-    static toCode(bytes) {
-        let code = '\n';
+    static toCode(bytes, firstLineEmpty = true) {
+        let code = firstLineEmpty ? '\n' : '';
         let span = '';
         for (let b = 0; b < bytes.length; b++) {
             if (bytes[b] === CODE_CMD_OFFS + 25) { // func

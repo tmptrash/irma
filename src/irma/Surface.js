@@ -27,6 +27,7 @@ class Surface {
 
         this.color       = cfg.color;
         this.energy      = cfg.energy;
+        this.barrier     = cfg.barrier;
         this.step        = cfg.step;
         this.radiation   = cfg.radiation;
         this.amount      = cfg.amount * 2;

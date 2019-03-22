@@ -172,7 +172,10 @@ class VM {
                             const y      = org.y + DIRY[intd];
                             let   dot;
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x][y]) & ORG_MASK) !== 0) {break}
-
+                            //
+                            // Organism can't step through stone
+                            //
+                            if ((dot & ENERGY_MASK) === 0 && this._surfaces[dot % SURFACES].barrier === true) {break}
                             org.dot = dot;
                             world.moveOrg(org, x, y);
                             (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
@@ -206,17 +209,19 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 2: { // clone
-                            if (orgs.full || org.energy < Config.orgCloneEnergy) {break}
-                            const intd   = abs(d << 0) % 8;
-                            const x      = org.x + DIRX[intd];
-                            const y      = org.y + DIRY[intd];
-                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
-                            const clone  = this._createOrg(x, y, org);
-                            org.energy   = clone.energy = ceil(org.energy >> 1);
-                            if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
-                            if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
-                            if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
-                            this._db && this._db.put(clone, org);
+                            if (orgs.full) {break}
+                            if (org.energy > Config.orgCloneEnergy) {
+                                const intd = abs(d << 0) % 8;
+                                const x = org.x + DIRX[intd];
+                                const y = org.y + DIRY[intd];
+                                if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
+                                const clone = this._createOrg(x, y, org);
+                                org.energy = clone.energy = ceil(org.energy >> 1);
+                                if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
+                                if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
+                                if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
+                                this._db && this._db.put(clone, org);
+                            }
                             break;
                         }
 
