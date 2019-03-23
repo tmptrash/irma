@@ -124,11 +124,11 @@ class VM {
      * times value may slow down user and browser interaction
      */
     run() {
-        const times   = Config.codeTimesPerRun;
-        const lines   = Config.codeLinesPerIteration;
-        const orgs    = this._orgs;
-        const world   = this._world;
-        const data    = world.data;
+        const times    = Config.codeTimesPerRun;
+        const lines    = Config.codeLinesPerIteration;
+        const orgs     = this._orgs;
+        const world    = this._world;
+        const data     = world.data;
         //
         // Loop X times through population
         //
@@ -436,16 +436,23 @@ class VM {
                     org.energy -= (1 + org.energy * .01);
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
+                //
+                // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
+                //
+                for (let s = 0, sLen = this._SURFS; s < sLen; s++) {
+                    const surface = this._surfaces[s];
+                    if (surface.curDelay++ >= surface.delay) {
+                        surface.move();
+                        surface.curDelay = 0;
+                    }
+                }
 
                 org.age++;
                 this._i += lines;
                 orgsEnergy += org.energy;
             }
-            //
-            // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
-            //
+
             this._ENERGY.update(this._totalOrgsEnergy);
-            for (let s = 0, sLen = this._SURFS; s < sLen; s++) {this._surfaces[s].move()}
             this._totalOrgsEnergy = orgsEnergy;
             this._iterations++;
         }

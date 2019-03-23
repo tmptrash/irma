@@ -44,7 +44,7 @@ const Config = {
     CODE_STACK_SIZE        : 1000,
     codeLinesPerIteration  : 10,
     codeTimesPerRun        : 3,
-    codeCrossoverEveryClone: 10,
+    codeCrossoverEveryClone: 7,
     codeMutateEveryClone   : 3,
     codeDefault            : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
@@ -58,7 +58,6 @@ const Config = {
      * @constant
      */
     WORLD_HEIGHT           : 1080 * 2,
-    worldSurfacesDelay     : 10,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -79,6 +78,7 @@ const Config = {
         energy   : 1,
         step     : 3,
         radiation: .1,
+        delay    : 20,
         amount   : 100000,
         block    : .96
     },*/ {                           // water
@@ -87,6 +87,7 @@ const Config = {
         energy   : 0,
         step     : 15,
         radiation: 0,
+        delay    : 0,
         amount   : 1000000,
         block    : .99
     },/* {                           // hole
@@ -95,6 +96,7 @@ const Config = {
         energy   : 100,
         step     : 0,
         radiation: 0,
+        delay    : 100,
         amount   : 10000,
         block    : .96
     }, {                           // sand
@@ -103,6 +105,7 @@ const Config = {
         energy   : .001,
         step     : 2,
         radiation: 0,
+        delay    : 50,
         amount   : 200000,
         block    : .96
     }, {                           // radiation
@@ -111,6 +114,7 @@ const Config = {
         energy   : 0,
         step     : 1,
         radiation: 1,
+        delay    : 50,
         amount   : 20000,
         block    : .96
     },*/ {
@@ -119,6 +123,7 @@ const Config = {
         energy   : 0,
         step     : 0,
         radiation: 0,
+        delay    : 100,
         amount   : 200000,
         block    : .96
     }],
@@ -134,8 +139,8 @@ const Config = {
      */
     ENERGY_MASK            : 0x40000000,
     energyColor            : 0x00ff00,
-    energyValue            : 50,
-    energyAmount           : 100000,
+    energyValue            : 30,
+    energyAmount           : 15000,
     energyBlockPercent     : .99,
 
     /**
@@ -144,9 +149,9 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE     : 100,
     orgAmount              : 10000,
-    orgMaxAge              : 500000,
-    orgEnergy              : 1000,
-    orgCloneEnergy         : 2000,
+    orgMaxAge              : 100000,
+    orgEnergy              : 200,
+    orgCloneEnergy         : 500,
     orgEnergyPeriod        : 1000,
     orgColor               : 0xff0000,
     orgMemSize             : 64,

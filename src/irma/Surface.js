@@ -30,6 +30,7 @@ class Surface {
         this.barrier     = cfg.barrier;
         this.step        = cfg.step;
         this.radiation   = cfg.radiation;
+        this.delay       = cfg.delay;
         this.amount      = cfg.amount * 2;
         this.block       = cfg.block;
         this.dots        = new Array(this.amount);
@@ -37,6 +38,7 @@ class Surface {
         this.dirx        = Helper.rand(Config.WORLD_WIDTH);
         this.diry        = Helper.rand(Config.WORLD_HEIGHT);
         this.i           = 0;
+        this.curDelay    = 0;
         this.blocked     = 0;
         this._blockLimit = (cfg.amount * cfg.block) << 0;
 
