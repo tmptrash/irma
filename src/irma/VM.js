@@ -465,7 +465,7 @@ class VM {
                 const org2 = orgs.get(rand(orgs.size));
                 if (org1 !== null && org2 !== null) {
                     this._averageDistance += Helper.distance(org1.code, org2.code);
-                    this._averageCodeSize += org1.code.length;
+                    this._averageCodeSize += ceil((org1.code.length + org2.code.length) / 2);
                     if (++this._averageAmount > (Config.orgAmount * Config.worldOrgsSimilarityPercent)) {
                         this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
                         if (this._diff < Config.worldOrgsSimilarityPercent) {
