@@ -466,10 +466,10 @@ class VM {
                 if (org1 !== null && org2 !== null) {
                     this._averageDistance += Helper.distance(org1.code, org2.code);
                     this._averageCodeSize += org1.code.length;
-                    if (++this._averageAmount > (Config.orgAmount / Config.worldOrgsSimilarityPercent)) {
+                    if (++this._averageAmount > (Config.orgAmount * Config.worldOrgsSimilarityPercent)) {
                         this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
                         if (this._diff < Config.worldOrgsSimilarityPercent) {
-                            for (let i = 0, orgAmount = ceil(orgs.items / Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
+                            for (let i = 0, orgAmount = ceil(orgs.items * Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
                                 const org2Kill = orgs.get(i);
                                 if (org2Kill === null) {orgAmount++; continue}
                                 const x = rand(Config.WORLD_WIDTH);
