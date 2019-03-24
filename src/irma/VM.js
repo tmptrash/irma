@@ -441,37 +441,6 @@ class VM {
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
                 //
-                // Global cataclysm logic. If global similarity is more then 30%, then this
-                // mechanism start working. 30% of all organisms will be removed and new random
-                // organisms will be created
-                //
-                if (this._iterations % Config.worldCataclysmCheck === 0) {
-                    const org2 = orgs.get(rand(orgs.size));
-                    if (org2 !== null) {
-                        this._averageDistance += Helper.distance(org.code, org2.code);
-                        this._averageCodeSize += org.code.length;
-                        if (++this._averageAmount === Config.orgAmount) {
-                            this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
-                            if (this._diff < Config.worldOrgsSimilarityPercent) {
-                                for (let i = 0, orgAmount = ceil(orgs.items / Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
-                                    const org2Kill = orgs.get(i);
-                                    if (org2Kill === null) {orgAmount++; continue}
-                                    const x = rand(Config.WORLD_WIDTH);
-                                    const y = rand(Config.WORLD_HEIGHT);
-                                    if (data[x][y] === 0) {
-                                        this._removeOrg(org2Kill);
-                                        const org = this._createOrg(x, y);
-                                        this._db && this._db.put(org);
-                                    }
-                                }
-                            }
-                            this._averageAmount   = 0;
-                            this._averageDistance = 0;
-                            this._averageCodeSize = 0;
-                        }
-                    }
-                }
-                //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
                 for (let s = 0, sLen = this._SURFS; s < sLen; s++) {
@@ -485,6 +454,38 @@ class VM {
                 org.age++;
                 this._i += lines;
                 orgsEnergy += org.energy;
+            }
+            //
+            // Global cataclysm logic. If global similarity is more then 30%, then this
+            // mechanism start working. 30% of all organisms will be removed and new random
+            // organisms will be created
+            //
+            if (this._iterations % Config.worldCataclysmEvery === 0) {
+                const org1 = orgs.get(rand(orgs.size));
+                const org2 = orgs.get(rand(orgs.size));
+                if (org1 !== null && org2 !== null) {
+                    this._averageDistance += Helper.distance(org1.code, org2.code);
+                    this._averageCodeSize += org1.code.length;
+                    if (++this._averageAmount > (Config.orgAmount / Config.worldOrgsSimilarityPercent)) {
+                        this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
+                        if (this._diff < Config.worldOrgsSimilarityPercent) {
+                            for (let i = 0, orgAmount = ceil(orgs.items / Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
+                                const org2Kill = orgs.get(i);
+                                if (org2Kill === null) {orgAmount++; continue}
+                                const x = rand(Config.WORLD_WIDTH);
+                                const y = rand(Config.WORLD_HEIGHT);
+                                if (data[x][y] === 0) {
+                                    this._removeOrg(org2Kill);
+                                    const org = this._createOrg(x, y);
+                                    this._db && this._db.put(org);
+                                }
+                            }
+                        }
+                        this._averageAmount   = 0;
+                        this._averageDistance = 0;
+                        this._averageCodeSize = 0;
+                    }
+                }
             }
 
             this._ENERGY.update(this._totalOrgsEnergy);

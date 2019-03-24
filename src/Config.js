@@ -62,7 +62,7 @@ const Config = {
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,
-    worldCataclysmCheck        : 100,
+    worldCataclysmEvery        : 10,
     /**
      * {Number} Percent of differences between organisms after which global
      * cataclysm mechanism will be run.
@@ -146,7 +146,7 @@ const Config = {
     ENERGY_MASK                : 0x40000000,
     energyColor                : 0x00ff00,
     energyValue                : 30,
-    energyAmount               : 10000,
+    energyAmount               : 5000,
     energyBlockPercent         : .99,
 
     /**
@@ -154,7 +154,7 @@ const Config = {
      * @constant
      */
     ORG_PROB_MAX_VALUE         : 100,
-    orgAmount                  : 10000,
+    orgAmount                  : 5000,
     orgGrabEnergyPercent       : .01,
     orgMaxAge                  : 100000,
     orgEnergy                  : 100,
