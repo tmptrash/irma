@@ -125,12 +125,12 @@ class Organism {
     _generateCode() {
         const size    = Config.orgStartCodeSize;
         const code    = new Array(size);
-        const codeLen = Config.codeDefault.length;
 
-        code.splice(0, codeLen, ...Config.codeDefault);
         if (Config.orgRandCodeOnStart) {
-            for (let i = codeLen; i < size; i++) {code[i] = Mutations.randCmd()}
+            for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
         } else {
+            const codeLen = Config.codeDefault.length;
+            code.splice(0, codeLen, ...Config.codeDefault);
             for (let i = codeLen; i < size; i++) {code[i] = CODE_CMD_OFFS + 18}
         }
 

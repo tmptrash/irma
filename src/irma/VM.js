@@ -93,6 +93,10 @@ class VM {
         this._ts              = Date.now();
         this._totalOrgsEnergy = 0;
         this._i               = 0;
+        this._diff            = 0;
+        this._averageDistance = 0;
+        this._averageCodeSize = 0;
+        this._averageAmount   = 0;
         if (Config.DB_ON) {
             this._db          = new Db();
             this._db.ready.then(() => this._createOrgs());
@@ -216,8 +220,8 @@ class VM {
                             const clone = this._createOrg(x, y, org);
                             org.energy = clone.energy = ceil(org.energy >> 1);
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
-                            if (rand(Config.codeCrossoverEveryClone) === 0) {Mutations.crossover(clone, org)}
                             if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
+                            if (rand(Config.codeCrossoverEveryClone) === 0) {const org2 = orgs.get(rand(orgs.size)); org2 !== null && Mutations.crossover(clone, org2)}
                             this._db && this._db.put(clone, org);
                             break;
                         }
@@ -433,8 +437,39 @@ class VM {
                     //
                     // Energy waste depends on energy amount. Big (more energy) organism spends more energy
                     //
-                    org.energy -= (1 + org.energy * .01);
+                    org.energy -= (1 + org.energy * Config.orgGrabEnergyPercent);
                     if (org.energy <= 0) {this._removeOrg(org)}
+                }
+                //
+                // Global cataclysm logic. If global similarity is more then 30%, then this
+                // mechanism start working. 30% of all organisms will be removed and new random
+                // organisms will be created
+                //
+                if (this._iterations % Config.worldCataclysmCheck === 0) {
+                    const org2 = orgs.get(rand(orgs.size));
+                    if (org2 !== null) {
+                        this._averageDistance += Helper.distance(org.code, org2.code);
+                        this._averageCodeSize += org.code.length;
+                        if (++this._averageAmount === Config.orgAmount) {
+                            this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
+                            if (this._diff < Config.worldOrgsSimilarityPercent) {
+                                for (let i = 0, orgAmount = ceil(orgs.items / Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
+                                    const org2Kill = orgs.get(i);
+                                    if (org2Kill === null) {orgAmount++; continue}
+                                    const x = rand(Config.WORLD_WIDTH);
+                                    const y = rand(Config.WORLD_HEIGHT);
+                                    if (data[x][y] === 0) {
+                                        this._removeOrg(org2Kill);
+                                        const org = this._createOrg(x, y);
+                                        this._db && this._db.put(org);
+                                    }
+                                }
+                            }
+                            this._averageAmount   = 0;
+                            this._averageDistance = 0;
+                            this._averageCodeSize = 0;
+                        }
+                    }
                 }
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
@@ -462,7 +497,7 @@ class VM {
         const ts = Date.now();
         if (ts - this._ts > 1000) {
             const orgAmount = orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this._totalOrgsEnergy / orgAmount) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population}`);
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this._totalOrgsEnergy / orgAmount) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population} diff:${this._diff}`);
             this._ts = ts;
             this._i  = 0;
 

@@ -30,6 +30,8 @@ class Energy extends Surface {
             energy   : 0,
             step     : 1,
             radiation: 0,
+            barrier  : false,
+            delay    : 50,
             amount   : Config.energyAmount,
             block    : Config.energyBlockPercent}, world
         );
