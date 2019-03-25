@@ -486,7 +486,7 @@ class VM {
         if (org1 !== null && org2 !== null) {
             this._averageDistance += Helper.distance(org1.code, org2.code);
             this._averageCodeSize += ceil((org1.code.length + org2.code.length) / 2);
-            if (++this._averageAmount > (Config.orgAmount * Config.worldOrgsSimilarityPercent)) {
+            if (++this._averageAmount > (Config.orgAmount * .3)) {
                 this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
                 if (this._diff < Config.worldOrgsSimilarityPercent) {
                     for (let i = 0, orgAmount = ceil(orgs.items * Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
