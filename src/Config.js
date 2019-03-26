@@ -46,6 +46,7 @@ const Config = {
     codeTimesPerRun            : 3,
     codeCrossoverEveryClone    : 10,
     codeMutateEveryClone       : 3,
+    codeStepEnergy             : .005,
     codeDefault                : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
@@ -93,7 +94,7 @@ const Config = {
         energy   : 0,
         step     : 15,
         radiation: 0,
-        delay    : 0,
+        delay    : 10,
         amount   : 1000000,
         block    : .99
     },/* {                            // hole
@@ -145,8 +146,8 @@ const Config = {
      */
     ENERGY_MASK                : 0x40000000,
     energyColor                : 0x00ff00,
-    energyValue                : 30,
-    energyAmount               : 5000,
+    energyValue                : 20,
+    energyAmount               : 10000,
     energyBlockPercent         : .99,
 
     /**
@@ -154,10 +155,10 @@ const Config = {
      * @constant
      */
     ORG_PROB_MAX_VALUE         : 100,
-    orgAmount                  : 5000,
+    orgAmount                  : 10000,
     orgGrabEnergyPercent       : .01,
     orgMaxAge                  : 100000,
-    orgEnergy                  : 100,
+    orgEnergy                  : 50,
     orgCloneEnergy             : 100,
     orgEnergyPeriod            : 1000,
     orgColor                   : 0xff0000,

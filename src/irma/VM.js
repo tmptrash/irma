@@ -166,8 +166,8 @@ class VM {
                             if (oldDot !== 0) {
                                 const surface = (oldDot & ENERGY_MASK) !== 0 ? this._ENERGY : this._surfaces[oldDot % SURFACES];
                                 org.energy   -= surface.energy;
-                                if ((org.radiation += surface.radiation) >= 1) {org.radiation = 0; Mutations.mutate(org)}
                                 if (org.energy <= 0) {this._removeOrg(org); l = lines; break}
+                                if ((org.radiation += surface.radiation) >= 1) {org.radiation = 0; Mutations.mutate(org)}
                                 if (++org.steps < surface.step) {break}
                                 org.steps = 0;
                             }
@@ -183,8 +183,10 @@ class VM {
                             org.dot = dot;
                             world.moveOrg(org, x, y);
                             (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
+                            org.energy -= Config.codeStepEnergy;
                             org.x = x;
                             org.y = y;
+                            if (org.energy <= 0) {this._removeOrg(org); l = lines}
                             break;
                         }
 
