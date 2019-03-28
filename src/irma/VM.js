@@ -183,7 +183,7 @@ class VM {
                             org.dot = dot;
                             world.moveOrg(org, x, y);
                             (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
-                            org.energy -= Config.codeStepEnergy;
+                            org.energy -= (org.energy * Config.codeStepEnergyPercent);
                             org.x = x;
                             org.y = y;
                             if (org.energy <= 0) {this._removeOrg(org); l = lines}
@@ -439,7 +439,7 @@ class VM {
                     //
                     // Energy waste depends on energy amount. Big (more energy) organism spends more energy
                     //
-                    org.energy -= (1 + org.energy * Config.orgGrabEnergyPercent);
+                    org.energy--;
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
                 //
@@ -485,6 +485,7 @@ class VM {
     _updateCataclysm(orgs) {
         const org1 = orgs.get(rand(orgs.size));
         const org2 = orgs.get(rand(orgs.size));
+        const data = this._world.data;
         if (org1 !== null && org2 !== null) {
             this._averageDistance += Helper.distance(org1.code, org2.code);
             this._averageCodeSize += ceil((org1.code.length + org2.code.length) / 2);

@@ -46,7 +46,7 @@ const Config = {
     codeTimesPerRun            : 3,
     codeCrossoverEveryClone    : 10,
     codeMutateEveryClone       : 3,
-    codeStepEnergy             : .005,
+    codeStepEnergyPercent      : .0001,
     codeDefault                : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
@@ -156,7 +156,6 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 100,
     orgAmount                  : 10000,
-    orgGrabEnergyPercent       : .01,
     orgMaxAge                  : 100000,
     orgEnergy                  : 50,
     orgCloneEnergy             : 100,
