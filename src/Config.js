@@ -97,8 +97,8 @@ const Config = {
         delay    : 10,
         amount   : 1000000,
         block    : .99
-    },/* {                            // hole
-        color    : 0xaaaaa3,
+    }, {                             // hole
+        color    : 0x333332,
         barrier  : false,
         energy   : 100,
         step     : 0,
@@ -106,7 +106,7 @@ const Config = {
         delay    : 100,
         amount   : 10000,
         block    : .96
-    }, {                              // sand
+    },/* {                              // sand
         color    : 0xFFFF02,
         barrier  : false,
         energy   : .001,
@@ -125,13 +125,22 @@ const Config = {
         amount   : 20000,
         block    : .96
     },*/ {
-        color    : 0xBBBBB2,          // stones
+        color    : 0xBBBBB3,          // stones
         barrier  : true,
         energy   : 0,
         step     : 0,
         radiation: 0,
         delay    : 100,
         amount   : 200000,
+        block    : .96
+    }, {
+        color    : 0xFF9904,          // poison
+        barrier  : false,
+        energy   : 100,
+        step     : 0,
+        radiation: 0,
+        delay    : 100,
+        amount   : 20000,
         block    : .96
     }],
     /**
@@ -147,7 +156,7 @@ const Config = {
     ENERGY_MASK                : 0x40000000,
     energyColor                : 0x00ff00,
     energyValue                : 20,
-    energyAmount               : 10000,
+    energyAmount               : 125000,
     energyBlockPercent         : .99,
 
     /**
@@ -155,7 +164,7 @@ const Config = {
      * @constant
      */
     ORG_PROB_MAX_VALUE         : 100,
-    orgAmount                  : 10000,
+    orgAmount                  : 50000,
     orgMaxAge                  : 100000,
     orgEnergy                  : 50,
     orgCloneEnergy             : 100,
