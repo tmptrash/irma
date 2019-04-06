@@ -126,7 +126,7 @@ class Organism {
         const size    = Config.orgStartCodeSize;
         const code    = new Array(size);
 
-        if (Config.orgRandCodeOnStart) {
+        if (Config.codeDefault.length === 0) {
             for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
         } else {
             const codeLen = Config.codeDefault.length;

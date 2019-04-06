@@ -1,137 +1,162 @@
 /**
  * Class, which creates and moves dots of specified surface (e.g.: lava, water, sand,...)
- * in time. It moves all dots in special random chosen direction. This is analog of earth
- * planes moving or water move.
+ * in time. It moves all dots in special random chosen directions. This is analog of earth
+ * planes moving or water tides.
  *
  * @author flatline
  */
-const Helper  = require('./../common/Helper');
-const Config  = require('./../Config');
+const Helper   = require('./../common/Helper');
+const Config   = require('./../Config');
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX    = Config.DIRX;
-const DIRY    = Config.DIRY;
-
-const WIDTH   = Config.WORLD_WIDTH  - 1;
-const HEIGHT  = Config.WORLD_HEIGHT - 1;
-
-const rand    = Helper.rand;
+const WIDTH    = Config.WORLD_WIDTH  - 1;
+const HEIGHT   = Config.WORLD_HEIGHT - 1;
+const WIDTH1   = Config.WORLD_WIDTH;
+const HEIGHT1  = Config.WORLD_HEIGHT;
+const ORG_MASK = Config.ORG_MASK;
+const rand     = Helper.rand;
+const abs      = Math.abs;
 
 class Surface {
     constructor(cfg, world) {
-        this.world       = world;
-        this.data        = world.data;
+        this._applyCfg(cfg);
 
-        this.color       = cfg.color;
-        this.energy      = cfg.energy;
-        this.barrier     = cfg.barrier;
-        this.step        = cfg.step;
-        this.radiation   = cfg.radiation;
-        this.delay       = cfg.delay;
-        this.amount      = cfg.amount * 2;
-        this.block       = cfg.block;
-        this.dots        = new Array(this.amount);
-
-        this.dirx        = Helper.rand(Config.WORLD_WIDTH);
-        this.diry        = Helper.rand(Config.WORLD_HEIGHT);
-        this.i           = 0;
+        this._world      = world;
+        this._data       = world.data;
+        this._dirx       = null;
+        this._diry       = null;
+        this._curAmount  = 0;
+        this._i          = 0;
         this.curDelay    = 0;
-        this.blocked     = 0;
-        this._blockLimit = (cfg.amount * cfg.block) << 0;
 
-        this.initDots();
+        this._initDirs();
+        this._initDots();
     }
 
     destroy() {
-        this.world  = null;
-        this.dots   = [];
-        this.data   = null;
+        this._world = null;
+        this._data  = null;
     }
 
     move() {
-        if (this.i >= this.amount) {this.i = this.blocked = 0}
-        const dots = this.dots;
-        const x0   = dots[this.i++];
-        const y0   = dots[this.i++];
-        if (x0 < 0) {return}
-        if (this.notSurfaceDot(x0, y0)) {++this.blocked; return}
-        const x1   = x0 + (this.dirx > x0 ? 1 : -1);
-        const y1   = y0 + (this.diry > y0 ? 1 : -1);
+        const SCAN  = this.scan;
+        const DATA  = this._data;
+        const DIRX  = this._dirx;
+        const DIRY  = this._diry;
 
-        if (x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || this.data[x1][y1] !== 0) {
-            if (rand(10) < 9) {
-                const intd = rand(8);
-                const x2 = x0 + DIRX[intd];
-                const y2 = y0 + DIRY[intd];
-                if (x2 >= 0 && x2 <= WIDTH && y2 >= 0 && y2 <= HEIGHT && this.data[x2][y2] === 0) {
-                    this.onMove(x0, y0, x2, y2, this.color);
-                    dots[this.i - 2] = x2;
-                    dots[this.i - 1] = y2;
-                } else if (++this.blocked > this._blockLimit) {
-                    this.dirx    = rand(Config.WORLD_WIDTH);
-                    this.diry    = rand(Config.WORLD_HEIGHT);
-                    this.blocked = 0;
+        for (let i = 0; i < SCAN; i++) {
+            const x   = rand(WIDTH1);
+            const y   = rand(HEIGHT1);
+            const dot = DATA[x][y];
+            if (dot !== 0 && (dot & ORG_MASK) === 0) {
+                const INDEX = this._findDirIndex(x, y);
+                const x1 = x + (DIRX[INDEX] > x && rand(3) > 0 ? 1 : -1);
+                const y1 = y + (DIRY[INDEX] > y && rand(3) > 0 ? 1 : -1);
+                //
+                // Something on a way. Change direction randomly
+                //
+                if (!(x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || DATA[x1][y1] !== 0)) {
+                    this._world.moveDot(x, y, x1, y1, dot);
                 }
-            } else if (++this.blocked > this._blockLimit) {
-                this.dirx    = rand(Config.WORLD_WIDTH);
-                this.diry    = rand(Config.WORLD_HEIGHT);
-                this.blocked = 0;
             }
-            return;
         }
 
-        this.onMove(x0, y0, x1, y1, this.color);
-        dots[this.i - 2] = x1;
-        dots[this.i - 1] = y1;
+        if ((this._i += SCAN) > this.dirUpdate) {
+            this._i = 0;
+            this._initDirs();
+        }
     }
 
-    /**
-     * Checks if specified dot is a dot of current surface. The dot may be grabbed by
-     * the organism, so we can't move it at this moment
-     * @param {Number} x dot X
-     * @param {Number} y dot Y
-     * @returns {Boolean}
-     */
-    notSurfaceDot(x, y) {
-        return this.world.data[x][y] !== this.color;
+    get curAmount() {
+        return this._curAmount;
     }
 
-    onMove(x0, y0, x1, y1, color) {
-        this.world.moveDot(x0, y0, x1, y1, color);
+    remove(x, y) {
+        this._world.empty(x, y);
+        this._curAmount--;
     }
 
-    dot(x, y, color) {
-        this.world.dot(x, y, color);
+    update() {
+        // TODO: refactor this while()
+        while (true) {
+            const x = rand(WIDTH1);
+            const y = rand(HEIGHT1);
+            if (this._data[x][y] === 0) {
+                this._world.dot(x, y, this.color);
+                this._curAmount++;
+                break;
+            }
+        }
+    }
+
+    _applyCfg(cfg) {
+        for (let prop in cfg) {
+            if (cfg.hasOwnProperty(prop)) {
+                this[prop] = cfg[prop];
+            }
+        }
     }
 
     /**
      * This method should draw all energy dots according to this.amount
      * without spaces. this.dots array should be filled.
      */
-    initDots() {
-        const width  = Config.WORLD_WIDTH;
-        const height = Config.WORLD_HEIGHT;
+    _initDots() {
         const color  = this.color;
-        const data   = this.world.data;
-        const dots   = this.dots;
-        const rand   = Helper.rand;
+        const world  = this._world;
+        const data   = this._data;
         let   amount = this.amount - 1;
 
-        if ((this.amount >> 1) > width * height) {
+        if (this.amount > WIDTH1 * HEIGHT1) {
             throw new Error('Amount of dots of surface is bigger then world size');
         }
         while (amount > 0) {
-            const x = rand(width);
-            const y = rand(height);
+            const x = rand(WIDTH1);
+            const y = rand(HEIGHT1);
             if (data[x][y] === 0) {
-                dots[amount--] = y;
-                dots[amount--] = x;
-                this.dot(x, y, color);
+                world.dot(x, y, color);
+                amount--;
             }
         }
+        this._curAmount = amount;
+    }
+
+    _initDirs() {
+        const DIR_AMOUNT = this.dirs;
+        this._dirx       = new Array(DIR_AMOUNT);
+        this._diry       = new Array(DIR_AMOUNT);
+
+        for (let i = 0; i < DIR_AMOUNT; i++) {
+            this._dirx[i] = rand(WIDTH1);
+            this._diry[i] = rand(HEIGHT1);
+        }
+    }
+
+    /**
+     * Returns random direction index in arrays this._dirx, this._diry
+     * @param {Number} x X coordinate we need to find
+     * @param {Number} y Y coordinate we need to find
+     * @returns {Number} Index of left value. +1 will take us right value
+     * @private
+     */
+    _findDirIndex(x, y) {
+        const DIRX     = this._dirx;
+        const DIRY     = this._diry;
+        let   index    = 0;
+        let   distance = Infinity;
+
+        for (let i = 0, l = DIRX.length; i < l; i++) {
+            const curDistance = abs(DIRX[i] - x) + abs(DIRY[i] - y);
+            if (curDistance < distance) {
+                index = i;
+                distance = curDistance;
+            }
+        }
+
+        return index;
     }
 }
 

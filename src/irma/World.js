@@ -6,7 +6,8 @@
 const Config   = require('./../Config');
 const Canvas   = require('./Canvas');
 
-const ORG_MASK = 0x80000000;
+const ORG_MASK = Config.ORG_MASK;
+const ENERGY_COLOR = Config.worldSurfaces[0].color;
 
 class World {
     constructor() {
@@ -31,7 +32,7 @@ class World {
 
     energy(x, y, index) {
         this._data[x][y] = index;
-        this._canvas.dot(x, y, Config.energyColor);
+        this._canvas.dot(x, y, ENERGY_COLOR);
     }
 
     empty(x, y) {
@@ -59,7 +60,7 @@ class World {
     moveEnergy(x0, y0, x1, y1, index) {
         this._data[x0][y0] = 0;
         this._data[x1][y1] = index;
-        this._canvas.move(x0, y0, x1, y1, Config.energyColor);
+        this._canvas.move(x0, y0, x1, y1, ENERGY_COLOR);
     }
 
     title(text) {

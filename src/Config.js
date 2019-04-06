@@ -4,7 +4,7 @@
  * be a luck of energy to provoke system to grow. To calculate amount of
  * energy dots we have to use formula:
  *
- *   dots = ((orgCloneEnergy - 1) * orgAmount - orgAmount * orgEnergy) / energyValue
+ *   energyDots = ((orgCloneEnergy - 2) * orgAmount - (orgAmount / 2) * orgEnergy) / energyValue
  *
  * Some of these configuration parameters may be changed during app work.
  * Some of them - not. See "@constant" mark in a comment.
@@ -46,8 +46,7 @@ const Config = {
     codeTimesPerRun            : 3,
     codeCrossoverEveryClone    : 10,
     codeMutateEveryClone       : 3,
-    codeStepEnergyPercent      : .0001,
-    codeDefault                : [CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
+    codeDefault                : [], //CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
      * World width in pixels
@@ -79,7 +78,18 @@ const Config = {
      *  step   - coefficient of speed (slow down) if organism above the surface
      *  amount - amount of surface dots
      */
-    worldSurfaces              : [/*{ // lava
+    worldSurfaces              : [{   // energy
+        color    : 0x00ff00,
+        barrier  : false,
+        energy   : 0,
+        step     : 1,
+        radiation: 0,
+        delay    : 300,
+        amount   : 637500,
+        dirs     : 10,
+        scan     : 10,
+        dirUpdate: 5000000000
+    }, /*{                            // lava
         color    : 0xff8881,
         barrier  : false,
         energy   : 1,
@@ -87,25 +97,30 @@ const Config = {
         radiation: .1,
         delay    : 20,
         amount   : 100000,
-        block    : .96
+        dirs     : 10,
+        dirUpdate: 5000000000
     },*/ {                            // water
         color    : 0x0000f1,
         barrier  : false,
         energy   : 0,
         step     : 15,
         radiation: 0,
-        delay    : 10,
-        amount   : 1000000,
-        block    : .99
+        delay    : 100,
+        amount   : 1500000,
+        dirs     : 10,
+        scan     : 10,
+        dirUpdate: 500000000
     }, {                             // hole
         color    : 0x333332,
         barrier  : false,
         energy   : 100,
         step     : 0,
         radiation: 0,
-        delay    : 100,
-        amount   : 10000,
-        block    : .96
+        delay    : 10000,
+        amount   : 20000,
+        dirs     : 10,
+        scan     : 10,
+        dirUpdate: 5000000000
     },/* {                              // sand
         color    : 0xFFFF02,
         barrier  : false,
@@ -114,7 +129,9 @@ const Config = {
         radiation: 0,
         delay    : 50,
         amount   : 200000,
-        block    : .96
+        dirs     : 10,
+        scan     : 10,
+        dirUpdate: 50000000
     }, {                              // radiation
         color    : 0xFFFFF3,
         barrier  : false,
@@ -123,25 +140,31 @@ const Config = {
         radiation: 1,
         delay    : 50,
         amount   : 20000,
-        block    : .96
+        dirs     : 10,
+        scan     : 10,
+        dirUpdate: 500000000
     },*/ {
         color    : 0xBBBBB3,          // stones
         barrier  : true,
         energy   : 0,
         step     : 0,
         radiation: 0,
-        delay    : 100,
-        amount   : 200000,
-        block    : .96
+        delay    : 10000,
+        amount   : 700000,
+        dirs     : 10,
+        scan     : 10,
+        dirUpdate: 5000000000
     }, {
         color    : 0xFF9904,          // poison
         barrier  : false,
-        energy   : 100,
+        energy   : 10,
         step     : 0,
         radiation: 0,
-        delay    : 100,
-        amount   : 20000,
-        block    : .96
+        delay    : 1000,
+        amount   : 50000,
+        dirs     : 10,
+        scan     : 10,
+        dirUpdate: 500000000
     }],
     /**
      * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
@@ -153,29 +176,26 @@ const Config = {
      * {Number} Mask to check if some dot is an energy. We use second bit
      * for this. First bit is used to check if it's an organism
      */
-    ENERGY_MASK                : 0x40000000,
-    energyColor                : 0x00ff00,
-    energyValue                : 20,
-    energyAmount               : 125000,
-    energyBlockPercent         : .99,
+    energyValue                : 1,
 
     /**
      * {Number} Maximum value of every element in orgProbs array
      * @constant
      */
     ORG_PROB_MAX_VALUE         : 100,
-    orgAmount                  : 50000,
-    orgMaxAge                  : 100000,
-    orgEnergy                  : 50,
-    orgCloneEnergy             : 100,
-    orgEnergyPeriod            : 1000,
+    ORG_MASK                   : 0x80000000,
+    orgAmount                  : 25000,
+    orgMaxAge                  : 10000,
+    orgEnergy                  : 49,
+    orgCloneEnergy             : 50,
+    orgStepEnergy              : .001,
+    orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMemSize                 : 64,
     orgMutationPercent         : .02,
     orgMutationPeriod          : 250000,
-    orgMaxCodeSize             : 512,
+    orgMaxCodeSize             : 256,
     orgStartCodeSize           : 64,
-    orgRandCodeOnStart         : true,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

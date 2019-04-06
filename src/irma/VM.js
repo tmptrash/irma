@@ -40,7 +40,12 @@ const Organism  = require('./Organism');
 const Mutations = require('./Mutations');
 const World     = require('./World');
 const Surface   = require('./Surface');
-const Energy    = require('./Energy');
+/**
+ * {Number} This value very important. This is amount of total energy in a world
+ * (organisms + energy). This value organisms must not exceed. This is how we
+ * create a lack of resources in a world.
+ */
+const MAX_ENERGY        = (Config.orgCloneEnergy - 2) * Config.orgAmount;
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -63,16 +68,16 @@ const DIRY              = Config.DIRY;
 const WIDTH             = Config.WORLD_WIDTH - 1;
 const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
+const HEIGHT1           = HEIGHT + 1;
 const MAX               = Number.MAX_VALUE;
 
-const ENERGY_MASK       = Config.ENERGY_MASK;
-const ENERGY_INDEX_MASK = 0x3fffffff;
-const ORG_MASK          = 0x80000000;
+const ORG_MASK          = Config.ORG_MASK;
 const ORG_INDEX_MASK    = 0x7fffffff;
 /**
  * {Number} Max amount of supported surfaces
  */
 const SURFACES          = 16;
+const ENERGY_COLOR      = Config.worldSurfaces[0].color;
 
 const ceil              = Math.ceil;
 const round             = Math.round;
@@ -164,7 +169,7 @@ class VM {
                         case CODE_CMD_OFFS: { // step
                             const oldDot = org.dot;
                             if (oldDot !== 0) {
-                                const surface = (oldDot & ENERGY_MASK) !== 0 ? this._ENERGY : this._surfaces[oldDot % SURFACES];
+                                const surface = this._surfaces[oldDot % SURFACES];
                                 org.energy   -= surface.energy;
                                 if (org.energy <= 0) {this._removeOrg(org); l = lines; break}
                                 if ((org.radiation += surface.radiation) >= 1) {org.radiation = 0; Mutations.mutate(org)}
@@ -179,11 +184,11 @@ class VM {
                             //
                             // Organism can't step through stone
                             //
-                            if ((dot & ENERGY_MASK) === 0 && this._surfaces[dot % SURFACES].barrier === true) {break}
+                            if (this._surfaces[dot % SURFACES].barrier) {break}
                             org.dot = dot;
                             world.moveOrg(org, x, y);
-                            (oldDot & ENERGY_MASK) !== 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
-                            org.energy -= (org.energy * Config.codeStepEnergyPercent);
+                            oldDot === ENERGY_COLOR ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
+                            org.energy -= Config.orgStepEnergy;
                             org.x = x;
                             org.y = y;
                             if (org.energy <= 0) {this._removeOrg(org); l = lines}
@@ -205,10 +210,9 @@ class VM {
                                 if (nearOrg.energy <= 0) {this._removeOrg(nearOrg); l = lines}
                                 break;
                             }
-                            if ((dot & ENERGY_MASK) !== 0) {
+                            if (dot === ENERGY_COLOR) {
                                 org.energy += Config.energyValue;                        // just energy block
-                                world.empty(x, y, 0);
-                                this._ENERGY.clear(dot & ENERGY_INDEX_MASK);
+                                this._ENERGY.remove(x, y);
                             }
                             break
                         }
@@ -435,13 +439,14 @@ class VM {
                 const age = org.age;
                 if (age % org.period === 0 && age > 0 && Config.orgMutationPeriod > 0) {Mutations.mutate(org)}
                 if (age % Config.orgMaxAge === 0 && age > 0) {this._removeOrg(org)}
-                if (age % Config.orgEnergyPeriod === 0) {
+                if (age % Config.orgEnergyPeriod === 0 && Config.orgEnergyPeriod > 0) {
                     //
                     // Energy waste depends on energy amount. Big (more energy) organism spends more energy
                     //
                     org.energy--;
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
+                if ((this._totalOrgsEnergy + this._ENERGY.curAmount * Config.energyValue) < MAX_ENERGY) {this._ENERGY.update()}
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
@@ -464,7 +469,6 @@ class VM {
             //
             if (this._iterations % Config.worldCataclysmEvery === 0) {this._updateCataclysm(orgs)}
 
-            this._ENERGY.update(this._totalOrgsEnergy);
             this._totalOrgsEnergy = orgsEnergy;
             this._iterations++;
         }
@@ -474,7 +478,7 @@ class VM {
         const ts = Date.now();
         if (ts - this._ts > 1000) {
             const orgAmount = orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this._totalOrgsEnergy / orgAmount) << 0} nrg:${(this._ENERGY.amount >> 1) - this._ENERGY._index + 1} gen:${this._population} diff:${this._diff}`);
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this._totalOrgsEnergy / orgAmount) << 0} diff:${this._diff} gen:${this._population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -498,8 +502,8 @@ class VM {
                     for (let i = 0, orgAmount = ceil(orgs.items * Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
                         const org2Kill = orgs.get(i);
                         if (org2Kill === null) {orgAmount++; continue}
-                        const x = rand(Config.WORLD_WIDTH);
-                        const y = rand(Config.WORLD_HEIGHT);
+                        const x = rand(WIDTH1);
+                        const y = rand(HEIGHT1);
                         if (data[x][y] === 0) {
                             this._removeOrg(org2Kill);
                             const org = this._createOrg(x, y);
@@ -527,8 +531,8 @@ class VM {
     _createOrgs() {
         const world     = this._world;
         const data      = world.data;
-        const width     = Config.WORLD_WIDTH;
-        const height    = Config.WORLD_HEIGHT;
+        const width     = WIDTH1;
+        const height    = HEIGHT1;
         let   orgAmount = Config.orgAmount;
 
         this._orgs = new FastArray(orgAmount);
@@ -567,12 +571,11 @@ class VM {
 
     _createSurfaces() {
         const SURFS  = Config.worldSurfaces;
-        const AMOUNT = SURFS.length + 1;
+        const AMOUNT = SURFS.length ;
 
         const surfaces = new Array(AMOUNT);
-        surfaces[0]    = new Energy(this._world);
-        for (let i = 1; i < AMOUNT; i++) {
-            surfaces[i] = new Surface(SURFS[i - 1], this._world);
+        for (let i = 0; i < AMOUNT; i++) {
+            surfaces[i] = new Surface(SURFS[i], this._world);
         }
 
         return surfaces;
