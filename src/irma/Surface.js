@@ -74,19 +74,23 @@ class Surface {
         return this._curAmount;
     }
 
-    remove(x, y) {
+    remove(x, y, hide = false) {
         this._world.empty(x, y);
-        this._curAmount--;
+        !hide && this._curAmount--;
     }
 
     update() {
+        this.put(this.color, true);
+    }
+
+    put(dot, isNew = false) {
         // TODO: refactor this while()
         while (true) {
             const x = rand(WIDTH1);
             const y = rand(HEIGHT1);
             if (this._data[x][y] === 0) {
-                this._world.dot(x, y, this.color);
-                this._curAmount++;
+                this._world.dot(x, y, dot);
+                isNew && this._curAmount++;
                 break;
             }
         }

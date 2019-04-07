@@ -73,6 +73,7 @@ const MAX               = Number.MAX_VALUE;
 
 const ORG_MASK          = Config.ORG_MASK;
 const ORG_INDEX_MASK    = 0x7fffffff;
+const ORG_ATOM_MASK     = 0x000000f0;
 /**
  * {Number} Max amount of supported surfaces
  */
@@ -406,6 +407,31 @@ class VM {
                             continue;
                         }
 
+                        case CODE_CMD_OFFS + 28: {// get
+                            if (org.packet !== 0) {break}
+                            const intd = abs(d << 0) % 8;
+                            const x    = org.x + DIRX[intd];
+                            const y    = org.y + DIRY[intd];
+                            let dot;
+                            let surf;
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = data[x][y]) === 0 || (dot & ORG_MASK) !== 0 || !(surf = this._surfaces[dot % SURFACES]).get) {break}
+                            org.packet = dot;
+                            surf.remove(x, y, true);
+                            break;
+                            //const atom = (dot & ORG_ATOM_MASK) >> 4;
+                        }
+
+                        case CODE_CMD_OFFS + 29: {// put
+                            if (org.packet === 0) {break}
+                            const intd = abs(d << 0) % 8;
+                            const x    = org.x + DIRX[intd];
+                            const y    = org.y + DIRY[intd];
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
+                            this._world.dot(x, y, org.packet);
+                            org.packet = 0;
+                            break;
+                        }
+
                         default:
                             //
                             // This is a number command: d = N
@@ -519,9 +545,14 @@ class VM {
     }
 
     _removeOrg(org) {
+        const x      = org.x;
+        const y      = org.y;
+        const packet = org.packet;
+
         this._orgs.del(org.item);
-        this._world.empty(org.x, org.y);
-        this._world.dot(org.x, org.y, org.dot);
+        this._world.empty(x, y);
+        this._world.dot(x, y, org.dot);
+        this._surfaces[packet % SURFACES].put(packet);
     }
 
     /**
@@ -537,9 +568,9 @@ class VM {
 
         this._orgs = new FastArray(orgAmount);
         //
-        // Only half of the population will be created on the beginning
+        // Only quarter of the population will be created on the beginning
         //
-        orgAmount >>= 1;
+        orgAmount >>= 2;
         while (orgAmount > 0) {
             const x = rand(width);
             const y = rand(height);

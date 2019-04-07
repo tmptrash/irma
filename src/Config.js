@@ -4,7 +4,7 @@
  * be a luck of energy to provoke system to grow. To calculate amount of
  * energy dots we have to use formula:
  *
- *   energyDots = ((orgCloneEnergy - 2) * orgAmount - (orgAmount / 2) * orgEnergy) / energyValue
+ *   energyDots = ((orgCloneEnergy - 2) * orgAmount - (orgAmount / 4) * orgEnergy) / energyValue
  *
  * Some of these configuration parameters may be changed during app work.
  * Some of them - not. See "@constant" mark in a comment.
@@ -37,11 +37,11 @@ const Config = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 28,
+    CODE_COMMANDS              : 30,
     /**
      * {Number} Functions call stack size
      */
-    CODE_STACK_SIZE            : 1000,
+    CODE_STACK_SIZE            : 600,
     codeLinesPerIteration      : 10,
     codeTimesPerRun            : 3,
     codeCrossoverEveryClone    : 10,
@@ -85,9 +85,10 @@ const Config = {
         step     : 1,
         radiation: 0,
         delay    : 300,
-        amount   : 637500,
+        amount   : 715000,
         dirs     : 10,
         scan     : 10,
+        get      : true,
         dirUpdate: 5000000000
     }, /*{                            // lava
         color    : 0xff8881,
@@ -98,6 +99,7 @@ const Config = {
         delay    : 20,
         amount   : 100000,
         dirs     : 10,
+        get      : false,
         dirUpdate: 5000000000
     },*/ {                            // water
         color    : 0x0000f1,
@@ -109,6 +111,7 @@ const Config = {
         amount   : 1500000,
         dirs     : 10,
         scan     : 10,
+        get      : true,
         dirUpdate: 500000000
     }, {                             // hole
         color    : 0x333332,
@@ -120,6 +123,7 @@ const Config = {
         amount   : 20000,
         dirs     : 10,
         scan     : 10,
+        get      : true,
         dirUpdate: 5000000000
     },/* {                              // sand
         color    : 0xFFFF02,
@@ -131,6 +135,7 @@ const Config = {
         amount   : 200000,
         dirs     : 10,
         scan     : 10,
+        get      : true,
         dirUpdate: 50000000
     }, {                              // radiation
         color    : 0xFFFFF3,
@@ -142,6 +147,7 @@ const Config = {
         amount   : 20000,
         dirs     : 10,
         scan     : 10,
+        get      : false,
         dirUpdate: 500000000
     },*/ {
         color    : 0xBBBBB3,          // stones
@@ -153,6 +159,7 @@ const Config = {
         amount   : 700000,
         dirs     : 10,
         scan     : 10,
+        get      : true,
         dirUpdate: 5000000000
     }, {
         color    : 0xFF9904,          // poison
@@ -164,6 +171,7 @@ const Config = {
         amount   : 50000,
         dirs     : 10,
         scan     : 10,
+        get      : true,
         dirUpdate: 500000000
     }],
     /**
@@ -184,7 +192,7 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 100,
     ORG_MASK                   : 0x80000000,
-    orgAmount                  : 25000,
+    orgAmount                  : 20000,
     orgMaxAge                  : 10000,
     orgEnergy                  : 49,
     orgCloneEnergy             : 50,
@@ -194,7 +202,7 @@ const Config = {
     orgMemSize                 : 64,
     orgMutationPercent         : .02,
     orgMutationPeriod          : 250000,
-    orgMaxCodeSize             : 256,
+    orgMaxCodeSize             : 128,
     orgStartCodeSize           : 64,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut

@@ -55,7 +55,7 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 15]: 'jumpg // jump d if a > b',
     [CODE_CMD_OFFS + 16]: 'jumpl // jump d if a <= b',
     [CODE_CMD_OFFS + 17]: 'jumpz // jump d if a === 0',
-    [CODE_CMD_OFFS + 18]: 'nop',
+    [CODE_CMD_OFFS + 18]: 'nop   // do nothing',
     [CODE_CMD_OFFS + 19]: 'mget  // a = mem[d]',
     [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
     [CODE_CMD_OFFS + 21]: 'x     // d = org.x',
@@ -64,7 +64,9 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 24]: `call  // calls d % fCount`,
     [CODE_CMD_OFFS + 25]: `func  // function`,
     [CODE_CMD_OFFS + 26]: `ret d`,
-    [CODE_CMD_OFFS + 27]: `end   // end function`
+    [CODE_CMD_OFFS + 27]: `end   // end function`,
+    [CODE_CMD_OFFS + 28]: `get   // d - direction`,
+    [CODE_CMD_OFFS + 29]: `put   // d - direction`
 };
 
 module.exports = Bytes2Code;

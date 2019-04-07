@@ -22,6 +22,7 @@ class Organism {
          */
         this.age        = 0;
         this.dot        = 0x000000;
+        this.packet     = 0;
         this.steps      = 0;
         this.radiation  = 0;
         this.mutations  = 0;
