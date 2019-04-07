@@ -41,7 +41,7 @@ const Config = {
     /**
      * {Number} Functions call stack size
      */
-    CODE_STACK_SIZE            : 600,
+    CODE_STACK_SIZE            : 500,
     codeLinesPerIteration      : 10,
     codeTimesPerRun            : 3,
     codeCrossoverEveryClone    : 10,
