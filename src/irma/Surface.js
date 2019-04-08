@@ -79,11 +79,7 @@ class Surface {
         !hide && this._curAmount--;
     }
 
-    update() {
-        this.put(this.color, true);
-    }
-
-    put(dot, isNew = false) {
+    put(dot = this.color, isNew = true) {
         // TODO: refactor this while()
         while (true) {
             const x = rand(WIDTH1);
@@ -125,7 +121,7 @@ class Surface {
                 amount--;
             }
         }
-        this._curAmount = amount;
+        this._curAmount = this.amount - 1;
     }
 
     _initDirs() {

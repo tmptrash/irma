@@ -45,7 +45,7 @@ const Surface   = require('./Surface');
  * (organisms + energy). This value organisms must not exceed. This is how we
  * create a lack of resources in a world.
  */
-const MAX_ENERGY        = (Config.orgCloneEnergy - 2) * Config.orgAmount;
+const MAX_ENERGY        = (Config.orgCloneEnergy - 10) * Config.orgAmount;
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -74,11 +74,12 @@ const MAX               = Number.MAX_VALUE;
 const ORG_MASK          = Config.ORG_MASK;
 const ORG_INDEX_MASK    = 0x7fffffff;
 const ORG_ATOM_MASK     = 0x000000f0;
+
+const ENERGY_OFF_MASK   = 0xffffff0f;
 /**
  * {Number} Max amount of supported surfaces
  */
 const SURFACES          = 16;
-const ENERGY_COLOR      = Config.worldSurfaces[0].color;
 
 const ceil              = Math.ceil;
 const round             = Math.round;
@@ -188,7 +189,10 @@ class VM {
                             if (this._surfaces[dot % SURFACES].barrier) {break}
                             org.dot = dot;
                             world.moveOrg(org, x, y);
-                            oldDot === ENERGY_COLOR ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
+                            //
+                            // << 28 - dot is an energy
+                            //
+                            (oldDot & ORG_MASK) !== 0 && (oldDot << 28) === 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
                             org.energy -= Config.orgStepEnergy;
                             org.x = x;
                             org.y = y;
@@ -211,8 +215,11 @@ class VM {
                                 if (nearOrg.energy <= 0) {this._removeOrg(nearOrg); l = lines}
                                 break;
                             }
-                            if (dot === ENERGY_COLOR) {
-                                org.energy += Config.energyValue;                        // just energy block
+                            //
+                            // << 28 - dot is an energy
+                            //
+                            if ((dot << 28) === 0) {
+                                org.energy += ((((dot & ORG_ATOM_MASK) >>> 4) || 1) * Config.energyValue * Config.orgEnergyMultiplayer);
                                 this._ENERGY.remove(x, y);
                             }
                             break
@@ -225,7 +232,7 @@ class VM {
                             const y = org.y + DIRY[intd];
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             const clone = this._createOrg(x, y, org);
-                            org.energy = clone.energy = ceil(org.energy >> 1);
+                            org.energy = clone.energy = ceil(org.energy >>> 1);
                             if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; break}
                             if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
                             if (rand(Config.codeCrossoverEveryClone) === 0) {const org2 = orgs.get(rand(orgs.size)); org2 !== null && Mutations.crossover(clone, org2)}
@@ -418,7 +425,6 @@ class VM {
                             org.packet = dot;
                             surf.remove(x, y, true);
                             break;
-                            //const atom = (dot & ORG_ATOM_MASK) >> 4;
                         }
 
                         case CODE_CMD_OFFS + 29: {// put
@@ -429,6 +435,28 @@ class VM {
                             if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {break}
                             this._world.dot(x, y, org.packet);
                             org.packet = 0;
+                            break;
+                        }
+
+                        case CODE_CMD_OFFS + 30: {// mix
+                            const packet = org.packet;
+                            if (packet === 0) {break}
+                            const intd = abs(d << 0) % 8;
+                            const x    = org.x + DIRX[intd];
+                            const y    = org.y + DIRY[intd];
+                            let   dot;
+                            //
+                            // << 28 - dot is an energy
+                            //
+                            if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = data[x][y]) === 0 || (dot & ORG_MASK) !== 0 || (dot << 28) !== 0 || (packet << 28) !== 0) {break}
+                            const atom1 = ((dot & ORG_ATOM_MASK) >>> 4) || 1;
+                            const atom2 = ((packet & ORG_ATOM_MASK) >>> 4) || 1;
+                            org.packet = 0;
+                            //
+                            // This remove() must be before dot()
+                            //
+                            this._ENERGY.remove(x, y);
+                            this._world.dot(x, y, dot & ENERGY_OFF_MASK | (atom1 + atom2) << 4);
                             break;
                         }
 
@@ -472,7 +500,7 @@ class VM {
                     org.energy--;
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
-                if ((this._totalOrgsEnergy + this._ENERGY.curAmount * Config.energyValue) < MAX_ENERGY) {this._ENERGY.update()}
+                if ((this._totalOrgsEnergy + this._ENERGY.curAmount * Config.energyValue) < MAX_ENERGY) {this._ENERGY.put()}
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
@@ -552,7 +580,7 @@ class VM {
         this._orgs.del(org.item);
         this._world.empty(x, y);
         this._world.dot(x, y, org.dot);
-        this._surfaces[packet % SURFACES].put(packet);
+        this._surfaces[packet % SURFACES].put(packet, false);
     }
 
     /**
@@ -570,7 +598,7 @@ class VM {
         //
         // Only quarter of the population will be created on the beginning
         //
-        orgAmount >>= 2;
+        orgAmount >>>= 2;
         while (orgAmount > 0) {
             const x = rand(width);
             const y = rand(height);

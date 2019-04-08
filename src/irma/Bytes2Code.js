@@ -66,7 +66,8 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 26]: `ret d`,
     [CODE_CMD_OFFS + 27]: `end   // end function`,
     [CODE_CMD_OFFS + 28]: `get   // d - direction`,
-    [CODE_CMD_OFFS + 29]: `put   // d - direction`
+    [CODE_CMD_OFFS + 29]: `put   // d - direction`,
+    [CODE_CMD_OFFS + 30]: `mix   // d - direction`
 };
 
 module.exports = Bytes2Code;

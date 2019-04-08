@@ -76,8 +76,8 @@ class Canvas {
         const data = this._data;
         const offs = (y * this._width + x) * 4;
 
-        data[offs    ] = (color >> 16) & 0xff;
-        data[offs + 1] = (color >> 8)  & 0xff;
+        data[offs    ] = (color >>> 16) & 0xff;
+        data[offs + 1] = (color >>> 8)  & 0xff;
         data[offs + 2] = color & 0xff;
     }
 
@@ -108,8 +108,8 @@ class Canvas {
 
         data[offs0] = data[offs0 + 1] = data[offs0 + 2] = 0;
 
-        data[offs1    ] = (color >> 16) & 0xff;
-        data[offs1 + 1] = (color >> 8)  & 0xff;
+        data[offs1    ] = (color >>> 16) & 0xff;
+        data[offs1 + 1] = (color >>> 8)  & 0xff;
         data[offs1 + 2] = color & 0xff;
     }
 

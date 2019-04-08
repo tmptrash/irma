@@ -4,7 +4,7 @@
  * be a luck of energy to provoke system to grow. To calculate amount of
  * energy dots we have to use formula:
  *
- *   energyDots = ((orgCloneEnergy - 2) * orgAmount - (orgAmount / 4) * orgEnergy) / energyValue
+ *   energyDots = ((orgCloneEnergy - 10) * orgAmount - (orgAmount / 4) * orgEnergy) / energyValue
  *
  * Some of these configuration parameters may be changed during app work.
  * Some of them - not. See "@constant" mark in a comment.
@@ -37,15 +37,15 @@ const Config = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 30,
+    CODE_COMMANDS              : 31,
     /**
      * {Number} Functions call stack size
      */
     CODE_STACK_SIZE            : 500,
     codeLinesPerIteration      : 10,
     codeTimesPerRun            : 3,
-    codeCrossoverEveryClone    : 10,
-    codeMutateEveryClone       : 3,
+    codeCrossoverEveryClone    : 15,
+    codeMutateEveryClone       : 10,
     codeDefault                : [], //CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
 
     /**
@@ -77,6 +77,7 @@ const Config = {
      *  energy - amount of energy, which grabs if organism above the surface
      *  step   - coefficient of speed (slow down) if organism above the surface
      *  amount - amount of surface dots
+     *  TODO: add other fields descriptions
      */
     worldSurfaces              : [{   // energy
         color    : 0x00ff00,
@@ -195,6 +196,7 @@ const Config = {
     orgAmount                  : 20000,
     orgMaxAge                  : 10000,
     orgEnergy                  : 49,
+    orgEnergyMultiplayer       : 10,
     orgCloneEnergy             : 50,
     orgStepEnergy              : .001,
     orgEnergyPeriod            : 0,
