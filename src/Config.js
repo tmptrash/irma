@@ -86,7 +86,7 @@ const Config = {
         step     : 1,
         radiation: 0,
         delay    : 300,
-        amount   : 715000,
+        amount   : 555000,
         dirs     : 10,
         scan     : 10,
         get      : true,

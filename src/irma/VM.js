@@ -90,6 +90,7 @@ const nan               = Number.isNaN;
 
 class VM {
     constructor() {
+        this.totalOrgsEnergy  = 0;
         this._world           = new World();
         this._surfaces        = this._createSurfaces();
         this._SURFS           = this._surfaces.length;
@@ -98,7 +99,6 @@ class VM {
         this._iterations      = 0;
         this._population      = 0;
         this._ts              = Date.now();
-        this._totalOrgsEnergy = 0;
         this._i               = 0;
         this._diff            = 0;
         this._averageDistance = 0;
@@ -500,7 +500,7 @@ class VM {
                     org.energy--;
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
-                if ((this._totalOrgsEnergy + this._ENERGY.curAmount * Config.energyValue) < MAX_ENERGY) {this._ENERGY.put()}
+                if ((this.totalOrgsEnergy + this._ENERGY.curAmount * Config.energyValue) < MAX_ENERGY) {this._ENERGY.put()}
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
@@ -523,7 +523,7 @@ class VM {
             //
             if (this._iterations % Config.worldCataclysmEvery === 0) {this._updateCataclysm(orgs)}
 
-            this._totalOrgsEnergy = orgsEnergy;
+            this.totalOrgsEnergy = orgsEnergy;
             this._iterations++;
         }
         //
@@ -532,7 +532,7 @@ class VM {
         const ts = Date.now();
         if (ts - this._ts > 1000) {
             const orgAmount = orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this._totalOrgsEnergy / orgAmount) << 0} diff:${this._diff} gen:${this._population}`);
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this.totalOrgsEnergy / orgAmount) << 0} diff:${this._diff} gen:${this._population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -577,6 +577,7 @@ class VM {
         const y      = org.y;
         const packet = org.packet;
 
+        org.energy = 0;
         this._orgs.del(org.item);
         this._world.empty(x, y);
         this._world.dot(x, y, org.dot);
@@ -620,7 +621,7 @@ class VM {
      */
     _createOrg(x, y, parent = null) {
         const orgs = this._orgs;
-        const org  = new Organism(Helper.id(), x, y, orgs.freeIndex, Config.orgEnergy, parent);
+        const org  = new Organism(Helper.id(), x, y, this, orgs.freeIndex, Config.orgEnergy, parent);
 
         orgs.add(org);
         this._world.org(x, y, org);

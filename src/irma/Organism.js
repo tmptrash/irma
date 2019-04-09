@@ -12,7 +12,7 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, x, y, item, energy, parent = null) {
+    constructor(id, x, y, sharedObj, item, energy, parent = null) {
         this.id         = id;
         this.item       = item;
         this.x          = x;
@@ -30,6 +30,12 @@ class Organism {
          * {Array} Temporary offsets array. Is used during preprocessing
          */
         this._offs      = new Array(Config.orgMaxCodeSize);
+        this._sharedObj = sharedObj;
+        /**
+         * {Number} Amount of energy
+         */
+        this._energy    = energy;
+        sharedObj.totalOrgsEnergy += energy;
         if (parent !== null) {
             this._clone(parent);
             return;
@@ -54,10 +60,6 @@ class Organism {
          */
         this.b          = 0;
         /**
-         * {Number} Amount of energy
-         */
-        this.energy     = energy;
-        /**
          * {Number} Amount of functions in a code
          */
         this.fCount     = 0;
@@ -74,6 +76,15 @@ class Organism {
          */
         this.code       = this._generateCode();
         this.preprocess();
+    }
+
+    get energy() {
+        return this._energy;
+    }
+
+    set energy(e) {
+        this._sharedObj.totalOrgsEnergy += (e - this._energy);
+        this._energy = e;
     }
 
     createProbArr() {
