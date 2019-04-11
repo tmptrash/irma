@@ -4,7 +4,7 @@
  * be a luck of energy to provoke system to grow. To calculate amount of
  * energy dots we have to use formula:
  *
- *   energyDots = ((orgCloneEnergy - 10) * orgAmount - (orgAmount / 4) * orgEnergy) / energyValue
+ *   energyDots = ((orgCloneEnergy - 1) * (orgAmount / 2) - (orgAmount / 4) * orgEnergy) / energyValue
  *
  * Some of these configuration parameters may be changed during app work.
  * Some of them - not. See "@constant" mark in a comment.
@@ -43,7 +43,7 @@ const Config = {
      */
     CODE_STACK_SIZE            : 500,
     codeLinesPerIteration      : 10,
-    codeTimesPerRun            : 3,
+    codeTimesPerRun            : 10,
     codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
     codeDefault                : [], //CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
@@ -86,7 +86,7 @@ const Config = {
         step     : 1,
         radiation: 0,
         delay    : 300,
-        amount   : 555000,
+        amount   : 122500, // we use formula at the top for this (energyDots)
         dirs     : 10,
         scan     : 10,
         get      : true,
@@ -193,7 +193,7 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 100,
     ORG_MASK                   : 0x80000000,
-    orgAmount                  : 20000,
+    orgAmount                  : 10000,
     orgMaxAge                  : 10000,
     orgEnergy                  : 49,
     orgEnergyMultiplayer       : 10,

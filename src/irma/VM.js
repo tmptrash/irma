@@ -45,7 +45,7 @@ const Surface   = require('./Surface');
  * (organisms + energy). This value organisms must not exceed. This is how we
  * create a lack of resources in a world.
  */
-const MAX_ENERGY        = (Config.orgCloneEnergy - 10) * Config.orgAmount;
+const MAX_ENERGY        = (Config.orgCloneEnergy - 1) * (Config.orgAmount >> 1);
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
