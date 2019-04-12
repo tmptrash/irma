@@ -124,7 +124,7 @@ const Config = {
         amount   : 20000,
         dirs     : 10,
         scan     : 10,
-        get      : true,
+        get      : false,
         dirUpdate: 5000000000
     },/* {                              // sand
         color    : 0xFFFF02,
