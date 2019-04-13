@@ -53,13 +53,19 @@ class Surface {
             const dot = DATA[x][y];
             if (dot !== 0 && (dot & ORG_MASK) === 0) {
                 const INDEX = this._findDirIndex(x, y);
+                //
+                // Changes direction randomly, but most of the time go to the right direction
+                //
                 const x1 = x + (DIRX[INDEX] > x && rand(3) > 0 ? 1 : -1);
                 const y1 = y + (DIRY[INDEX] > y && rand(3) > 0 ? 1 : -1);
-                //
-                // Something on a way. Change direction randomly
-                //
-                if (!(x1 < 0 || x1 > WIDTH || y1 < 0 || y1 > HEIGHT || DATA[x1][y1] !== 0)) {
-                    this._world.moveDot(x, y, x1, y1, dot);
+
+                if (x1 >= 0 && x1 < WIDTH1 && y1 >= 0 && y1 < HEIGHT1) {
+                    const destDot = DATA[x1][y1];
+                    if (destDot === 0) {
+                        this._world.moveDot(x, y, x1, y1, dot);
+                    } else if ((destDot & ORG_MASK) === 0) {
+                        this._world.swap(x, y, x1, y1);
+                    }
                 }
             }
         }

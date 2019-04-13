@@ -88,7 +88,7 @@ const Config = {
         delay    : 300,
         amount   : 122500, // we use formula at the top for this (energyDots)
         dirs     : 10,
-        scan     : 10,
+        scan     : 5,
         get      : true,
         dirUpdate: 5000000000
     }, /*{                            // lava
@@ -100,6 +100,7 @@ const Config = {
         delay    : 20,
         amount   : 100000,
         dirs     : 10,
+        scan     : 5,
         get      : false,
         dirUpdate: 5000000000
     },*/ {                            // water
@@ -108,11 +109,11 @@ const Config = {
         energy   : 0,
         step     : 15,
         radiation: 0,
-        delay    : 100,
+        delay    : 10,
         amount   : 1500000,
         dirs     : 10,
-        scan     : 10,
-        get      : true,
+        scan     : 5,
+        get      : false,
         dirUpdate: 500000000
     }, {                             // hole
         color    : 0x333332,
@@ -123,8 +124,8 @@ const Config = {
         delay    : 10000,
         amount   : 20000,
         dirs     : 10,
-        scan     : 10,
-        get      : true,
+        scan     : 3,
+        get      : false,
         dirUpdate: 5000000000
     },/* {                              // sand
         color    : 0xFFFF02,
@@ -135,8 +136,8 @@ const Config = {
         delay    : 50,
         amount   : 200000,
         dirs     : 10,
-        scan     : 10,
-        get      : true,
+        scan     : 5,
+        get      : false,
         dirUpdate: 50000000
     }, {                              // radiation
         color    : 0xFFFFF3,
@@ -147,7 +148,7 @@ const Config = {
         delay    : 50,
         amount   : 20000,
         dirs     : 10,
-        scan     : 10,
+        scan     : 5,
         get      : false,
         dirUpdate: 500000000
     },*/ {
@@ -159,8 +160,8 @@ const Config = {
         delay    : 10000,
         amount   : 700000,
         dirs     : 10,
-        scan     : 10,
-        get      : true,
+        scan     : 3,
+        get      : false,
         dirUpdate: 5000000000
     }, {
         color    : 0xFF9904,          // poison
@@ -171,8 +172,8 @@ const Config = {
         delay    : 1000,
         amount   : 50000,
         dirs     : 10,
-        scan     : 10,
-        get      : true,
+        scan     : 3,
+        get      : false,
         dirUpdate: 500000000
     }],
     /**
@@ -191,14 +192,14 @@ const Config = {
      * {Number} Maximum value of every element in orgProbs array
      * @constant
      */
-    ORG_PROB_MAX_VALUE         : 100,
+    ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
     orgAmount                  : 10000,
     orgMaxAge                  : 10000,
     orgEnergy                  : 49,
     orgEnergyMultiplayer       : 10,
     orgCloneEnergy             : 50,
-    orgStepEnergy              : .001,
+    orgStepEnergy              : .01,
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMemSize                 : 64,
@@ -211,7 +212,7 @@ const Config = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : [20,1,3,5,1,10,1,1]
+    orgProbs                   : [10,1,2,3,1,5,1,1]
 };
 
 module.exports = Config;

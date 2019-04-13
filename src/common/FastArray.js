@@ -71,6 +71,14 @@ class FastArray {
     get(i) {return this._arr[i]}
 
     /**
+     * Returns reference to this._arr for fast access to the data
+     * @return {Array} Data array
+     */
+    getRef() {
+        return this._arr;
+    }
+
+    /**
      * Removes(sets it to null) a value by index.
      * @param {Number} i Value index
      */

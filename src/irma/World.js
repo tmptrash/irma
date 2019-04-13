@@ -30,6 +30,16 @@ class World {
         this._canvas.dot(x, y, c);
     }
 
+    swap(x, y, x1, y1) {
+        const DATA = this._data;
+        const DOT  = DATA[x1][y1];
+
+        DATA[x1][y1] = DATA[x][y];
+        this._canvas.dot(x1, y1, DATA[x][y]);
+        DATA[x][y]   = DOT;
+        this._canvas.dot(x, y, DOT);
+    }
+
     energy(x, y, index) {
         this._data[x][y] = index;
         this._canvas.dot(x, y, ENERGY_COLOR);

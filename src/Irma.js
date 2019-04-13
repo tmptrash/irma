@@ -56,7 +56,7 @@ class Irma {
         //
         (() => {
             let   callback;
-            const msgName = 'm';
+            const msgName = 0;
 
             window.addEventListener('message', (event) => {
                 if (event.data === msgName) {
