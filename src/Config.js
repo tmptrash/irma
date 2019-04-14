@@ -124,7 +124,7 @@ const Config = {
         delay    : 10000,
         amount   : 20000,
         dirs     : 10,
-        scan     : 3,
+        scan     : 5,
         get      : false,
         dirUpdate: 5000000000
     },/* {                              // sand
