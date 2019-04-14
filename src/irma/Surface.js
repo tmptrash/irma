@@ -12,8 +12,6 @@ const Config   = require('./../Config');
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const WIDTH    = Config.WORLD_WIDTH  - 1;
-const HEIGHT   = Config.WORLD_HEIGHT - 1;
 const WIDTH1   = Config.WORLD_WIDTH;
 const HEIGHT1  = Config.WORLD_HEIGHT;
 const ORG_MASK = Config.ORG_MASK;
