@@ -646,7 +646,7 @@ class VM {
 
         const surfaces = new Array(AMOUNT);
         for (let i = 0; i < AMOUNT; i++) {
-            surfaces[i] = new Surface(SURFS[i], this._world);
+            surfaces[i] = new Surface(SURFS[i], i, this._world);
         }
 
         return surfaces;

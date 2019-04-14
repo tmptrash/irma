@@ -12,16 +12,18 @@ const Config   = require('./../Config');
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const WIDTH1   = Config.WORLD_WIDTH;
-const HEIGHT1  = Config.WORLD_HEIGHT;
-const ORG_MASK = Config.ORG_MASK;
-const rand     = Helper.rand;
-const abs      = Math.abs;
+const WIDTH1     = Config.WORLD_WIDTH;
+const HEIGHT1    = Config.WORLD_HEIGHT;
+const ORG_MASK   = Config.ORG_MASK;
+const rand       = Helper.rand;
+const abs        = Math.abs;
+const INDEX_MASK = 0x0000000f;
 
 class Surface {
-    constructor(cfg, world) {
+    constructor(cfg, index, world) {
         this._applyCfg(cfg);
 
+        this._index      = index;
         this._world      = world;
         this._data       = world.data;
         this._dirx       = null;
@@ -44,12 +46,13 @@ class Surface {
         const DATA  = this._data;
         const DIRX  = this._dirx;
         const DIRY  = this._diry;
+        const SURF_INDEX = this._index;
 
         for (let i = 0; i < SCAN; i++) {
             const x   = rand(WIDTH1);
             const y   = rand(HEIGHT1);
             const dot = DATA[x][y];
-            if (dot !== 0 && (dot & ORG_MASK) === 0) {
+            if (dot !== 0 && (dot & ORG_MASK) === 0 && (dot & INDEX_MASK) === SURF_INDEX) {
                 const INDEX = this._findDirIndex(x, y);
                 //
                 // Changes direction randomly, but most of the time go to the right direction
