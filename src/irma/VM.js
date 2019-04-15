@@ -151,6 +151,7 @@ class VM {
         const ORGS             = this._orgs;
         const ORGS_REF         = this._orgs.getRef();
         const ORG_AMOUNT       = Config.orgAmount;
+        const ORG_EAT_ORGS     = Config.orgEatOrgs;
         //
         // Loop X times through population
         //
@@ -219,6 +220,7 @@ class VM {
                             const dot  = DATA[x][y];
                             if (dot === 0) {break}                                       // no energy or out of the world
                             if ((dot & ORG_MASK) !== 0) {                                // other organism
+                                if (ORG_EAT_ORGS === false) {break}
                                 const nearOrg   = ORGS_REF[dot & ORG_INDEX_MASK];
                                 const energy    = nearOrg.energy <= intd ? nearOrg.energy : intd;
                                 nearOrg.energy -= energy;
@@ -367,7 +369,7 @@ class VM {
                             break;
 
                         case CODE_CMD_OFFS + 23:  // rand
-                            d = rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND;
+                            a = rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND;
                             break;
 
                         case CODE_CMD_OFFS + 24: {// call

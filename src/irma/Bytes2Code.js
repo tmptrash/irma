@@ -60,7 +60,7 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
     [CODE_CMD_OFFS + 21]: 'x     // d = org.x',
     [CODE_CMD_OFFS + 22]: 'y     // d = org.y',
-    [CODE_CMD_OFFS + 23]: `rand  // d = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
+    [CODE_CMD_OFFS + 23]: `rand  // a = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
     [CODE_CMD_OFFS + 24]: `call  // calls d % fCount`,
     [CODE_CMD_OFFS + 25]: `func  // function`,
     [CODE_CMD_OFFS + 26]: `ret d`,
