@@ -15,16 +15,16 @@
  *   CODE_CMD_OFFS + 11 - div    - d = a / b
  *   CODE_CMD_OFFS + 12 - inc    - d++
  *   CODE_CMD_OFFS + 13 - dec    - d--
- *   CODE_CMD_OFFS + 14 - jump   - jump to d line
- *   CODE_CMD_OFFS + 15 - jumpg  - jump to d line if a > b
- *   CODE_CMD_OFFS + 16 - jumpl  - jump to d line if a <= b
- *   CODE_CMD_OFFS + 17 - jumpz  - jump to d line if a === 0
+ *   CODE_CMD_OFFS + 14 - loop   - loop d times till end
+ *   CODE_CMD_OFFS + 15 - ifdgb  - if d > a
+ *   CODE_CMD_OFFS + 16 - ifdla  - if d < a
+ *   CODE_CMD_OFFS + 17 - ifdea  - if d == a
  *   CODE_CMD_OFFS + 18 - nop    - no operation
  *   CODE_CMD_OFFS + 19 - mget   - a = mem[d]
  *   CODE_CMD_OFFS + 20 - mput   - mem[d] = a
  *   CODE_CMD_OFFS + 21 - x      - d = org.x
  *   CODE_CMD_OFFS + 22 - y      - d = org.y
- *   CODE_CMD_OFFS + 23 - rand   - d = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
+ *   CODE_CMD_OFFS + 23 - rand   - a = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
  *   CODE_CMD_OFFS + 24 - call   - calls function with name/index d % funcAmount
  *   CODE_CMD_OFFS + 25 - func   - function begin operator
  *   CODE_CMD_OFFS + 26 - ret    - returns from function. d will be return value
@@ -308,38 +308,28 @@ class VM {
                             if (!fin(--d)) {d = -MAX}
                             break;
 
-                        case CODE_CMD_OFFS + 14: {// jump
-                            const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
-                            else if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else {line = newLine}
+                        case CODE_CMD_OFFS + 14: {// loop
+                            break;
+                            // if (d > a) {break}
+                            // line = org.offs[line];
+                            // continue;
+                        }
+
+                        case CODE_CMD_OFFS + 15: {// ifdga
+                            if (d > a) {break}
+                            line = org.offs[line];
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 15: {// jumpg
-                            if (a <= b) {break}
-                            const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
-                            else if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else {line = newLine}
+                        case CODE_CMD_OFFS + 16: {// ifdla
+                            if (d < a) {break}
+                            line = org.offs[line];
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 16: {// jumpl
-                            if (a > b) {break}
-                            const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
-                            else if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else {line = newLine}
-                            continue;
-                        }
-
-                        case CODE_CMD_OFFS + 17: {// jumpz
-                            if (a !== 0) {break}
-                            const newLine = (abs(d << 0) || 1) + line;
-                            if (newLine > org.stack[org.stackIndex]) {if ((line = org.stack[org.stackIndex]) >= len) {line = 0; org.stackIndex = -1}}
-                            else if (newLine < 0 || newLine >= code.length) {line = 0}
-                            else {line = newLine}
+                        case CODE_CMD_OFFS + 17: {// ifdea
+                            if (d === a) {break}
+                            line = org.offs[line];
                             continue;
                         }
 

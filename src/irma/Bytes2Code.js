@@ -3,7 +3,8 @@
  *
  * @author flatline
  */
-const Config = require('./../Config');
+const Config   = require('./../Config');
+const Organism = require('./Organism');
 /**
  * {Number} Offset of the first command. Before it, just numbers
  */
@@ -16,12 +17,28 @@ class Bytes2Code {
      * @return {String} Array of asm like strings
      */
     static toCode(bytes, firstLineEmpty = true) {
-        let code = firstLineEmpty ? '\n' : '';
-        let span = '';
+        //
+        // Create fake organism to preprocess his code to know where
+        // blocks are located (func/ifxx...end)
+        //
+        const org = new Organism(-1, -1, -1, {}, 0, 1);
+
+        org.code = bytes;
+        org.preprocess();
+
+        const offs = org.offs;
+        let code   = firstLineEmpty ? '\n' : '';
+        let span   = '';
         for (let b = 0; b < bytes.length; b++) {
-            if (bytes[b] === CODE_CMD_OFFS + 25) { // func
+            if (bytes[b] === CODE_CMD_OFFS + 25 || // func
+                bytes[b] === CODE_CMD_OFFS + 14 || // loop
+                bytes[b] === CODE_CMD_OFFS + 15 || // ifdga
+                bytes[b] === CODE_CMD_OFFS + 16 || // ifdla
+                bytes[b] === CODE_CMD_OFFS + 17) { // ifdea
                 code += `${b ? '\n' : ''}${span}${Bytes2Code.MAP[bytes[b]]}`;
-                span += '  ';
+                if (offs[b] > b + 1) {
+                    span += '  ';
+                }
                 continue;
             } else if (bytes[b] === CODE_CMD_OFFS + 27) { // end
                 span = span.substr(0, span.length - 2);
@@ -51,10 +68,10 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 11]: 'div   // d = a / b',
     [CODE_CMD_OFFS + 12]: 'inc   // d++',
     [CODE_CMD_OFFS + 13]: 'dec   // d--',
-    [CODE_CMD_OFFS + 14]: 'jump  // jump d',
-    [CODE_CMD_OFFS + 15]: 'jumpg // jump d if a > b',
-    [CODE_CMD_OFFS + 16]: 'jumpl // jump d if a <= b',
-    [CODE_CMD_OFFS + 17]: 'jumpz // jump d if a === 0',
+    [CODE_CMD_OFFS + 14]: 'loop  // loop d times till end',
+    [CODE_CMD_OFFS + 15]: 'ifdga // if d > a',
+    [CODE_CMD_OFFS + 16]: 'ifdla // if d < a',
+    [CODE_CMD_OFFS + 17]: 'ifdea // if d == a',
     [CODE_CMD_OFFS + 18]: 'nop   // do nothing',
     [CODE_CMD_OFFS + 19]: 'mget  // a = mem[d]',
     [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
@@ -64,7 +81,7 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 24]: `call  // calls d % fCount`,
     [CODE_CMD_OFFS + 25]: `func  // function`,
     [CODE_CMD_OFFS + 26]: `ret d`,
-    [CODE_CMD_OFFS + 27]: `end   // end function`,
+    [CODE_CMD_OFFS + 27]: `end   // end func/jump`,
     [CODE_CMD_OFFS + 28]: `get   // d - direction`,
     [CODE_CMD_OFFS + 29]: `put   // d - direction`,
     [CODE_CMD_OFFS + 30]: `mix   // d - direction`
