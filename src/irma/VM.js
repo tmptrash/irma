@@ -309,10 +309,13 @@ class VM {
                             break;
 
                         case CODE_CMD_OFFS + 14: {// loop
+                            const LOOPS = org.loops;
+                            if (LOOPS[line] < 0) {LOOPS[line] = abs(d)}
+                            if (--LOOPS[line] < 0) {
+                                line = org.offs[line];
+                                continue;
+                            }
                             break;
-                            // if (d > a) {break}
-                            // line = org.offs[line];
-                            // continue;
                         }
 
                         case CODE_CMD_OFFS + 15: {// ifdga
@@ -405,16 +408,25 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 27: {// end
-                            const stack = org.stack;
-                            let   index = org.stackIndex;
-                            if (index < 0) {break}
-                            index--;
-                            b    = stack[index--];
-                            a    = stack[index--];
-                            d    = stack[index--];
-                            line = stack[index--];
-                            org.stackIndex = index;
-                            continue;
+                            switch (code[org.offs[line]]) {
+                                case CODE_CMD_OFFS + 14: // loop
+                                    line = org.offs[line];
+                                    continue;
+                                case CODE_CMD_OFFS + 25: // func
+                                    const stack = org.stack;
+                                    let index = org.stackIndex;
+                                    if (index < 0) {break}
+                                    index--;
+                                    b = stack[index--];
+                                    a = stack[index--];
+                                    d = stack[index--];
+                                    line = stack[index--];
+                                    org.stackIndex = index;
+                                    continue;
+                                default:
+                                    break;
+                            }
+                            break;
                         }
 
                         case CODE_CMD_OFFS + 28: {// get

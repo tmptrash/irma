@@ -133,6 +133,7 @@ class Organism {
 
                 case CODE_CMD_OFFS + 27: // end
                     if (sCount < 0) {break}
+                    offs[i] = stack[sCount];
                     offs[stack[sCount--]] = i + 1;
                     break;
             }

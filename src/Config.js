@@ -88,7 +88,7 @@ const Config = {
         delay    : 300,
         amount   : 122500, // we use formula at the top for this (energyDots)
         dirs     : 10,
-        scan     : 5,
+        scan     : 3,
         get      : true,
         dirUpdate: 5000000000
     }, /*{                            // lava
@@ -111,7 +111,7 @@ const Config = {
         radiation: 0,
         delay    : 10,
         amount   : 1500000,
-        dirs     : 10,
+        dirs     : 50,
         scan     : 5,
         get      : false,
         dirUpdate: 500000000
