@@ -1,10 +1,10 @@
 /**
  * Supported commands:
  *   N                  - number - sets this number to d. number in range -CODE_CMD_OFFS...CODE_CMD_OFFS
- *   CODE_CMD_OFFS + 0  - step   - moves organism using current d direction
- *   CODE_CMD_OFFS + 1  - eat    - eats something using current d direction
- *   CODE_CMD_OFFS + 2  - clone  - clones himself using current d direction
- *   CODE_CMD_OFFS + 3  - see    - see using current d offset
+ *   CODE_CMD_OFFS + 0  - step   - moves organism using d (one of 8) direction
+ *   CODE_CMD_OFFS + 1  - eat    - eats something using d (one of 8) direction
+ *   CODE_CMD_OFFS + 2  - clone  - clones himself using d (one of 8) direction
+ *   CODE_CMD_OFFS + 3  - see    - see in point: (x + a, y + b)
  *   CODE_CMD_OFFS + 4  - dtoa   - copy value from d to a
  *   CODE_CMD_OFFS + 5  - dtob   - copy value from d to b
  *   CODE_CMD_OFFS + 6  - atod   - copy value from a to d
@@ -15,7 +15,7 @@
  *   CODE_CMD_OFFS + 11 - div    - d = a / b
  *   CODE_CMD_OFFS + 12 - inc    - d++
  *   CODE_CMD_OFFS + 13 - dec    - d--
- *   CODE_CMD_OFFS + 14 - loop   - loop d times till end
+ *   CODE_CMD_OFFS + 14 - loop   - loop d times till end or skip
  *   CODE_CMD_OFFS + 15 - ifdgb  - if d > a
  *   CODE_CMD_OFFS + 16 - ifdla  - if d < a
  *   CODE_CMD_OFFS + 17 - ifdea  - if d == a
@@ -28,7 +28,10 @@
  *   CODE_CMD_OFFS + 24 - call   - calls function with name/index d % funcAmount
  *   CODE_CMD_OFFS + 25 - func   - function begin operator
  *   CODE_CMD_OFFS + 26 - ret    - returns from function. d will be return value
- *   CODE_CMD_OFFS + 27 - end    - function finish operator. no return value
+ *   CODE_CMD_OFFS + 27 - end    - function/ifxxx finish operator. no return value
+ *   CODE_CMD_OFFS + 28 - get    - get object using d (one of 8) direction
+ *   CODE_CMD_OFFS + 29 - put    - put object using d (one of 8) direction
+ *   CODE_CMD_OFFS + 30 - mix    - mix gotten object and one from d (one of 8) direction into new one
  *
  * @author flatline
  */
@@ -310,7 +313,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 14: {// loop
                             const LOOPS = org.loops;
-                            if (LOOPS[line] < 0) {LOOPS[line] = abs(d)}
+                            if (LOOPS[line] < 0 && org.offs[line] > line + 1) {LOOPS[line] = abs(d)}
                             if (--LOOPS[line] < 0) {
                                 line = org.offs[line];
                                 continue;
@@ -319,20 +322,20 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 15: {// ifdga
-                            if (d > a) {break}
-                            line = org.offs[line];
+                            if (d > a) {line++}
+                            else {line = org.offs[line]}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 16: {// ifdla
-                            if (d < a) {break}
-                            line = org.offs[line];
+                            if (d < a) {line++}
+                            else {line = org.offs[line]}
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 17: {// ifdea
-                            if (d === a) {break}
-                            line = org.offs[line];
+                            if (d === a) {line++}
+                            else {line = org.offs[line]}
                             continue;
                         }
 
@@ -340,16 +343,16 @@ class VM {
                             break;
 
                         case CODE_CMD_OFFS + 19: {// mget
-                            const intd = abs(d << 0);
-                            if (intd >= org.mem.length) {break}
-                            a = org.mem[intd];
+                            const inta = abs(a << 0);
+                            if (inta >= org.mem.length) {break}
+                            d = org.mem[inta];
                             break;
                         }
 
                         case CODE_CMD_OFFS + 20: {// mput
-                            const intd = abs(d << 0);
-                            if (intd >= org.mem.length) {break}
-                            org.mem[intd] = a;
+                            const inta = abs(a << 0);
+                            if (inta >= org.mem.length) {break}
+                            org.mem[inta] = d;
                             break;
                         }
 
