@@ -37,12 +37,10 @@ class Mutations {
      * @param {Organism} org
      */
     static mutate(org) {
-        const mutCbs  = Mutations._MUTATION_CBS;
-        const probArr = org.probArr;
-        const pLen    = probArr.length;
-        for (let m = 0, len = ((org.code.length * org.percent) << 0) || 1; m < len; m++) {
-            mutCbs[probArr[rand(pLen)]](org.code, org);
-        }
+        const mutCbs    = Mutations._MUTATION_CBS;
+        const mutations = ((org.code.length * org.percent) << 0) || 1;
+        const prob      = Helper.probIndex;
+        for (let m = 0; m < mutations; m++) {mutCbs[prob(org.probs)](org.code, org)}
     }
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
@@ -63,7 +61,7 @@ class Mutations {
     static _onDel    (code, org) {code.splice(rand(code.length), 1); org.mutations++; org.preprocess()}
     static _onPeriod (code, org) {org.period = rand(Config.orgMaxAge) + 1; org.mutations++}
     static _onPercent(code, org) {org.percent = Math.random() || CODE_MUTATION_AMOUNT; org.mutations++}
-    static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.probArr = org.createProbArr(); org.mutations++}
+    static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.mutations++}
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
         code.splice(rand(code.length), 0, Mutations.randCmd());

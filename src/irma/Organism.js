@@ -24,13 +24,9 @@ class Organism {
         this.dot        = 0x000000;
         this.packet     = 0;
         this.steps      = 0;
+        this.moves      = Config.orgMovesInStep;
         this.radiation  = 0;
         this.mutations  = 0;
-        /**
-         * {Array} Temporary offsets array. Is used during preprocessing. It should be created
-         * here, not local in preprocess() method
-         */
-        this._offs      = new Array(Config.orgMaxCodeSize);
         this._sharedObj = sharedObj;
         /**
          * {Number} Amount of energy
@@ -45,7 +41,6 @@ class Organism {
         this.generation = 0;
         this.line       = 0;
         this.probs      = Config.orgProbs.slice();
-        this.probArr    = this.createProbArr();
         this.period     = Config.orgMutationPeriod;
         this.percent    = Config.orgMutationPercent;
         /**
@@ -90,20 +85,6 @@ class Organism {
         this._energy = e;
     }
 
-    createProbArr() {
-        const probs  = this.probs;
-        let   amount = 0;
-        for (let i = 0, iLen = probs.length; i < iLen; i++) {amount += probs[i]}
-        const arr    = new Array(amount);
-        for (let i = 0, c = 0, iLen = probs.length; i < iLen; i++) {
-            for (let j = 0, jLen = probs[i]; j < jLen; j++) {
-                arr[c++] = i;
-            }
-        }
-
-        return arr;
-    }
-
     /**
      * Preprocesses code before run it. Finds all functions and map them
      * in org.funcs map. After this call operator start to work.
@@ -112,7 +93,7 @@ class Organism {
         const code    = this.code;
         const offs    = this.offs;
         const funcs   = this.funcs;
-        const stack   = this._offs;
+        const stack   = new Array(Config.orgMaxCodeSize);
         let   sCount  = -1;
         let   fCount  = 0;
 
@@ -162,7 +143,6 @@ class Organism {
 
     _clone(parent) {
         this.probs      = parent.probs.slice();
-        this.probArr    = parent.probArr.slice();
         this.period     = parent.period;
         this.percent    = parent.percent;
         this.line       = parent.line;

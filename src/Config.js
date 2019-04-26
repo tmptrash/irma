@@ -41,7 +41,7 @@ const Config = {
     /**
      * {Number} Functions call stack size
      */
-    CODE_STACK_SIZE            : 500,
+    CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 10,
     codeTimesPerRun            : 10,
     codeCrossoverEveryClone    : 15,
@@ -85,8 +85,8 @@ const Config = {
         energy   : 0,
         step     : 1,
         radiation: 0,
-        delay    : 300,
-        amount   : 122500, // we use formula at the top for this (energyDots)
+        delay    : 1000,
+        amount   : 2450000, // we use formula at the top for this (energyDots)
         dirs     : 10,
         scan     : 3,
         get      : true,
@@ -97,7 +97,7 @@ const Config = {
         energy   : 1,
         step     : 3,
         radiation: .1,
-        delay    : 20,
+        delay    : 300,
         amount   : 100000,
         dirs     : 10,
         scan     : 5,
@@ -109,7 +109,7 @@ const Config = {
         energy   : 0,
         step     : 15,
         radiation: 0,
-        delay    : 10,
+        delay    : 100,
         amount   : 1500000,
         dirs     : 50,
         scan     : 5,
@@ -186,7 +186,7 @@ const Config = {
      * {Number} Mask to check if some dot is an energy. We use second bit
      * for this. First bit is used to check if it's an organism
      */
-    energyValue                : 1,
+    energyValue                : .5,
 
     /**
      * {Number} Maximum value of every element in orgProbs array
@@ -194,20 +194,21 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
-    orgAmount                  : 10000,
+    orgAmount                  : 100000,
     orgEatOrgs                 : false,
-    orgMaxAge                  : 10000,
+    orgMaxAge                  : 20000,
     orgEnergy                  : 49,
     orgEnergyMultiplayer       : 10,
     orgCloneEnergy             : 50,
-    orgStepEnergy              : .005,
+    orgStepEnergy              : .0001,
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMemSize                 : 64,
     orgMutationPercent         : .02,
     orgMutationPeriod          : 250000,
-    orgMaxCodeSize             : 128,
+    orgMaxCodeSize             : 100,
     orgStartCodeSize           : 64,
+    orgMovesInStep             : 5,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

@@ -54,10 +54,10 @@ class Bytes2Code {
 }
 
 Bytes2Code.MAP = {
-    [CODE_CMD_OFFS     ]: 'step  // d - direction',
-    [CODE_CMD_OFFS + 1 ]: 'eat   // d - direction',
-    [CODE_CMD_OFFS + 2 ]: 'clone // d - direction',
-    [CODE_CMD_OFFS + 3 ]: 'see   // d - offset',
+    [CODE_CMD_OFFS     ]: 'step  // step(dir:d)',
+    [CODE_CMD_OFFS + 1 ]: 'eat   // b = eat(dir:d)',
+    [CODE_CMD_OFFS + 2 ]: 'clone // b = clone(dir:d)',
+    [CODE_CMD_OFFS + 3 ]: 'see   // d = see(x:a,y:b)',
     [CODE_CMD_OFFS + 4 ]: 'dtoa  // a = d',
     [CODE_CMD_OFFS + 5 ]: 'dtob  // b = d',
     [CODE_CMD_OFFS + 6 ]: 'atod  // d = a',
@@ -68,23 +68,23 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 11]: 'div   // d = a / b',
     [CODE_CMD_OFFS + 12]: 'inc   // d++',
     [CODE_CMD_OFFS + 13]: 'dec   // d--',
-    [CODE_CMD_OFFS + 14]: 'loop  // loop d times till end',
+    [CODE_CMD_OFFS + 14]: 'loop  // d times',
     [CODE_CMD_OFFS + 15]: 'ifdga // if d > a',
     [CODE_CMD_OFFS + 16]: 'ifdla // if d < a',
     [CODE_CMD_OFFS + 17]: 'ifdea // if d == a',
     [CODE_CMD_OFFS + 18]: 'nop   // do nothing',
     [CODE_CMD_OFFS + 19]: 'mget  // a = mem[d]',
     [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
-    [CODE_CMD_OFFS + 21]: 'x     // d = org.x',
-    [CODE_CMD_OFFS + 22]: 'y     // d = org.y',
+    [CODE_CMD_OFFS + 21]: 'x     // a = org.x',
+    [CODE_CMD_OFFS + 22]: 'y     // b = org.y',
     [CODE_CMD_OFFS + 23]: `rand  // a = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
     [CODE_CMD_OFFS + 24]: `call  // calls d % fCount`,
     [CODE_CMD_OFFS + 25]: `func  // function`,
     [CODE_CMD_OFFS + 26]: `ret d`,
-    [CODE_CMD_OFFS + 27]: `end   // end func/jump`,
-    [CODE_CMD_OFFS + 28]: `get   // d - direction`,
-    [CODE_CMD_OFFS + 29]: `put   // d - direction`,
-    [CODE_CMD_OFFS + 30]: `mix   // d - direction`
+    [CODE_CMD_OFFS + 27]: `end   // end func/if/loop`,
+    [CODE_CMD_OFFS + 28]: `get   // b = get(dir:d)`,
+    [CODE_CMD_OFFS + 29]: `put   // b = put(d)`,
+    [CODE_CMD_OFFS + 30]: `mix   // b = mix(dir:d, packet)`
 };
 
 module.exports = Bytes2Code;
