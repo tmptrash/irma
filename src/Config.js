@@ -200,7 +200,7 @@ const Config = {
     orgEnergy                  : 49,
     orgEnergyMultiplayer       : 10,
     orgCloneEnergy             : 50,
-    orgStepEnergy              : .0001,
+    orgStepEnergy              : .001,
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMemSize                 : 64,
