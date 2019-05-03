@@ -168,7 +168,6 @@ class VM {
                 if (org === null) {continue}
 
                 const code = org.code;
-                const len  = code.length;
                 let   d    = org.d;
                 let   a    = org.a;
                 let   b    = org.b;
@@ -419,7 +418,7 @@ class VM {
                         stack[++index] = a;
                         stack[++index] = b;
                         const end = org.offs[org.funcs[func] - 1] - 1;
-                        stack[++index] = end <= 0 ? len : end;
+                        stack[++index] = end <= 0 ? code.length : end;
                         line = org.funcs[func];
                         org.stackIndex = index;
                         continue;
@@ -529,7 +528,7 @@ class VM {
                     //
                     // We are on the last code line. Have to jump to the first
                     //
-                    if (line >= len) {
+                    if (line >= code.length) {
                         if (org.stackIndex >= 0) {
                             const stack = org.stack;
                             b    = stack[3];
