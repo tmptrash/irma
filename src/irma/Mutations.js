@@ -103,7 +103,7 @@ class Mutations {
     }
     static _onCut    (code, org)  {
         const start = rand(code.length);
-        const end   = rand(code.length)
+        const end   = rand(code.length - start);
         code.splice(start, end);
         org.mutations += (end - start);
         org.preprocess();

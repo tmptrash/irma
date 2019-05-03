@@ -93,6 +93,7 @@ class Organism {
         const code    = this.code;
         const offs    = this.offs;
         const funcs   = this.funcs;
+        const loops   = this.loops;
         const stack   = new Array(Config.orgMaxCodeSize);
         let   sCount  = -1;
         let   fCount  = 0;
@@ -105,6 +106,7 @@ class Organism {
                     break;
 
                 case CODE_CMD_OFFS + 14: // loop
+                    loops[i] = -1;
                 case CODE_CMD_OFFS + 15: // ifdga
                 case CODE_CMD_OFFS + 16: // ifdla
                 case CODE_CMD_OFFS + 17: // ifdea

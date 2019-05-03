@@ -31,7 +31,7 @@
  *   CODE_CMD_OFFS + 27 - end    - function/ifxxx finish operator. no return value
  *   CODE_CMD_OFFS + 28 - get    - get object using d (one of 8) direction, get object will be in b
  *   CODE_CMD_OFFS + 29 - put    - put object using d (one of 8) direction, put object will be in b
- *   CODE_CMD_OFFS + 30 - mix    - mix gotten object and one from d (one of 8) direction into new one, mix will be in b
+ *   CODE_CMD_OFFS + 30 - mix    - mix near object and one from d (one of 8) direction into new one, mix will be in b
  *
  * @author flatline
  */
@@ -190,11 +190,11 @@ class VM {
                             if (org.energy <= 0) {this._removeOrg(org); l = LINES; continue}
                             if ((org.radiation += surface.radiation) >= 1) {org.radiation = 0; Mutations.mutate(org)}
                             if (++org.steps < surface.step + org.moves) {org.energy -= STEP_ENERGY; ++line; continue}
-                            org.steps = 0;
                         } else {
                             if (++org.steps < org.moves) {org.energy -= STEP_ENERGY; ++line; continue}
-                            org.steps = 0;
                         }
+                        org.steps = 0;
+
                         const intd   = abs(d << 0) % 8;
                         const x      = org.x + DIRX[intd];
                         const y      = org.y + DIRY[intd];
@@ -224,7 +224,7 @@ class VM {
                         const y    = org.y + DIRY[intd % 8];
                         if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {b = 0; ++line; continue}
                         const dot  = DATA[x][y];
-                        if (dot === 0) {++line; continue}                                       // no energy or out of the world
+                        if (dot === 0) {b = 0; ++line; continue}                     // no energy or out of the world
                         if ((dot & ORG_MASK) !== 0) {                                // other organism
                             if (ORG_EAT_ORGS === false) {b = 0; ++line; continue}
                             const nearOrg   = ORGS_REF[dot & ORG_INDEX_MASK];
