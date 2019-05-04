@@ -684,7 +684,7 @@ class VM {
         const org  = deadOrg && deadOrg.init(Helper.id(), x, y, this, deadOrg.item, Config.orgEnergy, parent) ||
                      new Organism(Helper.id(), x, y, this, orgs.freeIndex, Config.orgEnergy, parent);
 
-        !deadOrg && orgs.add(org);
+        orgs.add(org);
         this._world.org(x, y, org);
 
         return org;
