@@ -57,6 +57,14 @@ class FastArray {
     }
 
     /**
+     * Returns index of first not empty element in array
+     * @return {Number}
+     */
+    get first() {
+        return this._index + 1;
+    }
+
+    /**
      * Sets value to FastArray. You can't set value index due to
      * optimization reason. Only a value
      * @param {*|false} v Any value or false if value hasn't added
@@ -81,10 +89,11 @@ class FastArray {
     /**
      * Removes(sets it to null) a value by index.
      * @param {Number} i Value index
+     * @param {Boolean} remove true to null cell, false - don't
      */
-    del(i) {
+    del(i, remove = true) {
         if (this._arr[i] !== null) {
-            this._arr[i] = null;
+            remove && (this._arr[i] = null);
             this._freeIndexes[++this._index] = i;
         }
     }

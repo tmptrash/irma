@@ -139,33 +139,34 @@ class VM {
      * times value may slow down user and browser interaction
      */
     run() {
-        const TIMES            = Config.codeTimesPerRun;
-        const LINES            = Config.codeLinesPerIteration;
-        const WORLD            = this._world;
-        const DATA             = WORLD.data;
-        const STEP_ENERGY      = Config.orgStepEnergy;
-        const ENERGY_VALUE     = Config.energyValue;
-        const ENERGY_MULT      = ENERGY_VALUE * Config.orgEnergyMultiplayer;
-        const ENERGY_CLONE     = Config.orgCloneEnergy;
-        const MUTATION_PERIOD  = Config.orgMutationPeriod;
-        const MAX_AGE          = Config.orgMaxAge;
-        const ENERGY_PERIOD    = Config.orgEnergyPeriod;
-        const CATACLYSM_PERIOD = Config.worldCataclysmEvery;
-        const ORGS             = this._orgs;
-        const ORGS_REF         = this._orgs.getRef();
-        const ORG_AMOUNT       = Config.orgAmount;
-        const ORG_EAT_ORGS     = Config.orgEatOrgs;
+        const times            = Config.codeTimesPerRun;
+        const lines            = Config.codeLinesPerIteration;
+        const world            = this._world;
+        const data             = world.data;
+        const stepEnergy       = Config.orgStepEnergy;
+        const energyValue      = Config.energyValue;
+        const energyMult       = energyValue * Config.orgEnergyMultiplayer;
+        const energyClone      = Config.orgCloneEnergy;
+        const mutationPeriod   = Config.orgMutationPeriod;
+        const maxAge           = Config.orgMaxAge;
+        const energyPeriod     = Config.orgEnergyPeriod;
+        const cataclysmPeriod  = Config.worldCataclysmEvery;
+        const orgs             = this._orgs;
+        const orgsRef          = this._orgs.getRef();
+        const orgAmount        = Config.orgAmount;
+        const orgEatOrgs       = Config.orgEatOrgs;
         //
         // Loop X times through population
         //
-        for (let time = 0; time < TIMES; time++) {
+        for (let time = 0; time < times; time++) {
             //
             // Loop through population
             //
             let orgsEnergy = 0;
-            for (let o = 0; o < ORG_AMOUNT; o++) {
-                const org  = ORGS_REF[o];
-                if (org === null) {continue}
+            let o = orgs.first;
+            while (o < orgAmount) {
+                const org = orgsRef[o++];
+                if (org.energy === 0) {continue}
 
                 const code = org.code;
                 const len  = code.length;
@@ -177,7 +178,7 @@ class VM {
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
                 //
-                for (let l = 0; l < LINES; l++) {
+                for (let l = 0; l < lines; l++) {
                     const cmd = code[line];
                     //
                     // This is ordinary command
@@ -187,33 +188,33 @@ class VM {
                         if (oldDot !== 0) {
                             const surface = this._surfaces[oldDot % SURFACES];
                             org.energy   -= surface.energy;
-                            if (org.energy <= 0) {this._removeOrg(org); l = LINES; continue}
+                            if (org.energy <= 0) {this._removeOrg(org); l = lines; continue}
                             if ((org.radiation += surface.radiation) >= 1) {org.radiation = 0; Mutations.mutate(org)}
-                            if (++org.steps < surface.step + org.moves) {org.energy -= STEP_ENERGY; ++line; continue}
+                            if (++org.steps < surface.step + org.moves) {org.energy -= stepEnergy; ++line; continue}
                             org.steps = 0;
                         } else {
-                            if (++org.steps < org.moves) {org.energy -= STEP_ENERGY; ++line; continue}
+                            if (++org.steps < org.moves) {org.energy -= stepEnergy; ++line; continue}
                             org.steps = 0;
                         }
                         const intd   = abs(d << 0) % 8;
                         const x      = org.x + DIRX[intd];
                         const y      = org.y + DIRY[intd];
                         let   dot;
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = DATA[x][y]) & ORG_MASK) !== 0) {++line; continue}
+                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x][y]) & ORG_MASK) !== 0) {++line; continue}
                         //
                         // Organism can't step through stone
                         //
                         if (this._surfaces[dot % SURFACES].barrier) {++line; continue}
                         org.dot = dot;
-                        WORLD.moveOrg(org, x, y);
+                        world.moveOrg(org, x, y);
                         //
                         // << 28 - dot is an energy
                         //
-                        (oldDot & ORG_MASK) !== 0 && (oldDot << 28) === 0 ? WORLD.energy(org.x, org.y, oldDot) : WORLD.dot(org.x, org.y, oldDot);
-                        org.energy -= STEP_ENERGY;
+                        (oldDot & ORG_MASK) !== 0 && (oldDot << 28) === 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
+                        org.energy -= stepEnergy;
                         org.x = x;
                         org.y = y;
-                        if (org.energy <= 0) {this._removeOrg(org); l = LINES}
+                        if (org.energy <= 0) {this._removeOrg(org); l = lines}
                         ++line;
                         continue;
                     }
@@ -223,15 +224,15 @@ class VM {
                         const x    = org.x + DIRX[intd % 8];
                         const y    = org.y + DIRY[intd % 8];
                         if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {b = 0; ++line; continue}
-                        const dot  = DATA[x][y];
+                        const dot  = data[x][y];
                         if (dot === 0) {++line; continue}                                       // no energy or out of the world
                         if ((dot & ORG_MASK) !== 0) {                                // other organism
-                            if (ORG_EAT_ORGS === false) {b = 0; ++line; continue}
-                            const nearOrg   = ORGS_REF[dot & ORG_INDEX_MASK];
+                            if (orgEatOrgs === false) {b = 0; ++line; continue}
+                            const nearOrg   = orgsRef[dot & ORG_INDEX_MASK];
                             const energy    = nearOrg.energy <= intd ? nearOrg.energy : intd;
                             nearOrg.energy -= energy;
                             org.energy     += energy;
-                            if (nearOrg.energy <= 0) {this._removeOrg(nearOrg); l = LINES}
+                            if (nearOrg.energy <= 0) {this._removeOrg(nearOrg); l = lines}
                             b = energy;
                             ++line;
                             continue;
@@ -240,7 +241,7 @@ class VM {
                         // << 28 - dot is an energy
                         //
                         if ((dot << 28) === 0) {
-                            org.energy += (b = ((((dot & ORG_ATOM_MASK) >>> 4) || 1) * ENERGY_MULT));
+                            org.energy += (b = ((((dot & ORG_ATOM_MASK) >>> 4) || 1) * energyMult));
                             this._ENERGY.remove(x, y);
                         }
                         ++line;
@@ -248,16 +249,16 @@ class VM {
                     }
 
                     if (cmd === CODE_CMD_OFFS + 2) { // clone
-                        if (ORGS.full || org.energy < ENERGY_CLONE) {b = 0; ++line; continue}
+                        if (orgs.full || org.energy < energyClone) {b = 0; ++line; continue}
                         const intd = abs(d << 0) % 8;
                         const x = org.x + DIRX[intd];
                         const y = org.y + DIRY[intd];
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || DATA[x][y] !== 0) {b = 0; ++line; continue}
-                        const clone = this._createOrg(x, y, org);
+                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {b = 0; ++line; continue}
+                        const clone = this._createOrg(x, y, orgsRef[orgs.freeIndex], org);
                         org.energy = clone.energy = ceil(org.energy >>> 1);
-                        if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = LINES; b = 0; ++line; continue}
+                        if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; b = 0; ++line; continue}
                         if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
-                        if (rand(Config.codeCrossoverEveryClone) === 0) {const org2 = ORGS_REF[rand(ORGS.size)]; org2 !== null && Mutations.crossover(clone, org2)}
+                        if (rand(Config.codeCrossoverEveryClone) === 0) {const org2 = orgsRef[rand(orgs.size)]; org2 !== null && Mutations.crossover(clone, org2)}
                         b = 1;
                         this._db && this._db.put(clone, org);
                         ++line;
@@ -269,8 +270,8 @@ class VM {
                         const x    = org.x + DIRX[intd] + (a << 0);
                         const y    = org.y + DIRY[intd] + (b << 0);
                         if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = 0; ++line; continue}
-                        const dot  = DATA[x][y];
-                        if ((dot & ORG_MASK) !== 0) {d = (ORGS_REF[dot & ORG_INDEX_MASK]).energy; d = 0; ++line; continue}    // other organism
+                        const dot  = data[x][y];
+                        if ((dot & ORG_MASK) !== 0) {d = (orgsRef[dot & ORG_INDEX_MASK]).energy; d = 0; ++line; continue}    // other organism
                         d = dot;                                                    // some world object
                         ++line;
                         continue;
@@ -481,7 +482,7 @@ class VM {
                         const y    = org.y + DIRY[intd];
                         let dot;
                         let surf;
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = DATA[x][y]) === 0 || (dot & ORG_MASK) !== 0 || !(surf = this._surfaces[dot % SURFACES]).get) {b = 0; ++line; continue}
+                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = data[x][y]) === 0 || (dot & ORG_MASK) !== 0 || !(surf = this._surfaces[dot % SURFACES]).get) {b = 0; ++line; continue}
                         org.packet = b = dot;
                         surf.remove(x, y, true);
                         ++line;
@@ -493,7 +494,7 @@ class VM {
                         const intd = abs(d << 0) % 8;
                         const x    = org.x + DIRX[intd];
                         const y    = org.y + DIRY[intd];
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || DATA[x][y] !== 0) {++line; continue}
+                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {++line; continue}
                         this._world.dot(x, y, b = org.packet);
                         org.packet = 0;
                         ++line;
@@ -510,7 +511,7 @@ class VM {
                         //
                         // << 28 - dot is an energy
                         //
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = DATA[x][y]) === 0 || (dot & ORG_MASK) !== 0 || (dot << 28) !== 0 || (packet << 28) !== 0) {b = 0; ++line; continue}
+                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = data[x][y]) === 0 || (dot & ORG_MASK) !== 0 || (dot << 28) !== 0 || (packet << 28) !== 0) {b = 0; ++line; continue}
                         const atom1 = ((dot & ORG_ATOM_MASK) >>> 4) || 1;
                         const atom2 = ((packet & ORG_ATOM_MASK) >>> 4) || 1;
                         org.packet = 0;
@@ -550,16 +551,16 @@ class VM {
                 // Organism age related updates
                 //
                 const age = org.age;
-                if (age % org.period === 0 && age > 0 && MUTATION_PERIOD > 0) {Mutations.mutate(org)}
-                if (age % MAX_AGE === 0 && age > 0) {this._removeOrg(org)}
-                if (age % ENERGY_PERIOD === 0 && ENERGY_PERIOD > 0) {
+                if (age % org.period === 0 && age > 0 && mutationPeriod > 0) {Mutations.mutate(org)}
+                if (age % maxAge === 0 && age > 0) {this._removeOrg(org)}
+                if (age % energyPeriod === 0 && energyPeriod > 0) {
                     //
                     // Energy waste depends on energy amount. Big (more energy) organism spends more energy
                     //
                     org.energy--;
                     if (org.energy <= 0) {this._removeOrg(org)}
                 }
-                if ((this.totalOrgsEnergy + this._ENERGY.curAmount * ENERGY_VALUE) < MAX_ENERGY) {this._ENERGY.put()}
+                if ((this.totalOrgsEnergy + this._ENERGY.curAmount * energyValue) < MAX_ENERGY) {this._ENERGY.put()}
                 //
                 // This mechanism runs surfaces moving (energy, lava, holes, water, sand)
                 //
@@ -572,7 +573,7 @@ class VM {
                 }
 
                 org.age++;
-                this._i += LINES;
+                this._i += lines;
                 orgsEnergy += org.energy;
             }
             //
@@ -580,7 +581,7 @@ class VM {
             // mechanism start working. 30% of all organisms will be removed and new random
             // generated organisms will be created
             //
-            if (this._iterations % CATACLYSM_PERIOD === 0) {this._updateCataclysm(ORGS)}
+            if (this._iterations % cataclysmPeriod === 0) {this._updateCataclysm(orgs)}
 
             this.totalOrgsEnergy = orgsEnergy;
             this._iterations++;
@@ -590,12 +591,12 @@ class VM {
         //
         const ts = Date.now();
         if (ts - this._ts > 1000) {
-            const orgAmount = ORGS.items;
-            WORLD.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this.totalOrgsEnergy / orgAmount) << 0} diff:${this._diff} gen:${this._population}`);
+            const orgAmount = orgs.items;
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this.totalOrgsEnergy / orgAmount) << 0} diff:${this._diff} gen:${this._population}`);
             this._ts = ts;
             this._i  = 0;
 
-            if (ORGS.items === 0) {this._createOrgs()}
+            if (orgs.items === 0) {this._createOrgs()}
         }
     }
 
@@ -619,7 +620,7 @@ class VM {
                         const y = rand(HEIGHT1);
                         if (data[x][y] === 0) {
                             this._removeOrg(org2Kill);
-                            const org = this._createOrg(x, y);
+                            const org = this._createOrg(x, y, org2Kill);
                             this._db && this._db.put(org);
                         }
                     }
@@ -637,7 +638,7 @@ class VM {
         const packet = org.packet;
 
         org.energy = 0;
-        this._orgs.del(org.item);
+        this._orgs.del(org.item, false);
         this._world.empty(x, y);
         this._world.dot(x, y, org.dot);
         this._surfaces[packet % SURFACES].put(packet, false);
@@ -675,14 +676,16 @@ class VM {
      * Creates one organism with default parameters and empty code
      * @param {Number} x X coordinate
      * @param {Number} y Y coordinate
+     * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @param {Organism=} parent Create from parent
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(x, y, parent = null) {
+    _createOrg(x, y, deadOrg = undefined, parent = null) {
         const orgs = this._orgs;
-        const org  = new Organism(Helper.id(), x, y, this, orgs.freeIndex, Config.orgEnergy, parent);
+        const org  = deadOrg && deadOrg.init(Helper.id(), x, y, this, deadOrg.item, Config.orgEnergy, parent) ||
+                     new Organism(Helper.id(), x, y, this, orgs.freeIndex, Config.orgEnergy, parent);
 
-        orgs.add(org);
+        !deadOrg && orgs.add(org);
         this._world.org(x, y, org);
 
         return org;

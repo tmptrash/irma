@@ -13,6 +13,10 @@ const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
     constructor(id, x, y, sharedObj, item, energy, parent = null) {
+        return this.init(...arguments);
+    }
+
+    init(id, x, y, sharedObj, item, energy, parent = null) {
         this.id         = id;
         this.item       = item;
         this.x          = x;
@@ -74,6 +78,8 @@ class Organism {
          */
         this.code       = this._generateCode();
         this.preprocess();
+
+        return this;
     }
 
     get energy() {
