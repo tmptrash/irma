@@ -31,7 +31,7 @@
  *   CODE_CMD_OFFS + 27 - end    - function/ifxxx finish operator. no return value
  *   CODE_CMD_OFFS + 28 - get    - get object using d (one of 8) direction, get object will be in b
  *   CODE_CMD_OFFS + 29 - put    - put object using d (one of 8) direction, put object will be in b
- *   CODE_CMD_OFFS + 30 - mix    - mix gotten object and one from d (one of 8) direction into new one, mix will be in b
+ *   CODE_CMD_OFFS + 30 - mix    - mix near object and one from d (one of 8) direction into new one, mix will be in b
  *
  * @author flatline
  */
@@ -169,7 +169,6 @@ class VM {
                 if (org.energy === 0) {continue}
 
                 const code = org.code;
-                const len  = code.length;
                 let   d    = org.d;
                 let   a    = org.a;
                 let   b    = org.b;
@@ -191,11 +190,11 @@ class VM {
                             if (org.energy <= 0) {this._removeOrg(org); l = lines; continue}
                             if ((org.radiation += surface.radiation) >= 1) {org.radiation = 0; Mutations.mutate(org)}
                             if (++org.steps < surface.step + org.moves) {org.energy -= stepEnergy; ++line; continue}
-                            org.steps = 0;
                         } else {
                             if (++org.steps < org.moves) {org.energy -= stepEnergy; ++line; continue}
-                            org.steps = 0;
                         }
+                        org.steps = 0;
+
                         const intd   = abs(d << 0) % 8;
                         const x      = org.x + DIRX[intd];
                         const y      = org.y + DIRY[intd];
@@ -225,7 +224,7 @@ class VM {
                         const y    = org.y + DIRY[intd % 8];
                         if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {b = 0; ++line; continue}
                         const dot  = data[x][y];
-                        if (dot === 0) {++line; continue}                                       // no energy or out of the world
+                        if (dot === 0) {b = 0; ++line; continue}                                       // no energy or out of the world
                         if ((dot & ORG_MASK) !== 0) {                                // other organism
                             if (orgEatOrgs === false) {b = 0; ++line; continue}
                             const nearOrg   = orgsRef[dot & ORG_INDEX_MASK];
@@ -420,7 +419,7 @@ class VM {
                         stack[++index] = a;
                         stack[++index] = b;
                         const end = org.offs[org.funcs[func] - 1] - 1;
-                        stack[++index] = end <= 0 ? len : end;
+                        stack[++index] = end <= 0 ? code.length : end;
                         line = org.funcs[func];
                         org.stackIndex = index;
                         continue;
@@ -530,7 +529,7 @@ class VM {
                     //
                     // We are on the last code line. Have to jump to the first
                     //
-                    if (line >= len) {
+                    if (line >= code.length) {
                         if (org.stackIndex >= 0) {
                             const stack = org.stack;
                             b    = stack[3];

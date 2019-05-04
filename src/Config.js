@@ -24,8 +24,8 @@ const Config = {
      * point depending on one of 8 directions. We use these values in any command
      * related to sight, move, eating and so on
      */
-    DIRX                       : [0,   1, 1, 1, 0, -1, -1, -1],
-    DIRY                       : [-1, -1, 0, 1, 1,  1,  0, -1],
+    DIRX                       : new Int32Array([0,   1, 1, 1, 0, -1, -1, -1]),
+    DIRY                       : new Int32Array([-1, -1, 0, 1, 1,  1,  0, -1]),
     /**
      * {Number} This offset will be added to commands value. This is how we
      * add an ability to use numbers in a code, just putting them as command
@@ -214,7 +214,7 @@ const Config = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : [10,1,2,3,1,5,1,1]
+    orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1])
 };
 
 module.exports = Config;
