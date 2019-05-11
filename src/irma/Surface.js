@@ -14,6 +14,7 @@ const Config   = require('./../Config');
  */
 const WIDTH1     = Config.WORLD_WIDTH;
 const HEIGHT1    = Config.WORLD_HEIGHT;
+const MAX_OFFS   = WIDTH1 * HEIGHT1 - 1;
 const ORG_MASK   = Config.ORG_MASK;
 const rand       = Helper.rand;
 const abs        = Math.abs;
@@ -42,36 +43,36 @@ class Surface {
     }
 
     move() {
-        const SCAN  = this.scan;
-        const DATA  = this._data;
-        const DIRX  = this._dirx;
-        const DIRY  = this._diry;
-        const SURF_INDEX = this._index;
+        const scan  = this.scan;
+        const data  = this._data;
+        const dirx  = this._dirx;
+        const diry  = this._diry;
+        const surfIndex = this._index;
 
-        for (let i = 0; i < SCAN; i++) {
+        for (let i = 0; i < scan; i++) {
             const x   = rand(WIDTH1);
             const y   = rand(HEIGHT1);
-            const dot = DATA[x][y];
-            if (dot !== 0 && (dot & ORG_MASK) === 0 && (dot & INDEX_MASK) === SURF_INDEX) {
+            const dot = data[x][y];
+            if (dot !== 0 && (dot & ORG_MASK) === 0 && (dot & INDEX_MASK) === surfIndex) {
                 const INDEX = this._findDirIndex(x, y);
                 //
                 // Changes direction randomly, but most of the time go to the right direction
                 //
-                const x1 = x + (DIRX[INDEX] > x && rand(3) > 0 ? 1 : -1);
-                const y1 = y + (DIRY[INDEX] > y && rand(3) > 0 ? 1 : -1);
+                const x1 = x + (dirx[INDEX] > x && rand(3) > 0 ? 1 : -1);
+                const y1 = y + (diry[INDEX] > y && rand(3) > 0 ? 1 : -1);
 
                 if (x1 >= 0 && x1 < WIDTH1 && y1 >= 0 && y1 < HEIGHT1) {
-                    const destDot = DATA[x1][y1];
+                    const destDot = data[x1][y1];
                     if (destDot === 0) {
-                        this._world.moveDot(x, y, x1, y1, dot);
+                        this._world.moveDot(y * WIDTH1 + x, y1 * WIDTH1 + x1, dot);
                     } else if ((destDot & ORG_MASK) === 0) {
-                        this._world.swap(x, y, x1, y1);
+                        this._world.swap(y * WIDTH1 + x, y1 * WIDTH1 + x1);
                     }
                 }
             }
         }
 
-        if ((this._i += SCAN) > this.dirUpdate) {
+        if ((this._i += scan) > this.dirUpdate) {
             this._i = 0;
             this._initDirs();
         }
@@ -81,18 +82,17 @@ class Surface {
         return this._curAmount;
     }
 
-    remove(x, y, hide = false) {
-        this._world.empty(x, y);
+    remove(offs, hide = false) {
+        this._world.empty(offs);
         !hide && this._curAmount--;
     }
 
     put(dot = this.color, isNew = true) {
         // TODO: refactor this while()
         while (true) {
-            const x = rand(WIDTH1);
-            const y = rand(HEIGHT1);
-            if (this._data[x][y] === 0) {
-                this._world.dot(x, y, dot);
+            const offs = rand(MAX_OFFS);
+            if (this._data[offs] === 0) {
+                this._world.dot(offs, dot);
                 isNew && this._curAmount++;
                 break;
             }
@@ -121,10 +121,9 @@ class Surface {
             throw new Error('Amount of dots of surface is bigger then world size');
         }
         while (amount > 0) {
-            const x = rand(WIDTH1);
-            const y = rand(HEIGHT1);
-            if (data[x][y] === 0) {
-                world.dot(x, y, color);
+            const offs = rand(MAX_OFFS);
+            if (data[offs] === 0) {
+                world.dot(offs, color);
                 amount--;
             }
         }
@@ -150,13 +149,13 @@ class Surface {
      * @private
      */
     _findDirIndex(x, y) {
-        const DIRX     = this._dirx;
-        const DIRY     = this._diry;
+        const dirx     = this._dirx;
+        const diry     = this._diry;
         let   index    = 0;
         let   distance = Infinity;
 
-        for (let i = 0, l = DIRX.length; i < l; i++) {
-            const curDistance = abs(DIRX[i] - x) + abs(DIRY[i] - y);
+        for (let i = 0, l = dirx.length; i < l; i++) {
+            const curDistance = abs(dirx[i] - x) + abs(diry[i] - y);
             if (curDistance < distance) {
                 index = i;
                 distance = curDistance;

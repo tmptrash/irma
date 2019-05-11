@@ -68,13 +68,12 @@ class Canvas {
      * decimal number. For example: 16777215 is #FFFFFF - white.
      * In case of invalid coordinates 0 value for x, color and y will
      * be used.
-     * @param {Number} x X coordinate
-     * @param {Number} y Y coordinate
+     * @param {Number} offs Absolute dot offset
      * @param {Number} color Decimal color
      */
-    dot(x, y, color) {
+    dot(offs, color) {
         const data = this._data;
-        const offs = (y * this._width + x) * 4;
+        offs <<= 2;
 
         data[offs    ] = (color >>> 16) & 0xff;
         data[offs + 1] = (color >>> 8)  & 0xff;
@@ -83,30 +82,27 @@ class Canvas {
 
     /**
      * Sets pixel with 0 color with specified coordinates.
-     * @param {Number} x X coordinate
-     * @param {Number} y Y coordinate
+     * @param {Number} offs Absolute dot affset
      */
-    empty(x, y) {
+    empty(offs) {
         const data = this._data;
-        const offs = (y * this._width + x) * 4;
+        offs <<= 2;
         data[offs] = data[offs + 1] = data[offs + 2] = 0;
     }
 
     /**
      * This method is optimized for speed. It contains code duplication
      * with dot() method.
-     * @param {Number} x0 Start X position
-     * @param {Number} y0 Start Y position
-     * @param {Number} x1 End X position
-     * @param {Number} y1 End Y position
+     * @param {Number} offs Absolute source dot affset
+     * @param {Number} offs1 Absolute desctination dot affset
      * @param {Number} color
      */
-    move(x0, y0, x1, y1, color) {
-        const data  = this._data;
-        const offs0 = (y0 * this._width + x0) * 4;
-        const offs1 = (y1 * this._width + x1) * 4;
+    move(offs, offs1, color) {
+        const data = this._data;
+        offs  <<= 2;
+        offs1 <<= 2;
 
-        data[offs0] = data[offs0 + 1] = data[offs0 + 2] = 0;
+        data[offs] = data[offs + 1] = data[offs + 2] = 0;
 
         data[offs1    ] = (color >>> 16) & 0xff;
         data[offs1 + 1] = (color >>> 8)  & 0xff;

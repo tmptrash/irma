@@ -12,15 +12,14 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, x, y, sharedObj, item, energy, parent = null) {
+    constructor(id, offs, sharedObj, item, energy, parent = null) {
         return this.init(...arguments);
     }
 
-    init(id, x, y, sharedObj, item, energy, parent = null) {
+    init(id, offs, sharedObj, item, energy, parent = null) {
         this.id         = id;
         this.item       = item;
-        this.x          = x;
-        this.y          = y;
+        this.offset     = offs;
         /**
          * {Number} Organism's age - amount of iteration from born
          */

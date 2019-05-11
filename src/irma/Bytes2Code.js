@@ -75,16 +75,15 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 18]: 'nop   // do nothing',
     [CODE_CMD_OFFS + 19]: 'mget  // a = mem[d]',
     [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
-    [CODE_CMD_OFFS + 21]: 'x     // a = org.x',
-    [CODE_CMD_OFFS + 22]: 'y     // b = org.y',
-    [CODE_CMD_OFFS + 23]: `rand  // a = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
-    [CODE_CMD_OFFS + 24]: `call  // calls d % fCount`,
-    [CODE_CMD_OFFS + 25]: `func  // function`,
-    [CODE_CMD_OFFS + 26]: `ret d`,
-    [CODE_CMD_OFFS + 27]: `end   // end func/if/loop`,
-    [CODE_CMD_OFFS + 28]: `get   // b = get(dir:d)`,
-    [CODE_CMD_OFFS + 29]: `put   // b = put(d)`,
-    [CODE_CMD_OFFS + 30]: `mix   // b = mix(dir:d, packet)`
+    [CODE_CMD_OFFS + 21]: 'offs  // d = org.offset',
+    [CODE_CMD_OFFS + 22]: `rand  // a = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
+    [CODE_CMD_OFFS + 23]: `call  // calls d % fCount`,
+    [CODE_CMD_OFFS + 24]: `func  // function`,
+    [CODE_CMD_OFFS + 25]: `ret d`,
+    [CODE_CMD_OFFS + 26]: `end   // end func/if/loop`,
+    [CODE_CMD_OFFS + 27]: `get   // b = get(dir:d)`,
+    [CODE_CMD_OFFS + 28]: `put   // b = put(d)`,
+    [CODE_CMD_OFFS + 29]: `mix   // b = mix(dir:d, packet)`
 };
 
 module.exports = Bytes2Code;

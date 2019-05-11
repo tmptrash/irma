@@ -4,7 +4,7 @@
  *   CODE_CMD_OFFS + 0  - step   - moves organism using d (one of 8) direction
  *   CODE_CMD_OFFS + 1  - eat    - eats something using d (one of 8) direction, ate energy will be in b
  *   CODE_CMD_OFFS + 2  - clone  - clones himself using d (one of 8) direction, 0|1 will be in b
- *   CODE_CMD_OFFS + 3  - see    - see in point: (x + a, y + b), dot will be in d
+ *   CODE_CMD_OFFS + 3  - see    - see in point: (offs), dot will be in d
  *   CODE_CMD_OFFS + 4  - dtoa   - copy value from d to a
  *   CODE_CMD_OFFS + 5  - dtob   - copy value from d to b
  *   CODE_CMD_OFFS + 6  - atod   - copy value from a to d
@@ -22,16 +22,15 @@
  *   CODE_CMD_OFFS + 18 - nop    - no operation
  *   CODE_CMD_OFFS + 19 - mget   - a = mem[d]
  *   CODE_CMD_OFFS + 20 - mput   - mem[d] = a
- *   CODE_CMD_OFFS + 21 - x      - a = org.x
- *   CODE_CMD_OFFS + 22 - y      - b = org.y
- *   CODE_CMD_OFFS + 23 - rand   - a = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
- *   CODE_CMD_OFFS + 24 - call   - calls function with name/index d % funcAmount
- *   CODE_CMD_OFFS + 25 - func   - function begin operator
- *   CODE_CMD_OFFS + 26 - ret    - returns from function. d will be return value
- *   CODE_CMD_OFFS + 27 - end    - function/ifxxx finish operator. no return value
- *   CODE_CMD_OFFS + 28 - get    - get object using d (one of 8) direction, get object will be in b
- *   CODE_CMD_OFFS + 29 - put    - put object using d (one of 8) direction, put object will be in b
- *   CODE_CMD_OFFS + 30 - mix    - mix near object and one from d (one of 8) direction into new one, mix will be in b
+ *   CODE_CMD_OFFS + 21 - offs   - d = org.offset
+ *   CODE_CMD_OFFS + 22 - rand   - a = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
+ *   CODE_CMD_OFFS + 23 - call   - calls function with name/index d % funcAmount
+ *   CODE_CMD_OFFS + 24 - func   - function begin operator
+ *   CODE_CMD_OFFS + 25 - ret    - returns from function. d will be return value
+ *   CODE_CMD_OFFS + 26 - end    - function/ifxxx finish operator. no return value
+ *   CODE_CMD_OFFS + 27 - get    - get object using d (one of 8) direction, get object will be in b
+ *   CODE_CMD_OFFS + 28 - put    - put object using d (one of 8) direction, put object will be in b
+ *   CODE_CMD_OFFS + 29 - mix    - mix near object and one from d (one of 8) direction into new one, mix will be in b
  *
  * @author flatline
  */
@@ -64,8 +63,7 @@ const CODE_STACK_SIZE   = Config.CODE_STACK_SIZE;
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIRX              = Config.DIRX;
-const DIRY              = Config.DIRY;
+const DIR               = Config.DIR;
 /**
  * {Number} World size. Pay attention, that width and height is -1
  */
@@ -73,6 +71,7 @@ const WIDTH             = Config.WORLD_WIDTH - 1;
 const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
 const HEIGHT1           = HEIGHT + 1;
+const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
 const MAX               = Number.MAX_VALUE;
 
 const ORG_MASK          = Config.ORG_MASK;
@@ -122,7 +121,6 @@ class VM {
         this._surfaces = null;
         this._world    = null;
         this._orgs     = null;
-        this._world    = null;
         this._orgs     = null;
         this._db       = null;
     }
@@ -195,24 +193,21 @@ class VM {
                         }
                         org.steps = 0;
 
-                        const intd   = abs(d << 0) % 8;
-                        const x      = org.x + DIRX[intd];
-                        const y      = org.y + DIRY[intd];
+                        const offs = org.offset + DIR[abs(d << 0) % 8];
                         let   dot;
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || ((dot = data[x][y]) & ORG_MASK) !== 0) {++line; continue}
+                        if (offs < 0 || offs > MAX_OFFS || ((dot = data[offs]) & ORG_MASK) !== 0) {++line; continue}
                         //
                         // Organism can't step through stone
                         //
                         if (this._surfaces[dot % SURFACES].barrier) {++line; continue}
                         org.dot = dot;
-                        world.moveOrg(org, x, y);
+                        world.moveOrg(org, offs);
                         //
                         // << 28 - dot is an energy
                         //
-                        (oldDot & ORG_MASK) !== 0 && (oldDot << 28) === 0 ? world.energy(org.x, org.y, oldDot) : world.dot(org.x, org.y, oldDot);
+                        (oldDot & ORG_MASK) !== 0 && (oldDot << 28) === 0 ? world.energy(org.offset, oldDot) : world.dot(org.offset, oldDot);
                         org.energy -= stepEnergy;
-                        org.x = x;
-                        org.y = y;
+                        org.offset = offs;
                         if (org.energy <= 0) {this._removeOrg(org); l = lines}
                         ++line;
                         continue;
@@ -220,10 +215,9 @@ class VM {
 
                     if (cmd === CODE_CMD_OFFS + 1) { // eat
                         const intd = abs(d << 0);
-                        const x    = org.x + DIRX[intd % 8];
-                        const y    = org.y + DIRY[intd % 8];
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {b = 0; ++line; continue}
-                        const dot  = data[x][y];
+                        const offs = org.offset + DIR[intd % 8];
+                        if (offs < 0 || offs > MAX_OFFS) {b = 0; ++line; continue}
+                        const dot  = data[offs];
                         if (dot === 0) {b = 0; ++line; continue}                                       // no energy or out of the world
                         if ((dot & ORG_MASK) !== 0) {                                // other organism
                             if (orgEatOrgs === false) {b = 0; ++line; continue}
@@ -241,7 +235,7 @@ class VM {
                         //
                         if ((dot << 28) === 0) {
                             org.energy += (b = ((((dot & ORG_ATOM_MASK) >>> 4) || 1) * energyMult));
-                            this._ENERGY.remove(x, y);
+                            this._ENERGY.remove(offs);
                         }
                         ++line;
                         continue;
@@ -249,11 +243,9 @@ class VM {
 
                     if (cmd === CODE_CMD_OFFS + 2) { // clone
                         if (orgs.full || org.energy < energyClone) {b = 0; ++line; continue}
-                        const intd = abs(d << 0) % 8;
-                        const x = org.x + DIRX[intd];
-                        const y = org.y + DIRY[intd];
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {b = 0; ++line; continue}
-                        const clone = this._createOrg(x, y, orgsRef[orgs.freeIndex], org);
+                        const offs = org.offset + DIR[abs(d << 0) % 8];
+                        if (offs < 0 || offs > MAX_OFFS || data[offs] !== 0) {b = 0; ++line; continue}
+                        const clone = this._createOrg(offs, orgsRef[orgs.freeIndex], org);
                         org.energy = clone.energy = ceil(org.energy >>> 1);
                         if (org.energy <= 0) {this._removeOrg(org); this._removeOrg(clone); l = lines; b = 0; ++line; continue}
                         if (rand(Config.codeMutateEveryClone) === 0) {Mutations.mutate(clone)}
@@ -265,11 +257,9 @@ class VM {
                     }
 
                     if (cmd === CODE_CMD_OFFS + 3) { // see
-                        const intd = abs(d << 0) % 8;
-                        const x    = org.x + DIRX[intd] + (a << 0);
-                        const y    = org.y + DIRY[intd] + (b << 0);
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) {d = 0; ++line; continue}
-                        const dot  = data[x][y];
+                        const offs = org.offset + DIR[abs(d << 0) % 8] + (a << 0);
+                        if (offs < 0 || offs > MAX_OFFS) {d = 0; ++line; continue}
+                        const dot  = data[offs];
                         if ((dot & ORG_MASK) !== 0) {d = (orgsRef[dot & ORG_INDEX_MASK]).energy; d = 0; ++line; continue}    // other organism
                         d = dot;                                                    // some world object
                         ++line;
@@ -390,25 +380,19 @@ class VM {
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 21) {// x
-                        a = org.x;
+                    if (cmd === CODE_CMD_OFFS + 21) {// offs
+                        d = org.offs;
                         ++line;
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 22) {// y
-                        b = org.y;
-                        ++line;
-                        continue;
-                    }
-
-                    if (cmd === CODE_CMD_OFFS + 23) { // rand
+                    if (cmd === CODE_CMD_OFFS + 22) { // rand
                         a = rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND;
                         ++line;
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 24) {// call
+                    if (cmd === CODE_CMD_OFFS + 23) {// call
                         if (org.fCount === 0) {++line; continue}
                         let   index = org.stackIndex;
                         if (index >= CODE_STACK_SIZE * 5) {index = -1}
@@ -425,7 +409,7 @@ class VM {
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 25) { // func
+                    if (cmd === CODE_CMD_OFFS + 24) { // func
                         line = org.offs[line];
                         if (line === 0 && org.stackIndex >= 0) {
                             const stack = org.stack;
@@ -438,7 +422,7 @@ class VM {
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 26) {// ret
+                    if (cmd === CODE_CMD_OFFS + 25) {// ret
                         const stack = org.stack;
                         let   index = org.stackIndex;
                         if (index < 0) {++line; continue}
@@ -451,7 +435,7 @@ class VM {
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 27) {// end
+                    if (cmd === CODE_CMD_OFFS + 26) {// end
                         switch (code[org.offs[line]]) {
                             case CODE_CMD_OFFS + 14: // loop
                                 line = org.offs[line];
@@ -474,51 +458,45 @@ class VM {
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 28) {// get
+                    if (cmd === CODE_CMD_OFFS + 27) {// get
                         if (org.packet !== 0) {b = 0; ++line; continue}
-                        const intd = abs(d << 0) % 8;
-                        const x    = org.x + DIRX[intd];
-                        const y    = org.y + DIRY[intd];
+                        const offs = org.offset + DIR[abs(d << 0) % 8];
                         let dot;
                         let surf;
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = data[x][y]) === 0 || (dot & ORG_MASK) !== 0 || !(surf = this._surfaces[dot % SURFACES]).get) {b = 0; ++line; continue}
+                        if (offs < 0 || offs > MAX_OFFS || (dot = data[offs]) === 0 || (dot & ORG_MASK) !== 0 || !(surf = this._surfaces[dot % SURFACES]).get) {b = 0; ++line; continue}
                         org.packet = b = dot;
-                        surf.remove(x, y, true);
+                        surf.remove(offs, true);
                         ++line;
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 29) {// put
+                    if (cmd === CODE_CMD_OFFS + 28) {// put
                         if (org.packet === 0) {++line; continue}
-                        const intd = abs(d << 0) % 8;
-                        const x    = org.x + DIRX[intd];
-                        const y    = org.y + DIRY[intd];
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || data[x][y] !== 0) {++line; continue}
-                        this._world.dot(x, y, b = org.packet);
+                        const offs = org.offset + DIR[abs(d << 0) % 8];
+                        if (offs < 0 || offs > MAX_OFFS || data[offs] !== 0) {++line; continue}
+                        this._world.dot(offs, b = org.packet);
                         org.packet = 0;
                         ++line;
                         continue;
                     }
 
-                    if (cmd === CODE_CMD_OFFS + 30) {// mix
+                    if (cmd === CODE_CMD_OFFS + 29) {// mix
                         const packet = org.packet;
                         if (packet === 0) {b = 0; ++line; continue}
-                        const intd = abs(d << 0) % 8;
-                        const x    = org.x + DIRX[intd];
-                        const y    = org.y + DIRY[intd];
+                        const offs   = org.offset + DIR[abs(d << 0) % 8];
                         let   dot;
                         //
                         // << 28 - dot is an energy
                         //
-                        if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT || (dot = data[x][y]) === 0 || (dot & ORG_MASK) !== 0 || (dot << 28) !== 0 || (packet << 28) !== 0) {b = 0; ++line; continue}
+                        if (offs < 0 || offs > MAX_OFFS || (dot = data[offs]) === 0 || (dot & ORG_MASK) !== 0 || (dot << 28) !== 0 || (packet << 28) !== 0) {b = 0; ++line; continue}
                         const atom1 = ((dot & ORG_ATOM_MASK) >>> 4) || 1;
                         const atom2 = ((packet & ORG_ATOM_MASK) >>> 4) || 1;
                         org.packet = 0;
                         //
                         // This remove() must be before dot()
                         //
-                        this._ENERGY.remove(x, y);
-                        this._world.dot(x, y, b = (dot & ENERGY_OFF_MASK | (atom1 + atom2) << 4));
+                        this._ENERGY.remove(offs);
+                        this._world.dot(offs, b = (dot & ENERGY_OFF_MASK | (atom1 + atom2) << 4));
                         ++line;
                         continue;
                     }
@@ -615,11 +593,10 @@ class VM {
                     for (let i = 0, orgAmount = ceil(orgs.items * Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
                         const org2Kill = orgs.get(i);
                         if (org2Kill === null) {orgAmount++; continue}
-                        const x = rand(WIDTH1);
-                        const y = rand(HEIGHT1);
-                        if (data[x][y] === 0) {
+                        const offs = rand(MAX_OFFS);
+                        if (data[offs] === 0) {
                             this._removeOrg(org2Kill);
-                            const org = this._createOrg(x, y, org2Kill);
+                            const org = this._createOrg(offs, org2Kill);
                             this._db && this._db.put(org);
                         }
                     }
@@ -632,14 +609,13 @@ class VM {
     }
 
     _removeOrg(org) {
-        const x      = org.x;
-        const y      = org.y;
+        const offs   = org.offset;
         const packet = org.packet;
 
         org.energy = 0;
         this._orgs.del(org.item, false);
-        this._world.empty(x, y);
-        this._world.dot(x, y, org.dot);
+        this._world.empty(offs);
+        this._world.dot(offs, org.dot);
         this._surfaces[packet % SURFACES].put(packet, false);
     }
 
@@ -660,10 +636,9 @@ class VM {
         //
         orgAmount >>>= 2;
         while (orgAmount > 0) {
-            const x = rand(width);
-            const y = rand(height);
-            if (data[x][y] === 0) {
-                const org = this._createOrg(x, y);
+            const offs = rand(MAX_OFFS);
+            if (data[offs] === 0) {
+                const org = this._createOrg(offs);
                 this._db && this._db.put(org);
                 orgAmount--;
             }
@@ -673,19 +648,18 @@ class VM {
 
     /**
      * Creates one organism with default parameters and empty code
-     * @param {Number} x X coordinate
-     * @param {Number} y Y coordinate
+     * @param {Number} offs Absolute org offset
      * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @param {Organism=} parent Create from parent
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(x, y, deadOrg = undefined, parent = null) {
+    _createOrg(offs, deadOrg = undefined, parent = null) {
         const orgs = this._orgs;
-        const org  = deadOrg && deadOrg.init(Helper.id(), x, y, this, deadOrg.item, Config.orgEnergy, parent) ||
-                     new Organism(Helper.id(), x, y, this, orgs.freeIndex, Config.orgEnergy, parent);
+        const org  = deadOrg && deadOrg.init(Helper.id(), offs, this, deadOrg.item, Config.orgEnergy, parent) ||
+                     new Organism(Helper.id(), offs, this, orgs.freeIndex, Config.orgEnergy, parent);
 
         orgs.add(org);
-        this._world.org(x, y, org);
+        this._world.org(offs, org);
 
         return org;
     }

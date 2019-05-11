@@ -17,15 +17,16 @@
  * @constant
  */
 const CMD_OFFS = 128;
+const WIDTH    = 1920 * 2;
+const HEIGHT   = 1080 * 2;
 
 const Config = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
-     * point depending on one of 8 directions. We use these values in any command
-     * related to sight, move, eating and so on
+     * nearest point depending on one of 8 directions. We use these values in any
+     * command related to sight, move, eating and so on
      */
-    DIRX                       : new Int32Array([0,   1, 1, 1, 0, -1, -1, -1]),
-    DIRY                       : new Int32Array([-1, -1, 0, 1, 1,  1,  0, -1]),
+    DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
     /**
      * {Number} This offset will be added to commands value. This is how we
      * add an ability to use numbers in a code, just putting them as command
@@ -37,7 +38,7 @@ const Config = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 31,
+    CODE_COMMANDS              : 30,
     /**
      * {Number} Functions call stack size
      */
@@ -52,12 +53,12 @@ const Config = {
      * World width in pixels
      * @constant
      */
-    WORLD_WIDTH                : 1920 * 2,
+    WORLD_WIDTH                : WIDTH,
     /**
      * World height in pixels
      * @constant
      */
-    WORLD_HEIGHT               : 1080 * 2,
+    WORLD_HEIGHT               : HEIGHT,
     /**
      * {Number} Zoom speed 0..1
      */
