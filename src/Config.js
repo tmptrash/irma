@@ -24,7 +24,8 @@ const Config = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
      * nearest point depending on one of 8 directions. We use these values in any
-     * command related to sight, move, eating and so on
+     * command related to sight, move, eating and so on. Starts from: uo, up-right,
+     * right, right-down,...
      */
     DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
     /**

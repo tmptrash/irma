@@ -25,52 +25,52 @@ class World {
         return this._data;
     }
 
-    dot(offs, c) {
-        this._data[offs] = c;
-        this._canvas.dot(offs, c);
+    dot(offset, c) {
+        this._data[offset] = c;
+        this._canvas.dot(offset, c);
     }
 
-    swap(offs, offs1) {
+    swap(offset, offset1) {
         const data = this._data;
-        const dot  = data[offs1];
+        const dot  = data[offset1];
 
-        data[offs1] = data[offs];
-        this._canvas.dot(offs1, data[offs]);
-        data[offs]  = dot;
-        this._canvas.dot(offs, dot);
+        data[offset1] = data[offset];
+        this._canvas.dot(offset1, data[offset]);
+        data[offset]  = dot;
+        this._canvas.dot(offset, dot);
     }
 
-    energy(offs, index) {
-        this._data[offs] = index;
-        this._canvas.dot(offs, ENERGY_COLOR);
+    energy(offset, index) {
+        this._data[offset] = index;
+        this._canvas.dot(offset, ENERGY_COLOR);
     }
 
-    empty(offs) {
-        this._data[offs] = 0;
-        this._canvas.empty(offs);
+    empty(offset) {
+        this._data[offset] = 0;
+        this._canvas.empty(offset);
     }
 
-    org(offs, org) {
-        this._data[offs] = ORG_MASK | org.item;
-        this._canvas.dot(offs, Config.orgColor);
+    org(offset, org) {
+        this._data[offset] = ORG_MASK | org.item;
+        this._canvas.dot(offset, Config.orgColor);
     }
 
-    moveOrg(org, offs) {
-        this._data[org.offs] = 0;
-        this._data[offs] = ORG_MASK | org.item;
-        this._canvas.move(org.offs, offs, Config.orgColor);
+    moveOrg(org, offset) {
+        this._data[org.offset] = 0;
+        this._data[offset] = ORG_MASK | org.item;
+        this._canvas.move(org.offset, offset, Config.orgColor);
     }
 
-    moveDot(offs, offs1, color) {
-        this._data[offs]  = 0;
-        this._data[offs1] = color;
-        this._canvas.move(offs, offs1, color);
+    moveDot(offset, offset1, color) {
+        this._data[offset]  = 0;
+        this._data[offset1] = color;
+        this._canvas.move(offset, offset1, color);
     }
 
-    moveEnergy(offs, offs1, index) {
-        this._data[offs]  = 0;
-        this._data[offs1] = index;
-        this._canvas.move(offs, offs1, ENERGY_COLOR);
+    moveEnergy(offset, offset1, index) {
+        this._data[offset]  = 0;
+        this._data[offset1] = index;
+        this._canvas.move(offset, offset1, ENERGY_COLOR);
     }
 
     title(text) {
