@@ -42,9 +42,6 @@ class Bytes2Code {
                 continue;
             } else if (bytes[b] === CODE_CMD_OFFS + 27) { // end
                 span = span.substr(0, span.length - 2);
-            } else if (Bytes2Code.MAP[bytes[b]] === undefined) {
-                code += `${b ? '\n' : ''}${span}${bytes[b]}`;
-                continue;
             }
             code += `${b ? '\n' : ''}${span}${Bytes2Code.MAP[bytes[b]]}`;
         }
@@ -76,7 +73,7 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 19]: 'mget  // a = mem[d]',
     [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
     [CODE_CMD_OFFS + 21]: 'offs  // d = org.offset',
-    [CODE_CMD_OFFS + 22]: `rand  // a = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
+    [CODE_CMD_OFFS + 22]: `rand  // d = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
     [CODE_CMD_OFFS + 23]: `call  // calls d % fCount`,
     [CODE_CMD_OFFS + 24]: `func  // function`,
     [CODE_CMD_OFFS + 25]: `ret d`,

@@ -59,6 +59,7 @@ class World {
         this._data[org.offset] = 0;
         this._data[offset] = ORG_MASK | org.item;
         this._canvas.move(org.offset, offset, Config.orgColor);
+        org.offset = offset;
     }
 
     moveDot(offset, offset1, color) {

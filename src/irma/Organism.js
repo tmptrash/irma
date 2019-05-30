@@ -12,11 +12,11 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, offs, sharedObj, item, energy, parent = null) {
+    constructor(id, offs, item, parent = null) {
         return this.init(...arguments);
     }
 
-    init(id, offs, sharedObj, item, energy, parent = null) {
+    init(id, offs, item, parent = null) {
         this.id         = id;
         this.item       = item;
         this.offset     = offs;
@@ -24,18 +24,12 @@ class Organism {
          * {Number} Organism's age - amount of iteration from born
          */
         this.age        = 0;
-        this.dot        = 0x000000;
         this.packet     = 0;
         this.steps      = 0;
         this.moves      = Config.orgMovesInStep;
-        this.radiation  = 0;
         this.mutations  = 0;
-        this._sharedObj = sharedObj;
-        /**
-         * {Number} Amount of energy
-         */
-        this._energy    = energy;
-        sharedObj.totalOrgsEnergy += energy;
+        this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
+        this._memIdx    = 0;
         if (parent !== null) {
             this._clone(parent);
             return;
@@ -47,17 +41,13 @@ class Organism {
         this.period     = Config.orgMutationPeriod;
         this.percent    = Config.orgMutationPercent;
         /**
-         * {Number} Data register
+         * {Number} Register ax
          */
-        this.d          = 0;
+        this.ax         = 0;
         /**
-         * {Number} Additional register a
+         * {Number} Register bx
          */
-        this.a          = 0;
-        /**
-         * {Number} Additional register b
-         */
-        this.b          = 0;
+        this.bx         = 0;
         /**
          * {Number} Amount of functions in a code
          */
@@ -67,11 +57,10 @@ class Organism {
          */
         this.stackIndex = -1;
         this.loopIndex  = -1;
-        this.loops      = new Array(Config.orgMaxCodeSize).fill(-1);
+        this.loops      = new Array(Config.orgMaxCodeSize).fill(-1); // TODO: use {}
         this.stack      = new Array(Config.CODE_STACK_SIZE * 5); // 3 registers + back line + func end line
-        this.offs       = new Array(Config.orgMaxCodeSize);
-        this.funcs      = new Array(Config.orgMaxCodeSize);
-        this.mem        = (new Array(Config.orgMemSize)).fill(0);
+        this.offs       = new Array(Config.orgMaxCodeSize); // TODO: use {}
+        this.funcs      = new Array(Config.orgMaxCodeSize); // TODO: use {}
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
@@ -81,13 +70,14 @@ class Organism {
         return this;
     }
 
-    get energy() {
-        return this._energy;
+    pop() {
+        if (this._memIdx < 1) {return 0}
+        return this.mem[--this._memIdx];
     }
 
-    set energy(e) {
-        this._sharedObj.totalOrgsEnergy += (e - this._energy);
-        this._energy = e;
+    push(val) {
+        if (this._memIdx >= Config.orgMaxCodeSize - 1) {return 0}
+        this.mem[++this._memIdx] = val;
     }
 
     /**
@@ -151,9 +141,8 @@ class Organism {
         this.period     = parent.period;
         this.percent    = parent.percent;
         this.line       = parent.line;
-        this.d          = parent.d;
-        this.a          = parent.a;
-        this.b          = parent.b;
+        this.ax         = parent.ax;
+        this.bx         = parent.bx;
         this.fCount     = parent.fCount;
         this.stackIndex = parent.stackIndex;
         this.loopIndex  = parent.loopIndex;

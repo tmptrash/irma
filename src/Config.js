@@ -16,6 +16,7 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
+// TODO: review all configs
 const CMD_OFFS = 128;
 const WIDTH    = 1920 * 2;
 const HEIGHT   = 1080 * 2;
@@ -71,113 +72,9 @@ const Config = {
      */
     worldOrgsSimilarityPercent : .3,
     /**
-     * {Array} Array of surfaces. These surfaces are analogs of water, sand
-     * lava and other stuff. They are moving to some randomly selected point
-     * in a world all the time like water tides, earth layers moving and so on.
-     * Every surface has 4 parameters:
-     *  color  - dots color. % 16 with this color should get index of surface starting from 1
-     *  energy - amount of energy, which grabs if organism above the surface
-     *  step   - coefficient of speed (slow down) if organism above the surface
-     *  amount - amount of surface dots
-     *  TODO: add other fields descriptions
+     * {Number} Amount of elements in a world
      */
-    worldSurfaces              : [{   // energy
-        color    : 0x00ff00,
-        barrier  : false,
-        energy   : 0,
-        step     : 1,
-        radiation: 0,
-        delay    : 1000,
-        amount   : 2450000, // we use formula at the top for this (energyDots)
-        dirs     : 10,
-        scan     : 3,
-        get      : true,
-        dirUpdate: 5000000000
-    }, /*{                            // lava
-        color    : 0xff8881,
-        barrier  : false,
-        energy   : 1,
-        step     : 3,
-        radiation: .1,
-        delay    : 300,
-        amount   : 100000,
-        dirs     : 10,
-        scan     : 5,
-        get      : false,
-        dirUpdate: 5000000000
-    },*/ {                            // water
-        color    : 0x0000f1,
-        barrier  : false,
-        energy   : 0,
-        step     : 15,
-        radiation: 0,
-        delay    : 100,
-        amount   : 1500000,
-        dirs     : 50,
-        scan     : 5,
-        get      : false,
-        dirUpdate: 500000000
-    }, {                             // hole
-        color    : 0x333332,
-        barrier  : false,
-        energy   : 100,
-        step     : 0,
-        radiation: 0,
-        delay    : 10000,
-        amount   : 40000,
-        dirs     : 10,
-        scan     : 5,
-        get      : false,
-        dirUpdate: 5000000000
-    },/* {                              // sand
-        color    : 0xFFFF02,
-        barrier  : false,
-        energy   : .001,
-        step     : 2,
-        radiation: 0,
-        delay    : 50,
-        amount   : 200000,
-        dirs     : 10,
-        scan     : 5,
-        get      : false,
-        dirUpdate: 50000000
-    }, {                              // radiation
-        color    : 0xFFFFF3,
-        barrier  : false,
-        energy   : 0,
-        step     : 1,
-        radiation: 1,
-        delay    : 50,
-        amount   : 20000,
-        dirs     : 10,
-        scan     : 5,
-        get      : false,
-        dirUpdate: 500000000
-    },*/ {
-        color    : 0xBBBBB3,          // stones
-        barrier  : true,
-        energy   : 0,
-        step     : 0,
-        radiation: 0,
-        delay    : 10000,
-        amount   : 1000000,
-        dirs     : 10,
-        scan     : 3,
-        get      : false,
-        dirUpdate: 5000000000
-    }, {
-        color    : 0xFF9904,          // poison
-        barrier  : false,
-        energy   : 10,
-        step     : 0,
-        radiation: 0,
-        delay    : 1000,
-        amount   : 50000,
-        dirs     : 10,
-        scan     : 3,
-        get      : false,
-        dirUpdate: 500000000
-    }],
+    worldElements              : 100000,
     /**
      * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
      * @constant
@@ -200,12 +97,10 @@ const Config = {
     orgEatOrgs                 : false,
     orgMaxAge                  : 20000,
     orgEnergy                  : 49,
-    orgEnergyMultiplayer       : 10,
     orgCloneEnergy             : 50,
     orgStepEnergy              : .001,
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
-    orgMemSize                 : 64,
     orgMutationPercent         : .02,
     orgMutationPeriod          : 250000,
     orgMaxCodeSize             : 100,
