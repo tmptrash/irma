@@ -48,6 +48,12 @@ class Organism {
          * {Number} Register bx
          */
         this.bx         = 0;
+        this.repl       = 0;
+        this.repl0      = 0;
+        this.repl1      = 0;
+        this.food       = 0;
+        this.food0      = 0;
+        this.food1      = 0;
         /**
          * {Number} Amount of functions in a code
          */
@@ -58,7 +64,7 @@ class Organism {
         this.stackIndex = -1;
         this.loopIndex  = -1;
         this.loops      = new Array(Config.orgMaxCodeSize).fill(-1); // TODO: use {}
-        this.stack      = new Array(Config.CODE_STACK_SIZE * 5); // 3 registers + back line + func end line
+        this.stack      = new Array(Config.CODE_STACK_SIZE * 3); // 2 registers + back line
         this.offs       = new Array(Config.orgMaxCodeSize); // TODO: use {}
         this.funcs      = new Array(Config.orgMaxCodeSize); // TODO: use {}
         /**
@@ -143,6 +149,12 @@ class Organism {
         this.line       = parent.line;
         this.ax         = parent.ax;
         this.bx         = parent.bx;
+        this.repl       = parent.repl;
+        this.repl0      = parent.repl0;
+        this.repl1      = parent.repl1;
+        this.food       = parent.food;
+        this.food0      = parent.food0;
+        this.food1      = parent.food1;
         this.fCount     = parent.fCount;
         this.stackIndex = parent.stackIndex;
         this.loopIndex  = parent.loopIndex;

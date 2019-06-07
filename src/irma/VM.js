@@ -78,6 +78,7 @@ const MIN               = Number.MIN_VALUE;
 const ORG_MASK          = Config.ORG_MASK;
 const ORG_INDEX_MASK    = 0x7fffffff;
 const ORG_ATOM_MASK     = 0x000000f0;
+const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
 
 const ENERGY_OFF_MASK   = 0xffffff0f;
 /**
@@ -103,6 +104,7 @@ class VM {
         this._ts              = Date.now();
         this._i               = 0;
         this._r               = 0;
+        this._food            = 0;
         this._diff            = 0;
         this._averageDistance = 0;
         this._averageCodeSize = 0;
@@ -149,7 +151,6 @@ class VM {
         const orgs             = this._orgs;
         const orgsRef          = this._orgs.getRef();
         const orgAmount        = Config.orgAmount;
-        const orgEatOrgs       = Config.orgEatOrgs;
         //
         // Loop X times through population
         //
@@ -220,7 +221,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 8:  // div
                             ++line;
-                            ax /= bx;
+                            ax = Math.round(ax / bx);
                             if (!fin(ax)) {ax = MIN}
                             continue;
 
@@ -279,53 +280,206 @@ class VM {
                             line = ax !== bx ? line + 1 : org.offs[line]
                             continue;
 
-
-
-                        if (cmd === CODE_CMD_OFFS)
-                        { // step
+                        case CODE_CMD_OFFS + 21: {// loop
+                            const LOOPS = org.loops;
+                            if (LOOPS[line] < 0 && org.offs[line] > line + 1) {
+                                LOOPS[line] = ax;
+                            }
+                            if (--LOOPS[line] < 0) {
+                                line = org.offs[line];
+                                continue;
+                            }
                             ++line;
-                            if (++org.steps < org.moves) {
-                                continue
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 22: {// call
+                            if (org.fCount === 0) {++line; continue}
+                            let index = org.stackIndex;
+                            if (index >= CODE_STACK_SIZE * 4) {index = -1}
+                            const func = abs(ax) % org.fCount;
+                            const stack = org.stack;
+                            stack[++index] = line + 1;
+                            stack[++index] = ax;
+                            stack[++index] = bx;
+                            line = org.funcs[func];
+                            org.stackIndex = index;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 23: { // func
+                            line = org.offs[line];
+                            if (line === 0 && org.stackIndex >= 0) {
+                                const stack = org.stack;
+                                bx   = stack[2];
+                                ax   = stack[1];
+                                line = stack[0];
+                                org.stackIndex = -1;
                             }
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 24: {// ret
+                            const stack = org.stack;
+                            let index = org.stackIndex;
+                            if (index < 0) {++line; continue}
+                            line = stack[index--];
+                            bx   = stack[index--];
+                            ax   = stack[index--];
+                            org.stackIndex = index;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 25: {// end
+                            switch (code[org.offs[line]]) {
+                                case CODE_CMD_OFFS + 21: // loop
+                                    line = org.offs[line];
+                                    break;
+                                case CODE_CMD_OFFS + 23: // func
+                                    const stack = org.stack;
+                                    let index = org.stackIndex;
+                                    if (index < 0) {break}
+                                    line = stack[index--];
+                                    bx   = stack[index--];
+                                    ax   = stack[index--];
+                                    org.stackIndex = index;
+                                    break;
+                                default:
+                                    ++line;
+                                    break;
+                            }
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 26: {// rax
+                            ax = this._r;
+                            ++line;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 27: {// axr
+                            this._r = ax;
+                            ++line;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 28: {// and
+                            ax &= bx;
+                            ++line;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 29: {// or
+                            ax |= bx;
+                            ++line;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 30: {// xor
+                            ax ^= bx;
+                            ++line;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 31: {// not
+                            ax = ~ax;
+                            ++line;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 32: {// join
+                            ++line;
+                            const offset = org.offset + DIR[abs(ax) % 8];
+                            const dot    = data[offset];
+                            if (!dot) {this._r = 0; continue}
+                            const nearOrg = orgsRef[dot & ORG_INDEX_MASK];
+                            if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._r = 0; continue}
+                            code.splice(bx >= code.length ? code.length : bx, 0, ...nearOrg.code);
+                            world.empty(offset);
+                            this._r = 1;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 33: {// split
+                            ++line;
+                            const dot = data[org.offset + 1];
+                            if (!dot) {this._r = 0; continue} // organism on the right
+                            if (ax < 0 || ax > code.length || bx <= ax) {this._r = 0; continue}
+                            const newCode = code.splice(ax, bx - ax);
+                            const clone   = this._createOrg(org.offset + 1, org, newCode);
+                            this._db && this._db.put(clone, org);
+                            this._r = 1;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 34: {// step
+                            ++line;
+                            if (++org.steps < org.moves) {continue}
                             org.steps = 0;
-                            const offset = org.offset + DIR[abs(d << 0) % 8];
-                            if (data[offset] !== 0) {
-                                continue
-                            }
+                            const offset = org.offset + DIR[abs(ax) % 8];
+                            if (data[offset] !== 0) {continue}
                             world.moveOrg(org, offset);
                             continue;
                         }
 
-                            if (cmd === CODE_CMD_OFFS + 1) { // eat
-                                ++line;
-                                const dot = data[org.offset + DIR[abs(d << 0) % 8]];
-                                if (!dot) {
-                                    continue
-                                }                                         // no energy or out of the world
-                                const index = abs(a << 0) % maxCodeSize;
-                                if (org.mem[index] !== 0) {
-                                    continue
-                                }
-                                if ((dot & ORG_MASK) === 0) {                                // element/command
-                                    org.mem[index] = dot;
-                                    continue;
-                                }
-                                if (orgEatOrgs === false) {
-                                    continue
-                                }
-                                const nearOrg = orgsRef[dot & ORG_INDEX_MASK];
-                                const index1 = abs(b << 0) % maxCodeSize;
-                                org.mem[index] = nearOrg.mem[index1];
-                                nearOrg.mem[index1] = 0;
-                                continue;
+                        case CODE_CMD_OFFS + 35: {// repl
+                            ++line;
+                            if (this._r < 0) {
+                               ax = org.repl0;
+                               bx = org.repl1;
+                            } else {
+                                org.repl0 = ax;
+                                org.repl1 = bx;
+                                org.repl  = ax;
                             }
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 36: {// food
+                            ++line;
+                            if (this._r < 0) {
+                                ax = org.food0;
+                                bx = org.food1;
+                            } else {
+                                org.food0 = ax;
+                                org.food1 = bx;
+                                org.food  = ax;
+                            }
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 37: {// compare
+                            ++line;
+                            const repl = org.repl;
+                            if ((org.repl = this._compare(org)) > org.repl1) {
+                                //
+                                // If we are here, then compare was done and all
+                                // code was found in food segment
+                                //
+                                org.repl = org.repl0;
+                                org.food = org.food0;
+                                this._r  = -1;
+                            } else if (org.repl < 0) {
+                                //
+                                // food segment has finished
+                                //
+                                org.repl = org.repl0;
+                                org.food = org.food0;
+                                this._r  = 0;
+                            } else {
+                                this._r  = org.repl - repl;
+                            }
+                            continue;
+                        }
+
+
 
                             if (cmd === CODE_CMD_OFFS + 2) { // clone
                                 ++line;
                                 if (orgs.full) {
                                     continue
                                 }
-                                const offset = org.offset + DIR[abs(d << 0) % 8];
+                                const offset = org.offset + DIR[abs(d) % 8];
                                 if (data[offset] !== 0) {
                                     continue
                                 }
@@ -343,7 +497,7 @@ class VM {
 
                             if (cmd === CODE_CMD_OFFS + 3) { // see
                                 ++line;
-                                const offset = org.offset + (a << 0);
+                                const offset = org.offset + (a);
                                 const dot = data[offset];
                                 if (!dot) {
                                     d = 0;
@@ -353,122 +507,9 @@ class VM {
                                 continue;
                             }
 
-                            if (cmd === CODE_CMD_OFFS + 4) {  // dtoa
-                                ++line;
-                                a = d;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 5) {  // dtob
-                                ++line;
-                                b = d;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 6) {  // atod
-                                ++line;
-                                d = a;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 7) {  // atob
-                                ++line;
-                                b = a;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 14) {// loop
-                                const LOOPS = org.loops;
-                                if (LOOPS[line] < 0 && org.offs[line] > line + 1) {
-                                    LOOPS[line] = abs(d)
-                                }
-                                if (--LOOPS[line] < 0) {
-                                    line = org.offs[line];
-                                    continue;
-                                }
-                                ++line;
-                                continue;
-                            }
-
                             if (cmd === CODE_CMD_OFFS + 21) {// offs
                                 d = org.offset;
                                 ++line;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 23) {// call
-                                if (org.fCount === 0) {
-                                    ++line;
-                                    continue
-                                }
-                                let index = org.stackIndex;
-                                if (index >= CODE_STACK_SIZE * 5) {
-                                    index = -1
-                                }
-                                const func = abs(d << 0) % org.fCount;
-                                const stack = org.stack;
-                                stack[++index] = line + 1;
-                                stack[++index] = d;
-                                stack[++index] = a;
-                                stack[++index] = b;
-                                const end = org.offs[org.funcs[func] - 1] - 1;
-                                stack[++index] = end <= 0 ? code.length : end;
-                                line = org.funcs[func];
-                                org.stackIndex = index;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 24) { // func
-                                line = org.offs[line];
-                                if (line === 0 && org.stackIndex >= 0) {
-                                    const stack = org.stack;
-                                    b = stack[3];
-                                    a = stack[2];
-                                    d = stack[1];
-                                    line = stack[0];
-                                    org.stackIndex = -1;
-                                }
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 25) {// ret
-                                const stack = org.stack;
-                                let index = org.stackIndex;
-                                if (index < 0) {
-                                    ++line;
-                                    continue
-                                }
-                                index--;              // we have to skip func end line
-                                b = stack[index--];
-                                a = stack[index--];
-                                index--;              // we have to skip d register to return it
-                                line = stack[index--];
-                                org.stackIndex = index;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 26) {// end
-                                switch (code[org.offs[line]]) {
-                                    case CODE_CMD_OFFS + 14: // loop
-                                        line = org.offs[line];
-                                        break;
-                                    case CODE_CMD_OFFS + 25: // func
-                                        const stack = org.stack;
-                                        let index = org.stackIndex;
-                                        if (index < 0) {
-                                            break
-                                        }
-                                        index--;
-                                        b = stack[index--];
-                                        a = stack[index--];
-                                        d = stack[index--];
-                                        line = stack[index--];
-                                        org.stackIndex = index;
-                                        break;
-                                    default:
-                                        ++line;
-                                        break;
-                                }
                                 continue;
                             }
 
@@ -478,7 +519,7 @@ class VM {
                                     ++line;
                                     continue
                                 }
-                                const offset = org.offset + DIR[abs(d << 0) % 8];
+                                const offset = org.offset + DIR[abs(d) % 8];
                                 let dot;
                                 let surf;
                                 if (offset < 0 || offset > MAX_OFFS || (dot = data[offset]) === 0 || (dot & ORG_MASK) !== 0 || !(surf = this._elements[dot % SURFACES]).get) {
@@ -497,7 +538,7 @@ class VM {
                                     ++line;
                                     continue
                                 }
-                                const offset = org.offset + DIR[abs(d << 0) % 8];
+                                const offset = org.offset + DIR[abs(d) % 8];
                                 if (offset < 0 || offset > MAX_OFFS || data[offset] !== 0) {
                                     ++line;
                                     continue
@@ -515,7 +556,7 @@ class VM {
                                     ++line;
                                     continue
                                 }
-                                const offset = org.offset + DIR[abs(d << 0) % 8];
+                                const offset = org.offset + DIR[abs(d) % 8];
                                 let dot;
                                 //
                                 // << 28 - dot is an energy
@@ -551,6 +592,8 @@ class VM {
                                     line = 0;
                                 }
                             }
+
+                        if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {ax = cmd; ++line; continue}
                     }
                 }
                 org.line = line;
@@ -672,12 +715,13 @@ class VM {
      * @param {Number} offset Absolute org offset
      * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @param {Organism=} parent Create from parent
+     * @param {Array=} code New org code
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(offset, deadOrg = undefined, parent = null) {
+    _createOrg(offset, deadOrg = undefined, parent = null, code = null) {
         const orgs = this._orgs;
-        const org  = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent) ||
-                     new Organism(Helper.id(), offset, orgs.freeIndex, parent);
+        const org  = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code) ||
+                     new Organism(Helper.id(), offset, orgs.freeIndex, parent, code);
 
         orgs.add(org);
         this._world.org(offset, org);
@@ -686,7 +730,7 @@ class VM {
     }
 
     _createSurfaces() {
-        const AMOUNT = SURFS.length ;
+        const AMOUNT = SURFS.length;
 
         const surfaces = new Array(AMOUNT);
         for (let i = 0; i < AMOUNT; i++) {
@@ -694,6 +738,71 @@ class VM {
         }
 
         return surfaces;
+    }
+
+    /**
+     * Compares two part of one array: code and food sections. Try to find maximum
+     * intersection of code in food. Returns length of intersection in code starting
+     * from beginning. Updates organism's internal "repl" field.
+     * @param {Organism} org Organism we are working with
+     * @return {Number} Current index in code section where appropriate intersection was found
+     */
+    _compare(org) {
+        const repl0 = org.repl0;
+        if (repl0 < 0)     {this._r = 0; return -1}
+        const repl1 = org.repl1;
+        if (repl1 < 0)     {this._r = 0; return -1}
+        if (repl1 < repl0) {this._r = 0; return -1}
+        const food0 = org.food0;
+        if (food0 < repl1) {this._r = 0; return -1}
+        const food1 = org.food1;
+        if (food1 < food0) {this._r = 0; return -1}
+        let   repl  = org.repl;
+        const rLen  = repl1 - repl + 1;
+        if (rLen < 1)      {this._r = 0; return -1}
+        let   r     = 0;
+        let   idx   = -1;
+        let   idx1  = -1;
+
+        while (r <= rLen) {
+            if ((r = (r * 2 || 1)) > rLen) {r = rLen}
+            if ((idx = this._index(org, repl + r)) === -1) {
+                if (this._food >= food1) {return -1}
+                break;
+            }
+            if (r >= rLen) {
+                org.food = this._food;
+                return org.repl = idx + 1;
+            }
+            idx1 = idx;
+        }
+
+        org.food = this._food;
+        return (org.repl = idx1 + 1);
+    }
+
+    /**
+     * Compares two parts of array code and food. Try to check if code is inside the food.
+     * Order is matter. Returns index in code, where code begins in food or -1 if not found.
+     * @param {Organism} org   organism we are working with
+     * @param {Number}   repl1 End offset in replication segment, where current instruction
+     * set is ending. This is set we are looking in food section
+     * @returns {Number} Found index in replication segment or -1 if not found
+     */
+    _index(org, repl1) {
+        const code  = org.code;
+        const repl  = org.repl;
+        const food1 = org.food1 - (repl1 - repl) + 1;
+        let r;
+        loop: for (let f = org.food; f <= food1; f++) {
+            let r0;
+            for (r = repl, r0 = 0; r < repl1; r++, r0++) {
+                if (code[f + r0] !== code[r]) {continue loop}
+            }
+            this._food = f + r0;
+            return r - 1;
+        }
+        return -1;
     }
 }
 

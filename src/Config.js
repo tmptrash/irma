@@ -94,7 +94,6 @@ const Config = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
     orgAmount                  : 100000,
-    orgEatOrgs                 : false,
     orgMaxAge                  : 20000,
     orgEnergy                  : 49,
     orgCloneEnergy             : 50,
