@@ -40,6 +40,9 @@ class Organism {
         this.probs      = Config.orgProbs.slice();
         this.period     = Config.orgMutationPeriod;
         this.percent    = Config.orgMutationPercent;
+
+        this.regs       = new Array(Config.codeRegs);
+        this.rIndex     = 0;
         /**
          * {Number} Register ax
          */
@@ -48,12 +51,8 @@ class Organism {
          * {Number} Register bx
          */
         this.bx         = 0;
-        this.repl       = 0;
-        this.repl0      = 0;
-        this.repl1      = 0;
-        this.food       = 0;
-        this.food0      = 0;
-        this.food1      = 0;
+        this.find0      = 0;
+        this.find1      = 0;
         /**
          * {Number} Amount of functions in a code
          */
@@ -84,6 +83,12 @@ class Organism {
     push(val) {
         if (this._memIdx >= Config.orgMaxCodeSize - 1) {return 0}
         this.mem[++this._memIdx] = val;
+    }
+
+    shift() {
+        this.rIndex += 2;
+        this.ax = this.regs[this.rIndex];
+        this.bx = this.regs[this.rIndex + 1];
     }
 
     /**
@@ -147,14 +152,12 @@ class Organism {
         this.period     = parent.period;
         this.percent    = parent.percent;
         this.line       = parent.line;
+        this.regs       = parent.regs.slice();
+        this.rIndex     = parent.rIndex;
         this.ax         = parent.ax;
         this.bx         = parent.bx;
-        this.repl       = parent.repl;
-        this.repl0      = parent.repl0;
-        this.repl1      = parent.repl1;
-        this.food       = parent.food;
-        this.food0      = parent.food0;
-        this.food1      = parent.food1;
+        this.find0      = parent.find0;
+        this.find1      = parent.find1;
         this.fCount     = parent.fCount;
         this.stackIndex = parent.stackIndex;
         this.loopIndex  = parent.loopIndex;

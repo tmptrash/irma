@@ -1,4 +1,5 @@
 /**
+ * TODO: update this...
  * Supported commands:
  *   CODE_CMD_OFFS + 0  - toggle - switches active register between ax and bx
  *   CODE_CMD_OFFS + 0  - step   - moves organism using d (one of 8) direction
@@ -182,105 +183,112 @@ class VM {
                             ++line;
                             continue;
 
-                        case CODE_CMD_OFFS + 1:  // eq
+                        case CODE_CMD_OFFS + 1:  // shift
+                            org.shift();
+                            ax  = org.ax;
+                            bx  = org.bx;
+                            ++line;
+                            continue;
+
+                        case CODE_CMD_OFFS + 2:  // eq
                             ax = bx;
                             ++line;
                             continue;
 
-                        case CODE_CMD_OFFS + 2:  // pop
+                        case CODE_CMD_OFFS + 3:  // pop
                             ax = org.pop();
                             ++line;
                             continue;
 
-                        case CODE_CMD_OFFS + 3:  // push
+                        case CODE_CMD_OFFS + 4:  // push
                             org.push(ax);
                             ++line;
                             continue;
 
-                        case CODE_CMD_OFFS + 4:  // nop
+                        case CODE_CMD_OFFS + 5:  // nop
                             ++line;
                             continue;
 
-                        case CODE_CMD_OFFS + 5:  // add
+                        case CODE_CMD_OFFS + 6:  // add
                             ++line;
                             ax += bx;
                             if (!fin(ax)) {ax = MAX}
                             continue;
 
-                        case CODE_CMD_OFFS + 6:  // sub
+                        case CODE_CMD_OFFS + 7:  // sub
                             ++line;
                             ax -= bx;
                             if (!fin(ax)) {ax = MIN}
                             continue;
 
-                        case CODE_CMD_OFFS + 7:  // mul
+                        case CODE_CMD_OFFS + 8:  // mul
                             ++line;
                             ax *= bx;
                             if (!fin(ax)) {ax = MAX}
                             continue;
 
-                        case CODE_CMD_OFFS + 8:  // div
+                        case CODE_CMD_OFFS + 9:  // div
                             ++line;
                             ax = Math.round(ax / bx);
                             if (!fin(ax)) {ax = MIN}
                             continue;
 
-                        case CODE_CMD_OFFS + 9:  // inc
+                        case CODE_CMD_OFFS + 10: // inc
                             ++line;
                             ax++;
                             if (!fin(ax)) {ax = MAX}
                             continue;
 
-                        case CODE_CMD_OFFS + 10:  // dec
+                        case CODE_CMD_OFFS + 11:  // dec
                             ++line;
                             ax--;
                             if (!fin(ax)) {ax = MIN}
                             continue;
 
-                        case CODE_CMD_OFFS + 11:  // rshift
+                        case CODE_CMD_OFFS + 12:  // rshift
                             ++line;
                             ax >>= 1;
                             continue;
 
-                        case CODE_CMD_OFFS + 12:  // lshift
+                        case CODE_CMD_OFFS + 13:  // lshift
                             ++line;
                             ax <<= 1;
                             continue;
 
-                        case CODE_CMD_OFFS + 13:  // rand
+                        case CODE_CMD_OFFS + 14:  // rand
                             ++line;
                             ax = rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND;
                             continue;
 
-                        case CODE_CMD_OFFS + 14:  // ifp
+                        case CODE_CMD_OFFS + 15:  // ifp
                             line = ax > 0 ? line + 1 : org.offs[line]
                             continue;
 
-                        case CODE_CMD_OFFS + 15:  // ifn
+                        case CODE_CMD_OFFS + 16:  // ifn
                             line = ax < 0 ? line + 1 : org.offs[line]
                             continue;
 
-                        case CODE_CMD_OFFS + 16:  // ifz
+                        case CODE_CMD_OFFS + 17:  // ifz
                             line = ax === 0 ? line + 1 : org.offs[line]
                             continue;
 
-                        case CODE_CMD_OFFS + 17:  // ifg
+                        case CODE_CMD_OFFS + 18:  // ifg
                             line = ax > bx ? line + 1 : org.offs[line]
                             continue;
 
-                        case CODE_CMD_OFFS + 18:  // ifl
+                        case CODE_CMD_OFFS + 19:  // ifl
                             line = ax < bx ? line + 1 : org.offs[line]
                             continue;
 
-                        case CODE_CMD_OFFS + 19:  // ife
+                        case CODE_CMD_OFFS + 20:  // ife
                             line = ax === bx ? line + 1 : org.offs[line]
                             continue;
 
-                        case CODE_CMD_OFFS + 20:  // ifne
+                        case CODE_CMD_OFFS + 21:  // ifne
                             line = ax !== bx ? line + 1 : org.offs[line]
                             continue;
 
-                        case CODE_CMD_OFFS + 21: {// loop
+                        case CODE_CMD_OFFS + 22: {// loop
                             const LOOPS = org.loops;
                             if (LOOPS[line] < 0 && org.offs[line] > line + 1) {
                                 LOOPS[line] = ax;
@@ -293,7 +301,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 22: {// call
+                        case CODE_CMD_OFFS + 23: {// call
                             if (org.fCount === 0) {++line; continue}
                             let index = org.stackIndex;
                             if (index >= CODE_STACK_SIZE * 4) {index = -1}
@@ -307,7 +315,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 23: { // func
+                        case CODE_CMD_OFFS + 24: { // func
                             line = org.offs[line];
                             if (line === 0 && org.stackIndex >= 0) {
                                 const stack = org.stack;
@@ -319,7 +327,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 24: {// ret
+                        case CODE_CMD_OFFS + 25: {// ret
                             const stack = org.stack;
                             let index = org.stackIndex;
                             if (index < 0) {++line; continue}
@@ -330,7 +338,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 25: {// end
+                        case CODE_CMD_OFFS + 26: {// end
                             switch (code[org.offs[line]]) {
                                 case CODE_CMD_OFFS + 21: // loop
                                     line = org.offs[line];
@@ -351,43 +359,43 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 26: {// rax
+                        case CODE_CMD_OFFS + 27: {// retax
                             ax = this._r;
                             ++line;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 27: {// axr
+                        case CODE_CMD_OFFS + 28: {// axret
                             this._r = ax;
                             ++line;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 28: {// and
+                        case CODE_CMD_OFFS + 29: {// and
                             ax &= bx;
                             ++line;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 29: {// or
+                        case CODE_CMD_OFFS + 30: {// or
                             ax |= bx;
                             ++line;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 30: {// xor
+                        case CODE_CMD_OFFS + 31: {// xor
                             ax ^= bx;
                             ++line;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 31: {// not
+                        case CODE_CMD_OFFS + 32: {// not
                             ax = ~ax;
                             ++line;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 32: {// join
+                        case CODE_CMD_OFFS + 33: {// join
                             ++line;
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = data[offset];
@@ -400,7 +408,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 33: {// split
+                        case CODE_CMD_OFFS + 34: {// split
                             ++line;
                             const dot = data[org.offset + 1];
                             if (!dot) {this._r = 0; continue} // organism on the right
@@ -412,7 +420,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 34: {// step
+                        case CODE_CMD_OFFS + 35: {// step
                             ++line;
                             if (++org.steps < org.moves) {continue}
                             org.steps = 0;
@@ -422,53 +430,37 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 35: {// repl
+                        case CODE_CMD_OFFS + 36: {// find
                             ++line;
-                            if (this._r < 0) {
-                               ax = org.repl0;
-                               bx = org.repl1;
+                            if (bx < 0) {
+                                const index = code.indexOf(ax);
+                                if (index === -1) {
+                                    this._r = 0;
+                                } else {
+                                    this._r = 1;
+                                    org.find0 = org.find1 = ax = index;
+                                }
                             } else {
-                                org.repl0 = ax;
-                                org.repl1 = bx;
-                                org.repl  = ax;
+                                if (bx > ax) {this._r = 0; continue}
+                                const len2 = bx - ax;
+                                const len1 = code.length - len2;
+                                let   j;
+                                loop: for (let i = this._r; i < len1; i++) {
+                                    for (j = 0; j < len2; j++) {
+                                        if (code[i + j] !== code[i]) {break loop}
+                                    }
+                                    org.find0 = ax = i + j;
+                                    org.find1 = org.find0 + len2;
+                                    this._r = 1;
+                                    break;
+                                }
+                                this._r = 0;
                             }
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 36: {// food
+                        case CODE_CMD_OFFS + 37: {// move
                             ++line;
-                            if (this._r < 0) {
-                                ax = org.food0;
-                                bx = org.food1;
-                            } else {
-                                org.food0 = ax;
-                                org.food1 = bx;
-                                org.food  = ax;
-                            }
-                            continue;
-                        }
-
-                        case CODE_CMD_OFFS + 37: {// compare
-                            ++line;
-                            const repl = org.repl;
-                            if ((org.repl = this._compare(org)) > org.repl1) {
-                                //
-                                // If we are here, then compare was done and all
-                                // code was found in food segment
-                                //
-                                org.repl = org.repl0;
-                                org.food = org.food0;
-                                this._r  = -1;
-                            } else if (org.repl < 0) {
-                                //
-                                // food segment has finished
-                                //
-                                org.repl = org.repl0;
-                                org.food = org.food0;
-                                this._r  = 0;
-                            } else {
-                                this._r  = org.repl - repl;
-                            }
                             continue;
                         }
 
@@ -738,71 +730,6 @@ class VM {
         }
 
         return surfaces;
-    }
-
-    /**
-     * Compares two part of one array: code and food sections. Try to find maximum
-     * intersection of code in food. Returns length of intersection in code starting
-     * from beginning. Updates organism's internal "repl" field.
-     * @param {Organism} org Organism we are working with
-     * @return {Number} Current index in code section where appropriate intersection was found
-     */
-    _compare(org) {
-        const repl0 = org.repl0;
-        if (repl0 < 0)     {this._r = 0; return -1}
-        const repl1 = org.repl1;
-        if (repl1 < 0)     {this._r = 0; return -1}
-        if (repl1 < repl0) {this._r = 0; return -1}
-        const food0 = org.food0;
-        if (food0 < repl1) {this._r = 0; return -1}
-        const food1 = org.food1;
-        if (food1 < food0) {this._r = 0; return -1}
-        let   repl  = org.repl;
-        const rLen  = repl1 - repl + 1;
-        if (rLen < 1)      {this._r = 0; return -1}
-        let   r     = 0;
-        let   idx   = -1;
-        let   idx1  = -1;
-
-        while (r <= rLen) {
-            if ((r = (r * 2 || 1)) > rLen) {r = rLen}
-            if ((idx = this._index(org, repl + r)) === -1) {
-                if (this._food >= food1) {return -1}
-                break;
-            }
-            if (r >= rLen) {
-                org.food = this._food;
-                return org.repl = idx + 1;
-            }
-            idx1 = idx;
-        }
-
-        org.food = this._food;
-        return (org.repl = idx1 + 1);
-    }
-
-    /**
-     * Compares two parts of array code and food. Try to check if code is inside the food.
-     * Order is matter. Returns index in code, where code begins in food or -1 if not found.
-     * @param {Organism} org   organism we are working with
-     * @param {Number}   repl1 End offset in replication segment, where current instruction
-     * set is ending. This is set we are looking in food section
-     * @returns {Number} Found index in replication segment or -1 if not found
-     */
-    _index(org, repl1) {
-        const code  = org.code;
-        const repl  = org.repl;
-        const food1 = org.food1 - (repl1 - repl) + 1;
-        let r;
-        loop: for (let f = org.food; f <= food1; f++) {
-            let r0;
-            for (r = repl, r0 = 0; r < repl1; r++, r0++) {
-                if (code[f + r0] !== code[r]) {continue loop}
-            }
-            this._food = f + r0;
-            return r - 1;
-        }
-        return -1;
     }
 }
 

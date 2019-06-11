@@ -50,6 +50,7 @@ const Config = {
     codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
     codeDefault                : [], //CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
+    codeRegs                   : 6,
 
     /**
      * World width in pixels
