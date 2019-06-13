@@ -265,31 +265,31 @@ class VM {
                             continue;
 
                         case CODE_CMD_OFFS + 15:  // ifp
-                            line = ax > 0 ? line + 1 : org.offs[line]
+                            line = ax > 0 ? line + 1 : org.offs[line];
                             continue;
 
                         case CODE_CMD_OFFS + 16:  // ifn
-                            line = ax < 0 ? line + 1 : org.offs[line]
+                            line = ax < 0 ? line + 1 : org.offs[line];
                             continue;
 
                         case CODE_CMD_OFFS + 17:  // ifz
-                            line = ax === 0 ? line + 1 : org.offs[line]
+                            line = ax === 0 ? line + 1 : org.offs[line];
                             continue;
 
                         case CODE_CMD_OFFS + 18:  // ifg
-                            line = ax > bx ? line + 1 : org.offs[line]
+                            line = ax > bx ? line + 1 : org.offs[line];
                             continue;
 
                         case CODE_CMD_OFFS + 19:  // ifl
-                            line = ax < bx ? line + 1 : org.offs[line]
+                            line = ax < bx ? line + 1 : org.offs[line];
                             continue;
 
                         case CODE_CMD_OFFS + 20:  // ife
-                            line = ax === bx ? line + 1 : org.offs[line]
+                            line = ax === bx ? line + 1 : org.offs[line];
                             continue;
 
                         case CODE_CMD_OFFS + 21:  // ifne
-                            line = ax !== bx ? line + 1 : org.offs[line]
+                            line = ax !== bx ? line + 1 : org.offs[line];
                             continue;
 
                         case CODE_CMD_OFFS + 22: {// loop
@@ -493,6 +493,18 @@ class VM {
                             ax = this._freq[abs(bx) % Config.worldFrequency];
                             continue;
                         }
+
+                        case CODE_CMD_OFFS + 41: {// nread
+                            ++line;
+                            const offset = org.offset + DIR[abs(ax) % 8];
+                            const dot    = data[offset];
+                            if (!dot) {this._r = 0; continue}
+                            const nearOrg = orgsRef[dot & ORG_INDEX_MASK];
+                            ax = nearOrg.code[bx] || 0;
+                            this._r = 1;
+                            continue;
+                        }
+
 
                             if (cmd === CODE_CMD_OFFS + 2) { // clone
                                 ++line;
