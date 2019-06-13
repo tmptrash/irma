@@ -24,7 +24,7 @@ class Organism {
          * {Number} Organism's age - amount of iteration from born
          */
         this.age        = 0;
-        this.packet     = 0;
+        this.packet     = null;
         this.steps      = 0;
         this.moves      = Config.orgMovesInStep;
         this.mutations  = 0;

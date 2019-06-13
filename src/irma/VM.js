@@ -418,7 +418,7 @@ class VM {
                             if (!dot) {this._r = 0; continue} // organism on the right
                             if (ax < 0 || ax > code.length || bx <= ax) {this._r = 0; continue}
                             const newCode = code.splice(ax, bx - ax);
-                            const clone   = this._createOrg(org.offset + 1, org, newCode);
+                            const clone   = this._createOrg(org.offset + this._r, org, newCode);
                             this._db && this._db.put(clone, org);
                             this._r = 1;
                             continue;
@@ -517,6 +517,36 @@ class VM {
                             continue;
                         }
 
+                        case CODE_CMD_OFFS + 43: {// get
+                            ++line;
+                            if (org.packet !== 0) {this._r = 0; continue}
+                            const dot = data[org.offset + DIR[abs(ax) % 8]];
+                            if (!dot) {this._r = 0; continue}
+                            this._removeOrg(org.packet = orgsRef[dot & ORG_INDEX_MASK]);
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 44: {// put
+                            ++line;
+                            if (org.packet === 0) {this._r = 0; continue}
+                            const offset = org.offset + DIR[abs(ax) % 8];
+                            const dot  = data[offset];
+                            if (dot || offset < 0 || offset > MAX_OFFS) {this._r = 0; continue}
+                            this._createOrg(offset, undefined, org.packet);
+                            this._db && this._db.put(org.packet);
+                            org.packet = null;
+                            continue;
+                        }
+
+
+
+
+
+
+
+
+
+
                             if (cmd === CODE_CMD_OFFS + 2) { // clone
                                 ++line;
                                 if (orgs.full) {
@@ -540,42 +570,6 @@ class VM {
 
                             if (cmd === CODE_CMD_OFFS + 21) {// offs
                                 d = org.offset;
-                                ++line;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 27) {// get
-                                if (org.packet !== 0) {
-                                    b = 0;
-                                    ++line;
-                                    continue
-                                }
-                                const offset = org.offset + DIR[abs(d) % 8];
-                                let dot;
-                                let surf;
-                                if (offset < 0 || offset > MAX_OFFS || (dot = data[offset]) === 0 || (dot & ORG_MASK) !== 0 || !(surf = this._elements[dot % SURFACES]).get) {
-                                    b = 0;
-                                    ++line;
-                                    continue
-                                }
-                                org.packet = b = dot;
-                                surf.remove(offset, true);
-                                ++line;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 28) {// put
-                                if (org.packet === 0) {
-                                    ++line;
-                                    continue
-                                }
-                                const offset = org.offset + DIR[abs(d) % 8];
-                                if (offset < 0 || offset > MAX_OFFS || data[offset] !== 0) {
-                                    ++line;
-                                    continue
-                                }
-                                this._world.dot(offset, b = org.packet);
-                                org.packet = 0;
                                 ++line;
                                 continue;
                             }
@@ -706,6 +700,7 @@ class VM {
         }
     }
 
+    // TODO: organism from packet should be placed near dead one
     _removeOrg(org) {
         const offset = org.offset;
         const packet = org.packet;
