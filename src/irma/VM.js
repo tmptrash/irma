@@ -105,7 +105,7 @@ class VM {
         this._ts              = Date.now();
         this._i               = 0;
         this._r               = 0;
-        this._food            = 0;
+        this._freq            = {};
         this._diff            = 0;
         this._averageDistance = 0;
         this._averageCodeSize = 0;
@@ -168,6 +168,10 @@ class VM {
                 let   bx   = org.bx;
                 let   line = org.line;
                 let   tmp;
+                //
+                // Resets value of 'say' command
+                //
+                if (org.freq) {org.freq = this._freq[org.freq] = 0}
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
@@ -445,6 +449,7 @@ class VM {
                                 const len2 = bx - ax;
                                 const len1 = code.length - len2;
                                 let   j;
+                                this._r = 0;
                                 loop: for (let i = this._r; i < len1; i++) {
                                     for (j = 0; j < len2; j++) {
                                         if (code[i + j] !== code[i]) {break loop}
@@ -454,17 +459,40 @@ class VM {
                                     this._r = 1;
                                     break;
                                 }
-                                this._r = 0;
                             }
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 37: {// move
                             ++line;
+                            const find0    = org.find0;
+                            const find1    = org.find1;
+                            const len      = find1 - find0 + 1;
+                            const moveCode = code.slice(find0, find1 + 1);
+                            code.splice(find0, len);
+                            code.splice(find1 - len, 0, ...moveCode)
                             continue;
                         }
 
+                        case CODE_CMD_OFFS + 38: {// see
+                            ++line;
+                            ax = data[org.offset + ax] || 0;
+                            continue;
+                        }
 
+                        case CODE_CMD_OFFS + 39: {// say
+                            ++line;
+                            const freq = abs(bx) % Config.worldFrequency;
+                            this._freq[freq] = ax;
+                            org.freq = freq;
+                            continue;
+                        }
+
+                        case CODE_CMD_OFFS + 40: {// listen
+                            ++line;
+                            ax = this._freq[abs(bx) % Config.worldFrequency];
+                            continue;
+                        }
 
                             if (cmd === CODE_CMD_OFFS + 2) { // clone
                                 ++line;
@@ -484,18 +512,6 @@ class VM {
                                     org2 !== null && Mutations.crossover(clone, org2)
                                 }
                                 this._db && this._db.put(clone, org);
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 3) { // see
-                                ++line;
-                                const offset = org.offset + (a);
-                                const dot = data[offset];
-                                if (!dot) {
-                                    d = 0;
-                                    continue
-                                }
-                                d = dot;
                                 continue;
                             }
 

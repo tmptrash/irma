@@ -35,6 +35,7 @@ class Organism {
             return;
         }
 
+        this.freq       = 0;
         this.generation = 0;
         this.line       = 0;
         this.probs      = Config.orgProbs.slice();
@@ -168,6 +169,7 @@ class Organism {
         this.mem        = parent.mem.slice();
         this.code       = parent.code.slice();
         this.generation = parent.generation + 1;
+        this.freq       = parent.freq;
     }
 }
 

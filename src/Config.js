@@ -77,6 +77,10 @@ const Config = {
      */
     worldElements              : 100000,
     /**
+     * {Number} Amount of frequencies in a world. It uses with say/listen commands
+     */
+    worldFrequency             : 10,
+    /**
      * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
      * @constant
      */
