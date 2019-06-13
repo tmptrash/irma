@@ -414,7 +414,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 34: {// split
                             ++line;
-                            const dot = data[org.offset + 1];
+                            const dot = data[org.offset + this._r];
                             if (!dot) {this._r = 0; continue} // organism on the right
                             if (ax < 0 || ax > code.length || bx <= ax) {this._r = 0; continue}
                             const newCode = code.splice(ax, bx - ax);
@@ -470,7 +470,7 @@ class VM {
                             const len      = find1 - find0 + 1;
                             const moveCode = code.slice(find0, find1 + 1);
                             code.splice(find0, len);
-                            code.splice(find1 - len, 0, ...moveCode)
+                            code.splice(find1 - len, 0, ...moveCode);
                             continue;
                         }
 
@@ -505,6 +505,17 @@ class VM {
                             continue;
                         }
 
+                        case CODE_CMD_OFFS + 42: {// nsplit
+                            ++line;
+                            const dot     = data[org.offset + DIR[abs(ax) % 8]];
+                            if (!dot) {this._r = 0; continue}
+                            const nearOrg = orgsRef[dot & ORG_INDEX_MASK];
+                            const newCode = nearOrg.code.splice(0, bx);
+                            const clone   = this._createOrg(org.offset + DIR[abs(ax) % 8], nearOrg, newCode);
+                            this._db && this._db.put(clone, nearOrg);
+                            this._r = 1;
+                            continue;
+                        }
 
                             if (cmd === CODE_CMD_OFFS + 2) { // clone
                                 ++line;
