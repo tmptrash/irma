@@ -1,13 +1,7 @@
 /**
- * {Object} Global configuration of IRMA project. Very important idea
- * behind these configs is total amount of energy in a world. It should
- * be a luck of energy to provoke system to grow. To calculate amount of
- * energy dots we have to use formula:
- *
- *   energyDots = ((orgCloneEnergy - 1) * (orgAmount / 2) - (orgAmount / 4) * orgEnergy) / energyValue
- *
- * Some of these configuration parameters may be changed during app work.
- * Some of them - not. See "@constant" mark in a comment.
+ * {Object} Global configuration of IRMA project.
+ * Configuration parameters, which are not constants may be changed during app work in a console
+ * Constants should not be changed after app starts. See "@constant" mark in a comments.
  *
  * @author flatline
  */
@@ -17,7 +11,6 @@
  * @constant
  */
 // TODO: review all configs
-const CMD_OFFS = 128;
 const WIDTH    = 1920 * 2;
 const HEIGHT   = 1080 * 2;
 
@@ -34,7 +27,7 @@ const Config = {
      * add an ability to use numbers in a code, just putting them as command
      * @constant
      */
-    CODE_CMD_OFFS              : CMD_OFFS,
+    CODE_CMD_OFFS              : 1024,
     /**
      * {Number} Amount of supported commands in a code. This value must be
      * synchronized with real commands amount. See VM.js for details.
@@ -49,7 +42,7 @@ const Config = {
     codeTimesPerRun            : 10,
     codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
-    codeDefault                : [], //CMD_OFFS+23, CMD_OFFS, CMD_OFFS+1, CMD_OFFS+2],
+    codeDefault                : [],
     codeRegs                   : 6,
 
     /**
@@ -72,10 +65,6 @@ const Config = {
      * cataclysm mechanism will be run.
      */
     worldOrgsSimilarityPercent : .3,
-    /**
-     * {Number} Amount of elements in a world
-     */
-    worldElements              : 100000,
     /**
      * {Number} Amount of frequencies in a world. It uses with say/listen commands
      */
@@ -101,7 +90,6 @@ const Config = {
     orgAmount                  : 100000,
     orgMaxAge                  : 20000,
     orgEnergy                  : 49,
-    orgCloneEnergy             : 50,
     orgStepEnergy              : .001,
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,

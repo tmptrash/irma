@@ -42,13 +42,6 @@ const Db        = require('./../common/Db');
 const Organism  = require('./Organism');
 const Mutations = require('./Mutations');
 const World     = require('./World');
-const Elements  = require('./Elements');
-/**
- * {Number} This value very important. This is amount of total energy in a world
- * (organisms + energy). This value organisms must not exceed. This is how we
- * create a lack of resources in a world.
- */
-const MAX_ENERGY        = (Config.orgCloneEnergy - 1) * (Config.orgAmount >> 1);
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -76,29 +69,18 @@ const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
 const MAX               = Number.MAX_VALUE;
 const MIN               = Number.MIN_VALUE;
 
-const ORG_MASK          = Config.ORG_MASK;
 const ORG_INDEX_MASK    = 0x7fffffff;
-const ORG_ATOM_MASK     = 0x000000f0;
 const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
-
-const ENERGY_OFF_MASK   = 0xffffff0f;
-/**
- * {Number} Max amount of supported surfaces
- */
-const SURFACES          = 16;
 
 const ceil              = Math.ceil;
 const round             = Math.round;
 const rand              = Helper.rand;
 const fin               = Number.isFinite;
 const abs               = Math.abs;
-const nan               = Number.isNaN;
 
 class VM {
     constructor() {
-        this.totalOrgsEnergy  = 0;
         this._world           = new World();
-        this._elements        = new Elements(this._world);
         this._orgs            = null;
         this._iterations      = 0;
         this._population      = 0;
@@ -120,8 +102,6 @@ class VM {
         this._world.destroy();
         this._orgs.destroy();
         this._db && this._db.destroy();
-        this._elements.destroy();
-        this._elements = null;
         this._world    = null;
         this._orgs     = null;
         this._orgs     = null;
@@ -157,7 +137,6 @@ class VM {
             //
             // Loop through population
             //
-            let orgsEnergy = 0;
             let o = orgs.first;
             while (o < orgAmount) {
                 const org  = orgsRef[o++];
@@ -589,12 +568,9 @@ class VM {
                 const age = org.age;
                 if (age % org.period === 0 && age > 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 if (age % maxAge === 0 && age > 0) {this._removeOrg(org)}
-                // TODO:
-                //if ((this.totalOrgsEnergy + this._ENERGY.curAmount * energyValue) < MAX_ENERGY) {this._ENERGY.add()}
 
                 org.age++;
                 this._i += lines;
-                //orgsEnergy += org.energy;
             }
             //
             // Global cataclysm logic. If global similarity is more then 30%, then this
@@ -603,7 +579,6 @@ class VM {
             //
             if (this._iterations % cataclysmPeriod === 0) {this._updateCataclysm(orgs)}
 
-            this.totalOrgsEnergy = orgsEnergy;
             this._iterations++;
         }
         //
@@ -612,7 +587,7 @@ class VM {
         const ts = Date.now();
         if (ts - this._ts > 1000) {
             const orgAmount = orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} onrg:${(this.totalOrgsEnergy / orgAmount) << 0} diff:${this._diff} gen:${this._population}`);
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} diff:${this._diff} gen:${this._population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -704,17 +679,6 @@ class VM {
         this._world.org(offset, org);
 
         return org;
-    }
-
-    _createSurfaces() {
-        const AMOUNT = SURFS.length;
-
-        const surfaces = new Array(AMOUNT);
-        for (let i = 0; i < AMOUNT; i++) {
-            surfaces[i] = new Elements(SURFS[i], i, this._world);
-        }
-
-        return surfaces;
     }
 }
 
