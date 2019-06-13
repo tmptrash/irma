@@ -144,10 +144,8 @@ class VM {
         const lines            = Config.codeLinesPerIteration;
         const world            = this._world;
         const data             = world.data;
-        const maxCodeSize      = Config.orgMaxCodeSize;
         const mutationPeriod   = Config.orgMutationPeriod;
         const maxAge           = Config.orgMaxAge;
-        const energyPeriod     = Config.orgEnergyPeriod;
         const cataclysmPeriod  = Config.worldCataclysmEvery;
         const orgs             = this._orgs;
         const orgsRef          = this._orgs.getRef();
@@ -471,6 +469,9 @@ class VM {
                             const moveCode = code.slice(find0, find1 + 1);
                             code.splice(find0, len);
                             code.splice(find1 - len, 0, ...moveCode);
+                            if (rand(Config.codeMutateEveryClone) === 0) {
+                                Mutations.mutate(org);
+                            }
                             continue;
                         }
 
@@ -538,85 +539,42 @@ class VM {
                             continue;
                         }
 
+                        case CODE_CMD_OFFS + 45: {// offs
+                            ++line;
+                            ax = org.offset;
+                            continue;
+                        }
 
+                        case CODE_CMD_OFFS + 46: {// age
+                            ++line;
+                            ax = org.age;
+                            continue;
+                        }
 
+                        case CODE_CMD_OFFS + 47: {// line
+                            ax = line++;
+                            continue;
+                        }
 
+                        case CODE_CMD_OFFS + 48: {// len
+                            ax = line++;
+                            continue;
+                        }
 
-
-
-
-
-
-                            if (cmd === CODE_CMD_OFFS + 2) { // clone
-                                ++line;
-                                if (orgs.full) {
-                                    continue
-                                }
-                                const offset = org.offset + DIR[abs(d) % 8];
-                                if (data[offset] !== 0) {
-                                    continue
-                                }
-                                const clone = this._createOrg(offset, orgsRef[orgs.freeIndex], org);
-                                if (rand(Config.codeMutateEveryClone) === 0) {
-                                    Mutations.mutate(clone)
-                                }
-                                if (rand(Config.codeCrossoverEveryClone) === 0) {
-                                    const org2 = orgsRef[rand(orgs.size)];
-                                    org2 !== null && Mutations.crossover(clone, org2)
-                                }
-                                this._db && this._db.put(clone, org);
-                                continue;
+                        //
+                        // We are on the last code line. Have to jump to the first
+                        //
+                        if (line >= code.length) {
+                            if (org.stackIndex >= 0) {
+                                const stack = org.stack;
+                                bx   = stack[2];
+                                ax   = stack[1];
+                                line = stack[0];
+                                org.stackIndex = -1;
+                            } else {
+                                line = 0;
                             }
-
-                            if (cmd === CODE_CMD_OFFS + 21) {// offs
-                                d = org.offset;
-                                ++line;
-                                continue;
-                            }
-
-                            if (cmd === CODE_CMD_OFFS + 29) {// mix
-                                const packet = org.packet;
-                                if (packet === 0) {
-                                    b = 0;
-                                    ++line;
-                                    continue
-                                }
-                                const offset = org.offset + DIR[abs(d) % 8];
-                                let dot;
-                                //
-                                // << 28 - dot is an energy
-                                //
-                                if (offset < 0 || offset > MAX_OFFS || (dot = data[offset]) === 0 || (dot & ORG_MASK) !== 0 || (dot << 28) !== 0 || (packet << 28) !== 0) {
-                                    b = 0;
-                                    ++line;
-                                    continue
-                                }
-                                const atom1 = ((dot & ORG_ATOM_MASK) >>> 4) || 1;
-                                const atom2 = ((packet & ORG_ATOM_MASK) >>> 4) || 1;
-                                org.packet = 0;
-                                //
-                                // This remove() must be before dot()
-                                //
-                                //this._ENERGY.remove(offset);
-                                this._world.dot(offset, b = (dot & ENERGY_OFF_MASK | (atom1 + atom2) << 4));
-                                ++line;
-                                continue;
-                            }
-                            //
-                            // We are on the last code line. Have to jump to the first
-                            //
-                            if (line >= code.length) {
-                                if (org.stackIndex >= 0) {
-                                    const stack = org.stack;
-                                    b = stack[3];
-                                    a = stack[2];
-                                    d = stack[1];
-                                    line = stack[0];
-                                    org.stackIndex = -1;
-                                } else {
-                                    line = 0;
-                                }
-                            }
+                        }
 
                         if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {ax = cmd; ++line; continue}
                     }
@@ -631,19 +589,12 @@ class VM {
                 const age = org.age;
                 if (age % org.period === 0 && age > 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 if (age % maxAge === 0 && age > 0) {this._removeOrg(org)}
-                if (age % energyPeriod === 0 && energyPeriod > 0) {
-                    //
-                    // Energy waste depends on energy amount. Big (more energy) organism spends more energy
-                    //
-                    org.energy--;
-                    if (org.energy <= 0) {this._removeOrg(org)}
-                }
                 // TODO:
                 //if ((this.totalOrgsEnergy + this._ENERGY.curAmount * energyValue) < MAX_ENERGY) {this._ENERGY.add()}
 
                 org.age++;
                 this._i += lines;
-                orgsEnergy += org.energy;
+                //orgsEnergy += org.energy;
             }
             //
             // Global cataclysm logic. If global similarity is more then 30%, then this
