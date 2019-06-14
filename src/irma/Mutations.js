@@ -44,7 +44,7 @@ class Mutations {
     }
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
-
+    // TODO: do we need this?
     static crossover(destOrg, srcOrg) {
         const destCode = destOrg.code;
         const srcCode  = srcOrg.code;

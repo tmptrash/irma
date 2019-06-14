@@ -12,11 +12,11 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, offs, item, parent = null) {
+    constructor(id, offs, luca, item, parent = null) {
         return this.init(...arguments);
     }
 
-    init(id, offs, item, parent = null) {
+    init(id, offs, luca, item, parent = null) {
         this.id         = id;
         this.item       = item;
         this.offset     = offs;
@@ -70,7 +70,7 @@ class Organism {
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
-        this.code       = this._generateCode();
+        this.code       = this._generateCode(luca);
         this.preprocess();
 
         return this;
@@ -106,20 +106,24 @@ class Organism {
 
         for (let i = 0, len = code.length; i < len; i++) {
             switch(code[i]) {
-                case CODE_CMD_OFFS + 25: // func
+                case CODE_CMD_OFFS + 24: // func
                     funcs[fCount++] = i + 1;
                     stack[++sCount] = i;
                     break;
 
-                case CODE_CMD_OFFS + 14: // loop
-                case CODE_CMD_OFFS + 15: // ifdga
-                case CODE_CMD_OFFS + 16: // ifdla
-                case CODE_CMD_OFFS + 17: // ifdea
+                case CODE_CMD_OFFS + 22: // loop
+                case CODE_CMD_OFFS + 15: // ifp
+                case CODE_CMD_OFFS + 16: // ifn
+                case CODE_CMD_OFFS + 17: // ifz
+                case CODE_CMD_OFFS + 18: // ifg
+                case CODE_CMD_OFFS + 19: // ifl
+                case CODE_CMD_OFFS + 20: // ife
+                case CODE_CMD_OFFS + 21: // ifne
                     stack[++sCount] = i;
                     offs[i] = i + 1;
                     break;
 
-                case CODE_CMD_OFFS + 27: // end
+                case CODE_CMD_OFFS + 26: // end
                     if (sCount < 0) {break}
                     offs[i] = stack[sCount];
                     offs[stack[sCount--]] = i + 1;
@@ -133,17 +137,12 @@ class Organism {
         this.line       = 0;
     }
 
-    _generateCode() {
-        const size    = Config.orgStartCodeSize;
-        const code    = new Array(size);
+    _generateCode(luca) {
+        if (luca) {return Config.codeLuca.slice()}
 
-        if (Config.codeDefault.length === 0) {
-            for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
-        } else {
-            const codeLen = Config.codeDefault.length;
-            code.splice(0, codeLen, ...Config.codeDefault);
-            for (let i = codeLen; i < size; i++) {code[i] = CODE_CMD_OFFS + 18}
-        }
+        const size = Config.orgStartCodeSize;
+        const code = new Array(size);
+        for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
 
         return code;
     }

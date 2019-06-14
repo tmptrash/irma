@@ -7,7 +7,6 @@ const Config   = require('./../Config');
 const Canvas   = require('./Canvas');
 
 const ORG_MASK = Config.ORG_MASK;
-const ENERGY_COLOR = Config.worldSurfaces[0].color;
 
 class World {
     constructor() {
@@ -40,11 +39,6 @@ class World {
         this._canvas.dot(offset, dot);
     }
 
-    energy(offset, index) {
-        this._data[offset] = index;
-        this._canvas.dot(offset, ENERGY_COLOR);
-    }
-
     empty(offset) {
         this._data[offset] = 0;
         this._canvas.empty(offset);
@@ -66,12 +60,6 @@ class World {
         this._data[offset]  = 0;
         this._data[offset1] = color;
         this._canvas.move(offset, offset1, color);
-    }
-
-    moveEnergy(offset, offset1, index) {
-        this._data[offset]  = 0;
-        this._data[offset1] = index;
-        this._canvas.move(offset, offset1, ENERGY_COLOR);
     }
 
     title(text) {

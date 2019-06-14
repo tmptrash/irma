@@ -72,7 +72,6 @@ const MIN               = Number.MIN_VALUE;
 const ORG_INDEX_MASK    = 0x7fffffff;
 const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
 
-const ceil              = Math.ceil;
 const round             = Math.round;
 const rand              = Helper.rand;
 const fin               = Number.isFinite;
@@ -88,10 +87,6 @@ class VM {
         this._i               = 0;
         this._r               = 0;
         this._freq            = {};
-        this._diff            = 0;
-        this._averageDistance = 0;
-        this._averageCodeSize = 0;
-        this._averageAmount   = 0;
         if (Config.DB_ON) {
             this._db          = new Db();
             this._db.ready.then(() => this._createOrgs());
@@ -103,7 +98,6 @@ class VM {
         this._orgs.destroy();
         this._db && this._db.destroy();
         this._world    = null;
-        this._orgs     = null;
         this._orgs     = null;
         this._db       = null;
     }
@@ -126,7 +120,6 @@ class VM {
         const data             = world.data;
         const mutationPeriod   = Config.orgMutationPeriod;
         const maxAge           = Config.orgMaxAge;
-        const cataclysmPeriod  = Config.worldCataclysmEvery;
         const orgs             = this._orgs;
         const orgsRef          = this._orgs.getRef();
         const orgAmount        = Config.orgAmount;
@@ -385,6 +378,7 @@ class VM {
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._r = 0; continue}
                             code.splice(bx >= code.length ? code.length : bx, 0, ...nearOrg.code);
                             world.empty(offset);
+                            org.age -= 10;
                             this._r = 1;
                             continue;
                         }
@@ -397,6 +391,7 @@ class VM {
                             const newCode = code.splice(ax, bx - ax);
                             const clone   = this._createOrg(org.offset + this._r, org, newCode);
                             this._db && this._db.put(clone, org);
+                            clone.age = Config.orgMaxAge;
                             this._r = 1;
                             continue;
                         }
@@ -418,8 +413,9 @@ class VM {
                                 if (index === -1) {
                                     this._r = 0;
                                 } else {
-                                    this._r = 1;
                                     org.find0 = org.find1 = ax = index;
+                                    org.age += 20;
+                                    this._r = 1;
                                 }
                             } else {
                                 if (bx > ax) {this._r = 0; continue}
@@ -433,6 +429,7 @@ class VM {
                                     }
                                     org.find0 = ax = i + j;
                                     org.find1 = org.find0 + len2;
+                                    org.age += 20;
                                     this._r = 1;
                                     break;
                                 }
@@ -442,15 +439,18 @@ class VM {
 
                         case CODE_CMD_OFFS + 37: {// move
                             ++line;
+                            org.age += 20;
                             const find0    = org.find0;
                             const find1    = org.find1;
                             const len      = find1 - find0 + 1;
                             const moveCode = code.slice(find0, find1 + 1);
+                            if (moveCode.length < 1) {this._r = 0; continue}
                             code.splice(find0, len);
                             code.splice(find1 - len, 0, ...moveCode);
                             if (rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(org);
                             }
+                            this._r = 1;
                             continue;
                         }
 
@@ -539,29 +539,29 @@ class VM {
                             ax = line++;
                             continue;
                         }
-
-                        //
-                        // We are on the last code line. Have to jump to the first
-                        //
-                        if (line >= code.length) {
-                            if (org.stackIndex >= 0) {
-                                const stack = org.stack;
-                                bx   = stack[2];
-                                ax   = stack[1];
-                                line = stack[0];
-                                org.stackIndex = -1;
-                            } else {
-                                line = 0;
-                            }
+                    }
+                    //
+                    // This is constant value
+                    //
+                    if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {ax = cmd; ++line; continue}
+                    //
+                    // We are on the last code line. Have to jump to the first
+                    //
+                    if (line >= code.length) {
+                        if (org.stackIndex >= 0) {
+                            const stack = org.stack;
+                            bx   = stack[2];
+                            ax   = stack[1];
+                            line = stack[0];
+                            org.stackIndex = -1;
+                        } else {
+                            line = 0;
                         }
-
-                        if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {ax = cmd; ++line; continue}
                     }
                 }
                 org.line = line;
-                org.d    = d;
-                org.a    = a;
-                org.b    = b;
+                org.ax   = ax;
+                org.bx   = bx;
                 //
                 // Organism age related updates
                 //
@@ -572,13 +572,6 @@ class VM {
                 org.age++;
                 this._i += lines;
             }
-            //
-            // Global cataclysm logic. If global similarity is more then 30%, then this
-            // mechanism start working. 30% of all organisms will be removed and new random
-            // generated organisms will be created
-            //
-            if (this._iterations % cataclysmPeriod === 0) {this._updateCataclysm(orgs)}
-
             this._iterations++;
         }
         //
@@ -587,42 +580,11 @@ class VM {
         const ts = Date.now();
         if (ts - this._ts > 1000) {
             const orgAmount = orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} diff:${this._diff} gen:${this._population}`);
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this._population}`);
             this._ts = ts;
             this._i  = 0;
 
             if (orgs.items === 0) {this._createOrgs()}
-        }
-    }
-
-    _updateCataclysm(orgs) {
-        const org1 = orgs.get(rand(orgs.size));
-        const org2 = orgs.get(rand(orgs.size));
-        const data = this._world.data;
-        if (org1 !== null && org2 !== null) {
-            this._averageDistance += Helper.distance(org1.code, org2.code);
-            this._averageCodeSize += ceil((org1.code.length + org2.code.length) / 2);
-            if (this._iterations > 100) {
-                this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
-            }
-            if (++this._averageAmount > (Config.orgAmount * .3)) {
-                this._diff = round(((this._averageDistance / this._averageAmount) / (this._averageCodeSize / this._averageAmount)) * 100) / 100;
-                if (this._diff < Config.worldOrgsSimilarityPercent) {
-                    for (let i = 0, orgAmount = ceil(orgs.items * Config.worldOrgsSimilarityPercent); i < orgAmount; i++) {
-                        const org2Kill = orgs.get(i);
-                        if (org2Kill === null) {orgAmount++; continue}
-                        const offset = rand(MAX_OFFS);
-                        if (data[offset] === 0) {
-                            this._removeOrg(org2Kill);
-                            const org = this._createOrg(offset, org2Kill);
-                            this._db && this._db.put(org);
-                        }
-                    }
-                }
-                this._averageAmount   = 0;
-                this._averageDistance = 0;
-                this._averageCodeSize = 0;
-            }
         }
     }
 
@@ -648,13 +610,12 @@ class VM {
 
         this._orgs = new FastArray(orgAmount);
         //
-        // Only quarter of the population will be created on the beginning
+        // Creates atoms and molecules and LUCA as last organism
         //
-        orgAmount >>>= 2;
         while (orgAmount > 0) {
             const offset = rand(MAX_OFFS);
             if (data[offset] === 0) {
-                const org = this._createOrg(offset);
+                const org = this._createOrg(offset, orgAmount === 1);
                 this._db && this._db.put(org);
                 orgAmount--;
             }
@@ -665,15 +626,16 @@ class VM {
     /**
      * Creates one organism with default parameters and empty code
      * @param {Number} offset Absolute org offset
+     * @param {Boolean} luca true if current organism is a replicator, false - just atom
      * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @param {Organism=} parent Create from parent
      * @param {Array=} code New org code
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(offset, deadOrg = undefined, parent = null, code = null) {
+    _createOrg(offset, luca = false, deadOrg = undefined, parent = null, code = null) {
         const orgs = this._orgs;
         const org  = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code) ||
-                     new Organism(Helper.id(), offset, orgs.freeIndex, parent, code);
+                     new Organism(Helper.id(), offset, luca, orgs.freeIndex, parent, code);
 
         orgs.add(org);
         this._world.org(offset, org);

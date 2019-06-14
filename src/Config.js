@@ -11,8 +11,9 @@
  * @constant
  */
 // TODO: review all configs
-const WIDTH    = 1920 * 2;
-const HEIGHT   = 1080 * 2;
+const WIDTH     = 1920 * 2;
+const HEIGHT    = 1080 * 2;
+const CODE_OFFS = 1024;
 
 const Config = {
     /**
@@ -27,13 +28,13 @@ const Config = {
      * add an ability to use numbers in a code, just putting them as command
      * @constant
      */
-    CODE_CMD_OFFS              : 1024,
+    CODE_CMD_OFFS              : CODE_OFFS,
     /**
      * {Number} Amount of supported commands in a code. This value must be
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 30,
+    CODE_COMMANDS              : 49,
     /**
      * {Number} Functions call stack size
      */
@@ -42,8 +43,77 @@ const Config = {
     codeTimesPerRun            : 10,
     codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
-    codeDefault                : [],
     codeRegs                   : 6,
+    codeLuca                   : [
+        CODE_OFFS + 24, // func
+        -1,             //   -1
+        CODE_OFFS,      //   toggle
+        5,              //   5
+        CODE_OFFS + 36, //   find
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 4,  //   push
+        CODE_OFFS + 1,  //   shift
+        CODE_OFFS + 3,  //   pop
+        CODE_OFFS,      //   toggle
+        0,              //   0
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 22, //   loop
+        CODE_OFFS + 28, //     axret
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS + 2,  //     eq
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS + 36, //     find
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS + 27, //     retax
+        CODE_OFFS + 17, //     ifz
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 25, //       ret
+        CODE_OFFS + 26, //     end
+        CODE_OFFS + 1,  //     shift
+        CODE_OFFS + 1,  //     shift
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 28, //     axret
+        CODE_OFFS + 1,  //     shift
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 27, //     retax
+        CODE_OFFS + 11, //     dec
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 18, //     ifg
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 25, //       ret
+        CODE_OFFS + 26, //     end
+        CODE_OFFS + 48, //     len
+        CODE_OFFS + 37, //     move
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS + 10, //     inc
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS + 26, //   end
+        CODE_OFFS + 1,  //   shift
+        CODE_OFFS + 1,  //   shift
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 34, //   split
+        CODE_OFFS + 26, // end
+        CODE_OFFS + 24, // func
+        CODE_OFFS + 14, //   rand
+        CODE_OFFS + 35, //   step
+        CODE_OFFS + 33, //   join
+        CODE_OFFS + 26, // end
+        100,            // 100
+        CODE_OFFS + 22, // loop
+        1,              //   1
+        CODE_OFFS + 23, //   call
+        CODE_OFFS + 26, // end
+        0,              // 0
+        CODE_OFFS + 23, // call
+        CODE_OFFS + 25, // ret
+        CODE_OFFS + 5   // nop
+    ],
 
     /**
      * World width in pixels
@@ -59,12 +129,6 @@ const Config = {
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,
-    worldCataclysmEvery        : 10,
-    /**
-     * {Number} Percent of differences between organisms after which global
-     * cataclysm mechanism will be run.
-     */
-    worldOrgsSimilarityPercent : .3,
     /**
      * {Number} Amount of frequencies in a world. It uses with say/listen commands
      */
@@ -87,8 +151,8 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
-    orgAmount                  : 100000,
-    orgMaxAge                  : 20000,
+    orgAmount                  : 50000,
+    orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,
     orgEnergyPeriod            : 0,
@@ -96,7 +160,7 @@ const Config = {
     orgMutationPercent         : .02,
     orgMutationPeriod          : 250000,
     orgMaxCodeSize             : 100,
-    orgStartCodeSize           : 64,
+    orgStartCodeSize           : 32,
     orgMovesInStep             : 5,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
