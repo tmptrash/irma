@@ -161,7 +161,6 @@ const Config = {
     orgMutationPeriod          : 250000,
     orgMaxCodeSize             : 100,
     orgStartCodeSize           : 32,
-    orgMovesInStep             : 5,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

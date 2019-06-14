@@ -25,8 +25,6 @@ class Organism {
          */
         this.age        = 0;
         this.packet     = null;
-        this.steps      = 0;
-        this.moves      = Config.orgMovesInStep;
         this.mutations  = 0;
         this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
         this._memIdx    = 0;

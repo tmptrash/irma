@@ -6,8 +6,6 @@
 const Config   = require('./../Config');
 const Canvas   = require('./Canvas');
 
-const ORG_MASK = Config.ORG_MASK;
-
 class World {
     constructor() {
         this._canvas = new Canvas();
@@ -45,13 +43,18 @@ class World {
     }
 
     org(offset, org) {
-        this._data[offset] = ORG_MASK | org.item;
+        this._data[offset] = org.item + 1;
         this._canvas.dot(offset, Config.orgColor);
+    }
+
+    getOrg(offset) {
+        const dot = this._data[offset];
+        return dot === 0 ? dot : dot - 1;
     }
 
     moveOrg(org, offset) {
         this._data[org.offset] = 0;
-        this._data[offset] = ORG_MASK | org.item;
+        this._data[offset] = org.item + 1;
         this._canvas.move(org.offset, offset, Config.orgColor);
         org.offset = offset;
     }
