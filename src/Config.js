@@ -166,7 +166,13 @@ const Config = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1])
+    orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
+    /**
+     * {Number} Ages we decrease from organism is case of running these commands.
+     * In some sense this is amount of energy for commands
+     */
+    ageJoin                    : 10,
+    ageMove                    : 20
 };
 
 module.exports = Config;

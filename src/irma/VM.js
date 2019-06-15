@@ -117,7 +117,6 @@ class VM {
         const lines            = Config.codeLinesPerIteration;
         const world            = this._world;
         const mutationPeriod   = Config.orgMutationPeriod;
-        const maxAge           = Config.orgMaxAge;
         const orgs             = this._orgs;
         const orgsRef          = this._orgs.getRef();
         const orgAmount        = Config.orgAmount;
@@ -303,25 +302,25 @@ class VM {
                             const stack = org.stack;
                             let index = org.stackIndex;
                             if (index < 0) {++line; continue}
-                            line = stack[index--];
                             bx   = stack[index--];
                             ax   = stack[index--];
+                            line = stack[index--];
                             org.stackIndex = index;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 26: {// end
                             switch (code[org.offs[line]]) {
-                                case CODE_CMD_OFFS + 21: // loop
+                                case CODE_CMD_OFFS + 22: // loop
                                     line = org.offs[line];
                                     break;
-                                case CODE_CMD_OFFS + 23: // func
+                                case CODE_CMD_OFFS + 24: // func
                                     const stack = org.stack;
                                     let index = org.stackIndex;
                                     if (index < 0) {break}
-                                    line = stack[index--];
                                     bx   = stack[index--];
                                     ax   = stack[index--];
+                                    line = stack[index--];
                                     org.stackIndex = index;
                                     break;
                                 default:
@@ -369,6 +368,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 33: {// join
                             ++line;
+                            org.age -= Config.ageJoin;
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrg(offset);
                             if (!dot) {this._r = 0; continue}
@@ -376,7 +376,6 @@ class VM {
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._r = 0; continue}
                             code.splice(bx >= code.length ? code.length : bx, 0, ...nearOrg.code);
                             world.empty(offset);
-                            org.age -= 10;
                             this._r = 1;
                             continue;
                         }
@@ -396,10 +395,10 @@ class VM {
 
                         case CODE_CMD_OFFS + 35: {// step
                             ++line;
+                            org.age -= code.length;
                             const offset = org.offset + DIR[abs(ax) % 8];
                             if (world.getOrg(offset) !== 0) {continue}
                             world.moveOrg(org, offset);
-                            org.age += code.length;
                             continue;
                         }
 
@@ -411,7 +410,6 @@ class VM {
                                     this._r = 0;
                                 } else {
                                     org.find0 = org.find1 = ax = index;
-                                    org.age += 20;
                                     this._r = 1;
                                 }
                             } else {
@@ -426,7 +424,6 @@ class VM {
                                     }
                                     org.find0 = ax = i + j;
                                     org.find1 = org.find0 + len2;
-                                    org.age += 20;
                                     this._r = 1;
                                     break;
                                 }
@@ -436,7 +433,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 37: {// move
                             ++line;
-                            org.age += 20;
+                            org.age -= Config.ageMove;
                             const find0    = org.find0;
                             const find1    = org.find1;
                             const len      = find1 - find0 + 1;
@@ -564,9 +561,9 @@ class VM {
                 //
                 const age = org.age;
                 if (age % org.period === 0 && age > 0 && mutationPeriod > 0) {Mutations.mutate(org)}
-                if (age % maxAge === 0 && age > 0) {this._removeOrg(org)}
+                if (age < 0) {this._removeOrg(org)}
 
-                org.age++;
+                org.age -= lines;
                 this._i += lines;
             }
             this._iterations++;

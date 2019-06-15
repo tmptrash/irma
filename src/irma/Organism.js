@@ -23,7 +23,7 @@ class Organism {
         /**
          * {Number} Organism's age - amount of iteration from born
          */
-        this.age        = 0;
+        this.age        = Config.orgMaxAge;
         this.packet     = null;
         this.mutations  = 0;
         this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);

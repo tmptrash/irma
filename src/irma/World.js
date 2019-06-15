@@ -49,7 +49,7 @@ class World {
 
     getOrg(offset) {
         const dot = this._data[offset];
-        return dot === 0 ? dot : dot - 1;
+        return dot === 0 ? 0 : dot - 1;
     }
 
     moveOrg(org, offset) {
