@@ -374,7 +374,7 @@ class VM {
                             if (!dot) {this._r = 0; continue}
                             const nearOrg = orgsRef[dot];
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._r = 0; continue}
-                            code.splice(bx >= code.length ? code.length : bx, 0, ...nearOrg.code);
+                            code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
                             world.empty(offset);
                             this._r = 1;
                             continue;
@@ -530,7 +530,7 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 48: {// len
-                            ax = line++;
+                            ax = code.length;
                             continue;
                         }
                     }

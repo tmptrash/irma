@@ -39,16 +39,20 @@ const Config = {
      * {Number} Functions call stack size
      */
     CODE_STACK_SIZE            : 300,
-    codeLinesPerIteration      : 10,
+    codeLinesPerIteration      : 1000,
     codeTimesPerRun            : 10,
     codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
     codeRegs                   : 6,
     codeLuca                   : [
         CODE_OFFS + 24, // func
+        1023,           //   1023
+        CODE_OFFS,      //   toggle
+        6,              //   6
+        CODE_OFFS + 6,  //   add
+        CODE_OFFS,      //   toggle
         -1,             //   -1
         CODE_OFFS,      //   toggle
-        5,              //   5
         CODE_OFFS + 36, //   find
         CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
@@ -102,6 +106,9 @@ const Config = {
         CODE_OFFS + 24, // func
         CODE_OFFS + 14, //   rand
         CODE_OFFS + 35, //   step
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
         CODE_OFFS + 33, //   join
         CODE_OFFS + 26, // end
         100,            // 100
@@ -151,7 +158,7 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
-    orgAmount                  : 50000,
+    orgAmount                  : 20000,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,
@@ -159,8 +166,8 @@ const Config = {
     orgColor                   : 0xff0000,
     orgMutationPercent         : .02,
     orgMutationPeriod          : 250000,
-    orgMaxCodeSize             : 100,
-    orgStartCodeSize           : 32,
+    orgMaxCodeSize             : 256,
+    orgMoleculeCodeSize        : 16,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

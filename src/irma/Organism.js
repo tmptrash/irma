@@ -138,7 +138,7 @@ class Organism {
     _generateCode(luca) {
         if (luca) {return Config.codeLuca.slice()}
 
-        const size = Config.orgStartCodeSize;
+        const size = Config.orgMoleculeCodeSize;
         const code = new Array(size);
         for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
 
