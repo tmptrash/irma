@@ -12,11 +12,11 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, offs, item, parent = null) {
+    constructor(id, offs, item, parent = null, code = null) {
         return this.init(...arguments);
     }
 
-    init(id, offs, item, parent = null) {
+    init(id, offs, item, parent = null, code = null) {
         this.id         = id;
         this.item       = item;
         this.offset     = offs;
@@ -68,7 +68,7 @@ class Organism {
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
-        this.code       = this._generateCode();
+        this.code       = code !== null ? code.slice() : this._generateCode();
         this.preprocess();
 
         return this;

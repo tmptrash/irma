@@ -382,11 +382,13 @@ class VM {
 
                         case CODE_CMD_OFFS + 34: {// split
                             ++line;
-                            const dot = world.getOrg(org.offset + this._r);
+                            const offset = org.offset + this._r % 8;
+                            if (offset < 0 || offset > MAX_OFFS) {this._r = 0; continue}
+                            const dot = world.getOrg(offset);
                             if (!dot) {this._r = 0; continue} // organism on the right
                             if (ax < 0 || ax > code.length || bx <= ax) {this._r = 0; continue}
                             const newCode = code.splice(ax, bx - ax);
-                            const clone   = this._createOrg(org.offset + this._r, org, newCode);
+                            const clone   = this._createOrg(offset, org, newCode);
                             this._db && this._db.put(clone, org);
                             clone.age = Config.orgMaxAge;
                             this._r = 1;
