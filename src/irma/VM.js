@@ -599,7 +599,7 @@ class VM {
      */
     _createOrgs() {
         const world     = this._world;
-        let   orgAmount = Config.orgAmount;
+        let   orgAmount = Config.orgAmount - 1;
 
         this._orgs = new FastArray(orgAmount);
         //
@@ -608,9 +608,20 @@ class VM {
         while (orgAmount > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrg(offset) === 0) {
-                const org = this._createOrg(offset, orgAmount === 1);
+                const org = this._createOrg(offset);
                 this._db && this._db.put(org);
                 orgAmount--;
+            }
+        }
+        //
+        // Adds LUCA to the world
+        //
+        while (true) {
+            const offset = rand(MAX_OFFS);
+            if (world.getOrg(offset) === 0) {
+                const luca = this._createOrg(offset, undefined, null, Config.codeLuca.slice());
+                this._db && this._db.put(luca);
+                break;
             }
         }
         this._population++;
@@ -619,16 +630,15 @@ class VM {
     /**
      * Creates one organism with default parameters and empty code
      * @param {Number} offset Absolute org offset
-     * @param {Boolean} luca true if current organism is a replicator, false - just atom
      * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @param {Organism=} parent Create from parent
      * @param {Array=} code New org code
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(offset, luca = false, deadOrg = undefined, parent = null, code = null) {
+    _createOrg(offset, deadOrg = undefined, parent = null, code = null) {
         const orgs = this._orgs;
         const org  = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code) ||
-                     new Organism(Helper.id(), offset, luca, orgs.freeIndex, parent, code);
+                     new Organism(Helper.id(), offset, orgs.freeIndex, parent, code);
 
         orgs.add(org);
         this._world.org(offset, org);
