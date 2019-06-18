@@ -384,11 +384,12 @@ class VM {
                             ++line;
                             const offset = org.offset + this._r % 8;
                             if (offset < 0 || offset > MAX_OFFS) {this._r = 0; continue}
-                            const dot = world.getOrg(offset);
+                            const dot    = world.getOrg(offset);
                             if (!dot) {this._r = 0; continue} // organism on the right
                             if (ax < 0 || ax > code.length || bx <= ax) {this._r = 0; continue}
                             const newCode = code.splice(ax, bx - ax);
-                            const clone   = this._createOrg(offset, org, newCode);
+                            const clone   = this._createOrg(offset, undefined, org, newCode);
+                            org.preprocess();
                             this._db && this._db.put(clone, org);
                             clone.age = Config.orgMaxAge;
                             this._r = 1;
@@ -481,13 +482,14 @@ class VM {
                             continue;
                         }
 
+                        // TODO: we need second offset to place spliced organism
                         case CODE_CMD_OFFS + 42: {// nsplit
                             ++line;
                             const dot     = world.getOrg(org.offset + DIR[abs(ax) % 8]);
                             if (!dot) {this._r = 0; continue}
                             const nearOrg = orgsRef[dot];
                             const newCode = nearOrg.code.splice(0, bx);
-                            const clone   = this._createOrg(org.offset + DIR[abs(ax) % 8], nearOrg, newCode);
+                            const clone   = this._createOrg(org.offset + DIR[abs(ax) % 8], undefined, nearOrg, newCode);
                             this._db && this._db.put(clone, nearOrg);
                             this._r = 1;
                             continue;

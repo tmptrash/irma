@@ -40,7 +40,7 @@ class Organism {
         this.period     = Config.orgMutationPeriod;
         this.percent    = Config.orgMutationPercent;
 
-        this.regs       = new Array(Config.codeRegs);
+        this.regs       = (new Array(Config.codeRegs)).fill(0);
         this.rIndex     = 0;
         /**
          * {Number} Register ax
@@ -84,8 +84,11 @@ class Organism {
         this.mem[++this._memIdx] = val;
     }
 
+    /**
+     * Shifts ax, bx to the next two values in this.regs array
+     */
     shift() {
-        this.rIndex += 2;
+        if ((this.rIndex += 2) >= this.regs.length) {this.rIndex = 0}
         this.ax = this.regs[this.rIndex];
         this.bx = this.regs[this.rIndex + 1];
     }
