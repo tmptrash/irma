@@ -158,7 +158,7 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
-    orgAmount                  : 20000,
+    orgAmount                  : 30000,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,
