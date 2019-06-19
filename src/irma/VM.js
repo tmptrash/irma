@@ -72,6 +72,7 @@ const MIN               = Number.MIN_VALUE;
 const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
 
 const round             = Math.round;
+const floor             = Math.floor;
 const rand              = Helper.rand;
 const fin               = Number.isFinite;
 const abs               = Math.abs;
@@ -84,7 +85,7 @@ class VM {
         this._population      = 0;
         this._ts              = Date.now();
         this._i               = 0;
-        this._r               = 0;
+        this._ret             = 0;
         this._freq            = {};
         if (Config.DB_ON) {
             this._db          = new Db();
@@ -331,13 +332,13 @@ class VM {
                         }
 
                         case CODE_CMD_OFFS + 27: {// retax
-                            ax = this._r;
+                            ax = this._ret;
                             ++line;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 28: {// axret
-                            this._r = ax;
+                            this._ret = ax;
                             ++line;
                             continue;
                         }
@@ -370,29 +371,30 @@ class VM {
                             ++line;
                             org.age -= Config.ageJoin;
                             const offset = org.offset + DIR[abs(ax) % 8];
-                            const dot    = world.getOrg(offset);
-                            if (!dot) {this._r = 0; continue}
+                            const dot    = world.getOrgIdx(offset);
+                            if (!dot) {this._ret = 0; continue}
                             const nearOrg = orgsRef[dot];
-                            if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._r = 0; continue}
+                            if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._ret = 0; continue}
                             code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
                             world.empty(offset);
-                            this._r = 1;
+                            this._ret = 1;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 34: {// split
                             ++line;
-                            const offset = org.offset + this._r % 8;
-                            if (offset < 0 || offset > MAX_OFFS) {this._r = 0; continue}
-                            const dot    = world.getOrg(offset);
-                            if (!dot) {this._r = 0; continue} // organism on the right
-                            if (ax < 0 || ax > code.length || bx <= ax) {this._r = 0; continue}
+                            if (orgs.full) {this._ret = 0; continue}
+                            const offset = org.offset + DIR[abs(this._ret) % 8];
+                            if (offset < 0 || offset > MAX_OFFS) {this._ret = 0; continue}
+                            const dot    = world.getOrgIdx(offset);
+                            if (dot) {this._ret = 0; continue} // organism on the way
+                            if (ax < 0 || ax > code.length || bx <= ax) {this._ret = 0; continue}
                             const newCode = code.splice(ax, bx - ax);
-                            const clone   = this._createOrg(offset, undefined, org, newCode);
+                            const clone   = this._createOrg(offset, org, newCode);
                             org.preprocess();
                             this._db && this._db.put(clone, org);
                             clone.age = Config.orgMaxAge;
-                            this._r = 1;
+                            this._ret = 1;
                             continue;
                         }
 
@@ -400,7 +402,7 @@ class VM {
                             ++line;
                             org.age -= code.length;
                             const offset = org.offset + DIR[abs(ax) % 8];
-                            if (world.getOrg(offset) !== 0) {continue}
+                            if (world.getOrgIdx(offset) !== 0) {continue}
                             world.moveOrg(org, offset);
                             continue;
                         }
@@ -410,24 +412,24 @@ class VM {
                             if (bx < 0) {
                                 const index = code.indexOf(ax);
                                 if (index === -1) {
-                                    this._r = 0;
+                                    this._ret = 0;
                                 } else {
                                     org.find0 = org.find1 = ax = index;
-                                    this._r = 1;
+                                    this._ret = 1;
                                 }
                             } else {
-                                if (bx > ax) {this._r = 0; continue}
+                                if (bx > ax) {this._ret = 0; continue}
                                 const len2 = bx - ax;
                                 const len1 = code.length - len2;
                                 let   j;
-                                this._r = 0;
-                                loop: for (let i = this._r; i < len1; i++) {
+                                this._ret = 0;
+                                loop: for (let i = this._ret; i < len1; i++) {
                                     for (j = 0; j < len2; j++) {
                                         if (code[i + j] !== code[i]) {break loop}
                                     }
                                     org.find0 = ax = i + j;
                                     org.find1 = org.find0 + len2;
-                                    this._r = 1;
+                                    this._ret = 1;
                                     break;
                                 }
                             }
@@ -441,19 +443,19 @@ class VM {
                             const find1    = org.find1;
                             const len      = find1 - find0 + 1;
                             const moveCode = code.slice(find0, find1 + 1);
-                            if (moveCode.length < 1) {this._r = 0; continue}
+                            if (moveCode.length < 1) {this._ret = 0; continue}
                             code.splice(find0, len);
                             code.splice(find1 - len, 0, ...moveCode);
                             if (rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(org);
                             }
-                            this._r = 1;
+                            this._ret = 1;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 38: {// see
                             ++line;
-                            ax = world.getOrg(org.offset + ax) || 0;
+                            ax = world.getOrgIdx(org.offset + ax) || 0;
                             continue;
                         }
 
@@ -474,43 +476,49 @@ class VM {
                         case CODE_CMD_OFFS + 41: {// nread
                             ++line;
                             const offset = org.offset + DIR[abs(ax) % 8];
-                            const dot    = world.getOrg(offset);
-                            if (!dot) {this._r = 0; continue}
+                            const dot    = world.getOrgIdx(offset);
+                            if (!dot) {this._ret = 0; continue}
                             const nearOrg = orgsRef[dot];
                             ax = nearOrg.code[bx] || 0;
-                            this._r = 1;
+                            this._ret = 1;
                             continue;
                         }
 
-                        // TODO: we need second offset to place spliced organism
                         case CODE_CMD_OFFS + 42: {// nsplit
                             ++line;
-                            const dot     = world.getOrg(org.offset + DIR[abs(ax) % 8]);
-                            if (!dot) {this._r = 0; continue}
+                            if (orgs.full) {this._ret = 0; continue}
+                            const offset  = org.offset + DIR[abs(ax) % 8];
+                            const dOffset = org.offset + DIR[abs(this._ret) % 8];
+                            if (offset === dOffset) {this._ret = 0; continue}
+                            const dot     = world.getOrgIdx(offset);
+                            if (!dot) {this._ret = 0; continue}
+                            const dDot    = world.getOrgIdx(dOffset);
+                            if (dDot) {this._ret = 0; continue}
                             const nearOrg = orgsRef[dot];
                             const newCode = nearOrg.code.splice(0, bx);
-                            const clone   = this._createOrg(org.offset + DIR[abs(ax) % 8], undefined, nearOrg, newCode);
-                            this._db && this._db.put(clone, nearOrg);
-                            this._r = 1;
+                            const cut     = this._createOrg(dOffset, nearOrg, newCode);
+                            this._db && this._db.put(cut, nearOrg);
+                            this._ret = 1;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 43: {// get
                             ++line;
-                            if (org.packet !== 0) {this._r = 0; continue}
-                            const dot = world.getOrg(org.offset + DIR[abs(ax) % 8]);
-                            if (!dot) {this._r = 0; continue}
+                            if (org.packet !== 0) {this._ret = 0; continue}
+                            const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
+                            if (!dot) {this._ret = 0; continue}
                             this._removeOrg(org.packet = orgsRef[dot]);
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 44: {// put
                             ++line;
-                            if (org.packet === 0) {this._r = 0; continue}
+                            if (org.packet === 0) {this._ret = 0; continue}
+                            if (orgs.full) {this._ret = 0; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
-                            const dot    = world.getOrg(offset);
-                            if (dot || offset < 0 || offset > MAX_OFFS) {this._r = 0; continue}
-                            this._createOrg(offset, undefined, org.packet);
+                            const dot    = world.getOrgIdx(offset);
+                            if (dot || offset < 0 || offset > MAX_OFFS) {this._ret = 0; continue}
+                            this._createOrg(offset, org.packet);
                             this._db && this._db.put(org.packet);
                             org.packet = null;
                             continue;
@@ -603,7 +611,7 @@ class VM {
      */
     _createOrgs() {
         const world     = this._world;
-        let   orgAmount = Config.orgAmount - 1;
+        let   orgAmount = floor(Config.orgAmount / 2);
 
         this._orgs = new FastArray(orgAmount);
         //
@@ -611,7 +619,7 @@ class VM {
         //
         while (orgAmount > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrg(offset) === 0) {
+            if (world.getOrgIdx(offset) === 0) {
                 const org = this._createOrg(offset);
                 this._db && this._db.put(org);
                 orgAmount--;
@@ -622,8 +630,8 @@ class VM {
         //
         while (true) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrg(offset) === 0) {
-                const luca = this._createOrg(offset, undefined, null, Config.codeLuca.slice());
+            if (world.getOrgIdx(offset) === 0) {
+                const luca = this._createOrg(offset, null, Config.codeLuca.slice());
                 this._db && this._db.put(luca);
                 break;
             }
@@ -634,12 +642,12 @@ class VM {
     /**
      * Creates one organism with default parameters and empty code
      * @param {Number} offset Absolute org offset
-     * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @param {Organism=} parent Create from parent
      * @param {Array=} code New org code
+     * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(offset, deadOrg = undefined, parent = null, code = null) {
+    _createOrg(offset, parent = null, code = null, deadOrg = null) {
         const orgs = this._orgs;
         const org  = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code) ||
                      new Organism(Helper.id(), offset, orgs.freeIndex, parent, code);
