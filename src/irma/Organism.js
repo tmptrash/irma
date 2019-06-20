@@ -27,7 +27,7 @@ class Organism {
         this.packet     = null;
         this.mutations  = 0;
         this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
-        this._memIdx    = 0;
+        this._memIdx    = -1;
         if (parent !== null) {
             this._clone(parent);
             return;
@@ -75,8 +75,8 @@ class Organism {
     }
 
     pop() {
-        if (this._memIdx < 1) {return 0}
-        return this.mem[--this._memIdx];
+        if (this._memIdx < 0) {return 0}
+        return this.mem[this._memIdx--];
     }
 
     push(val) {

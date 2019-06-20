@@ -289,7 +289,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 24: { // func
+                        case CODE_CMD_OFFS + 24:   // func
                             line = org.offs[line];
                             if (line === 0 && org.stackIndex >= 0) {
                                 const stack = org.stack;
@@ -299,7 +299,6 @@ class VM {
                                 org.stackIndex = -1;
                             }
                             continue;
-                        }
 
                         case CODE_CMD_OFFS + 25: {// ret
                             const stack = org.stack;
@@ -312,7 +311,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 26: {// end
+                        case CODE_CMD_OFFS + 26:  // end
                             switch (code[org.offs[line]]) {
                                 case CODE_CMD_OFFS + 22: // loop
                                     line = org.offs[line];
@@ -331,43 +330,36 @@ class VM {
                                     break;
                             }
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 27: {// retax
+                        case CODE_CMD_OFFS + 27:  // retax
                             ax = this._ret;
                             ++line;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 28: {// axret
+                        case CODE_CMD_OFFS + 28:  // axret
                             this._ret = ax;
                             ++line;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 29: {// and
+                        case CODE_CMD_OFFS + 29:  // and
                             ax &= bx;
                             ++line;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 30: {// or
+                        case CODE_CMD_OFFS + 30:  // or
                             ax |= bx;
                             ++line;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 31: {// xor
+                        case CODE_CMD_OFFS + 31:  // xor
                             ax ^= bx;
                             ++line;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 32: {// not
+                        case CODE_CMD_OFFS + 32:  // not
                             ax = ~ax;
                             ++line;
                             continue;
-                        }
 
                         case CODE_CMD_OFFS + 33: {// join
                             ++line;
@@ -410,7 +402,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 36: {// find
+                        case CODE_CMD_OFFS + 36:  // find
                             ++line;
                             if (bx < 0) {
                                 const index = code.indexOf(ax);
@@ -437,7 +429,6 @@ class VM {
                                 }
                             }
                             continue;
-                        }
 
                         case CODE_CMD_OFFS + 37: {// move
                             ++line;
@@ -456,11 +447,10 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 38: {// see
+                        case CODE_CMD_OFFS + 38:  // see
                             ++line;
                             ax = world.getOrgIdx(org.offset + ax) || 0;
                             continue;
-                        }
 
                         case CODE_CMD_OFFS + 39: {// say
                             ++line;
@@ -470,11 +460,10 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 40: {// listen
+                        case CODE_CMD_OFFS + 40:  // listen
                             ++line;
                             ax = this._freq[abs(bx) % Config.worldFrequency];
                             continue;
-                        }
 
                         case CODE_CMD_OFFS + 41: {// nread
                             ++line;
@@ -527,28 +516,24 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 45: {// offs
+                        case CODE_CMD_OFFS + 45:  // offs
                             ++line;
                             ax = org.offset;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 46: {// age
+                        case CODE_CMD_OFFS + 46:  // age
                             ++line;
                             ax = org.age;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 47: {// line
+                        case CODE_CMD_OFFS + 47:  // line
                             ax = line++;
                             continue;
-                        }
 
-                        case CODE_CMD_OFFS + 48: {// len
+                        case CODE_CMD_OFFS + 48:  // len
                             line++;
                             ax = code.length;
                             continue;
-                        }
                     }
                     //
                     // This is constant value
