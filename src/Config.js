@@ -63,6 +63,7 @@ const Config = {
         CODE_OFFS,      //   toggle
         0,              //   0
         CODE_OFFS,      //   toggle
+        CODE_OFFS + 10, //   inc
         CODE_OFFS + 22, //   loop
         CODE_OFFS + 28, //     axret
         CODE_OFFS + 4,  //     push

@@ -332,33 +332,33 @@ class VM {
                             continue;
 
                         case CODE_CMD_OFFS + 27:  // retax
-                            ax = this._ret;
                             ++line;
+                            ax = this._ret;
                             continue;
 
                         case CODE_CMD_OFFS + 28:  // axret
-                            this._ret = ax;
                             ++line;
+                            this._ret = ax;
                             continue;
 
                         case CODE_CMD_OFFS + 29:  // and
-                            ax &= bx;
                             ++line;
+                            ax &= bx;
                             continue;
 
                         case CODE_CMD_OFFS + 30:  // or
-                            ax |= bx;
                             ++line;
+                            ax |= bx;
                             continue;
 
                         case CODE_CMD_OFFS + 31:  // xor
-                            ax ^= bx;
                             ++line;
+                            ax ^= bx;
                             continue;
 
                         case CODE_CMD_OFFS + 32:  // not
-                            ax = ~ax;
                             ++line;
+                            ax = ~ax;
                             continue;
 
                         case CODE_CMD_OFFS + 33: {// join
@@ -414,19 +414,20 @@ class VM {
                                 }
                             } else {
                                 if (bx > ax) {this._ret = RET_ERR; continue}
-                                const len2 = bx - ax;
+                                const len2 = bx - ax + 1;
                                 const len1 = code.length - len2;
+                                let   ret  = RET_ERR;
                                 let   j;
-                                this._ret = RET_ERR;
                                 loop: for (let i = this._ret; i < len1; i++) {
-                                    for (j = 0; j < len2; j++) {
-                                        if (code[i + j] !== code[i]) {break loop}
+                                    for (j = ax; j <= bx; j++) {
+                                        if (code[i + j - ax] !== code[j]) {break loop}
                                     }
                                     org.find0 = ax = i + j;
                                     org.find1 = org.find0 + len2;
-                                    this._ret = RET_OK;
+                                    ret = RET_OK;
                                     break;
                                 }
+                                this._ret = ret;
                             }
                             continue;
 
