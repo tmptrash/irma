@@ -303,7 +303,7 @@ class VM {
                         case CODE_CMD_OFFS + 25: {// ret
                             const stack = org.stack;
                             let index = org.stackIndex;
-                            if (index < 0) {++line; continue}
+                            if (index < 0) {line = 0; continue}
                             bx   = stack[index--];
                             ax   = stack[index--];
                             line = stack[index--];
