@@ -11,8 +11,8 @@
  * @constant
  */
 // TODO: review all configs
-const WIDTH     = 1920 * 2;
-const HEIGHT    = 1080 * 2;
+const WIDTH     = 1920;
+const HEIGHT    = 1080;
 const CODE_OFFS = 1024;
 
 const Config = {
@@ -39,7 +39,7 @@ const Config = {
      * {Number} Functions call stack size
      */
     CODE_STACK_SIZE            : 300,
-    codeLinesPerIteration      : 2000,
+    codeLinesPerIteration      : 5,
     codeTimesPerRun            : 10,
     codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
@@ -159,7 +159,7 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
-    orgAmount                  : 30000,
+    orgAmount                  : 20000,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,

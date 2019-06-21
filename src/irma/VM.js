@@ -116,6 +116,7 @@ class VM {
      * times value may slow down user and browser interaction
      */
     run() {
+        debugger;
         const times            = Config.codeTimesPerRun;
         const lines            = Config.codeLinesPerIteration;
         const world            = this._world;
@@ -370,7 +371,7 @@ class VM {
                             const nearOrg = orgsRef[dot];
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._ret = RET_ERR; continue}
                             code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
-                            world.empty(offset);
+                            this._removeOrg(nearOrg);
                             this._ret = RET_OK;
                             continue;
                         }
