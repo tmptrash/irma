@@ -116,7 +116,6 @@ class VM {
      * times value may slow down user and browser interaction
      */
     run() {
-        debugger;
         const times            = Config.codeTimesPerRun;
         const lines            = Config.codeLinesPerIteration;
         const world            = this._world;
