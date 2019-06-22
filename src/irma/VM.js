@@ -569,7 +569,7 @@ class VM {
                 //
                 const age = org.age;
                 if (age % org.period === 0 && age > 0 && mutationPeriod > 0) {Mutations.mutate(org)}
-                if (age < 0) {this._removeOrg(org)}
+                if (age < 0) {this._killOrg(org)}
 
                 org.age -= (lines + 1);
                 this._i += lines;
@@ -590,15 +590,36 @@ class VM {
         }
     }
 
-    // TODO: organism from packet should be placed near dead one
+    /**
+     * Removes organism from the world totally. Places "packet" organism
+     * instead original if exists on the same position. See _killOrg().
+     * @param {Organism} org Organism to remove
+     * @private
+     */
     _removeOrg(org) {
         const offset = org.offset;
-        //const packet = org.packet;
+        const packet = org.packet;
 
-        org.energy = 0;
         this._orgs.del(org.item, false);
         this._world.empty(offset);
-        this._world.dot(offset, org.dot);
+        packet && this._createOrg(offset, packet);
+    }
+
+    /**
+     * Kills organism. Change it's atoms to random sequence. In this case
+     * organism will stay non living thing. Just a bundle of atoms without
+     * an ability to reproduce. Simply, it will be changed to one big molecule.
+     * It will be present in a world. See _removeOrg().
+     * @param {Organism} org Organism to kill.
+     * @private
+     */
+    _killOrg(org) {
+        org.age = Config.orgMaxAge;
+        const code = org.code;
+        const len  = code.length;
+        for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
+            code.push(...code.splice(rand(len), rand(len)));
+        }
     }
 
     /**
@@ -639,13 +660,13 @@ class VM {
      * @param {Number} offset Absolute org offset
      * @param {Organism=} parent Create from parent
      * @param {Array=} code New org code
-     * @param {Organism=} deadOrg Dead organism we may replace by new one
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(offset, parent = null, code = null, deadOrg = null) {
-        const orgs = this._orgs;
-        const org  = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code) ||
-                     new Organism(Helper.id(), offset, orgs.freeIndex, parent, code);
+    _createOrg(offset, parent = null, code = null) {
+        const orgs    = this._orgs;
+        const deadOrg = orgs.get(orgs.freeIndex);
+        const org     = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code) ||
+                        new Organism(Helper.id(), offset, orgs.freeIndex, parent, code);
 
         orgs.add(org);
         this._world.org(offset, org);

@@ -44,6 +44,7 @@ const Config = {
     codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
     codeRegs                   : 6,
+    codeKillTimes              : 3,
     codeLuca                   : [
         CODE_OFFS + 24, // func
         1023,           //   1023
@@ -121,7 +122,7 @@ const Config = {
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
-        CODE_OFFS + 48, // color
+        CODE_OFFS + 49, // color
         100,            // 100
         CODE_OFFS + 22, // loop
         1,              //   1

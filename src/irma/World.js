@@ -44,7 +44,7 @@ class World {
 
     org(offset, org) {
         this._data[offset] = org.item + 1;
-        this._canvas.dot(offset, Config.orgColor);
+        this._canvas.dot(offset, org.color);
     }
 
     getOrgIdx(offset) {
@@ -55,7 +55,7 @@ class World {
     moveOrg(org, offset) {
         this._data[org.offset] = 0;
         this._data[offset] = org.item + 1;
-        this._canvas.move(org.offset, offset, Config.orgColor);
+        this._canvas.move(org.offset, offset, org.color);
         org.offset = offset;
     }
 
