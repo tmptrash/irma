@@ -33,6 +33,7 @@ class Organism {
             return;
         }
 
+        this.color      = Config.orgColor;
         this.freq       = 0;
         this.generation = 0;
         this.line       = 0;
@@ -147,6 +148,7 @@ class Organism {
     }
 
     _clone(parent) {
+        this.color      = parent.color;
         this.probs      = parent.probs.slice();
         this.period     = parent.period;
         this.percent    = parent.percent;

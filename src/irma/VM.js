@@ -450,7 +450,8 @@ class VM {
 
                         case CODE_CMD_OFFS + 38:  // see
                             ++line;
-                            ax = world.getOrgIdx(org.offset + ax) || 0;
+                            const dot = world.getOrgIdx(org.offset + ax);
+                            ax = (dot === 0 ? 0 : dot.color);
                             continue;
 
                         case CODE_CMD_OFFS + 39: {// say
@@ -535,6 +536,11 @@ class VM {
                             line++;
                             ax = code.length;
                             continue;
+
+                        case CODE_CMD_OFFS + 49:  // color
+                            line++;
+                            org.color = ax % 0xffffff;
+                            continue;
                     }
                     //
                     // This is constant value
@@ -565,7 +571,7 @@ class VM {
                 if (age % org.period === 0 && age > 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 if (age < 0) {this._removeOrg(org)}
 
-                org.age -= lines;
+                org.age -= (lines + 1);
                 this._i += lines;
             }
             this._iterations++;
@@ -587,7 +593,7 @@ class VM {
     // TODO: organism from packet should be placed near dead one
     _removeOrg(org) {
         const offset = org.offset;
-        const packet = org.packet;
+        //const packet = org.packet;
 
         org.energy = 0;
         this._orgs.del(org.item, false);

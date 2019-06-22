@@ -34,7 +34,7 @@ const Config = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 49,
+    CODE_COMMANDS              : 50,
     /**
      * {Number} Functions call stack size
      */
@@ -112,6 +112,16 @@ const Config = {
         CODE_OFFS,      //   toggle
         CODE_OFFS + 33, //   join
         CODE_OFFS + 26, // end
+        255,            // 255
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 48, // color
         100,            // 100
         CODE_OFFS + 22, // loop
         1,              //   1
