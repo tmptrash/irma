@@ -137,7 +137,6 @@ class VM {
                 let   ax   = org.ax;
                 let   bx   = org.bx;
                 let   line = org.line;
-                let   tmp;
                 //
                 // Resets value of 'say' command
                 //
@@ -150,12 +149,13 @@ class VM {
                     const cmd = code[line];
 
                     switch (cmd) {
-                        case CODE_CMD_OFFS:      // toggle
+                        case CODE_CMD_OFFS: {    // toggle
                             ++line;
-                            tmp = ax;
-                            ax  = bx;
-                            bx  = tmp;
+                            const tmp = ax;
+                            ax = bx;
+                            bx = tmp;
                             continue;
+                        }
 
                         case CODE_CMD_OFFS + 1:  // shift
                             ++line;
@@ -442,7 +442,7 @@ class VM {
                             const moveCode = code.slice(find0, find1 + 1);
                             if (moveCode.length < 1) {this._ret = RET_ERR; continue}
                             code.splice(find0, len);
-                            code.splice(find1 - len, 0, ...moveCode);
+                            code.splice(ax < 0 ? 0 : (ax > code.length ? code.length : ax), 0, ...moveCode);
                             if (rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(org);
                             }
@@ -452,7 +452,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 38:  // see
                             ++line;
-                            const dot = world.getOrgIdx(org.offset + ax);
+                            const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
                             ax = (dot === 0 ? 0 : dot.color);
                             continue;
 

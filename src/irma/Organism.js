@@ -89,6 +89,8 @@ class Organism {
      * Shifts ax, bx to the next two values in this.regs array
      */
     shift() {
+        this.regs[this.rIndex] = this.ax;
+        this.regs[this.rIndex + 1] = this.bx;
         if ((this.rIndex += 2) >= this.regs.length) {this.rIndex = 0}
         this.ax = this.regs[this.rIndex];
         this.bx = this.regs[this.rIndex + 1];
@@ -109,7 +111,7 @@ class Organism {
         for (let i = 0, len = code.length; i < len; i++) {
             switch(code[i]) {
                 case CODE_CMD_OFFS + 24: // func
-                    funcs[fCount++] = i + 1;
+                    funcs[fCount++] = offs[i] = i + 1;
                     stack[++sCount] = i;
                     break;
 
