@@ -177,9 +177,9 @@ const Config = {
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMutationPercent         : .02,
-    orgMutationPeriod          : 250000,
+    orgMutationPeriod          : 25001,
     orgMaxCodeSize             : 256,
-    orgMoleculeCodeSize        : 16,
+    orgMoleculeCodeSize        : 8,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

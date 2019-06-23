@@ -159,6 +159,8 @@ class VM {
 
                         case CODE_CMD_OFFS + 1:  // shift
                             ++line;
+                            org.ax = ax;
+                            org.bx = bx;
                             org.shift();
                             ax  = org.ax;
                             bx  = org.bx;
@@ -498,7 +500,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 43: {// get
                             ++line;
-                            if (org.packet !== 0) {this._ret = RET_ERR; continue}
+                            if (org.packet) {this._ret = RET_ERR; continue}
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
                             if (!dot) {this._ret = RET_ERR; continue}
                             this._removeOrg(org.packet = orgsRef[dot]);
@@ -507,7 +509,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 44: {// put
                             ++line;
-                            if (org.packet === 0) {this._ret = RET_ERR; continue}
+                            if (!org.packet) {this._ret = RET_ERR; continue}
                             if (orgs.full) {this._ret = RET_ERR; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
@@ -568,7 +570,7 @@ class VM {
                 // Organism age related updates
                 //
                 const age = org.age;
-                if (age % org.period === 0 && age > 0 && mutationPeriod > 0) {Mutations.mutate(org)}
+                if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 if (age < 0) {this._killOrg(org)}
 
                 org.age -= (lines + 1);

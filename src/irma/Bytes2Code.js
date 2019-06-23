@@ -1,5 +1,5 @@
 /**
- * Converts byte code to human readable assembler like language.
+ * Converts byte code of "line" language to human readable assembler like text.
  *
  * @author flatline
  */
@@ -19,9 +19,9 @@ class Bytes2Code {
     static toCode(bytes, firstLineEmpty = true) {
         //
         // Create fake organism to preprocess his code to know where
-        // blocks are located (func/ifxx...end)
+        // blocks are located (func/ifxx/loop...end)
         //
-        const org = new Organism(-1, -1, -1, {}, 0, 1);
+        const org = new Organism(-1, -1, -1);
 
         org.code = bytes;
         org.preprocess();
@@ -30,17 +30,21 @@ class Bytes2Code {
         let code   = firstLineEmpty ? '\n' : '';
         let span   = '';
         for (let b = 0; b < bytes.length; b++) {
-            if (bytes[b] === CODE_CMD_OFFS + 25 || // func
-                bytes[b] === CODE_CMD_OFFS + 14 || // loop
-                bytes[b] === CODE_CMD_OFFS + 15 || // ifdga
-                bytes[b] === CODE_CMD_OFFS + 16 || // ifdla
-                bytes[b] === CODE_CMD_OFFS + 17) { // ifdea
+            if (bytes[b] === CODE_CMD_OFFS + 24 || // func
+                bytes[b] === CODE_CMD_OFFS + 22 || // loop
+                bytes[b] === CODE_CMD_OFFS + 15 || // ifp
+                bytes[b] === CODE_CMD_OFFS + 16 || // ifn
+                bytes[b] === CODE_CMD_OFFS + 17 || // ifz
+                bytes[b] === CODE_CMD_OFFS + 18 || // ifg
+                bytes[b] === CODE_CMD_OFFS + 19 || // ifl
+                bytes[b] === CODE_CMD_OFFS + 20 || // ife
+                bytes[b] === CODE_CMD_OFFS + 21) { // ifne
                 code += `${b ? '\n' : ''}${span}${Bytes2Code.MAP[bytes[b]]}`;
                 if (offs[b] > b + 1) {
                     span += '  ';
                 }
                 continue;
-            } else if (bytes[b] === CODE_CMD_OFFS + 27) { // end
+            } else if (bytes[b] === CODE_CMD_OFFS + 26) { // end
                 span = span.substr(0, span.length - 2);
             }
             code += `${b ? '\n' : ''}${span}${Bytes2Code.MAP[bytes[b]]}`;
@@ -51,36 +55,56 @@ class Bytes2Code {
 }
 
 Bytes2Code.MAP = {
-    [CODE_CMD_OFFS     ]: 'step  // step(dir:d)',
-    [CODE_CMD_OFFS + 1 ]: 'eat   // b = eat(dir:d)',
-    [CODE_CMD_OFFS + 2 ]: 'clone // b = clone(dir:d)',
-    [CODE_CMD_OFFS + 3 ]: 'see   // d = see(x:a,y:b)',
-    [CODE_CMD_OFFS + 4 ]: 'dtoa  // a = d',
-    [CODE_CMD_OFFS + 5 ]: 'dtob  // b = d',
-    [CODE_CMD_OFFS + 6 ]: 'atod  // d = a',
-    [CODE_CMD_OFFS + 7 ]: 'btod  // d = b',
-    [CODE_CMD_OFFS + 8 ]: 'add   // d = a + b',
-    [CODE_CMD_OFFS + 9 ]: 'sub   // d = a - b',
-    [CODE_CMD_OFFS + 10]: 'mul   // d = a * b',
-    [CODE_CMD_OFFS + 11]: 'div   // d = a / b',
-    [CODE_CMD_OFFS + 12]: 'inc   // d++',
-    [CODE_CMD_OFFS + 13]: 'dec   // d--',
-    [CODE_CMD_OFFS + 14]: 'loop  // d times',
-    [CODE_CMD_OFFS + 15]: 'ifdga // if d > a',
-    [CODE_CMD_OFFS + 16]: 'ifdla // if d < a',
-    [CODE_CMD_OFFS + 17]: 'ifdea // if d == a',
-    [CODE_CMD_OFFS + 18]: 'nop   // do nothing',
-    [CODE_CMD_OFFS + 19]: 'mget  // a = mem[d]',
-    [CODE_CMD_OFFS + 20]: 'mput  // mem[d] = a',
-    [CODE_CMD_OFFS + 21]: 'offs  // d = org.offset',
-    [CODE_CMD_OFFS + 22]: `rand  // d = rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
-    [CODE_CMD_OFFS + 23]: `call  // calls d % fCount`,
-    [CODE_CMD_OFFS + 24]: `func  // function`,
-    [CODE_CMD_OFFS + 25]: `ret d`,
-    [CODE_CMD_OFFS + 26]: `end   // end func/if/loop`,
-    [CODE_CMD_OFFS + 27]: `get   // b = get(dir:d)`,
-    [CODE_CMD_OFFS + 28]: `put   // b = put(d)`,
-    [CODE_CMD_OFFS + 29]: `mix   // b = mix(dir:d, packet)`
+    [CODE_CMD_OFFS     ]: 'toggle // swap ax,bx',
+    [CODE_CMD_OFFS + 1 ]: 'shift  // shifts ax,bx',
+    [CODE_CMD_OFFS + 2 ]: 'eq     // ax=bx',
+    [CODE_CMD_OFFS + 3 ]: 'pop    // ax=stack.pop()',
+    [CODE_CMD_OFFS + 4 ]: 'push   // stack.push(ax)',
+    [CODE_CMD_OFFS + 5 ]: 'nop    // do nothing',
+    [CODE_CMD_OFFS + 6 ]: 'add    // ax+=bx',
+    [CODE_CMD_OFFS + 7 ]: 'sub    // ax-=bx',
+    [CODE_CMD_OFFS + 8 ]: 'mul    // ax*=bx',
+    [CODE_CMD_OFFS + 9 ]: 'div    // ax/=bx',
+    [CODE_CMD_OFFS + 10]: 'inc    // ax++',
+    [CODE_CMD_OFFS + 11]: 'dec    // ax--',
+    [CODE_CMD_OFFS + 12]: 'rshift // ax>>=1',
+    [CODE_CMD_OFFS + 13]: 'lshift // ax<<=1',
+    [CODE_CMD_OFFS + 14]: `rand   // ax=rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`,
+    [CODE_CMD_OFFS + 15]: 'ifp    // if ax>0',
+    [CODE_CMD_OFFS + 16]: 'ifn    // if ax<0',
+    [CODE_CMD_OFFS + 17]: 'ifz    // if ax==0',
+    [CODE_CMD_OFFS + 18]: 'ifg    // if ax>bx',
+    [CODE_CMD_OFFS + 19]: 'ifl    // if ax<bx',
+    [CODE_CMD_OFFS + 20]: 'ife    // if ax==bx',
+    [CODE_CMD_OFFS + 21]: 'ifne   // if ax!=bx',
+    [CODE_CMD_OFFS + 22]: 'loop   // ax times',
+    [CODE_CMD_OFFS + 23]: 'call   // calls ax % funcAmount',
+    [CODE_CMD_OFFS + 24]: 'func   // function',
+    [CODE_CMD_OFFS + 25]: 'ret    // return',
+    [CODE_CMD_OFFS + 26]: 'end    // end func/if/loop',
+    [CODE_CMD_OFFS + 27]: 'retax  // ax=ret',
+    [CODE_CMD_OFFS + 28]: 'axret  // ret=ax',
+    [CODE_CMD_OFFS + 29]: 'and    // ax&=bx',
+    [CODE_CMD_OFFS + 30]: 'or     // ax|=bx',
+    [CODE_CMD_OFFS + 31]: 'xor    // ax^=bx',
+    [CODE_CMD_OFFS + 32]: 'not    // ax=~ax',
+
+    [CODE_CMD_OFFS + 33]: 'join   // ret=join(ax:dir,bx:offs)',
+    [CODE_CMD_OFFS + 34]: 'split  // ret=split(ax:from,bx:to,ret:dir)',
+    [CODE_CMD_OFFS + 35]: 'step   // step(ax:dir)',
+    [CODE_CMD_OFFS + 36]: 'find   // ax=find(ax:cmd|offs1,bx=-1|offs2):ret',
+    [CODE_CMD_OFFS + 37]: 'move   // move(ax:offs):ret',
+    [CODE_CMD_OFFS + 38]: 'see    // ax=see(ax:offs)',
+    [CODE_CMD_OFFS + 39]: 'listen // ax:val,ret:dir=listen(bx:freq)',
+    [CODE_CMD_OFFS + 40]: 'nread  // ax=nread(ax:dir,bx:offs)',
+    [CODE_CMD_OFFS + 41]: 'nsplit // nsplit(ax:dir,bx:offs,ret:offs):ret',
+    [CODE_CMD_OFFS + 42]: 'get    // get(ax:dir)',
+    [CODE_CMD_OFFS + 43]: 'put    // put(ax:dir)',
+    [CODE_CMD_OFFS + 44]: 'offs   // ax=org.offset',
+    [CODE_CMD_OFFS + 45]: 'age    // ax=org.age',
+    [CODE_CMD_OFFS + 46]: 'line   // ax=org.line',
+    [CODE_CMD_OFFS + 47]: 'len    // ax=org.code.length',
+    [CODE_CMD_OFFS + 48]: 'color  // org.color=ax % 0xffffff'
 };
 
 module.exports = Bytes2Code;
