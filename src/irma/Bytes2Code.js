@@ -95,16 +95,17 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 36]: 'find   // ax=find(ax:cmd|offs1,bx=-1|offs2):ret',
     [CODE_CMD_OFFS + 37]: 'move   // move(ax:offs):ret',
     [CODE_CMD_OFFS + 38]: 'see    // ax=see(ax:offs)',
-    [CODE_CMD_OFFS + 39]: 'listen // ax:val,ret:dir=listen(bx:freq)',
-    [CODE_CMD_OFFS + 40]: 'nread  // ax=nread(ax:dir,bx:offs)',
-    [CODE_CMD_OFFS + 41]: 'nsplit // nsplit(ax:dir,bx:offs,ret:offs):ret',
-    [CODE_CMD_OFFS + 42]: 'get    // get(ax:dir)',
-    [CODE_CMD_OFFS + 43]: 'put    // put(ax:dir)',
-    [CODE_CMD_OFFS + 44]: 'offs   // ax=org.offset',
-    [CODE_CMD_OFFS + 45]: 'age    // ax=org.age',
-    [CODE_CMD_OFFS + 46]: 'line   // ax=org.line',
-    [CODE_CMD_OFFS + 47]: 'len    // ax=org.code.length',
-    [CODE_CMD_OFFS + 48]: 'color  // org.color=ax % 0xffffff'
+    [CODE_CMD_OFFS + 39]: 'say    // ax=say(ax:val,bx:freq)',
+    [CODE_CMD_OFFS + 40]: 'listen // ax:val,ret:dir=listen(bx:freq)',
+    [CODE_CMD_OFFS + 41]: 'nread  // ax=nread(ax:dir,bx:offs)',
+    [CODE_CMD_OFFS + 42]: 'nsplit // nsplit(ax:dir,bx:offs,ret:offs):ret',
+    [CODE_CMD_OFFS + 43]: 'get    // get(ax:dir)',
+    [CODE_CMD_OFFS + 44]: 'put    // put(ax:dir)',
+    [CODE_CMD_OFFS + 45]: 'offs   // ax=org.offset',
+    [CODE_CMD_OFFS + 46]: 'age    // ax=org.age',
+    [CODE_CMD_OFFS + 47]: 'line   // ax=org.line',
+    [CODE_CMD_OFFS + 48]: 'len    // ax=org.code.length',
+    [CODE_CMD_OFFS + 49]: 'color  // org.color=ax % 0xffffff'
 };
 
 module.exports = Bytes2Code;
