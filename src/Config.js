@@ -170,6 +170,7 @@ const Config = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
+    ORG_MIN_COLOR              : 0x96,
     orgAmount                  : 20000,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,

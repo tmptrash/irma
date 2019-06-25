@@ -72,6 +72,7 @@ const MAX               = Number.MAX_VALUE;
 const MIN               = Number.MIN_VALUE;
 
 const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
+const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
 
 const round             = Math.round;
 const floor             = Math.floor;
@@ -442,7 +443,9 @@ class VM {
                             const moveCode = code.slice(find0, find1 + 1);
                             if (moveCode.length < 1) {this._ret = RET_ERR; continue}
                             code.splice(find0, len);
-                            code.splice(ax < 0 ? 0 : (ax > code.length ? code.length : ax), 0, ...moveCode);
+                            const newAx    = ax < 0 ? 0 : (ax > code.length ? code.length : ax);
+                            const offs     = newAx > find1 ? newAx - len : (newAx < find0 ? newAx : find0);
+                            code.splice(offs, 0, ...moveCode);
                             if (rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(org);
                             }
@@ -541,7 +544,8 @@ class VM {
 
                         case CODE_CMD_OFFS + 49:  // color
                             line++;
-                            org.color = ax % 0xffffff;
+                            const newAx = abs(ax);
+                            org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;
                             continue;
                     }
                     //
@@ -573,7 +577,7 @@ class VM {
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 if (age < 0) {this._killOrg(org)}
 
-                org.age -= (lines + 1);
+                org.age--;
                 this._i += lines;
             }
             this._iterations++;
