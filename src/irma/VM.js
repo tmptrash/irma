@@ -442,9 +442,10 @@ class VM {
                             const len      = find1 - find0 + 1;
                             const moveCode = code.slice(find0, find1 + 1);
                             if (moveCode.length < 1) {this._ret = RET_ERR; continue}
-                            code.splice(find0, len);
                             const newAx    = ax < 0 ? 0 : (ax > code.length ? code.length : ax);
                             const offs     = newAx > find1 ? newAx - len : (newAx < find0 ? newAx : find0);
+                            if (find0 === offs) {this._ret = RET_OK; continue}
+                            code.splice(find0, len);
                             code.splice(offs, 0, ...moveCode);
                             if (rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(org);
