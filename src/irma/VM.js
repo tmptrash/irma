@@ -387,9 +387,11 @@ class VM {
                             if (dot) {this._ret = RET_ERR; continue} // organism on the way
                             if (ax < 0 || ax > code.length || bx <= ax) {this._ret = RET_ERR; continue}
                             const newCode = code.splice(ax, bx - ax);
+                            if (newCode.length < 1) {this._ret = RET_ERR; continue}
                             const clone   = this._createOrg(offset, org, newCode);
                             org.preprocess();
                             this._db && this._db.put(clone, org);
+                            if (code.length < 1) {this._removeOrg(org)}
                             clone.age = Config.orgMaxAge;
                             this._ret = RET_OK;
                             continue;
@@ -398,7 +400,9 @@ class VM {
                         case CODE_CMD_OFFS + 35: {// step
                             ++line;
                             org.age -= code.length;
-                            const offset = org.offset + DIR[abs(ax) % 8];
+                            let offset = org.offset + DIR[abs(ax) % 8];
+                            if (offset < -1) {offset = (HEIGHT1 - 1) * WIDTH1 + org.offset}
+                            else if (offset > MAX_OFFS) {offset = WIDTH - (MAX_OFFS - org.offset)}
                             if (world.getOrgIdx(offset) !== 0) {this._ret = RET_ERR; continue}
                             world.moveOrg(org, offset);
                             this._ret = RET_OK;
@@ -496,8 +500,10 @@ class VM {
                             if (dDot) {this._ret = RET_ERR; continue}
                             const nearOrg = orgsRef[dot];
                             const newCode = nearOrg.code.splice(0, bx);
-                            const cut     = this._createOrg(dOffset, nearOrg, newCode);
-                            this._db && this._db.put(cut, nearOrg);
+                            if (newCode.length < 1) {this._ret = RET_ERR; continue}
+                            const cutOrg  = this._createOrg(dOffset, nearOrg, newCode);
+                            this._db && this._db.put(cutOrg, nearOrg);
+                            if (code.length < 1) {this._removeOrg(org)}
                             this._ret = RET_OK;
                             continue;
                         }
@@ -635,7 +641,7 @@ class VM {
      */
     _createOrgs() {
         const world     = this._world;
-        let   orgAmount = floor(Config.orgAmount / 2);
+        let   orgAmount = floor(Config.orgAmount / Config.orgMoleculeCodeSize);
 
         this._orgs = new FastArray(Config.orgAmount);
         //

@@ -29,8 +29,8 @@ class Organism {
         this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
         this._memIdx    = -1;
         if (parent !== null) {
-            this._clone(parent);
-            return;
+            this._clone(parent, code);
+            return this;
         }
 
         this.color      = Config.orgColor;
@@ -149,7 +149,7 @@ class Organism {
         return code;
     }
 
-    _clone(parent) {
+    _clone(parent, code) {
         this.color      = parent.color;
         this.probs      = parent.probs.slice();
         this.period     = parent.period;
@@ -169,7 +169,7 @@ class Organism {
         this.stack      = parent.stack.slice();
         this.loops      = parent.loops.slice();
         this.mem        = parent.mem.slice();
-        this.code       = parent.code.slice();
+        this.code       = code ? code : parent.code.slice();
         this.generation = parent.generation + 1;
         this.freq       = parent.freq;
     }
