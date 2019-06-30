@@ -11,8 +11,8 @@
  * @constant
  */
 // TODO: review all configs
-const WIDTH     = 1920;
-const HEIGHT    = 1080;
+const WIDTH     = 1920 / 4;
+const HEIGHT    = 1080 / 4;
 const CODE_OFFS = 1024;
 
 const Config = {

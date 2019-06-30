@@ -57,14 +57,6 @@ class FastArray {
     }
 
     /**
-     * Returns index of first not empty element in array
-     * @return {Number}
-     */
-    get first() {
-        return this._index + 1;
-    }
-
-    /**
      * Sets value to FastArray. You can't set value index due to
      * optimization reason. Only a value
      * @param {*|false} v Any value or false if value hasn't added
@@ -132,7 +124,7 @@ class FastArray {
         /**
          * {Array} Source container for custom objects
          */
-        this._arr         = new Array(size);
+        this._arr         = new Array(size).fill(null);
         /**
          * {Array} Array of free indexes in _arr. Every time
          * user calls del() method _arr obtains hole in it.
@@ -149,10 +141,8 @@ class FastArray {
          */
         this._size        = size;
 
-        for (let i = 0; i < size; i++) {
-            this._freeIndexes[i] = i;
-            this._arr[i]         = null;
-        }
+        const indexes = this._freeIndexes;
+        for (let i = 0; i < size; i++) {indexes[i] = i}
     }
 }
 

@@ -131,9 +131,11 @@ class VM {
             //
             // Loop through population
             //
-            let o = orgs.first;
-            while (o < orgAmount) {
-                const org  = orgsRef[o++];
+            let o = orgAmount;
+            while (--o > -1) {
+                const org  = orgsRef[o];
+                if (org === null) {break}
+                if (org.age <= 0) {continue}
                 const code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
@@ -582,7 +584,7 @@ class VM {
                 //
                 const age = org.age;
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
-                if (age < 0) {this._killOrg(org)}
+                if (age < 0) {this._killOrg(org); org.age = Config.orgMaxAge}
 
                 org.age--;
                 this._i += lines;
@@ -613,6 +615,7 @@ class VM {
         const offset = org.offset;
         const packet = org.packet;
 
+        org.age = 0;
         this._orgs.del(org.item, false);
         this._world.empty(offset);
         packet && this._createOrg(offset, packet);
@@ -627,7 +630,6 @@ class VM {
      * @private
      */
     _killOrg(org) {
-        org.age = Config.orgMaxAge;
         const code = org.code;
         const len  = code.length;
         for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
@@ -649,10 +651,9 @@ class VM {
         //
         while (orgAmount-- > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) === 0) {
-                const org = this._createOrg(offset);
-                this._db && this._db.put(org);
-            }
+            if (world.getOrgIdx(offset) !== 0) {orgAmount++; continue}
+            const org = this._createOrg(offset);
+            this._db && this._db.put(org);
         }
         //
         // Adds LUCA to the world
