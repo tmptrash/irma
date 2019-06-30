@@ -72,6 +72,10 @@ const MAX               = Number.MAX_VALUE;
 const MIN               = Number.MIN_VALUE;
 
 const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
+/**
+ * {Number} This color is a simple fix of black organism. In this case we
+ * don't see him in a world
+ */
 const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
 
 const round             = Math.round;
@@ -414,7 +418,8 @@ class VM {
                         case CODE_CMD_OFFS + 36:  // find
                             ++line;
                             if (bx < 0) {
-                                const index = code.indexOf(ax);
+                                const ret   = this._ret;
+                                const index = code.findIndex((c, i) => i >= ret && ax === c);
                                 if (index === -1) {
                                     this._ret = RET_ERR;
                                 } else {

@@ -123,7 +123,7 @@ const Config = {
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 49, // color
-        100,            // 100
+        30,             // 30
         CODE_OFFS + 22, // loop
         1,              //   1
         CODE_OFFS + 23, //   call
