@@ -92,7 +92,6 @@ class VM {
         this._population      = 0;
         this._ts              = Date.now();
         this._i               = 0;
-        this._ret             = RET_OK;
         this._freq            = {};
         if (Config.DB_ON) {
             this._db          = new Db();
@@ -342,12 +341,12 @@ class VM {
 
                         case CODE_CMD_OFFS + 27:  // retax
                             ++line;
-                            ax = this._ret;
+                            ax = org.ret;
                             continue;
 
                         case CODE_CMD_OFFS + 28:  // axret
                             ++line;
-                            this._ret = ax;
+                            org.ret = ax;
                             continue;
 
                         case CODE_CMD_OFFS + 29:  // and
@@ -375,31 +374,31 @@ class VM {
                             org.age -= Config.ageJoin;
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
-                            if (!dot) {this._ret = RET_ERR; continue}
+                            if (!dot) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsRef[dot];
-                            if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {this._ret = RET_ERR; continue}
+                            if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; continue}
                             code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
                             this._removeOrg(nearOrg);
-                            this._ret = RET_OK;
+                            org.ret = RET_OK;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 34: {// split
                             ++line;
-                            if (orgs.full) {this._ret = RET_ERR; continue}
-                            const offset  = org.offset + DIR[abs(this._ret) % 8];
-                            if (offset < 0 || offset > MAX_OFFS) {this._ret = RET_ERR; continue}
+                            if (orgs.full) {org.ret = RET_ERR; continue}
+                            const offset  = org.offset + DIR[abs(org.ret) % 8];
+                            if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
                             const dot     = world.getOrgIdx(offset);
-                            if (dot) {this._ret = RET_ERR; continue} // organism on the way
-                            if (ax < 0 || ax > code.length || bx <= ax) {this._ret = RET_ERR; continue}
+                            if (dot) {org.ret = RET_ERR; continue} // organism on the way
+                            if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; continue}
                             const newCode = code.splice(ax, bx - ax);
-                            if (newCode.length < 1) {this._ret = RET_ERR; continue}
+                            if (newCode.length < 1) {org.ret = RET_ERR; continue}
                             const clone   = this._createOrg(offset, org, newCode);
                             org.preprocess();
                             this._db && this._db.put(clone, org);
                             if (code.length < 1) {this._removeOrg(org)}
                             clone.age = Config.orgMaxAge;
-                            this._ret = RET_OK;
+                            org.ret = RET_OK;
                             continue;
                         }
 
@@ -409,30 +408,30 @@ class VM {
                             let offset = org.offset + DIR[abs(ax) % 8];
                             if (offset < -1) {offset = (HEIGHT1 - 1) * WIDTH1 + org.offset}
                             else if (offset > MAX_OFFS) {offset = WIDTH - (MAX_OFFS - org.offset)}
-                            if (world.getOrgIdx(offset) !== 0) {this._ret = RET_ERR; continue}
+                            if (world.getOrgIdx(offset) !== 0) {org.ret = RET_ERR; continue}
                             world.moveOrg(org, offset);
-                            this._ret = RET_OK;
+                            org.ret = RET_OK;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 36:  // find
                             ++line;
                             if (bx < 0) {
-                                const ret   = this._ret;
+                                const ret   = org.ret;
                                 const index = code.findIndex((c, i) => i >= ret && ax === c);
                                 if (index === -1) {
-                                    this._ret = RET_ERR;
+                                    org.ret = RET_ERR;
                                 } else {
                                     org.find0 = org.find1 = ax = index;
-                                    this._ret = RET_OK;
+                                    org.ret = RET_OK;
                                 }
                             } else {
-                                if (bx > ax) {this._ret = RET_ERR; continue}
+                                if (bx > ax) {org.ret = RET_ERR; continue}
                                 const len2 = bx - ax + 1;
                                 const len1 = code.length - len2;
                                 let   ret  = RET_ERR;
                                 let   j;
-                                loop: for (let i = this._ret; i < len1; i++) {
+                                loop: for (let i = org.ret; i < len1; i++) {
                                     for (j = ax; j <= bx; j++) {
                                         if (code[i + j - ax] !== code[j]) {break loop}
                                     }
@@ -441,7 +440,7 @@ class VM {
                                     ret = RET_OK;
                                     break;
                                 }
-                                this._ret = ret;
+                                org.ret = ret;
                             }
                             continue;
 
@@ -452,16 +451,16 @@ class VM {
                             const find1    = org.find1;
                             const len      = find1 - find0 + 1;
                             const moveCode = code.slice(find0, find1 + 1);
-                            if (moveCode.length < 1) {this._ret = RET_ERR; continue}
+                            if (moveCode.length < 1) {org.ret = RET_ERR; continue}
                             const newAx    = ax < 0 ? 0 : (ax > code.length ? code.length : ax);
                             const offs     = newAx > find1 ? newAx - len : (newAx < find0 ? newAx : find0);
-                            if (find0 === offs) {this._ret = RET_OK; continue}
+                            if (find0 === offs) {org.ret = RET_OK; continue}
                             code.splice(find0, len);
                             code.splice(offs, 0, ...moveCode);
                             if (rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(org);
                             }
-                            this._ret = RET_OK;
+                            org.ret = RET_OK;
                             continue;
                         }
 
@@ -488,49 +487,49 @@ class VM {
                             ++line;
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
-                            if (!dot) {this._ret = RET_ERR; continue}
+                            if (!dot) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsRef[dot];
                             ax = nearOrg.code[bx] || 0;
-                            this._ret = RET_OK;
+                            org.ret = RET_OK;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 42: {// nsplit
                             ++line;
-                            if (orgs.full) {this._ret = RET_ERR; continue}
+                            if (orgs.full) {org.ret = RET_ERR; continue}
                             const offset  = org.offset + DIR[abs(ax) % 8];
-                            const dOffset = org.offset + DIR[abs(this._ret) % 8];
-                            if (offset === dOffset) {this._ret = RET_ERR; continue}
+                            const dOffset = org.offset + DIR[abs(org.ret) % 8];
+                            if (offset === dOffset) {org.ret = RET_ERR; continue}
                             const dot     = world.getOrgIdx(offset);
-                            if (!dot) {this._ret = RET_ERR; continue}
+                            if (!dot) {org.ret = RET_ERR; continue}
                             const dDot    = world.getOrgIdx(dOffset);
-                            if (dDot) {this._ret = RET_ERR; continue}
+                            if (dDot) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsRef[dot];
                             const newCode = nearOrg.code.splice(0, bx);
-                            if (newCode.length < 1) {this._ret = RET_ERR; continue}
+                            if (newCode.length < 1) {org.ret = RET_ERR; continue}
                             const cutOrg  = this._createOrg(dOffset, nearOrg, newCode);
                             this._db && this._db.put(cutOrg, nearOrg);
                             if (code.length < 1) {this._removeOrg(org)}
-                            this._ret = RET_OK;
+                            org.ret = RET_OK;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 43: {// get
                             ++line;
-                            if (org.packet) {this._ret = RET_ERR; continue}
+                            if (org.packet) {org.ret = RET_ERR; continue}
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
-                            if (!dot) {this._ret = RET_ERR; continue}
+                            if (!dot) {org.ret = RET_ERR; continue}
                             this._removeOrg(org.packet = orgsRef[dot]);
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 44: {// put
                             ++line;
-                            if (!org.packet) {this._ret = RET_ERR; continue}
-                            if (orgs.full) {this._ret = RET_ERR; continue}
+                            if (!org.packet) {org.ret = RET_ERR; continue}
+                            if (orgs.full) {org.ret = RET_ERR; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
-                            if (dot || offset < 0 || offset > MAX_OFFS) {this._ret = RET_ERR; continue}
+                            if (dot || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
                             this._createOrg(offset, org.packet);
                             this._db && this._db.put(org.packet);
                             org.packet = null;

@@ -51,6 +51,7 @@ class Organism {
          * {Number} Register bx
          */
         this.bx         = 0;
+        this.ret        = 0;
         this.find0      = 0;
         this.find1      = 0;
         /**
@@ -159,6 +160,7 @@ class Organism {
         this.rIndex     = parent.rIndex;
         this.ax         = parent.ax;
         this.bx         = parent.bx;
+        this.ret        = parent.ret;
         this.find0      = parent.find0;
         this.find1      = parent.find1;
         this.fCount     = parent.fCount;
