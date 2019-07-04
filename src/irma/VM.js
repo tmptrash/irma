@@ -67,9 +67,10 @@ const WIDTH             = Config.WORLD_WIDTH - 1;
 const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
 const HEIGHT1           = HEIGHT + 1;
+const LINE_OFFS         = HEIGHT * WIDTH1;
 const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
 const MAX               = Number.MAX_VALUE;
-const MIN               = Number.MIN_VALUE;
+const MIN               = -MAX;
 
 const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
 /**
@@ -152,6 +153,7 @@ class VM {
                 // support pseudo multi threading
                 //
                 for (let l = 0; l < lines; l++) {
+                    for (let k = 0; k < 10000; k++) {}
                     const cmd = code[line];
 
                     switch (cmd) {
@@ -406,8 +408,8 @@ class VM {
                             ++line;
                             org.age -= code.length;
                             let offset = org.offset + DIR[abs(ax) % 8];
-                            if (offset < -1) {offset = (HEIGHT1 - 1) * WIDTH1 + org.offset}
-                            else if (offset > MAX_OFFS) {offset = WIDTH - (MAX_OFFS - org.offset)}
+                            if (offset < -1) {offset = LINE_OFFS + org.offset}
+                            else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
                             if (world.getOrgIdx(offset) !== 0) {org.ret = RET_ERR; continue}
                             world.moveOrg(org, offset);
                             org.ret = RET_OK;
