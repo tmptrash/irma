@@ -94,6 +94,7 @@ class VM {
         this._ts              = Date.now();
         this._i               = 0;
         this._freq            = {};
+        for (let i = 0; i < Config.worldFrequency; i++) {this._freq[i] = 0}
         if (Config.DB_ON) {
             this._db          = new Db();
             this._db.ready.then(() => this._createOrgs());
@@ -153,7 +154,6 @@ class VM {
                 // support pseudo multi threading
                 //
                 for (let l = 0; l < lines; l++) {
-                    for (let k = 0; k < 10000; k++) {}
                     const cmd = code[line];
 
                     switch (cmd) {
@@ -469,7 +469,7 @@ class VM {
                         case CODE_CMD_OFFS + 38:  // see
                             ++line;
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
-                            ax = (dot === 0 ? 0 : dot.color);
+                            ax = (dot === 0 ? 0 : orgsRef[dot].color);
                             continue;
 
                         case CODE_CMD_OFFS + 39: {// say
