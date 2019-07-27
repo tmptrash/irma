@@ -41,7 +41,6 @@ const Config = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 5,
     codeTimesPerRun            : 10,
-    codeCrossoverEveryClone    : 15,
     codeMutateEveryClone       : 10,
     codeRegs                   : 6,
     codeKillTimes              : 3,
@@ -178,7 +177,7 @@ const Config = {
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMutationPercent         : .02,
-    orgMutationPeriod          : 25001,
+    orgMutationPeriod          : 2000001,
     orgMaxCodeSize             : 256,
     orgMoleculeCodeSize        : 8,
     /**

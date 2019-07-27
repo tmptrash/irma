@@ -13,3 +13,10 @@ Steps to run tests:
 1. cd irma
 2. npm test
 3. npm run cover (run tests with coverage)
+
+All available commands:
+1. npm test      - runs tests in production mode (without browser)
+2. npm run dtest - runs tests in development mode (in Chrome)
+3. npm run cover - runs tests with coverage (istanbul)
+4. npm run prod  - build irma in production mode
+4. npm run dev   - build irma in development mode
