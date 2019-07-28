@@ -54,6 +54,7 @@ class Canvas {
         this._ctx         = null;
         this._imgData     = null;
         this._data        = null;
+        this._panZoom     = null;
     }
 
     visualize(visualize = true) {
@@ -194,6 +195,7 @@ class Canvas {
     }
 
     _onAnimate() {
+        if (!this._panZoom) {return}
         this._ctx.putImageData(this._imgData, 0, 0, this._xDataOffs, this._yDataOffs, this._visibleWidth, this._visibleHeight);
 
         if (this._visualize === true) {
@@ -282,6 +284,7 @@ class Canvas {
      * memory (see this._imgData).
      */
     _onZoom() {
+        if (!this._canvasEl) {return}
         const transform     = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
         if (transform === 'none') {return}
         const matrix        = transform.split('(')[1].split(')')[0].split(',');

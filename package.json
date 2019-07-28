@@ -53,6 +53,7 @@
     "karma-jasmine": "^2.0.1",
     "karma-webpack": "^4.0.2",
     "watchify": "^3.11.1",
-    "webpack": "^4.35.3"
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.6"
   }
 }

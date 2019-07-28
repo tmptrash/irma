@@ -32,9 +32,12 @@ module.exports = function (config) {
         // list of files / patterns to exclude
         exclude: [],
 
-
+        //
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        // We have to use webpack to support modules and require operator. If you change
+        // list of files here, don't forget to change them also in jasmine.json
+        //
         preprocessors: {
             'src/irma/VM.spec.js': ['webpack']
         },

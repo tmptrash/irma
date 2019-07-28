@@ -14,7 +14,7 @@ Steps to run tests:
 2. npm test
 3. npm run cover (run tests with coverage)
 
-All available commands:
+Available commands:
 1. npm test      - runs tests in production mode (without browser)
 2. npm run dtest - runs tests in development mode (in Chrome)
 3. npm run cover - runs tests with coverage (istanbul)
