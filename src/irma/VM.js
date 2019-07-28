@@ -1,37 +1,6 @@
 /**
- * TODO: update this...
- * Supported commands:
- *   CODE_CMD_OFFS + 0  - toggle - switches active register between ax and bx
- *   CODE_CMD_OFFS + 0  - step   - moves organism using d (one of 8) direction
- *   CODE_CMD_OFFS + 1  - eat    - eats something using d (one of 8) direction, ate energy will be in b
- *   CODE_CMD_OFFS + 2  - clone  - clones himself using d (one of 8) direction, 0|1 will be in b
- *   CODE_CMD_OFFS + 3  - see    - see in point: (offs), dot will be in d
- *   CODE_CMD_OFFS + 4  - dtoa   - copy value from d to a
- *   CODE_CMD_OFFS + 5  - dtob   - copy value from d to b
- *   CODE_CMD_OFFS + 6  - atod   - copy value from a to d
- *   CODE_CMD_OFFS + 7  - btod   - copy value from b to d
- *   CODE_CMD_OFFS + 8  - add    - d = a + b
- *   CODE_CMD_OFFS + 9  - sub    - d = a - b
- *   CODE_CMD_OFFS + 10 - mul    - d = a * b
- *   CODE_CMD_OFFS + 11 - div    - d = a / b
- *   CODE_CMD_OFFS + 12 - inc    - d++
- *   CODE_CMD_OFFS + 13 - dec    - d--
- *   CODE_CMD_OFFS + 14 - loop   - loop d times till end or skip
- *   CODE_CMD_OFFS + 15 - ifdgb  - if d > a
- *   CODE_CMD_OFFS + 16 - ifdla  - if d < a
- *   CODE_CMD_OFFS + 17 - ifdea  - if d == a
- *   CODE_CMD_OFFS + 18 - nop    - no operation
- *   CODE_CMD_OFFS + 19 - mget   - a = mem[d]
- *   CODE_CMD_OFFS + 20 - mput   - mem[d] = a
- *   CODE_CMD_OFFS + 21 - offs   - d = org.offset
- *   CODE_CMD_OFFS + 22 - rand   - d = rand(-CODE_CMD_OFFS..CODE_CMD_OFFS)
- *   CODE_CMD_OFFS + 23 - call   - calls function with name/index d % funcAmount
- *   CODE_CMD_OFFS + 24 - func   - function begin operator
- *   CODE_CMD_OFFS + 25 - ret    - returns from function. d will be return value
- *   CODE_CMD_OFFS + 26 - end    - function/ifxxx finish operator. no return value
- *   CODE_CMD_OFFS + 27 - get    - get object using d (one of 8) direction, get object will be in b
- *   CODE_CMD_OFFS + 28 - put    - put object using d (one of 8) direction, put object will be in b
- *   CODE_CMD_OFFS + 29 - mix    - mix near object and one from d (one of 8) direction into new one, mix will be in b
+ * This is Virtual Machine (VM) class. It runs "line" scripts, switches between them
+ * works with registers and understands all available commands.
  *
  * @author flatline
  */

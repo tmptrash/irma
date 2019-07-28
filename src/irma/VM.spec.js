@@ -29,7 +29,7 @@ describe('src/irma/VM', () => {
             ORG_PROB_MAX_VALUE         : 50,
             ORG_MASK                   : 0x80000000,
             ORG_MIN_COLOR              : 0x96,
-            orgAmount                  : 20000,
+            orgAmount                  : 1,
             orgMaxAge                  : 2000000,
             orgEnergy                  : 49,
             orgStepEnergy              : .001,
@@ -55,6 +55,9 @@ describe('src/irma/VM', () => {
 
     it('Checks VM creation', (done) => {
         vm.ready.then(done);
-        expect(true).toBe(true);
+    });
+
+    it('Checks amount of created organisms', () => {
+        expect(vm._orgs.items).toBe(Config.orgAmount);
     });
 });
