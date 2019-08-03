@@ -15,7 +15,8 @@ const WIDTH     = 1920 / 4;
 const HEIGHT    = 1080 / 4;
 const CODE_OFFS = 1024;
 
-const Config = {
+
+module.exports = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
      * nearest point depending on one of 8 directions. We use these values in any
@@ -193,5 +194,3 @@ const Config = {
     ageJoin                    : 10,
     ageMove                    : 20
 };
-
-module.exports = Config;

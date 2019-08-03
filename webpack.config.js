@@ -22,7 +22,7 @@ module.exports = {
     mode   : NODE_ENV,
     entry  : './src/Irma.js',
     watch  : DEV_MODE,
-    devtool: DEV_MODE ? 'eval-source-map' : false, // 'source-map' doesn't work with karma
+    devtool: DEV_MODE ? 'source-map' : 'source-map', // 'source-map' doesn't work with karma
 
     module : {
         rules: [

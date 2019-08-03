@@ -1,6 +1,7 @@
 describe('src/irma/VM', () => {
     const VM        = require('./VM');
     let   Config    = require('./../Config');
+    const CMD_OFFS  = Config.CODE_CMD_OFFS;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -48,16 +49,43 @@ describe('src/irma/VM', () => {
     });
 
     afterEach(() => {
-        Config = oldConfig;
+        Object.assign(Config, oldConfig);
         vm.destroy();
         vm = null;
     });
 
-    it('Checks VM creation', (done) => {
-        vm.ready.then(done);
+    //
+    // Runs one script from single organism and checks registers on finish
+    //
+    function run(code, ax = 0, bx = 0, ret = 0) {
+        Config.codeLinesPerIteration = code.length;
+        const org = vm._orgs.added();
+        org.code  = code.slice(); // code copy
+        expect(org.ax).toBe(0);
+        expect(org.bx).toBe(0);
+        expect(org.ret).toBe(0);
+        expect(org.line).toBe(0);
+        vm.run();
+        expect(org.ax).toBe(ax);
+        expect(org.bx).toBe(bx);
+        expect(org.ret).toBe(ret);
+        expect(org.code).toEqual(code);
+    }
+
+    describe('VM creation', () => {
+        it('Checks VM creation', (done) => {
+            vm.ready.then(done);
+        });
+
+        it('Checks amount of created organisms', () => {
+            expect(vm._orgs.items).toBe(Config.orgAmount);
+        });
     });
 
-    it('Checks amount of created organisms', () => {
-        expect(vm._orgs.items).toBe(Config.orgAmount);
+    describe('Scripts run', () => {
+        it('constant',  () => run([1], 1));
+        it('constant1', () => run([2], 2));
+        it('constant2', () => run([1,2], 2));
+        it('toggle',    () => run([1, CMD_OFFS, 2, CMD_OFFS], 1, 2));
     });
 });
