@@ -96,6 +96,12 @@ describe('src/irma/VM', () => {
             it('constant8',  () => run([-1, -1], -1));
             it('constant9',  () => run([-1, 0, 2], 2));
             it('constant10', () => run([-1, 0, 2], 2));
+            it('constant11', () => {                                   // toggle
+                const org = vm._orgs.added();
+                expect(org.line).toBe(0);
+                run([1], 1);
+                expect(org.line).toBe(1);
+            });
         });
         describe('toggle tests', () => {
             it('toggle0', () => run([CMD]));                           // toggle
@@ -106,16 +112,28 @@ describe('src/irma/VM', () => {
             it('toggle4', () => run([1,CMD,2,CMD,CMD], 2, 1));         // 1,toggle,2,toggle,toggle
             it('toggle5', () => run([CMD,CMD,1,CMD,2], 2, 1))          // toggle,toggle,1,toggle,2
             it('toggle6', () => run([1,CMD,CMD], 1))                   // 1,toggle,toggle
-            it('toggle6', () => run([1,CMD,CMD,CMD], 0, 1))            // 1,toggle,toggle,toggle
+            it('toggle7', () => run([1,CMD,CMD,CMD], 0, 1))            // 1,toggle,toggle,toggle
+            it('toggle8', () => {                                      // toggle
+                const org = vm._orgs.added();
+                expect(org.line).toBe(0);
+                run([CMD]);
+                expect(org.line).toBe(1);
+            });
         });
         describe('shift tests', () => {
             it('shift0', () => run([SH]));                             // shift
             it('shift1', () => run([SH,SH]));                          // shift,shift
             it('shift2', () => run([1,SH]));                           // 1,shift
-            it('shift2', () => run([1,SH,SH,SH],1));                   // 1,shift,shift,shift
-            it('shift2', () => run([1,SH,2,SH,3,SH],1));               // 1,shift,2,shift,3,shift
-            it('shift2', () => run([1,SH,2,SH,3],3));                  // 1,shift,2,shift,3
-            it('shift2', () => run([1,SH,2,SH,3,SH,SH],2));            // 1,shift,2,shift,3,shift,shift
+            it('shift3', () => run([1,SH,SH,SH],1));                   // 1,shift,shift,shift
+            it('shift4', () => run([1,SH,2,SH,3,SH],1));               // 1,shift,2,shift,3,shift
+            it('shift5', () => run([1,SH,2,SH,3],3));                  // 1,shift,2,shift,3
+            it('shift6', () => run([1,SH,2,SH,3,SH,SH],2));            // 1,shift,2,shift,3,shift,shift
+            it('shift7', () => {                                       // shift
+                const org = vm._orgs.added();
+                expect(org.line).toBe(0);
+                run([SH])
+                expect(org.line).toBe(1);
+            });
         });
     });
 });
