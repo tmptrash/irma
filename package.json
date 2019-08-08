@@ -11,8 +11,8 @@
     "panzoom": "^4.5.0"
   },
   "scripts": {
-    "test": "npx karma start",
-    "dtest": "SET NODE_ENV=development& NODE_ENV=development& npx karma start",
+    "test": "SET NODE_ENV=production& npx karma start",
+    "dtest": "SET NODE_ENV=development& npx karma start",
     "cover": "istanbul cover tests/run.js",
     "prod": "npx webpack --mode=production",
     "dev": "npx webpack --mode=development"

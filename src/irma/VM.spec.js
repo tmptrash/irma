@@ -1,7 +1,8 @@
 describe('src/irma/VM', () => {
     const VM        = require('./VM');
     let   Config    = require('./../Config');
-    const CMD_OFFS  = Config.CODE_CMD_OFFS;
+    const CMD       = Config.CODE_CMD_OFFS;
+    const SH        = Config.CODE_CMD_OFFS+1;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -83,9 +84,38 @@ describe('src/irma/VM', () => {
     });
 
     describe('Scripts run', () => {
-        it('constant',  () => run([1], 1));
-        it('constant1', () => run([2], 2));
-        it('constant2', () => run([1,2], 2));
-        it('toggle',    () => run([1, CMD_OFFS, 2, CMD_OFFS], 1, 2));
+        describe('Constants tests', () => {
+            it('constant0',  () => run([-1], -1));
+            it('constant1',  () => run([0], 0));
+            it('constant2',  () => run([1], 1));
+            it('constant3',  () => run([2], 2));
+            it('constant4',  () => run([1, 2], 2));
+            it('constant5',  () => run([1, -1], -1));
+            it('constant6',  () => run([1, -1], -1));
+            it('constant7',  () => run([0, -1], -1));
+            it('constant8',  () => run([-1, -1], -1));
+            it('constant9',  () => run([-1, 0, 2], 2));
+            it('constant10', () => run([-1, 0, 2], 2));
+        });
+        describe('toggle tests', () => {
+            it('toggle0', () => run([CMD]));                           // toggle
+            it('toggle1', () => run([CMD,CMD]));                       // toggle,toggle
+            it('toggle2', () => run([1,CMD], 0, 1));                   // 1,toggle
+            it('toggle2', () => run([CMD,1], 1));                      // toggle,1
+            it('toggle3', () => run([1,CMD,2,CMD], 1, 2));             // 1,toggle,2,toggle
+            it('toggle4', () => run([1,CMD,2,CMD,CMD], 2, 1));         // 1,toggle,2,toggle,toggle
+            it('toggle5', () => run([CMD,CMD,1,CMD,2], 2, 1))          // toggle,toggle,1,toggle,2
+            it('toggle6', () => run([1,CMD,CMD], 1))                   // 1,toggle,toggle
+            it('toggle6', () => run([1,CMD,CMD,CMD], 0, 1))            // 1,toggle,toggle,toggle
+        });
+        describe('shift tests', () => {
+            it('shift0', () => run([SH]));                             // shift
+            it('shift1', () => run([SH,SH]));                          // shift,shift
+            it('shift2', () => run([1,SH]));                           // 1,shift
+            it('shift2', () => run([1,SH,SH,SH],1));                   // 1,shift,shift,shift
+            it('shift2', () => run([1,SH,2,SH,3,SH],1));               // 1,shift,2,shift,3,shift
+            it('shift2', () => run([1,SH,2,SH,3],3));                  // 1,shift,2,shift,3
+            it('shift2', () => run([1,SH,2,SH,3,SH,SH],2));            // 1,shift,2,shift,3,shift,shift
+        });
     });
 });
