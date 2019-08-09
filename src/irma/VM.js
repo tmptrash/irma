@@ -139,8 +139,8 @@ class VM {
                             org.ax = ax;
                             org.bx = bx;
                             org.shift();
-                            ax  = org.ax;
-                            bx  = org.bx;
+                            ax = org.ax;
+                            bx = org.bx;
                             continue;
 
                         case CODE_CMD_OFFS + 2:  // eq

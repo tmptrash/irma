@@ -1,8 +1,11 @@
 describe('src/irma/VM', () => {
     const VM        = require('./VM');
     let   Config    = require('./../Config');
-    const CMD       = Config.CODE_CMD_OFFS;
+    const TG        = Config.CODE_CMD_OFFS;
     const SH        = Config.CODE_CMD_OFFS+1;
+    const EQ        = Config.CODE_CMD_OFFS+2;
+    const PO        = Config.CODE_CMD_OFFS+3;
+    const PU        = Config.CODE_CMD_OFFS+4;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -71,6 +74,7 @@ describe('src/irma/VM', () => {
         expect(org.bx).toBe(bx);
         expect(org.ret).toBe(ret);
         expect(org.code).toEqual(code);
+        expect(org.line).toEqual(org.code.length);
     }
 
     describe('VM creation', () => {
@@ -96,44 +100,73 @@ describe('src/irma/VM', () => {
             it('constant8',  () => run([-1, -1], -1));
             it('constant9',  () => run([-1, 0, 2], 2));
             it('constant10', () => run([-1, 0, 2], 2));
-            it('constant11', () => {                                   // toggle
-                const org = vm._orgs.added();
-                expect(org.line).toBe(0);
-                run([1], 1);
-                expect(org.line).toBe(1);
-            });
         });
         describe('toggle tests', () => {
-            it('toggle0', () => run([CMD]));                           // toggle
-            it('toggle1', () => run([CMD,CMD]));                       // toggle,toggle
-            it('toggle2', () => run([1,CMD], 0, 1));                   // 1,toggle
-            it('toggle2', () => run([CMD,1], 1));                      // toggle,1
-            it('toggle3', () => run([1,CMD,2,CMD], 1, 2));             // 1,toggle,2,toggle
-            it('toggle4', () => run([1,CMD,2,CMD,CMD], 2, 1));         // 1,toggle,2,toggle,toggle
-            it('toggle5', () => run([CMD,CMD,1,CMD,2], 2, 1))          // toggle,toggle,1,toggle,2
-            it('toggle6', () => run([1,CMD,CMD], 1))                   // 1,toggle,toggle
-            it('toggle7', () => run([1,CMD,CMD,CMD], 0, 1))            // 1,toggle,toggle,toggle
-            it('toggle8', () => {                                      // toggle
-                const org = vm._orgs.added();
-                expect(org.line).toBe(0);
-                run([CMD]);
-                expect(org.line).toBe(1);
-            });
+            it('toggle0', () => run([TG]));                           // toggle
+            it('toggle1', () => run([TG,TG]));                        // toggle,toggle
+            it('toggle2', () => run([1,TG], 0, 1));                   // 1,toggle
+            it('toggle2', () => run([TG,1], 1));                      // toggle,1
+            it('toggle3', () => run([1,TG,2,TG], 1, 2));              // 1,toggle,2,toggle
+            it('toggle4', () => run([1,TG,2,TG,TG], 2, 1));           // 1,toggle,2,toggle,toggle
+            it('toggle5', () => run([TG,TG,1,TG,2], 2, 1))            // toggle,toggle,1,toggle,2
+            it('toggle6', () => run([1,TG,TG], 1))                    // 1,toggle,toggle
+            it('toggle7', () => run([1,TG,TG,TG], 0, 1))              // 1,toggle,toggle,toggle
         });
+
         describe('shift tests', () => {
-            it('shift0', () => run([SH]));                             // shift
-            it('shift1', () => run([SH,SH]));                          // shift,shift
-            it('shift2', () => run([1,SH]));                           // 1,shift
-            it('shift3', () => run([1,SH,SH,SH],1));                   // 1,shift,shift,shift
-            it('shift4', () => run([1,SH,2,SH,3,SH],1));               // 1,shift,2,shift,3,shift
-            it('shift5', () => run([1,SH,2,SH,3],3));                  // 1,shift,2,shift,3
-            it('shift6', () => run([1,SH,2,SH,3,SH,SH],2));            // 1,shift,2,shift,3,shift,shift
-            it('shift7', () => {                                       // shift
-                const org = vm._orgs.added();
-                expect(org.line).toBe(0);
-                run([SH])
-                expect(org.line).toBe(1);
-            });
+            it('shift0', () => run([SH]));                            // shift
+            it('shift1', () => run([SH,SH]));                         // shift,shift
+            it('shift2', () => run([1,SH]));                          // 1,shift
+            it('shift3', () => run([1,SH,SH,SH],1));                  // 1,shift,shift,shift
+            it('shift4', () => run([1,SH,2,SH,3,SH],1));              // 1,shift,2,shift,3,shift
+            it('shift5', () => run([1,SH,2,SH,3],3));                 // 1,shift,2,shift,3
+            it('shift6', () => run([1,SH,2,SH,3,SH,SH],2));           // 1,shift,2,shift,3,shift,shift
+        });
+
+        describe('eq tests', () => {
+            it('eq0', () => run([EQ]));                               // eq
+            it('eq1', () => run([EQ,EQ]));                            // eq,eq
+            it('eq2', () => run([1,EQ]));                             // 1,eq
+            it('eq3', () => run([1,TG,EQ], 1, 1));                    // 1,toggle,eq
+        });
+
+        describe('pop tests', () => {
+            it('pop0', () => run([PO]));                              // pop
+            it('pop1', () => run([PO,PO]));                           // pop,pop
+            it('pop2', () => run([1,PU,0,PO], 1));                    // 1,push,0,pop
         });
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
