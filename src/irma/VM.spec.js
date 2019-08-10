@@ -134,6 +134,9 @@ describe('src/irma/VM', () => {
             it('pop0', () => run([PO]));                              // pop
             it('pop1', () => run([PO,PO]));                           // pop,pop
             it('pop2', () => run([1,PU,0,PO], 1));                    // 1,push,0,pop
+            it('pop3', () => run([1,PU,0,PO,PO]));                    // 1,push,0,pop,pop
+            it('pop4', () => run([1,PU,PU,0,PO,PO], 1));              // 1,push,push,0,pop,pop
+            it('pop4', () => run([1,PU,0,PO,PO,1,PU,0,PO], 1));       // 1,push,0,pop,pop,1,push,0,pop
         });
     });
 });
