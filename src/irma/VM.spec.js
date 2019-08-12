@@ -42,7 +42,7 @@ describe('src/irma/VM', () => {
             orgColor                   : 0xff0000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
-            orgMaxCodeSize             : 256,
+            orgMaxCodeSize             : 5,
             orgMoleculeCodeSize        : 8,
             orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
             ageJoin                    : 10,
@@ -137,6 +137,12 @@ describe('src/irma/VM', () => {
             it('pop3', () => run([1,PU,0,PO,PO]));                    // 1,push,0,pop,pop
             it('pop4', () => run([1,PU,PU,0,PO,PO], 1));              // 1,push,push,0,pop,pop
             it('pop4', () => run([1,PU,0,PO,PO,1,PU,0,PO], 1));       // 1,push,0,pop,pop,1,push,0,pop
+        });
+
+        describe('push tests', () => {
+            it('push0', () => run([PU]));                              // push
+            it('push2', () => run([1,PU,0,PO], 1));                    // 1,push,0,pop
+            it('push2', () => run([1,PU,PU,PU,PU,PU,PU], 1));          // 1,push,push,push,push,push,push
         });
     });
 });
