@@ -6,6 +6,9 @@ describe('src/irma/VM', () => {
     const EQ        = Config.CODE_CMD_OFFS+2;
     const PO        = Config.CODE_CMD_OFFS+3;
     const PU        = Config.CODE_CMD_OFFS+4;
+    const NO        = Config.CODE_CMD_OFFS+5;
+    const AD        = Config.CODE_CMD_OFFS+6;
+    const SU        = Config.CODE_CMD_OFFS+7;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -102,47 +105,70 @@ describe('src/irma/VM', () => {
             it('constant10', () => run([-1, 0, 2], 2));
         });
         describe('toggle tests', () => {
-            it('toggle0', () => run([TG]));                           // toggle
-            it('toggle1', () => run([TG,TG]));                        // toggle,toggle
-            it('toggle2', () => run([1,TG], 0, 1));                   // 1,toggle
-            it('toggle2', () => run([TG,1], 1));                      // toggle,1
-            it('toggle3', () => run([1,TG,2,TG], 1, 2));              // 1,toggle,2,toggle
-            it('toggle4', () => run([1,TG,2,TG,TG], 2, 1));           // 1,toggle,2,toggle,toggle
-            it('toggle5', () => run([TG,TG,1,TG,2], 2, 1))            // toggle,toggle,1,toggle,2
-            it('toggle6', () => run([1,TG,TG], 1))                    // 1,toggle,toggle
-            it('toggle7', () => run([1,TG,TG,TG], 0, 1))              // 1,toggle,toggle,toggle
+            it('toggle0', () => run([TG]));
+            it('toggle1', () => run([TG,TG]));
+            it('toggle2', () => run([1,TG], 0, 1));
+            it('toggle2', () => run([TG,1], 1));
+            it('toggle3', () => run([1,TG,2,TG], 1, 2));
+            it('toggle4', () => run([1,TG,2,TG,TG], 2, 1));
+            it('toggle5', () => run([TG,TG,1,TG,2], 2, 1));
+            it('toggle6', () => run([1,TG,TG], 1));
+            it('toggle7', () => run([1,TG,TG,TG], 0, 1));
         });
 
         describe('shift tests', () => {
-            it('shift0', () => run([SH]));                            // shift
-            it('shift1', () => run([SH,SH]));                         // shift,shift
-            it('shift2', () => run([1,SH]));                          // 1,shift
-            it('shift3', () => run([1,SH,SH,SH],1));                  // 1,shift,shift,shift
-            it('shift4', () => run([1,SH,2,SH,3,SH],1));              // 1,shift,2,shift,3,shift
-            it('shift5', () => run([1,SH,2,SH,3],3));                 // 1,shift,2,shift,3
-            it('shift6', () => run([1,SH,2,SH,3,SH,SH],2));           // 1,shift,2,shift,3,shift,shift
+            it('shift0', () => run([SH]));
+            it('shift1', () => run([SH,SH]));
+            it('shift2', () => run([1,SH]));
+            it('shift3', () => run([1,SH,SH,SH],1));
+            it('shift4', () => run([1,SH,2,SH,3,SH],1));
+            it('shift5', () => run([1,SH,2,SH,3],3));
+            it('shift6', () => run([1,SH,2,SH,3,SH,SH],2));
         });
 
         describe('eq tests', () => {
-            it('eq0', () => run([EQ]));                               // eq
-            it('eq1', () => run([EQ,EQ]));                            // eq,eq
-            it('eq2', () => run([1,EQ]));                             // 1,eq
-            it('eq3', () => run([1,TG,EQ], 1, 1));                    // 1,toggle,eq
+            it('eq0', () => run([EQ]));
+            it('eq1', () => run([EQ,EQ]));
+            it('eq2', () => run([1,EQ]));
+            it('eq3', () => run([1,TG,EQ], 1, 1));
         });
 
         describe('pop tests', () => {
-            it('pop0', () => run([PO]));                              // pop
-            it('pop1', () => run([PO,PO]));                           // pop,pop
-            it('pop2', () => run([1,PU,0,PO], 1));                    // 1,push,0,pop
-            it('pop3', () => run([1,PU,0,PO,PO]));                    // 1,push,0,pop,pop
-            it('pop4', () => run([1,PU,PU,0,PO,PO], 1));              // 1,push,push,0,pop,pop
-            it('pop4', () => run([1,PU,0,PO,PO,1,PU,0,PO], 1));       // 1,push,0,pop,pop,1,push,0,pop
+            it('pop0', () => run([PO]));
+            it('pop1', () => run([PO,PO]));
+            it('pop2', () => run([1,PU,0,PO], 1));
+            it('pop3', () => run([1,PU,0,PO,PO]));
+            it('pop4', () => run([1,PU,PU,0,PO,PO], 1));
+            it('pop4', () => run([1,PU,0,PO,PO,1,PU,0,PO], 1));
         });
 
         describe('push tests', () => {
-            it('push0', () => run([PU]));                              // push
-            it('push2', () => run([1,PU,0,PO], 1));                    // 1,push,0,pop
-            it('push2', () => run([1,PU,PU,PU,PU,PU,PU], 1));          // 1,push,push,push,push,push,push
+            it('push0', () => run([PU]));
+            it('push2', () => run([1,PU,0,PO], 1));
+            it('push2', () => run([1,PU,PU,PU,PU,PU,2,PU,PO], 1));
+        });
+
+        describe('nop tests', () => {
+            it('nop0', () => run([NO]));
+            it('nop1', () => run([NO,NO,NO]));
+            it('nop2', () => run([1,NO], 1));
+            it('nop3', () => run([NO,1,NO], 1));
+        });
+
+        describe('add tests', () => {
+            it('add0', () => run([AD]));
+            it('add1', () => run([1,TG,2,AD], 3, 1));
+            it('add2', () => run([1,TG,0,AD], 1, 1));
+            it('add3', () => run([1,TG,AD,AD], 2, 1));
+            it('add4', () => run([-1,TG,AD,AD], -2, -1));
+            it('add5', () => run([-1,TG,2,AD], 1, -1));
+        });
+
+        describe('sub tests', () => {
+            it('sub0', () => run([SU]));
+            it('sub1', () => run([1,TG,2,SU], 1, 1));
+            it('sub2', () => run([1,TG,SU], -1, 1));
+            it('sub2', () => run([-1,TG,-2,SU], -1, -1));
         });
     });
 });
