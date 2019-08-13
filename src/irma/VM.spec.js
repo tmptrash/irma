@@ -14,6 +14,7 @@ describe('src/irma/VM', () => {
     const IN        = Config.CODE_CMD_OFFS+10;
     const DE        = Config.CODE_CMD_OFFS+11;
     const RS        = Config.CODE_CMD_OFFS+12;
+    const LS        = Config.CODE_CMD_OFFS+13;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -226,6 +227,17 @@ describe('src/irma/VM', () => {
             it('rshift5', () => run([3,RS], 1));
             it('rshift6', () => run([-3,RS], -2));
             it('rshift7', () => run([-4,RS], -2));
+        });
+
+        describe('lshift tests', () => {
+            it('lshift0', () => run([LS]));
+            it('lshift1', () => run([1,LS], 2));
+            it('lshift2', () => run([2,LS], 4));
+            it('lshift3', () => run([8,LS], 16));
+            it('lshift4', () => run([8,LS,LS], 32));
+            it('lshift5', () => run([3,LS], 6));
+            it('lshift6', () => run([-3,LS], -6));
+            it('lshift7', () => run([-4,LS], -8));
         });
     });
 });
