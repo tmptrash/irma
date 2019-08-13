@@ -10,6 +10,7 @@ describe('src/irma/VM', () => {
     const AD        = Config.CODE_CMD_OFFS+6;
     const SU        = Config.CODE_CMD_OFFS+7;
     const MU        = Config.CODE_CMD_OFFS+8;
+    const DI        = Config.CODE_CMD_OFFS+9;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -181,6 +182,18 @@ describe('src/irma/VM', () => {
             it('mul3', () => run([-1,TG,MU], 0, -1));
             it('mul4', () => run([-3,TG,-2,MU], 6, -3));
             it('mul5', () => run([1,TG,2,MU], 2, 1));
+        });
+
+        describe('div tests', () => {
+            it('div0', () => run([DI], -Number.MAX_VALUE));
+            it('div1', () => run([3,TG,2,DI], 1, 3));
+            it('div2', () => run([1,TG,DI], 0, 1));
+            it('div3', () => run([-1,TG,DI], 0, -1));
+            it('div4', () => run([-3,TG,-2,DI], 1, -3));
+            it('div5', () => run([1,TG,2,DI], 2, 1));
+            it('div6', () => run([2,TG,-1,DI], 0, 2));
+            it('div7', () => run([2,DI], -Number.MAX_VALUE));
+            it('div8', () => run([5,TG,10,DI], 2, 5));
         });
     });
 });
