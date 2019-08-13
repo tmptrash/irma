@@ -9,6 +9,7 @@ describe('src/irma/VM', () => {
     const NO        = Config.CODE_CMD_OFFS+5;
     const AD        = Config.CODE_CMD_OFFS+6;
     const SU        = Config.CODE_CMD_OFFS+7;
+    const MU        = Config.CODE_CMD_OFFS+8;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -168,7 +169,18 @@ describe('src/irma/VM', () => {
             it('sub0', () => run([SU]));
             it('sub1', () => run([1,TG,2,SU], 1, 1));
             it('sub2', () => run([1,TG,SU], -1, 1));
-            it('sub2', () => run([-1,TG,-2,SU], -1, -1));
+            it('sub3', () => run([-1,TG,-2,SU], -1, -1));
+            it('sub4', () => run([3,TG,-1,SU], -4, 3));
+            it('sub5', () => run([3,TG,1,SU], -2, 3));
+        });
+
+        describe('mul tests', () => {
+            it('mul0', () => run([MU]));
+            it('mul1', () => run([2,TG,3,MU], 6, 2));
+            it('mul2', () => run([1,TG,MU], 0, 1));
+            it('mul3', () => run([-1,TG,MU], 0, -1));
+            it('mul4', () => run([-3,TG,-2,MU], 6, -3));
+            it('mul5', () => run([1,TG,2,MU], 2, 1));
         });
     });
 });
