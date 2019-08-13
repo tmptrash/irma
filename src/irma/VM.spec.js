@@ -12,6 +12,7 @@ describe('src/irma/VM', () => {
     const MU        = Config.CODE_CMD_OFFS+8;
     const DI        = Config.CODE_CMD_OFFS+9;
     const IN        = Config.CODE_CMD_OFFS+10;
+    const DE        = Config.CODE_CMD_OFFS+11;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -204,6 +205,24 @@ describe('src/irma/VM', () => {
             it('inc3', () => run([2,IN,IN,2,IN], 3));
             it('inc4', () => run([-2,IN], -1));
             it('inc5', () => run([-1,IN]));
+        });
+
+        describe('dec tests', () => {
+            it('dec0', () => run([DE], -1));
+            it('dec1', () => run([2,DE], 1));
+            it('dec2', () => run([2,DE,DE,DE], -1));
+            it('dec3', () => run([2,DE,DE,2,DE], 1));
+            it('dec4', () => run([-2,DE], -3));
+            it('dec5', () => run([1,DE]));
+        });
+
+        describe('dec tests', () => {
+            it('dec0', () => run([DE], -1));
+            it('dec1', () => run([2,DE], 1));
+            it('dec2', () => run([2,DE,DE,DE], -1));
+            it('dec3', () => run([2,DE,DE,2,DE], 1));
+            it('dec4', () => run([-2,DE], -3));
+            it('dec5', () => run([1,DE]));
         });
     });
 });
