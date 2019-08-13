@@ -1,6 +1,7 @@
 describe('src/irma/VM', () => {
     const VM        = require('./VM');
     let   Config    = require('./../Config');
+    const Helper    = require('./../common/Helper');
     const TG        = Config.CODE_CMD_OFFS;
     const SH        = Config.CODE_CMD_OFFS+1;
     const EQ        = Config.CODE_CMD_OFFS+2;
@@ -15,6 +16,7 @@ describe('src/irma/VM', () => {
     const DE        = Config.CODE_CMD_OFFS+11;
     const RS        = Config.CODE_CMD_OFFS+12;
     const LS        = Config.CODE_CMD_OFFS+13;
+    const RA        = Config.CODE_CMD_OFFS+14;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -238,6 +240,24 @@ describe('src/irma/VM', () => {
             it('lshift5', () => run([3,LS], 6));
             it('lshift6', () => run([-3,LS], -6));
             it('lshift7', () => run([-4,LS], -8));
+        });
+
+        describe('rand tests', () => {
+            it('rand0', () => {
+                const code = [RA];
+                Config.codeLinesPerIteration = code.length;
+                const org  = vm._orgs.added();
+                org.code  = code;
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.line).toBe(0);
+                vm.run();
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            })
         });
     });
 });
