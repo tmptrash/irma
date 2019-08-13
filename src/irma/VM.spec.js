@@ -11,6 +11,7 @@ describe('src/irma/VM', () => {
     const SU        = Config.CODE_CMD_OFFS+7;
     const MU        = Config.CODE_CMD_OFFS+8;
     const DI        = Config.CODE_CMD_OFFS+9;
+    const IN        = Config.CODE_CMD_OFFS+10;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -194,6 +195,15 @@ describe('src/irma/VM', () => {
             it('div6', () => run([2,TG,-1,DI], 0, 2));
             it('div7', () => run([2,DI], -Number.MAX_VALUE));
             it('div8', () => run([5,TG,10,DI], 2, 5));
+        });
+
+        describe('inc tests', () => {
+            it('inc0', () => run([IN], 1));
+            it('inc1', () => run([2,IN], 3));
+            it('inc2', () => run([2,IN,IN,IN], 5));
+            it('inc3', () => run([2,IN,IN,2,IN], 3));
+            it('inc4', () => run([-2,IN], -1));
+            it('inc5', () => run([-1,IN]));
         });
     });
 });
