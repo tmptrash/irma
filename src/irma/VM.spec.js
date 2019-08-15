@@ -17,6 +17,8 @@ describe('src/irma/VM', () => {
     const RS        = Config.CODE_CMD_OFFS+12;
     const LS        = Config.CODE_CMD_OFFS+13;
     const RA        = Config.CODE_CMD_OFFS+14;
+    const FP        = Config.CODE_CMD_OFFS+15;
+    const EN        = Config.CODE_CMD_OFFS+26;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -72,10 +74,11 @@ describe('src/irma/VM', () => {
     //
     // Runs one script from single organism and checks registers on finish
     //
-    function run(code, ax = 0, bx = 0, ret = 0) {
-        Config.codeLinesPerIteration = code.length;
+    function run(code, ax = 0, bx = 0, ret = 0, checkLen = true, lines = null) {
+        Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm._orgs.added();
         org.code  = code.slice(); // code copy
+        org.preprocess();
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
         expect(org.ret).toBe(0);
@@ -85,7 +88,7 @@ describe('src/irma/VM', () => {
         expect(org.bx).toBe(bx);
         expect(org.ret).toBe(ret);
         expect(org.code).toEqual(code);
-        expect(org.line).toEqual(org.code.length);
+        checkLen && expect(org.line).toEqual(org.code.length);
     }
 
     describe('VM creation', () => {
@@ -258,6 +261,19 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
             })
+        });
+
+        describe('ifp tests', () => {
+            it('ifp0', () => run([1,FP,2,EN], 2, 0, 0, false));
+            it('ifp1', () => run([FP,2,EN], 0, 0, 0, false));
+            it('ifp2', () => run([FP,2,3,EN], 0, 0, 0, false));
+            it('ifp3', () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifp4', () => run([FP,1,FP,2,EN,3], 1, 0, 0, false, 2));
+            it('ifp5', () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
+            it('ifp6', () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifp7', () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
+            it('ifp8', () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
+            it('ifp9', () => run([FP,FP,2], 2, 0, 0, false, 3));
         });
     });
 });
