@@ -264,16 +264,19 @@ describe('src/irma/VM', () => {
         });
 
         describe('ifp tests', () => {
-            it('ifp0', () => run([1,FP,2,EN], 2, 0, 0, false));
-            it('ifp1', () => run([FP,2,EN], 0, 0, 0, false));
-            it('ifp2', () => run([FP,2,3,EN], 0, 0, 0, false));
-            it('ifp3', () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
-            it('ifp4', () => run([FP,1,FP,2,EN,3], 1, 0, 0, false, 2));
-            it('ifp5', () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
-            it('ifp6', () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
-            it('ifp7', () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
-            it('ifp8', () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
-            it('ifp9', () => run([FP,FP,2], 2, 0, 0, false, 3));
+            it('ifp0',  () => run([1,FP,2,EN], 2, 0, 0, false));
+            it('ifp1',  () => run([FP,2,EN], 0, 0, 0, false));
+            it('ifp2',  () => run([FP,2,3,EN], 0, 0, 0, false));
+            it('ifp3',  () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifp4',  () => run([1,FP,2,FP,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifp5',  () => run([1,FP,0,FP,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifp6',  () => run([FP,1,FP,2,EN,3], 1, 0, 0, false, 2));
+            it('ifp7',  () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
+            it('ifp8',  () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifp9',  () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
+            it('ifp10', () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
+            it('ifp11', () => run([FP,FP,2], 2, 0, 0, false, 3));
+            it('ifp12', () => run([FP,2], 2, 0, 0, false, 2));
         });
     });
 });
