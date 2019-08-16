@@ -18,6 +18,7 @@ describe('src/irma/VM', () => {
     const LS        = Config.CODE_CMD_OFFS+13;
     const RA        = Config.CODE_CMD_OFFS+14;
     const FP        = Config.CODE_CMD_OFFS+15;
+    const FN        = Config.CODE_CMD_OFFS+16;
     const EN        = Config.CODE_CMD_OFFS+26;
 
     const WIDTH     = 10;
@@ -277,6 +278,38 @@ describe('src/irma/VM', () => {
             it('ifp10', () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
             it('ifp11', () => run([FP,FP,2], 2, 0, 0, false, 3));
             it('ifp12', () => run([FP,2], 2, 0, 0, false, 2));
+        });
+
+        describe('ifp tests (ax > 0)', () => {
+            it('ifp0',  () => run([1,FP,2,EN], 2, 0, 0, false));
+            it('ifp1',  () => run([FP,2,EN], 0, 0, 0, false));
+            it('ifp2',  () => run([FP,2,3,EN], 0, 0, 0, false));
+            it('ifp3',  () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifp4',  () => run([1,FP,2,FP,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifp5',  () => run([1,FP,0,FP,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifp6',  () => run([FP,1,FP,2,EN,3], 3, 0, 0, false, 6));
+            it('ifp7',  () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
+            it('ifp8',  () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifp9',  () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
+            it('ifp10', () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
+            it('ifp11', () => run([FP,FP,2], 2, 0, 0, false, 3));
+            it('ifp12', () => run([FP,2], 2, 0, 0, false, 2));
+        });
+
+        describe('ifn tests (ax < 0)', () => {
+            it('ifn0',  () => run([1,FN,2,EN], 1, 0, 0, false, 2));
+            it('ifn1',  () => run([FN,2,EN], 0, 0, 0, false, 2));
+            it('ifn2',  () => run([FN,2,3,EN], 0, 0, 0, false, 2));
+            it('ifn3',  () => run([FN,1,FN,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifn4',  () => run([-1,FN,-2,FN,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifn5',  () => run([-1,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifn6',  () => run([FN,1,FN,2,EN,3], 3, 0, 0, false, 4));
+            it('ifn7',  () => run([FN,2,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifn8',  () => run([-1,FN,1,EN,3,EN], 3, 0, 0, false, 5));
+            it('ifn9',  () => run([FN,-1,FN,2,EN], 2, 0, 0, false, 4));
+            it('ifn10', () => run([FN,FN,2,EN], 0, 0, 0, false, 3));
+            it('ifn11', () => run([FN,FN,2], 2, 0, 0, false, 3));
+            it('ifn12', () => run([FN,2], 2, 0, 0, false, 2));
         });
     });
 });
