@@ -17,7 +17,4 @@ window.irma  = {
 };
 window.irma.app.ready
     .then(() => irma.app.run())
-    .catch(e => {
-        debugger;
-        console.error(e);
-    })
+    .catch(e => console.error(e))

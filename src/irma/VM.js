@@ -634,12 +634,12 @@ class VM {
         //
         // Adds LUCA to the world
         //
-        while (true) {
+        let orgs = Config.orgLucaAmount;
+        while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) === 0) {
                 const luca = this._createOrg(offset, null, Config.codeLuca.slice());
                 this._db && this._db.put(luca);
-                break;
             }
         }
         this._population++;

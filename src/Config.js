@@ -172,6 +172,7 @@ module.exports = {
     ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
     orgAmount                  : 20000,
+    orgLucaAmount              : 100,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,
