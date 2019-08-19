@@ -4,9 +4,7 @@
  * and creates main (manager) object - Virtual Machine (VM.js). The only thing you
  * have to do with this class is call run() method to run VM and all inner stuff.
  */
-const Bytes2Code = require('./irma/Bytes2Code');
-const Config     = require('./Config');
-const VM         = require('./irma/VM');
+const VM = require('./VM');
 
 class Irma {
     constructor() {
@@ -78,11 +76,5 @@ class Irma {
         return true;
     }
 }
-//
-// Creates global objects to have an access to app from browser's console
-//
-window.irma  = {
-    code: Bytes2Code.toCode,
-    app : new Irma(),
-    cfg : Config
-};
+
+module.exports = Irma;

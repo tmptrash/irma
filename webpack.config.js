@@ -20,7 +20,7 @@ const DEV_MODE = NODE_ENV === 'development';
 
 module.exports = {
     mode   : NODE_ENV,
-    entry  : './src/Irma.js',
+    entry  : './src/Main.js',
     watch  : DEV_MODE,
     devtool: DEV_MODE ? 'source-map' : 'source-map', // 'source-map' doesn't work with karma
 

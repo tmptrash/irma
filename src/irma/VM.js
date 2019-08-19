@@ -96,8 +96,8 @@ class VM {
         const world            = this._world;
         const mutationPeriod   = Config.orgMutationPeriod;
         const orgs             = this._orgs;
-        const orgsRef          = this._orgs.getRef();
-        const orgAmount        = Config.orgAmount;
+        const orgsRef          = orgs.getRef();
+        const orgAmount        = orgs.size;
         //
         // Loop X times through population
         //
@@ -398,16 +398,16 @@ class VM {
                                 }
                             } else {
                                 if (bx > ax) {org.ret = RET_ERR; continue}
-                                const len2 = bx - ax + 1;
-                                const len1 = code.length - len2;
+                                const len2 = bx - ax;
+                                const len1 = code.length - (len2 + 1);
                                 let   ret  = RET_ERR;
                                 let   j;
-                                loop: for (let i = org.ret; i < len1; i++) {
+                                loop: for (let i = org.ret < 0 ? 0 : org.ret; i < len1; i++) {
                                     for (j = ax; j <= bx; j++) {
-                                        if (code[i + j - ax] !== code[j]) {break loop}
+                                        if (code[i + j - ax] !== code[j]) {continue loop}
                                     }
-                                    org.find0 = ax = i + j;
-                                    org.find1 = org.find0 + len2;
+                                    org.find0 = ax = i;
+                                    org.find1 = i + len2;
                                     ret = RET_OK;
                                     break;
                                 }
@@ -420,6 +420,7 @@ class VM {
                             org.age -= Config.ageMove;
                             const find0    = org.find0;
                             const find1    = org.find1;
+                            if (find1 < find0) {org.ret = RET_ERR; continue}
                             const len      = find1 - find0 + 1;
                             const moveCode = code.slice(find0, find1 + 1);
                             if (moveCode.length < 1) {org.ret = RET_ERR; continue}
