@@ -20,6 +20,7 @@ describe('src/irma/VM', () => {
     const FP        = Config.CODE_CMD_OFFS+15;
     const FN        = Config.CODE_CMD_OFFS+16;
     const FZ        = Config.CODE_CMD_OFFS+17;
+    const FG        = Config.CODE_CMD_OFFS+18;
     const EN        = Config.CODE_CMD_OFFS+26;
 
     const WIDTH     = 10;
@@ -311,6 +312,22 @@ describe('src/irma/VM', () => {
             it('ifz10', () => run([FZ,FZ,2,EN], 2, 0, 0, false, 3));
             it('ifz11', () => run([FZ,FZ,2], 2, 0, 0, false, 3));
             it('ifz12', () => run([FZ,2], 2, 0, 0, false, 2));
+        });
+
+        describe('ifg tests (ax > bx)', () => {
+            it('ifg0',  () => run([FG,2,EN], 0, 0, 0, false, 2));
+            it('ifg1',  () => run([1,FG,2,EN], 2, 0, 0, false, 3));
+            it('ifg2',  () => run([FG,2,3,EN], 0, 0, 0, false, 2));
+            it('ifg3',  () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, 0, false, 8));
+            it('ifg4',  () => run([-1,FG,-2,FG,4,EN,EN], -1, 0, 0, false, 3));
+            it('ifg5',  () => run([1,FG,0,FG,4,EN,EN], 0, 0, 0, false, 5));
+            it('ifg6',  () => run([FG,1,FG,2,EN,3], 3, 0, 0, false, 6));
+            it('ifg7',  () => run([FG,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifg8',  () => run([FG,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifg9',  () => run([FG,-1,FG,2,EN], -1, 0, 0, false, 4));
+            it('ifg10', () => run([FG,FG,2,EN], 0, 0, 0, false, 3));
+            it('ifg11', () => run([FG,FG,2], 2, 0, 0, false, 3));
+            it('ifg12', () => run([FG,2], 2, 0, 0, false, 2));
         });
     });
 });
