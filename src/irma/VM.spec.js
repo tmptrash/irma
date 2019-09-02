@@ -333,18 +333,18 @@ describe('src/irma/VM', () => {
 
         describe('ifl tests (ax < bx)', () => {
             it('ifl0',  () => run([FL,2,EN], 0, 0, 0, false, 2));
-            //it('ifl1',  () => run([1,FL,2,EN], 2, 0, 0, false, 3));
-            // it('ifl2',  () => run([FL,2,3,EN], 0, 0, 0, false, 2));
-            // it('ifl3',  () => run([1,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 8));
-            // it('ifl4',  () => run([-1,FL,-2,FL,4,EN,EN], -1, 0, 0, false, 3));
-            // it('ifl5',  () => run([1,FL,0,FL,4,EN,EN], 0, 0, 0, false, 5));
-            // it('ifl6',  () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 6));
-            // it('ifl7',  () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
-            // it('ifl8',  () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
-            // it('ifl9',  () => run([FL,-1,FL,2,EN], -1, 0, 0, false, 4));
-            // it('ifl10', () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
-            // it('ifl11', () => run([FL,FL,2], 2, 0, 0, false, 3));
-            // it('ifl12', () => run([FL,2], 2, 0, 0, false, 2));
+            it('ifl1',  () => run([1,FL,2,EN], 1, 0, 0, false, 3));
+            it('ifl2',  () => run([FL,2,3,EN], 0, 0, 0, false, 2));
+            it('ifl3',  () => run([-1,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
+            it('ifl4',  () => run([-1,FL,-2,FL,4,EN,EN], 4, 0, 0, false, 7));
+            it('ifl5',  () => run([1,FL,0,FL,4,EN,EN], 1, 0, 0, false, 3));
+            it('ifl6',  () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 5));
+            it('ifl7',  () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifl8',  () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifl9',  () => run([FL,-1,FL,2,EN], 2, 0, 0, false, 4));
+            it('ifl10', () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
+            it('ifl11', () => run([FL,FL,2], 2, 0, 0, false, 3));
+            it('ifl12', () => run([FL,2], 2, 0, 0, false, 2));
         });
     });
 });
