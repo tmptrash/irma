@@ -23,6 +23,7 @@ describe('src/irma/VM', () => {
     const FG        = Config.CODE_CMD_OFFS+18;
     const FL        = Config.CODE_CMD_OFFS+19;
     const FE        = Config.CODE_CMD_OFFS+20;
+    const FNE       = Config.CODE_CMD_OFFS+21;
     const EN        = Config.CODE_CMD_OFFS+26;
 
     const WIDTH     = 10;
@@ -362,6 +363,22 @@ describe('src/irma/VM', () => {
             it('ife10', () => run([FE,FE,2,EN], 2, 0, 0, false, 4));
             it('ife11', () => run([FE,FE,2], 2, 0, 0, false, 3));
             it('ife12', () => run([FE,2], 2, 0, 0, false, 2));
+        });
+
+        describe('ifne tests (ax !== bx)', () => {
+            it('ifne0',  () => run([FNE,2,EN], 0, 0, 0, false, 2));
+            it('ifne1',  () => run([1,FNE,2,EN], 2, 0, 0, false, 4));
+            it('ifne2',  () => run([FNE,2,3,EN], 0, 0, 0, false, 4));
+            it('ifne3',  () => run([-1,FNE,2,FNE,3,EN,4,EN], 4, 0, 0, false, 8));
+            it('ifne4',  () => run([-1,FNE,-2,FNE,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifne5',  () => run([FNE,0,FNE,4,EN,EN], 0, 0, 0, false, 2));
+            it('ifne6',  () => run([FNE,1,FNE,2,EN,3], 3, 0, 0, false, 6));
+            it('ifne7',  () => run([FNE,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifne8',  () => run([1,FNE,1,EN,3,EN], 3, 0, 0, false, 5));
+            it('ifne9',  () => run([FNE,-1,FNE,2,EN], 2, 0, 0, false, 5));
+            it('ifne10', () => run([FNE,FNE,2,EN], 0, 0, 0, false, 4));
+            it('ifne11', () => run([FNE,FNE,2], 2, 0, 0, false, 3));
+            it('ifne12', () => run([FNE,2], 2, 0, 0, false, 2));
         });
     });
 });
