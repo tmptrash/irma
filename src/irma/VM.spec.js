@@ -1,7 +1,7 @@
 describe('src/irma/VM', () => {
     const VM        = require('./VM');
     let   Config    = require('./../Config');
-    const Helper    = require('./../common/Helper');
+    //const Helper    = require('./../common/Helper');
     const TG        = Config.CODE_CMD_OFFS;
     const SH        = Config.CODE_CMD_OFFS+1;
     const EQ        = Config.CODE_CMD_OFFS+2;
@@ -27,6 +27,7 @@ describe('src/irma/VM', () => {
     const LP        = Config.CODE_CMD_OFFS+22;
     const CA        = Config.CODE_CMD_OFFS+23;
     const FU        = Config.CODE_CMD_OFFS+24;
+    const RE        = Config.CODE_CMD_OFFS+25;
     const EN        = Config.CODE_CMD_OFFS+26;
 
     const WIDTH     = 10;
@@ -398,7 +399,7 @@ describe('src/irma/VM', () => {
             it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
         });
 
-        describe('call tests', () => {
+        describe('call/func tests', () => {
             it('call0',  () => run([CA], 0, 0, 0, false, 1));
             it('call1',  () => run([CA,IN,FU,IN,EN], 1, 0, 0, false, 4));
             it('call2',  () => run([1,CA,IN,FU,IN,FU,EN,EN], 2, 0, 0, false, 6));
@@ -413,6 +414,15 @@ describe('src/irma/VM', () => {
             it('call11', () => run([CA,CA,FU,IN,EN], 1, 0, 0, false, 5));
             it('call11', () => run([CA,IN,IN,EN], 2, 0, 0, false, 4));
             it('call12', () => run([CA,IN,FU,IN,FU], 2, 0, 0, false, 5));
+        });
+
+        describe('ret tests', () => {
+            it('ret0',   () => run([RE], 0, 0, 0, false, 1));
+            it('ret1',   () => run([FU,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret2',   () => run([FU,RE,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret3',   () => run([FU,IN,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 0, 0, false, 7));
+            it('ret5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, 0, false, 5));
         });
     });
 });
