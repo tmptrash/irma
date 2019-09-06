@@ -258,12 +258,14 @@ class VM {
                             if (org.fCount === 0) {++line; continue}
                             let index = org.stackIndex;
                             if (index >= CODE_STACK_SIZE * 3) {index = -1}
-                            const func = abs(ax) % org.fCount;
-                            const stack = org.stack;
+                            const func     = abs(ax) % org.fCount;
+                            const stack    = org.stack;
+                            const newLine  = org.funcs[func];
+                            if (org.offs[newLine - 1] === newLine) {++line; continue}
                             stack[++index] = line + 1;
                             stack[++index] = ax;
                             stack[++index] = bx;
-                            line = org.funcs[func];
+                            line = newLine;
                             org.stackIndex = index;
                             continue;
                         }

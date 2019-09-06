@@ -25,6 +25,8 @@ describe('src/irma/VM', () => {
     const FE        = Config.CODE_CMD_OFFS+20;
     const FNE       = Config.CODE_CMD_OFFS+21;
     const LP        = Config.CODE_CMD_OFFS+22;
+    const CA        = Config.CODE_CMD_OFFS+23;
+    const FU        = Config.CODE_CMD_OFFS+24;
     const EN        = Config.CODE_CMD_OFFS+26;
 
     const WIDTH     = 10;
@@ -394,6 +396,20 @@ describe('src/irma/VM', () => {
             it('loop8',  () => run([-1,LP,IN,EN], -1, 0, 0, false, 3));
             it('loop9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, 0, false, 10));
             it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
+        });
+
+        describe('call tests', () => {
+            it('call0',  () => run([CA], 0, 0, 0, false, 1));
+            it('call1',  () => run([CA,IN,FU,IN,EN], 1, 0, 0, false, 4));
+            it('call2',  () => run([1,CA,IN,FU,IN,FU,EN,EN], 2, 0, 0, false, 6));
+            it('call3',  () => run([FU,IN,EN,CA], 0, 0, 0, false, 4));
+            it('call4',  () => run([FU,IN,EN,CA,CA], 0, 0, 0, false, 8));
+            it('call5',  () => run([FU,IN,CA], 1, 0, 0, false, 4));
+            // it('call6',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
+            // it('call7',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
+            // it('call8',  () => run([-1,LP,IN,EN], -1, 0, 0, false, 3));
+            // it('call9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, 0, false, 10));
+            // it('call10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
         });
     });
 });
