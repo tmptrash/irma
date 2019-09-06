@@ -408,8 +408,11 @@ describe('src/irma/VM', () => {
             it('call6',  () => run([FU,FU,IN,EN,CA], 0, 0, 0, false, 5));
             it('call7',  () => run([FU,IN,EN,2,CA], 3, 0, 0, false, 4));
             it('call8',  () => run([FU,IN,EN,-2,CA], -1, 0, 0, false, 4));
-            // it('call9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, 0, false, 10));
-            // it('call10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
+            it('call9',  () => run([FU,IN,CA,EN,CA], 2, 0, 0, false, 5));
+            it('call10', () => run([CA,CA,FU,IN,EN], 0, 0, 0, false, 7));
+            it('call11', () => run([CA,CA,FU,IN,EN], 1, 0, 0, false, 5));
+            it('call11', () => run([CA,IN,IN,EN], 2, 0, 0, false, 4));
+            it('call12', () => run([CA,IN,FU,IN,FU], 2, 0, 0, false, 5));
         });
     });
 });
