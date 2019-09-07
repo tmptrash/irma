@@ -29,6 +29,8 @@ describe('src/irma/VM', () => {
     const FU        = Config.CODE_CMD_OFFS+24;
     const RE        = Config.CODE_CMD_OFFS+25;
     const EN        = Config.CODE_CMD_OFFS+26;
+    const RX        = Config.CODE_CMD_OFFS+27;
+    const AR        = Config.CODE_CMD_OFFS+28;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -431,7 +433,6 @@ describe('src/irma/VM', () => {
             it('ret11',  () => run([RE], 0, 0, 0, false, 10));
         });
 
-
         describe('numeric constant tests', () => {
             it('const0', () => run([0]));
             it('const1', () => run([1], 1));
@@ -443,6 +444,11 @@ describe('src/irma/VM', () => {
             it('const7', () => run([IN,10,IN], 11));
             it('const8', () => run([1,TG,2,Config.CODE_CMD_OFFS], 1, 2));
             it('const9', () => run([1,TG,2], 2, 1));
+        });
+
+        describe('retax tests', () => {
+            it('retax0', () => run([RX]));
+            it('retax1', () => run([2,AR,1,RX], 2, 0, 2));
         });
     });
 });
