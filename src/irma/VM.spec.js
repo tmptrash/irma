@@ -423,6 +423,12 @@ describe('src/irma/VM', () => {
             it('ret3',   () => run([FU,IN,RE,EN,CA,IN], 1, 0, 0, false, 5));
             it('ret4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 0, 0, false, 7));
             it('ret5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, 0, false, 5));
+            it('ret6',   () => run([FU,FG,RE,EN,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret7',   () => run([FU,FG,FL,RE,EN,EN,EN,CA,IN], 1, 0, 0, false, 6));
+            it('ret8',   () => run([FU,FG,FL,IN,RE,EN,EN,EN,CA], 0, 0, 0, false, 6));
+            it('ret9',   () => run([NO,NO,RE,IN,IN], 0, 0, 0, false, 5));
+            it('ret10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, 0, false, 5));
+            it('ret11',  () => run([RE], 0, 0, 0, false, 10));
         });
     });
 });
