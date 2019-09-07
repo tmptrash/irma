@@ -430,6 +430,20 @@ describe('src/irma/VM', () => {
             it('ret10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, 0, false, 5));
             it('ret11',  () => run([RE], 0, 0, 0, false, 10));
         });
+
+
+        describe('numeric constant tests', () => {
+            it('const0', () => run([0]));
+            it('const1', () => run([1], 1));
+            it('const2', () => run([-1], -1));
+            it('const3', () => run([-3], -3));
+            it('const4', () => run([-3,1], 1));
+            it('const5', () => run([-3,-1], -1));
+            it('const6', () => run([IN,10], 10));
+            it('const7', () => run([IN,10,IN], 11));
+            it('const8', () => run([1,TG,2,Config.CODE_CMD_OFFS], 1, 2));
+            it('const9', () => run([1,TG,2], 2, 1));
+        });
     });
 });
 
