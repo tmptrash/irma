@@ -26,9 +26,9 @@ Digital organisms ecology system experiment. This is optimized 2D ecosystem with
 
 # Old research
 #### Presentations
-- [jevo 2016](https://www.youtube.com/watch?v=tF77s_4RA08) - this presentation is about
-- [construct 2017](https://www.youtube.com/watch?v=9ykr9KzcKq)
+- [jevo 2016 (rus)](https://www.youtube.com/watch?v=tF77s_4RA08) - this presentation is about first attempts of obtaining complex behavior of organisms. Julia language was used for that. All details are presented in presentation.
+- [construct 2017 (rus)](https://www.youtube.com/watch?v=9ykr9KzcKq) - this is next attempt to create complex behavior using distributed network of chrome browsers (NodeJs + browsers).
 
 #### Videos
-- [construct](https://www.youtube.com/watch?v=cfgcEVQ5A-A)
-- [construct](https://www.youtube.com/watch?v=28hzh-BUzbQ)
+- [construct (rus)](https://www.youtube.com/watch?v=cfgcEVQ5A-A) - Introduction to Genetic Algorithm and construct project
+- [construct (rus)](https://www.youtube.com/watch?v=28hzh-BUzbQ) - Example of Evolution of types
