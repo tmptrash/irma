@@ -450,6 +450,11 @@ describe('src/irma/VM', () => {
             it('retax0', () => run([RX]));
             it('retax1', () => run([2,AR,1,RX], 2, 0, 2));
         });
+
+        describe('axret tests', () => {
+            it('axret0', () => run([AR]));
+            it('axret1', () => run([1,AR], 1, 0, 1));
+        });
     });
 });
 
