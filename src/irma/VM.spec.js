@@ -34,6 +34,7 @@ describe('src/irma/VM', () => {
     const AN        = Config.CODE_CMD_OFFS+29;
     const OR        = Config.CODE_CMD_OFFS+30;
     const XO        = Config.CODE_CMD_OFFS+31;
+    const NT        = Config.CODE_CMD_OFFS+32;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -486,6 +487,12 @@ describe('src/irma/VM', () => {
             it('xor3',   () => run([1,TG,2,XO], 3, 1));
             it('xor4',   () => run([-2,XO], -2));
             it('xor5',   () => run([2,TG,1,XO,XO], 1, 2));
+        });
+
+        describe('not tests', () => {
+            it('not0',   () => run([NT], -1));
+            it('not1',   () => run([1,TG,1,NT], -2, 1));
+            it('not2',   () => run([-1,NT]));
         });
     });
 });
