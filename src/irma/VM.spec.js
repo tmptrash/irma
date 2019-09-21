@@ -31,6 +31,8 @@ describe('src/irma/VM', () => {
     const EN        = Config.CODE_CMD_OFFS+26;
     const RX        = Config.CODE_CMD_OFFS+27;
     const AR        = Config.CODE_CMD_OFFS+28;
+    const AN        = Config.CODE_CMD_OFFS+29;
+    const OR        = Config.CODE_CMD_OFFS+30;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -276,99 +278,99 @@ describe('src/irma/VM', () => {
         });
 
         describe('ifp tests (ax > 0)', () => {
-            it('ifp0',  () => run([1,FP,2,EN], 2, 0, 0, false));
-            it('ifp1',  () => run([FP,2,EN], 0, 0, 0, false));
-            it('ifp2',  () => run([FP,2,3,EN], 0, 0, 0, false));
-            it('ifp3',  () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
-            it('ifp4',  () => run([1,FP,2,FP,4,EN,EN], 4, 0, 0, false, 5));
-            it('ifp5',  () => run([1,FP,0,FP,4,EN,EN], 0, 0, 0, false, 4));
-            it('ifp6',  () => run([FP,1,FP,2,EN,3], 3, 0, 0, false, 6));
-            it('ifp7',  () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
-            it('ifp8',  () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
-            it('ifp9',  () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
-            it('ifp10', () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
-            it('ifp11', () => run([FP,FP,2], 2, 0, 0, false, 3));
-            it('ifp12', () => run([FP,2], 2, 0, 0, false, 2));
+            it('ifp0',   () => run([1,FP,2,EN], 2, 0, 0, false));
+            it('ifp1',   () => run([FP,2,EN], 0, 0, 0, false));
+            it('ifp2',   () => run([FP,2,3,EN], 0, 0, 0, false));
+            it('ifp3',   () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifp4',   () => run([1,FP,2,FP,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifp5',   () => run([1,FP,0,FP,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifp6',   () => run([FP,1,FP,2,EN,3], 3, 0, 0, false, 6));
+            it('ifp7',   () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
+            it('ifp8',   () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifp9',   () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
+            it('ifp10',  () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
+            it('ifp11',  () => run([FP,FP,2], 2, 0, 0, false, 3));
+            it('ifp12',  () => run([FP,2], 2, 0, 0, false, 2));
         });
 
         describe('ifn tests (ax < 0)', () => {
-            it('ifn0',  () => run([1,FN,2,EN], 1, 0, 0, false, 2));
-            it('ifn1',  () => run([FN,2,EN], 0, 0, 0, false, 2));
-            it('ifn2',  () => run([FN,2,3,EN], 0, 0, 0, false, 2));
-            it('ifn3',  () => run([FN,1,FN,2,EN,3,EN], 0, 0, 0, false, 2));
-            it('ifn4',  () => run([-1,FN,-2,FN,4,EN,EN], 4, 0, 0, false, 5));
-            it('ifn5',  () => run([-1,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
-            it('ifn6',  () => run([FN,1,FN,2,EN,3], 3, 0, 0, false, 4));
-            it('ifn7',  () => run([FN,2,EN,3,EN], 3, 0, 0, false, 3));
-            it('ifn8',  () => run([-1,FN,1,EN,3,EN], 3, 0, 0, false, 5));
-            it('ifn9',  () => run([FN,-1,FN,2,EN], 2, 0, 0, false, 4));
-            it('ifn10', () => run([FN,FN,2,EN], 0, 0, 0, false, 3));
-            it('ifn11', () => run([FN,FN,2], 2, 0, 0, false, 3));
-            it('ifn12', () => run([FN,2], 2, 0, 0, false, 2));
+            it('ifn0',   () => run([1,FN,2,EN], 1, 0, 0, false, 2));
+            it('ifn1',   () => run([FN,2,EN], 0, 0, 0, false, 2));
+            it('ifn2',   () => run([FN,2,3,EN], 0, 0, 0, false, 2));
+            it('ifn3',   () => run([FN,1,FN,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifn4',   () => run([-1,FN,-2,FN,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifn5',   () => run([-1,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifn6',   () => run([FN,1,FN,2,EN,3], 3, 0, 0, false, 4));
+            it('ifn7',   () => run([FN,2,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifn8',   () => run([-1,FN,1,EN,3,EN], 3, 0, 0, false, 5));
+            it('ifn9',   () => run([FN,-1,FN,2,EN], 2, 0, 0, false, 4));
+            it('ifn10',  () => run([FN,FN,2,EN], 0, 0, 0, false, 3));
+            it('ifn11',  () => run([FN,FN,2], 2, 0, 0, false, 3));
+            it('ifn12',  () => run([FN,2], 2, 0, 0, false, 2));
         });
 
         describe('ifz tests (ax === 0)', () => {
-            it('ifz0',  () => run([1,FZ,2,EN], 1, 0, 0, false, 3));
-            it('ifz1',  () => run([FZ,2,EN], 2, 0, 0, false, 2));
-            it('ifz2',  () => run([FZ,2,3,EN], 3, 0, 0, false, 3));
-            it('ifz3',  () => run([FZ,1,FZ,2,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifz4',  () => run([-1,FZ,-2,FZ,4,EN,EN], -1, 0, 0, false, 3));
-            it('ifz5',  () => run([FZ,0,FZ,4,EN,EN], 4, 0, 0, false, 5));
-            it('ifz6',  () => run([FZ,1,FZ,2,EN,3], 3, 0, 0, false, 4));
-            it('ifz7',  () => run([FZ,2,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifz8',  () => run([FZ,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifz9',  () => run([FZ,-1,FZ,2,EN], -1, 0, 0, false, 4));
-            it('ifz10', () => run([FZ,FZ,2,EN], 2, 0, 0, false, 3));
-            it('ifz11', () => run([FZ,FZ,2], 2, 0, 0, false, 3));
-            it('ifz12', () => run([FZ,2], 2, 0, 0, false, 2));
+            it('ifz0',   () => run([1,FZ,2,EN], 1, 0, 0, false, 3));
+            it('ifz1',   () => run([FZ,2,EN], 2, 0, 0, false, 2));
+            it('ifz2',   () => run([FZ,2,3,EN], 3, 0, 0, false, 3));
+            it('ifz3',   () => run([FZ,1,FZ,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifz4',   () => run([-1,FZ,-2,FZ,4,EN,EN], -1, 0, 0, false, 3));
+            it('ifz5',   () => run([FZ,0,FZ,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifz6',   () => run([FZ,1,FZ,2,EN,3], 3, 0, 0, false, 4));
+            it('ifz7',   () => run([FZ,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifz8',   () => run([FZ,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifz9',   () => run([FZ,-1,FZ,2,EN], -1, 0, 0, false, 4));
+            it('ifz10',  () => run([FZ,FZ,2,EN], 2, 0, 0, false, 3));
+            it('ifz11',  () => run([FZ,FZ,2], 2, 0, 0, false, 3));
+            it('ifz12',  () => run([FZ,2], 2, 0, 0, false, 2));
         });
 
         describe('ifg tests (ax > bx)', () => {
-            it('ifg0',  () => run([FG,2,EN], 0, 0, 0, false, 2));
-            it('ifg1',  () => run([1,FG,2,EN], 2, 0, 0, false, 3));
-            it('ifg2',  () => run([FG,2,3,EN], 0, 0, 0, false, 2));
-            it('ifg3',  () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, 0, false, 8));
-            it('ifg4',  () => run([-1,FG,-2,FG,4,EN,EN], -1, 0, 0, false, 3));
-            it('ifg5',  () => run([1,FG,0,FG,4,EN,EN], 0, 0, 0, false, 5));
-            it('ifg6',  () => run([FG,1,FG,2,EN,3], 3, 0, 0, false, 6));
-            it('ifg7',  () => run([FG,2,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifg8',  () => run([FG,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifg9',  () => run([FG,-1,FG,2,EN], -1, 0, 0, false, 4));
-            it('ifg10', () => run([FG,FG,2,EN], 0, 0, 0, false, 3));
-            it('ifg11', () => run([FG,FG,2], 2, 0, 0, false, 3));
-            it('ifg12', () => run([FG,2], 2, 0, 0, false, 2));
+            it('ifg0',   () => run([FG,2,EN], 0, 0, 0, false, 2));
+            it('ifg1',   () => run([1,FG,2,EN], 2, 0, 0, false, 3));
+            it('ifg2',   () => run([FG,2,3,EN], 0, 0, 0, false, 2));
+            it('ifg3',   () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, 0, false, 8));
+            it('ifg4',   () => run([-1,FG,-2,FG,4,EN,EN], -1, 0, 0, false, 3));
+            it('ifg5',   () => run([1,FG,0,FG,4,EN,EN], 0, 0, 0, false, 5));
+            it('ifg6',   () => run([FG,1,FG,2,EN,3], 3, 0, 0, false, 6));
+            it('ifg7',   () => run([FG,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifg8',   () => run([FG,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifg9',   () => run([FG,-1,FG,2,EN], -1, 0, 0, false, 4));
+            it('ifg10',  () => run([FG,FG,2,EN], 0, 0, 0, false, 3));
+            it('ifg11',  () => run([FG,FG,2], 2, 0, 0, false, 3));
+            it('ifg12',  () => run([FG,2], 2, 0, 0, false, 2));
         });
 
         describe('ifl tests (ax < bx)', () => {
-            it('ifl0',  () => run([FL,2,EN], 0, 0, 0, false, 2));
-            it('ifl1',  () => run([1,FL,2,EN], 1, 0, 0, false, 3));
-            it('ifl2',  () => run([FL,2,3,EN], 0, 0, 0, false, 2));
-            it('ifl3',  () => run([-1,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
-            it('ifl4',  () => run([-1,FL,-2,FL,4,EN,EN], 4, 0, 0, false, 7));
-            it('ifl5',  () => run([1,FL,0,FL,4,EN,EN], 1, 0, 0, false, 3));
-            it('ifl6',  () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 5));
-            it('ifl7',  () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifl8',  () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifl9',  () => run([FL,-1,FL,2,EN], 2, 0, 0, false, 4));
-            it('ifl10', () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
-            it('ifl11', () => run([FL,FL,2], 2, 0, 0, false, 3));
-            it('ifl12', () => run([FL,2], 2, 0, 0, false, 2));
+            it('ifl0',   () => run([FL,2,EN], 0, 0, 0, false, 2));
+            it('ifl1',   () => run([1,FL,2,EN], 1, 0, 0, false, 3));
+            it('ifl2',   () => run([FL,2,3,EN], 0, 0, 0, false, 2));
+            it('ifl3',   () => run([-1,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
+            it('ifl4',   () => run([-1,FL,-2,FL,4,EN,EN], 4, 0, 0, false, 7));
+            it('ifl5',   () => run([1,FL,0,FL,4,EN,EN], 1, 0, 0, false, 3));
+            it('ifl6',   () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 5));
+            it('ifl7',   () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifl8',   () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifl9',   () => run([FL,-1,FL,2,EN], 2, 0, 0, false, 4));
+            it('ifl10',  () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
+            it('ifl11',  () => run([FL,FL,2], 2, 0, 0, false, 3));
+            it('ifl12',  () => run([FL,2], 2, 0, 0, false, 2));
         });
 
         describe('ife tests (ax === bx)', () => {
-            it('ife0',  () => run([FE,2,EN], 2, 0, 0, false, 2));
-            it('ife1',  () => run([1,FE,2,EN], 1, 0, 0, false, 4));
-            it('ife2',  () => run([FE,2,3,EN], 3, 0, 0, false, 4));
-            it('ife3',  () => run([-1,FE,2,FE,3,EN,4,EN], -1, 0, 0, false, 3));
-            it('ife4',  () => run([-1,FE,-2,FE,4,EN,EN], -1, 0, 0, false, 7));
-            it('ife5',  () => run([FE,0,FE,4,EN,EN], 4, 0, 0, false, 6));
-            it('ife6',  () => run([FE,1,FE,2,EN,3], 3, 0, 0, false, 5));
-            it('ife7',  () => run([FE,2,EN,3,EN], 3, 0, 0, false, 5));
-            it('ife8',  () => run([1,FE,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ife9',  () => run([FE,-1,FE,2,EN], -1, 0, 0, false, 4));
-            it('ife10', () => run([FE,FE,2,EN], 2, 0, 0, false, 4));
-            it('ife11', () => run([FE,FE,2], 2, 0, 0, false, 3));
-            it('ife12', () => run([FE,2], 2, 0, 0, false, 2));
+            it('ife0',   () => run([FE,2,EN], 2, 0, 0, false, 2));
+            it('ife1',   () => run([1,FE,2,EN], 1, 0, 0, false, 4));
+            it('ife2',   () => run([FE,2,3,EN], 3, 0, 0, false, 4));
+            it('ife3',   () => run([-1,FE,2,FE,3,EN,4,EN], -1, 0, 0, false, 3));
+            it('ife4',   () => run([-1,FE,-2,FE,4,EN,EN], -1, 0, 0, false, 7));
+            it('ife5',   () => run([FE,0,FE,4,EN,EN], 4, 0, 0, false, 6));
+            it('ife6',   () => run([FE,1,FE,2,EN,3], 3, 0, 0, false, 5));
+            it('ife7',   () => run([FE,2,EN,3,EN], 3, 0, 0, false, 5));
+            it('ife8',   () => run([1,FE,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ife9',   () => run([FE,-1,FE,2,EN], -1, 0, 0, false, 4));
+            it('ife10',  () => run([FE,FE,2,EN], 2, 0, 0, false, 4));
+            it('ife11',  () => run([FE,FE,2], 2, 0, 0, false, 3));
+            it('ife12',  () => run([FE,2], 2, 0, 0, false, 2));
         });
 
         describe('ifne tests (ax !== bx)', () => {
@@ -454,6 +456,26 @@ describe('src/irma/VM', () => {
         describe('axret tests', () => {
             it('axret0', () => run([AR]));
             it('axret1', () => run([1,AR], 1, 0, 1));
+            it('axret2', () => run([1,AR,2,AR], 2, 0, 2));
+        });
+
+        describe('and tests', () => {
+            it('and0',   () => run([AN]));
+            it('and1',   () => run([1,TG, 1, AN], 1, 1));
+            it('and2',   () => run([1, AN]));
+            it('and3',   () => run([1, TG, AN], 0, 1));
+            it('and4',   () => run([3, TG, 2, AN], 2, 3));
+            it('and4',   () => run([-3, TG, -2, AN], -4, -3));
+            it('and5',   () => run([3, AR, 0, AN], 0, 0, 3));
+        });
+
+        describe('or tests', () => {
+            it('or0',    () => run([OR]));
+            it('or1',    () => run([1,OR], 1));
+            it('or2',    () => run([1, TG, 2, OR], 3, 1));
+            it('or3',    () => run([1, TG, OR], 1, 1));
+            it('or4',    () => run([3, TG, 2, OR], 3, 3));
+            it('or4',    () => run([-3, TG, -2, OR], -1, -3));
         });
     });
 });
