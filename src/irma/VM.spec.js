@@ -33,6 +33,7 @@ describe('src/irma/VM', () => {
     const AR        = Config.CODE_CMD_OFFS+28;
     const AN        = Config.CODE_CMD_OFFS+29;
     const OR        = Config.CODE_CMD_OFFS+30;
+    const XO        = Config.CODE_CMD_OFFS+31;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -462,20 +463,29 @@ describe('src/irma/VM', () => {
         describe('and tests', () => {
             it('and0',   () => run([AN]));
             it('and1',   () => run([1,TG, 1, AN], 1, 1));
-            it('and2',   () => run([1, AN]));
-            it('and3',   () => run([1, TG, AN], 0, 1));
-            it('and4',   () => run([3, TG, 2, AN], 2, 3));
-            it('and4',   () => run([-3, TG, -2, AN], -4, -3));
-            it('and5',   () => run([3, AR, 0, AN], 0, 0, 3));
+            it('and2',   () => run([1,AN]));
+            it('and3',   () => run([1,TG,AN], 0, 1));
+            it('and4',   () => run([3,TG,2,AN], 2, 3));
+            it('and4',   () => run([-3,TG,-2,AN], -4, -3));
+            it('and5',   () => run([3,AR,0,AN], 0, 0, 3));
         });
 
         describe('or tests', () => {
             it('or0',    () => run([OR]));
             it('or1',    () => run([1,OR], 1));
-            it('or2',    () => run([1, TG, 2, OR], 3, 1));
-            it('or3',    () => run([1, TG, OR], 1, 1));
-            it('or4',    () => run([3, TG, 2, OR], 3, 3));
-            it('or4',    () => run([-3, TG, -2, OR], -1, -3));
+            it('or2',    () => run([1,TG,2,OR], 3, 1));
+            it('or3',    () => run([1,TG,OR],1, 1));
+            it('or4',    () => run([3,TG,2,OR], 3, 3));
+            it('or4',    () => run([-3,TG,-2,OR], -1, -3));
+        });
+
+        describe('xor tests', () => {
+            it('xor0',   () => run([XO]));
+            it('xor1',   () => run([1,TG,1,XO], 0, 1));
+            it('xor2',   () => run([1,XO], 1));
+            it('xor3',   () => run([1,TG,2,XO], 3, 1));
+            it('xor4',   () => run([-2,XO], -2));
+            it('xor5',   () => run([2,TG,1,XO,XO], 1, 2));
         });
     });
 });
