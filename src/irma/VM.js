@@ -109,7 +109,7 @@ class VM {
             while (--o > -1) {
                 const org  = orgsRef[o];
                 if (org === null) {break}
-                if (org.age <= 0) {continue}
+                if (org.energy < 1) {continue}
                 const code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
@@ -344,13 +344,13 @@ class VM {
 
                         case CODE_CMD_OFFS + 33: {// join
                             ++line;
-                            org.age -= Config.ageJoin;
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
                             if (!dot) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsRef[dot];
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; continue}
                             code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
+                            org.energy += (nearOrg.code.length * Config.energyMultiplier);
                             this._removeOrg(nearOrg);
                             org.ret = RET_OK;
                             continue;
@@ -367,17 +367,19 @@ class VM {
                             const newCode = code.splice(ax, bx - ax);
                             if (newCode.length < 1) {org.ret = RET_ERR; continue}
                             const clone   = this._createOrg(offset, org, newCode);
-                            org.preprocess();
                             this._db && this._db.put(clone, org);
                             if (code.length < 1) {this._removeOrg(org)}
-                            clone.age = Config.orgMaxAge;
-                            org.ret = RET_OK;
+                            org.preprocess();
+                            const energy = clone.code.length * Config.energyMultiplier;
+                            clone.energy = energy;
+                            org.energy  -= energy;
+                            org.ret      = RET_OK;
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 35: {// step
                             ++line;
-                            org.age -= code.length;
+                            org.energy -= code.length;
                             let offset = org.offset + DIR[abs(ax) % 8];
                             if (offset < -1) {offset = LINE_OFFS + org.offset}
                             else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
@@ -419,7 +421,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 37: {// move
                             ++line;
-                            org.age -= Config.ageMove;
+                            org.energy -= Config.ageMove; // TODO: do we need this?
                             const find0    = org.find0;
                             const find1    = org.find1;
                             if (find1 < find0) {org.ret = RET_ERR; continue}
@@ -431,7 +433,7 @@ class VM {
                             if (find0 === offs) {org.ret = RET_OK; continue}
                             code.splice(find0, len);
                             code.splice(offs, 0, ...moveCode);
-                            if (rand(Config.codeMutateEveryClone) === 0) {
+                            if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(org);
                             }
                             org.ret = RET_OK;
@@ -484,6 +486,10 @@ class VM {
                             const cutOrg  = this._createOrg(dOffset, nearOrg, newCode);
                             this._db && this._db.put(cutOrg, nearOrg);
                             if (code.length < 1) {this._removeOrg(org)}
+                            const energy = newCode.length * Config.energyMultiplier;
+                            if (nearOrg.code.length < 1) {this._removeOrg(nearOrg)}
+                            nearOrg.energy -= energy;
+                            cutOrg.energy   = energy;
                             org.ret = RET_OK;
                             continue;
                         }
@@ -562,9 +568,10 @@ class VM {
                 //
                 const age = org.age;
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
-                if (age < 0) {this._killOrg(org); org.age = Config.orgMaxAge}
+                if (org.energy < 0) {this._killOrg(org)}
 
-                org.age--;
+                org.age++;
+                org.energy--;
                 this._i += lines;
             }
             this._iterations++;
@@ -593,7 +600,7 @@ class VM {
         const offset = org.offset;
         const packet = org.packet;
 
-        org.age = 0;
+        org.energy = 0;
         this._orgs.del(org.item, false);
         this._world.empty(offset);
         packet && this._createOrg(offset, packet);

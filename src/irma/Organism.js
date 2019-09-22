@@ -23,11 +23,11 @@ class Organism {
         /**
          * {Number} Organism's age - amount of iteration from born
          */
-        this.age        = Config.orgMaxAge;
         this.packet     = null;
         this.mutations  = 0;
         this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
         this._memIdx    = -1;
+        this.age        = 1;
         if (parent !== null) {
             this._clone(parent, code);
             return this;
@@ -71,6 +71,7 @@ class Organism {
          * {Array} Array of numbers. Code (DNA) of organism
          */
         this.code       = code !== null ? code.slice() : this._generateCode();
+        this.energy     = this.code.length * Config.energyMultiplier;
         this.preprocess();
 
         return this;
@@ -172,6 +173,7 @@ class Organism {
         this.loops      = parent.loops.slice();
         this.mem        = parent.mem.slice();
         this.code       = code ? code : parent.code.slice();
+        this.energy     = parent.code.length * Config.energyMultiplier;
         this.generation = parent.generation + 1;
         this.freq       = parent.freq;
     }

@@ -74,7 +74,6 @@ describe('src/irma/VM', () => {
             orgMaxCodeSize             : 5,
             orgMoleculeCodeSize        : 8,
             orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
-            ageJoin                    : 10,
             ageMove                    : 20
         });
 

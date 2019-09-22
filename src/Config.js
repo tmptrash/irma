@@ -42,7 +42,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 5,
     codeTimesPerRun            : 10,
-    codeMutateEveryClone       : 10,
+    codeMutateEveryClone       : 0,
     codeRegs                   : 6,
     codeKillTimes              : 3,
     codeLuca                   : [
@@ -192,6 +192,6 @@ module.exports = {
      * {Number} Ages we decrease from organism is case of running these commands.
      * In some sense this is amount of energy for commands
      */
-    ageJoin                    : 10,
-    ageMove                    : 20
+    ageMove                    : 10,
+    energyMultiplier           : 1000
 };
