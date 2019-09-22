@@ -368,12 +368,12 @@ class VM {
                             if (newCode.length < 1) {org.ret = RET_ERR; continue}
                             const clone   = this._createOrg(offset, org, newCode);
                             this._db && this._db.put(clone, org);
-                            if (code.length < 1) {this._removeOrg(org)}
-                            org.preprocess();
                             const energy = clone.code.length * Config.energyMultiplier;
                             clone.energy = energy;
+                            if (code.length < 1) {this._removeOrg(org); break}
                             org.energy  -= energy;
-                            org.ret      = RET_OK;
+                            org.preprocess();
+                            org.ret = RET_OK;
                             continue;
                         }
 
@@ -485,11 +485,11 @@ class VM {
                             if (newCode.length < 1) {org.ret = RET_ERR; continue}
                             const cutOrg  = this._createOrg(dOffset, nearOrg, newCode);
                             this._db && this._db.put(cutOrg, nearOrg);
-                            if (code.length < 1) {this._removeOrg(org)}
-                            const energy = newCode.length * Config.energyMultiplier;
                             if (nearOrg.code.length < 1) {this._removeOrg(nearOrg)}
+                            const energy = newCode.length * Config.energyMultiplier;
                             nearOrg.energy -= energy;
                             cutOrg.energy   = energy;
+                            if (code.length < 1) {this._removeOrg(org); break}
                             org.ret = RET_OK;
                             continue;
                         }
@@ -600,7 +600,6 @@ class VM {
         const offset = org.offset;
         const packet = org.packet;
 
-        org.energy = 0;
         this._orgs.del(org.item, false);
         this._world.empty(offset);
         packet && this._createOrg(offset, packet);
@@ -617,6 +616,7 @@ class VM {
     _killOrg(org) {
         const code = org.code;
         const len  = code.length;
+        if (len < 1) {return}
         for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
             code.push(...code.splice(rand(len), rand(len)));
         }
