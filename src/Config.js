@@ -193,5 +193,5 @@ module.exports = {
      * In some sense this is amount of energy for commands
      */
     ageMove                    : 10,
-    energyMultiplier           : 1000
+    energyMultiplier           : 10000
 };
