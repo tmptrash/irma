@@ -192,6 +192,6 @@ module.exports = {
      * {Number} Ages we decrease from organism is case of running these commands.
      * In some sense this is amount of energy for commands
      */
-    ageMove                    : 10,
+    ageMove                    : 0,
     energyMultiplier           : 10000
 };

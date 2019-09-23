@@ -64,6 +64,7 @@ describe('src/irma/VM', () => {
             ORG_MASK                   : 0x80000000,
             ORG_MIN_COLOR              : 0x96,
             orgAmount                  : 1,
+            orgLucaAmount              : 1,
             orgMaxAge                  : 2000000,
             orgEnergy                  : 49,
             orgStepEnergy              : .001,
@@ -78,6 +79,7 @@ describe('src/irma/VM', () => {
         });
 
         vm = new VM();
+        vm._orgs.added().energy = 1000;
     });
 
     afterEach(() => {
