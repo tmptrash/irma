@@ -35,6 +35,7 @@ describe('src/irma/VM', () => {
     const OR        = Config.CODE_CMD_OFFS+30;
     const XO        = Config.CODE_CMD_OFFS+31;
     const NT        = Config.CODE_CMD_OFFS+32;
+    const JO        = Config.CODE_CMD_OFFS+33;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -495,6 +496,23 @@ describe('src/irma/VM', () => {
             it('not1',   () => run([1,TG,1,NT], -2, 1));
             it('not2',   () => run([-1,NT]));
         });
+
+        describe('join tests', () => {
+            it('join0',  () => {
+                Config.orgAmount = 2;
+                Config.orgLucaAmount = 2;
+                const vm1  = new VM();
+                const org1 = vm1._orgs.get(0);
+                const org2 = vm1._orgs.get(1);
+
+                vm1._world.moveOrg(org1, 0);
+                vm1._world.moveOrg(org2, 1);
+                org1.code = [2,JO];
+                org1.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+            });
+        })
     });
 });
 
