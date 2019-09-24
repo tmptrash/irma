@@ -114,8 +114,8 @@ module.exports = {
         CODE_OFFS + 4,  //   push
         1,              //   1
         CODE_OFFS + 28, //   axret
-        CODE_OFFS + 33, //   join
         CODE_OFFS + 3,  //   pop
+        CODE_OFFS + 33, //   join
         CODE_OFFS + 26, // end
         255,            // 255
         CODE_OFFS + 13, // lshift
@@ -175,8 +175,8 @@ module.exports = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 60000,
-    orgLucaAmount              : 1000,
+    orgAmount                  : 50000,
+    orgLucaAmount              : 500,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,

@@ -629,16 +629,16 @@ class VM {
      * Organisms will be placed randomly in a world
      */
     _createOrgs() {
-        const world     = this._world;
-        let   orgAmount = floor(Config.orgAmount / Config.orgMoleculeCodeSize);
+        const world = this._world;
 
-        this._orgs = new FastArray(Config.orgAmount);
+        this._orgs = new FastArray(Config.orgAmount + Config.orgLucaAmount);
         //
         // Creates atoms and molecules and LUCA as last organism
         //
-        while (orgAmount-- > 0) {
+        let atoms = Config.orgAmount;
+        while (atoms-- > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) !== 0) {orgAmount++; continue}
+            if (world.getOrgIdx(offset) !== 0) {atoms++; continue}
             const org = this._createOrg(offset);
             this._db && this._db.put(org);
         }
@@ -648,10 +648,9 @@ class VM {
         let orgs = Config.orgLucaAmount;
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) === 0) {
-                const luca = this._createOrg(offset, null, Config.codeLuca.slice());
-                this._db && this._db.put(luca);
-            }
+            if (world.getOrgIdx(offset) !== 0) {orgs++; continue}
+            const luca = this._createOrg(offset, null, Config.codeLuca.slice());
+            this._db && this._db.put(luca);
         }
         this._population++;
     }

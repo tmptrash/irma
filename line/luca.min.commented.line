@@ -1,17 +1,4 @@
-#
-# Makes cloning of organism. Takes all commands from the
-# beginning (replication segment) and till "nop" separator 
-# and find them in food/elements segment. After that copy 
-# found commands in food/elements section into the organism's 
-# tail (after food segment). After that, splits tail and 
-# replication segment calling "split" command. Requires 6
-# registers (0,1..4,5).
-#
 func             # func 0
-  #
-  # Finds separator offset between replicator code and food
-  # and tail offset
-  #
   1023           # ax=1023    bx=-1
   toggle         # ax=-1      bx=1023
   6              # ax=6       bx=1023
@@ -25,33 +12,24 @@ func             # func 0
   toggle         # ax=sepIdx  bx=len
   push           # ax=sepIdx  bx=len      (regs: 0,1)
   shift          # ax=?       bx=?        (regs: 2,3)
-  #
-  # Loops through replicator code and copy it to the tail
-  #
   pop            # ax=sepIdx  bx=?
   toggle         # ax=?       bx=sepIdx
   0              # ax=0       bx=sepIdx
   toggle         # ax=sepIdx  bx=0
-  inc            # ax=sepIdx  bx=0
-  loop           # ax=sepIdx  bx=0        (ax-code len, bx-code index)
-    axret        # ax=sepIdx  bx=0        ret=sepIdx
-    push         # ax=sepIdx  bx=0        ret=sepIdx
+  inc            # ax=sepIdx1 bx=0
+  loop           # ax=sepIdx1 bx=0        (ax-code len, bx-code index)
+    axret        # ax=sepIdx1 bx=0        ret=sepIdx
+    push         # ax=sepIdx1 bx=0        ret=sepIdx
     eq           # ax=0       bx=0        (ax-idx of cur cmd to copy)
     push         # ax=0       bx=0
     find         # ax=findIdx bx=0
     push         # ax=findIdx bx=0
     retax        # ax=1       bx=0
-    #
-    # If instruction is not found
-    #
     ifz          # ax=0 - not found
       pop
       pop        # resets stack
       ret
     end
-    #
-    # If instruction is out of food segment
-    #
     shift        # ax=?       bx=?
     shift        # ax=sepIdx  bx=len      (regs: 0,1)
     toggle       # ax=len     bx=sepIdx
@@ -66,32 +44,19 @@ func             # func 0
       pop        # resets stack
       ret
     end
-    #
-    # Moves current instruction to the tail
-    #
     len          # ax=len     bx=len-1
     move
-    #
-    # Inc code segment counter
-    #
     pop          # ax=0       bx=len-1
     inc          # ax=1       bx=len-1
     toggle       # ax=len-1   bx=1
     pop          # ax=sepIdx  bx=1
   end
-  #
-  # Splits tail with it's copy to create separate organism
-  #
   shift          # ax=?       bx=?
   shift          # ax=sepIdx  bx=foodEnd
   len            # ax=len     bx=foodEnd
   toggle         # ax=foodEnd bx=len
   split
 end
-#
-# Eating function. Randomly change direction and
-# eats every organism, which is on the way
-#
 func             # func 1
   rand           # ax=2       bx=?
   step           # ax=2       bx=?
@@ -104,36 +69,22 @@ func             # func 1
   pop            # ax=2       bx=len
   join           # ax=2       bx=len    ret=1
 end
-#
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# main (entry point). General approach: organism
-# sets it's color, 100 times eating and 1 time 
-# cloning himself. Repeat all above...
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#
 255              # ax=255     bx=0 
-lshift
-lshift
-lshift
-lshift
-lshift
-lshift
-lshift
+lshift           # ax=510     bx=0
+lshift           # ax=1020    bx=0
+lshift           # ax=2040    bx=0
+lshift           # ax=4080    bx=0
+lshift           # ax=8160    bx=0
+lshift           # ax=16320   bx=0
+lshift           # ax=32640   bx=0
 lshift           # ax=0xFF00  bx=0
 color            # ax=0xFF00  bx=0
-100              # ax=100     bx=0
+30               # ax=100     bx=0
 loop
   1              # ax=1       bx=?
   call           # eating
 end
-#
-# This method checks if organism may produce
-# it's clone if it has enough food inside.
-#
 0
 call             # try clone
 ret              # this is how we disable food segment
 nop              # separator between code and food
-#
-# Here and further food is located
-#
