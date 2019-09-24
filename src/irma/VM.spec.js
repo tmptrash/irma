@@ -498,7 +498,7 @@ describe('src/irma/VM', () => {
         });
 
         describe('join tests', () => {
-            it('join0',  () => {
+            xit('join0',  () => {
                 Config.orgAmount = 2;
                 Config.orgLucaAmount = 2;
                 const vm1  = new VM();
