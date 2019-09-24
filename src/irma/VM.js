@@ -344,6 +344,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 33: {// join
                             ++line;
+                            if (org.ret !== 1) {org.ret = RET_ERR; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
                             if (!dot) {org.ret = RET_ERR; continue}
@@ -472,6 +473,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 42: {// nsplit
                             ++line;
+                            if (org.ret !== 1) {org.ret = RET_ERR; continue}
                             if (orgs.full) {org.ret = RET_ERR; continue}
                             const offset  = org.offset + DIR[abs(ax) % 8];
                             const dOffset = org.offset + DIR[abs(org.ret) % 8];
@@ -496,7 +498,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 43: {// get
                             ++line;
-                            if (org.packet) {org.ret = RET_ERR; continue}
+                            if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; continue}
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
                             if (!dot) {org.ret = RET_ERR; continue}
                             this._removeOrg(org.packet = orgsRef[dot]);

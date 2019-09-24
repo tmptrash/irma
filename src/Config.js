@@ -111,7 +111,11 @@ module.exports = {
         CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
+        CODE_OFFS + 4,  //   push
+        1,              //   1
+        CODE_OFFS + 28, //   axret
         CODE_OFFS + 33, //   join
+        CODE_OFFS + 3,  //   pop
         CODE_OFFS + 26, // end
         255,            // 255
         CODE_OFFS + 13, // lshift
@@ -171,7 +175,7 @@ module.exports = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 40000,
+    orgAmount                  : 60000,
     orgLucaAmount              : 1000,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
@@ -192,6 +196,6 @@ module.exports = {
      * {Number} Ages we decrease from organism is case of running these commands.
      * In some sense this is amount of energy for commands
      */
-    ageMove                    : 0,
+    ageMove                    : 0, // TODO: do we need this?
     energyMultiplier           : 10000
 };
