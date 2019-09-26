@@ -633,12 +633,12 @@ class VM {
 
         this._orgs = new FastArray(Config.orgAmount + Config.orgLucaAmount);
         //
-        // Creates atoms and molecules and LUCA as last organism
+        // Creates molecules and LUCA as last organism
         //
-        let atoms = Config.orgAmount;
-        while (atoms-- > 0) {
+        let molecules = Config.orgAmount;
+        while (molecules-- > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) !== 0) {atoms++; continue}
+            if (world.getOrgIdx(offset) !== 0) {molecules++; continue}
             const org = this._createOrg(offset);
             this._db && this._db.put(org);
         }

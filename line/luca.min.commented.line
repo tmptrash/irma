@@ -54,7 +54,8 @@ func             # func 0
   shift          # ax=?       bx=?
   shift          # ax=sepIdx  bx=foodEnd
   len            # ax=len     bx=foodEnd
-  toggle         # ax=foodEnd bx=len
+  toggle         # ax=food    bx=len
+  inc            # ax=food+1  bx=len
   split
 end
 func             # func 1

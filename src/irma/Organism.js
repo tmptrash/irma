@@ -144,11 +144,10 @@ class Organism {
     }
 
     _generateCode() {
-        const size = Config.orgMoleculeCodeSize;
-        const code = new Array(size);
-        for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
-
-        return code;
+        const code  = Config.codeLuca;
+        const len   = code.length;
+        const start = Math.floor(Math.random() * (len - Config.orgMoleculeCodeSize));
+        return code.slice(start, start + Config.orgMoleculeCodeSize);
     }
 
     _clone(parent, code) {

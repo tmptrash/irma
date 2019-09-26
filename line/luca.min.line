@@ -55,6 +55,7 @@ func             # 24
   shift          # 1
   len            # 48
   toggle         # 0
+  inc            # 10
   split          # 34
 end              # 26
 func             # 24

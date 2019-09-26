@@ -127,7 +127,7 @@ module.exports = {
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 49, // color
-        30,             // 30
+        50,             // 50
         CODE_OFFS + 22, // loop
         1,              //   1
         CODE_OFFS + 23, //   call
@@ -175,8 +175,8 @@ module.exports = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 50000,
-    orgLucaAmount              : 500,
+    orgAmount                  : 20000,
+    orgLucaAmount              : 300,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,
@@ -184,7 +184,7 @@ module.exports = {
     orgColor                   : 0xff0000,
     orgMutationPercent         : .02,
     orgMutationPeriod          : 200001,
-    orgMaxCodeSize             : 256,
+    orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
