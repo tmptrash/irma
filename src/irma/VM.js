@@ -570,7 +570,7 @@ class VM {
                 //
                 const age = org.age;
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
-                if (org.energy < 0) {this._killOrg(org)}
+                if (org.energy < 0) {this._mixAtoms(org)}
 
                 org.age++;
                 org.energy--;
@@ -594,7 +594,7 @@ class VM {
 
     /**
      * Removes organism from the world totally. Places "packet" organism
-     * instead original if exists on the same position. See _killOrg().
+     * instead original if exists on the same position. See _mixAtoms().
      * @param {Organism} org Organism to remove
      * @private
      */
@@ -608,19 +608,25 @@ class VM {
     }
 
     /**
-     * Kills organism. Change it's atoms to random sequence. In this case
+     * Mix organism commands. Change it's atoms to random sequence. In this case
      * organism will stay non living thing. Just a bundle of atoms without
      * an ability to reproduce. Simply, it will be changed to one big molecule.
      * It will be present in a world. See _removeOrg().
      * @param {Organism} org Organism to kill.
      * @private
      */
-    _killOrg(org) {
-        const code = org.code;
-        const len  = code.length;
+    _mixAtoms(org) {
+        const code    = org.code;
+        const coreLen = Config.codeLuca.length;
+        const len     = code.length;
         if (len < 1) {return}
         for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
-            code.push(...code.splice(rand(len), rand(len)));
+            const pos = rand(coreLen);
+            code.push(...code.splice(pos, pos + rand(coreLen - pos)));
+        }
+        for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
+            const pos = rand(len);
+            code.push(...code.splice(pos, pos + rand(len - pos)));
         }
     }
 
