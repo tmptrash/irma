@@ -143,6 +143,8 @@ module.exports = {
         CODE_OFFS + 34, //   split
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
+        0,              //   0
+        CODE_OFFS + 28, //   axret
         1023,           //   1023
         CODE_OFFS,      //   toggle
         6,              //   6
