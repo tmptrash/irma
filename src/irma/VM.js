@@ -635,7 +635,7 @@ class VM {
         //
         // Creates molecules and LUCA as last organism
         //
-        let molecules = Config.orgAmount - 1;
+        let molecules = Config.orgAmount;
         while (molecules-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) !== 0) {molecules++; continue}
