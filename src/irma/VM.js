@@ -402,7 +402,7 @@ class VM {
                                     org.ret = RET_OK;
                                 }
                             } else {
-                                if (bx > ax) {org.ret = RET_ERR; continue}
+                                if (bx > ax || ax > code.length || bx > code.length) {org.ret = RET_ERR; continue}
                                 const len2 = bx - ax;
                                 const len1 = code.length - (len2 + 1);
                                 let   ret  = RET_ERR;
