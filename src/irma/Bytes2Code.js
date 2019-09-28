@@ -43,16 +43,16 @@ class Bytes2Code {
                 bytes[b] === CODE_CMD_OFFS + 19 || // ifl
                 bytes[b] === CODE_CMD_OFFS + 20 || // ife
                 bytes[b] === CODE_CMD_OFFS + 21) { // ifne
-                code += `${b ? '\n' : ''}${(b+'').padEnd(4)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
                 if (offs[b] > b + 1) {span += '  '}
                 continue;
             } else if (bytes[b] === CODE_CMD_OFFS + 26) { // end
                 span = span.substr(0, span.length - 2);
             } else if (line === undefined) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(4)}${span}${bytes[b]}`;
+                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${span}${bytes[b]}`;
                 continue;
             }
-            code += `${b ? '\n' : ''}${(b+'').padEnd(4)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+            code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
         }
 
         return code;

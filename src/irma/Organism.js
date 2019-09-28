@@ -143,7 +143,18 @@ class Organism {
         this.line       = 0;
     }
 
+    /**
+     * Generates random code and code based on organism parts
+     * @returns {Array}
+     * @private
+     */
     _generateCode() {
+        if (Math.random() > .5) {
+            const size = Config.orgMoleculeCodeSize;
+            const code = new Array(size);
+            for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
+            return code;
+        }
         const code  = Config.codeLuca;
         const len   = code.length;
         const start = Math.floor(Math.random() * (len - Config.orgMoleculeCodeSize));
@@ -172,7 +183,6 @@ class Organism {
         this.loops      = parent.loops.slice();
         this.mem        = parent.mem.slice();
         this.code       = code ? code : parent.code.slice();
-        this.energy     = parent.code.length * Config.energyMultiplier;
         this.generation = parent.generation + 1;
         this.freq       = parent.freq;
     }

@@ -49,7 +49,6 @@ const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
 const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
 
 const round             = Math.round;
-const floor             = Math.floor;
 const rand              = Helper.rand;
 const fin               = Number.isFinite;
 const abs               = Math.abs;
@@ -210,7 +209,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 14:  // rand
                             ++line;
-                            ax = rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND;
+                            ax = ax < 0 ? rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND : rand(ax);
                             continue;
 
                         case CODE_CMD_OFFS + 15:  // ifp
@@ -374,6 +373,7 @@ class VM {
                             if (code.length < 1) {this._removeOrg(org); break}
                             org.energy  -= energy;
                             org.preprocess();
+                            line = 0;
                             org.ret = RET_OK;
                             continue;
                         }
@@ -635,7 +635,7 @@ class VM {
         //
         // Creates molecules and LUCA as last organism
         //
-        let molecules = Config.orgAmount;
+        let molecules = Config.orgAmount - 1;
         while (molecules-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) !== 0) {molecules++; continue}

@@ -1,13 +1,8 @@
 func             # func 0
-  1023           # ax=1023    bx=-1
-  toggle         # ax=-1      bx=1023
-  6              # ax=6       bx=1023
-  add            # ax=1029    bx=1023     (1029 - nop command)
-  toggle         # ax=1023    bx=1029
-  -1             # ax=-1      bx=1029
-  toggle         # ax=1029    bx=-1  
-  find           # ax=sepIdx  bx=-1
-  toggle         # ax=-1      bx=sepIdx
+  3              # ax=3       bx=?
+  call           # ax=3       bx=?
+  retax          # ax=sepIdx  bx=?
+  toggle         # ax=?       bx=sepIdx
   len            # ax=len     bx=sepIdx
   toggle         # ax=sepIdx  bx=len
   push           # ax=sepIdx  bx=len      (regs: 0,1)
@@ -18,8 +13,8 @@ func             # func 0
   toggle         # ax=sepIdx  bx=0
   inc            # ax=sepIdx1 bx=0
   loop           # ax=sepIdx1 bx=0        (ax-code len, bx-code index)
-    axret        # ax=sepIdx1 bx=0        ret=sepIdx
-    push         # ax=sepIdx1 bx=0        ret=sepIdx
+    axret        # ax=sepIdx1 bx=0        ret=sepIdx1
+    push         # ax=sepIdx1 bx=0        ret=sepIdx1
     eq           # ax=0       bx=0        (ax-idx of cur cmd to copy)
     push         # ax=0       bx=0
     find         # ax=findIdx bx=0
@@ -27,13 +22,17 @@ func             # func 0
     retax        # ax=1       bx=0
     ifz          # ax=0 - not found
       pop
+	  pop
       pop        # resets stack
+      shift
+      shift
       ret
     end
     shift        # ax=?       bx=?
     shift        # ax=sepIdx  bx=len      (regs: 0,1)
     toggle       # ax=len     bx=sepIdx
     axret        # ax=len     bx=sepIdx   ret=len
+	toggle       # ax=sepIdx  bx=len      ret=len
     shift        # ax=1       bx=0        ret=len
     pop          # ax=findIdx bx=0        ret=len
     toggle       # ax=0       bx=findIdx  ret=len
@@ -41,7 +40,10 @@ func             # func 0
     dec          # ax=len-1   bx=findIdx
     toggle       # ax=findIdx bx=len-1
     ifg
+      pop
       pop        # resets stack
+      shift
+      shift
       ret
     end
     len          # ax=len     bx=len-1
@@ -49,16 +51,18 @@ func             # func 0
     pop          # ax=0       bx=len-1
     inc          # ax=1       bx=len-1
     toggle       # ax=len-1   bx=1
-    pop          # ax=sepIdx  bx=1
+    pop          # ax=sepIdx1 bx=1
   end
-  shift          # ax=?       bx=?
-  shift          # ax=sepIdx  bx=foodEnd
-  len            # ax=len     bx=foodEnd
-  toggle         # ax=food    bx=len
-  inc            # ax=food+1  bx=len
-  split
+  toggle         # ax=?       bx=sepIdx1
+  len            # ax=len     bx=sepIdx1
+  sub            # ax=copyIdx bx=sepIdx1
+  toggle         # ax=sepIdx1 bx=copyIdx
+  len            # ax=len     bx=copyIdx
+  toggle         # ax=copyIdx bx=len
+  split          # ax=copyIdx bx=len
 end
 func             # func 1
+  -1             # ax=-1      bx=?
   rand           # ax=2       bx=?
   step           # ax=2       bx=?
   toggle         # ax=?       bx=2
@@ -70,21 +74,56 @@ func             # func 1
   pop            # ax=2       bx=len
   join           # ax=2       bx=len    ret=1
 end
+func             # func 2
+  900            # ax=900     bx=0
+  toggle         # ax=0       bx=900
+  len            # ax=len     bx=900
+  ifl            # ax=len     bx=900
+    ret
+  end
+  3
+  call
+  retax          # ax=sepIdx  bx=?
+  toggle         # ax=?       bx=sepIdx
+  len            # ax=len     bx=sepIdx
+  sub            # ax=rndLen  bx=sepIdx
+  rand           # ax=rnd     bx=sepIdx
+  add            # ax=cutIdx  bx=sepIdx
+  toggle         # ax=sepIdx  bx=cutIdx
+  len            # ax=len     bx=cutIdx
+  toggle         # ax=cutIdx  bx=len
+  split          # ax=cutIdx  bx=len
+end
+func
+  0              # ax=0       bx=?
+  axret          # ax=0       bx=?         ret=0
+  1023           # ax=1023    bx=?
+  toggle         # ax=?       bx=1023
+  6              # ax=6       bx=1023
+  add            # ax=1029    bx=1023     (1029 - nop command)
+  toggle         # ax=1023    bx=1029
+  -1             # ax=-1      bx=1029
+  toggle         # ax=1029    bx=-1  
+  find           # ax=sepIdx  bx=-1
+  axret          # ax=sepIdx  bx=-1
+end
 255              # ax=255     bx=0 
-lshift           # ax=510     bx=0
-lshift           # ax=1020    bx=0
-lshift           # ax=2040    bx=0
-lshift           # ax=4080    bx=0
-lshift           # ax=8160    bx=0
-lshift           # ax=16320   bx=0
-lshift           # ax=32640   bx=0
+lshift
+lshift
+lshift
+lshift
+lshift
+lshift
+lshift
 lshift           # ax=0xFF00  bx=0
 color            # ax=0xFF00  bx=0
-30               # ax=100     bx=0
+50               # ax=50      bx=0
 loop
   1              # ax=1       bx=?
   call           # eating
 end
+2                # ax=2       bx=?
+call             # ax=2       bx=?
 0
 call             # try clone
 ret              # this is how we disable food segment

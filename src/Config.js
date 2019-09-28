@@ -47,14 +47,9 @@ module.exports = {
     codeKillTimes              : 3,
     codeLuca                   : [
         CODE_OFFS + 24, // func
-        1023,           //   1023
-        CODE_OFFS,      //   toggle
-        6,              //   6
-        CODE_OFFS + 6,  //   add
-        CODE_OFFS,      //   toggle
-        -1,             //   -1
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 36, //   find
+        3,              //   3
+        CODE_OFFS + 23, //   call
+        CODE_OFFS + 27, //   retax
         CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
@@ -76,12 +71,16 @@ module.exports = {
         CODE_OFFS + 17, //     ifz
         CODE_OFFS + 3,  //       pop
         CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 1,  //       shift
+        CODE_OFFS + 1,  //       shift
         CODE_OFFS + 25, //       ret
         CODE_OFFS + 26, //     end
         CODE_OFFS + 1,  //     shift
         CODE_OFFS + 1,  //     shift
         CODE_OFFS,      //     toggle
         CODE_OFFS + 28, //     axret
+        CODE_OFFS,      //     toggle
         CODE_OFFS + 1,  //     shift
         CODE_OFFS + 3,  //     pop
         CODE_OFFS,      //     toggle
@@ -90,6 +89,9 @@ module.exports = {
         CODE_OFFS,      //     toggle
         CODE_OFFS + 18, //     ifg
         CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 1,  //       shift
+        CODE_OFFS + 1,  //       shift
         CODE_OFFS + 25, //       ret
         CODE_OFFS + 26, //     end
         CODE_OFFS + 48, //     len
@@ -99,13 +101,16 @@ module.exports = {
         CODE_OFFS,      //     toggle
         CODE_OFFS + 3,  //     pop
         CODE_OFFS + 26, //   end
-        CODE_OFFS + 1,  //   shift
-        CODE_OFFS + 1,  //   shift
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS + 7,  //   sub
+        CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 34, //   split
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
+        -1,             //   -1
         CODE_OFFS + 14, //   rand
         CODE_OFFS + 35, //   step
         CODE_OFFS,      //   toggle
@@ -116,6 +121,37 @@ module.exports = {
         CODE_OFFS + 28, //   axret
         CODE_OFFS + 3,  //   pop
         CODE_OFFS + 33, //   join
+        CODE_OFFS + 26, // end
+        CODE_OFFS + 24, // func
+        900,            //   900
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS + 19, //   ifl
+        CODE_OFFS + 25, //     ret
+        CODE_OFFS + 26, //   end
+        3,              //   3
+        CODE_OFFS + 23, //   call
+        CODE_OFFS + 27, //   retax
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS + 7,  //   sub
+        CODE_OFFS + 14, //   rand
+        CODE_OFFS + 6,  //   add
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 34, //   split
+        CODE_OFFS + 26, // end
+        CODE_OFFS + 24, // func
+        1023,           //   1023
+        CODE_OFFS,      //   toggle
+        6,              //   6
+        CODE_OFFS + 6,  //   add
+        CODE_OFFS,      //   toggle
+        -1,             //   -1
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 36, //   find
+        CODE_OFFS + 28, //   axret
         CODE_OFFS + 26, // end
         255,            // 255
         CODE_OFFS + 13, // lshift
@@ -132,6 +168,8 @@ module.exports = {
         1,              //   1
         CODE_OFFS + 23, //   call
         CODE_OFFS + 26, // end
+        2,              // 2
+        CODE_OFFS + 23, // call
         0,              // 0
         CODE_OFFS + 23, // call
         CODE_OFFS + 25, // ret
@@ -176,7 +214,7 @@ module.exports = {
     ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
     orgAmount                  : 20000,
-    orgLucaAmount              : 300,
+    orgLucaAmount              : 200,
     orgMaxAge                  : 2000000,
     orgEnergy                  : 49,
     orgStepEnergy              : .001,
