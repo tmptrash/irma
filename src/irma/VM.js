@@ -371,6 +371,9 @@ class VM {
                             const energy = clone.code.length * Config.energyMultiplier;
                             clone.energy = energy;
                             if (code.length < 1) {this._removeOrg(org); break}
+                            if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0) {
+                                Mutations.mutate(clone);
+                            }
                             org.energy  -= energy;
                             org.preprocess();
                             line = 0;
@@ -434,9 +437,6 @@ class VM {
                             if (find0 === offs) {org.ret = RET_OK; continue}
                             code.splice(find0, len);
                             code.splice(offs, 0, ...moveCode);
-                            if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0) {
-                                Mutations.mutate(org);
-                            }
                             org.ret = RET_OK;
                             continue;
                         }
