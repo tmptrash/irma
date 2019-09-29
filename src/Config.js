@@ -10,7 +10,6 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-// TODO: review all configs
 const WIDTH     = 1920 / 4;
 const HEIGHT    = 1080 / 4;
 const CODE_OFFS = 1024;
@@ -41,10 +40,10 @@ module.exports = {
      */
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 1,
-    codeTimesPerRun            : 10,
+    codeTimesPerRun            : 30,
     codeMutateEveryClone       : 5,
     codeRegs                   : 6,
-    codeKillTimes              : 3,
+    codeMixTimes               : 4,
     codeLuca                   : [
         CODE_OFFS + 24, // func
         3,              //   3
@@ -202,11 +201,6 @@ module.exports = {
      */
     DB_ON                      : false,
     DB_CHUNK_SIZE              : 200,
-    /**
-     * {Number} Mask to check if some dot is an energy. We use second bit
-     * for this. First bit is used to check if it's an organism
-     */
-    energyValue                : .5,
 
     /**
      * {Number} Maximum value of every element in orgProbs array
@@ -217,9 +211,7 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     orgAmount                  : 110000,
     orgLucaAmount              : 5000,
-    orgMaxAge                  : 2000000,
-    orgStepEnergy              : .001,
-    orgEnergyPeriod            : 0,
+    orgMaxAge                  : 200000,
     orgColor                   : 0xff0000,
     orgMutationPercent         : .005,
     orgMutationPeriod          : 8001,
@@ -235,6 +227,7 @@ module.exports = {
      * {Number} Ages we decrease from organism is case of running these commands.
      * In some sense this is amount of energy for commands
      */
-    ageMove                    : 0, // TODO: do we need this?
-    energyMultiplier           : 10000
+    energyMove                 : 10,
+    energyStepCoef             : .01,
+    energyMultiplier           : 4000
 };

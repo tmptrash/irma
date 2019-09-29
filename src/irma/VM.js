@@ -92,6 +92,7 @@ class VM {
     run() {
         const times            = Config.codeTimesPerRun;
         const lines            = Config.codeLinesPerIteration;
+        const stepEnergy       = Config.energyStepCoef;
         const world            = this._world;
         const mutationPeriod   = Config.orgMutationPeriod;
         const orgs             = this._orgs;
@@ -386,7 +387,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 35: {// step
                             ++line;
-                            org.energy -= code.length;
+                            org.energy -= Math.floor(code.length * stepEnergy);
                             let offset = org.offset + DIR[abs(ax) % 8];
                             if (offset < -1) {offset = LINE_OFFS + org.offset}
                             else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
@@ -428,7 +429,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 37: {// move
                             ++line;
-                            org.energy -= Config.ageMove; // TODO: do we need this?
+                            org.energy -= Config.energyMove;
                             const find0    = org.find0;
                             const find1    = org.find1;
                             if (find1 < find0) {org.ret = RET_ERR; continue}
@@ -573,6 +574,7 @@ class VM {
                 //
                 const age = org.age;
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
+                if (age > Config.orgMaxAge) {this._mixAtoms(org)}
                 if (org.energy < 0) {this._mixAtoms(org)}
 
                 org.age++;
@@ -623,7 +625,7 @@ class VM {
         const coreLen = Config.codeLuca.length;
         const len     = code.length;
         if (len < 1) {return}
-        for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
+        for (let i = 0, iLen = Config.codeMixTimes; i < iLen; i++) {
             const pos1 = rand(coreLen);
             const pos2 = rand(len);
             code.push(...code.splice(pos1, pos1 + rand(coreLen - pos1)));

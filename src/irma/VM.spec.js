@@ -53,29 +53,28 @@ describe('src/irma/VM', () => {
             codeTimesPerRun            : 1,
             codeMutateEveryClone       : 1000,
             codeRegs                   : 6,
-            codeKillTimes              : 3,
+            codeMixTimes               : 3,
             codeLuca                   : [],
             WORLD_WIDTH                : WIDTH,
             WORLD_HEIGHT               : HEIGHT,
             worldFrequency             : 10,
             DB_ON                      : false,
             DB_CHUNK_SIZE              : 100,
-            energyValue                : .5,
             ORG_PROB_MAX_VALUE         : 50,
             ORG_MASK                   : 0x80000000,
             ORG_MIN_COLOR              : 0x96,
             orgAmount                  : 1,
             orgLucaAmount              : 1,
             orgMaxAge                  : 2000000,
-            orgStepEnergy              : .001,
-            orgEnergyPeriod            : 0,
             orgColor                   : 0xff0000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
             orgMaxCodeSize             : 5,
             orgMoleculeCodeSize        : 8,
             orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
-            ageMove                    : 20
+            energyMove                 : 20,
+            energyStepCoef             : 0.01,
+            energyMultiplier           : 10000
         });
 
         vm = new VM();
