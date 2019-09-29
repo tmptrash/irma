@@ -11,8 +11,8 @@
  * @constant
  */
 // TODO: review all configs
-const WIDTH     = 1920 / 4;
-const HEIGHT    = 1080 / 4;
+const WIDTH     = 1920 / 3;
+const HEIGHT    = 1080 / 3;
 const CODE_OFFS = 1024;
 
 
@@ -42,7 +42,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 1,
     codeTimesPerRun            : 10,
-    codeMutateEveryClone       : 3,
+    codeMutateEveryClone       : 5,
     codeRegs                   : 6,
     codeKillTimes              : 3,
     codeLuca                   : [
@@ -222,7 +222,7 @@ module.exports = {
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 6001,
+    orgMutationPeriod          : 8001,
     orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
     /**

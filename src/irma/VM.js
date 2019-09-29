@@ -624,12 +624,10 @@ class VM {
         const len     = code.length;
         if (len < 1) {return}
         for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
-            const pos = rand(coreLen);
-            code.push(...code.splice(pos, pos + rand(coreLen - pos)));
-        }
-        for (let i = 0, iLen = Config.codeKillTimes; i < iLen; i++) {
-            const pos = rand(len);
-            code.push(...code.splice(pos, pos + rand(len - pos)));
+            const pos1 = rand(coreLen);
+            const pos2 = rand(len);
+            code.push(...code.splice(pos1, pos1 + rand(coreLen - pos1)));
+            code.push(...code.splice(pos2, pos2 + rand(len - pos2)));
         }
         org.isOrg = false;
     }

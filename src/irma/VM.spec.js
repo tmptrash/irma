@@ -114,7 +114,7 @@ describe('src/irma/VM', () => {
         });
 
         it('Checks amount of created organisms', () => {
-            expect(vm._orgs.items).toBe(Config.orgAmount);
+            expect(vm._orgs.items).toBe(Config.orgAmount + Config.orgLucaAmount);
         });
     });
 
