@@ -97,6 +97,7 @@ class VM {
         const orgs             = this._orgs;
         const orgsRef          = orgs.getRef();
         const orgAmount        = orgs.size;
+        let   aliveAmount      = 0;
         //
         // Loop X times through population
         //
@@ -104,11 +105,13 @@ class VM {
             //
             // Loop through population
             //
+            aliveAmount = 0;
             let o = orgAmount;
             while (--o > -1) {
                 const org  = orgsRef[o];
                 if (org === null) {break}
-                if (org.energy < 1) {continue}
+                if (!org.isOrg || org.energy < 1) {continue}
+                aliveAmount++;
                 const code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
@@ -366,14 +369,14 @@ class VM {
                             if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; continue}
                             const newCode = code.splice(ax, bx - ax);
                             if (newCode.length < 1) {org.ret = RET_ERR; continue}
-                            const clone   = this._createOrg(offset, org, newCode);
+                            const clone   = this._createOrg(offset, org, newCode, true);
                             this._db && this._db.put(clone, org);
                             const energy = clone.code.length * Config.energyMultiplier;
                             clone.energy = energy;
-                            if (code.length < 1) {this._removeOrg(org); break}
                             if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0) {
                                 Mutations.mutate(clone);
                             }
+                            if (code.length < 1) {this._removeOrg(org); break}
                             org.energy  -= energy;
                             org.preprocess();
                             line = 0;
@@ -583,8 +586,7 @@ class VM {
         //
         const ts = Date.now();
         if (ts - this._ts > 1000) {
-            const orgAmount = orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this._population}`);
+            world.title(`inps:${round(((this._i / aliveAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${aliveAmount} gen:${this._population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -602,6 +604,7 @@ class VM {
         const offset = org.offset;
         const packet = org.packet;
 
+        org.energy = 0;
         this._orgs.del(org.item, false);
         this._world.empty(offset);
         packet && this._createOrg(offset, packet);
@@ -628,6 +631,7 @@ class VM {
             const pos = rand(len);
             code.push(...code.splice(pos, pos + rand(len - pos)));
         }
+        org.isOrg = false;
     }
 
     /**
@@ -655,7 +659,7 @@ class VM {
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) !== 0) {orgs++; continue}
-            const luca = this._createOrg(offset, null, Config.codeLuca.slice());
+            const luca = this._createOrg(offset, null, Config.codeLuca.slice(), true);
             this._db && this._db.put(luca);
         }
         this._population++;
@@ -666,13 +670,14 @@ class VM {
      * @param {Number} offset Absolute org offset
      * @param {Organism=} parent Create from parent
      * @param {Array=} code New org code
+     * @param {Boolean} isOrg Current molecule is an organism
      * @returns {Object} Item in FastArray class
      */
-    _createOrg(offset, parent = null, code = null) {
+    _createOrg(offset, parent = null, code = null, isOrg = false) {
         const orgs    = this._orgs;
         const deadOrg = orgs.get(orgs.freeIndex);
-        const org     = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code) ||
-                        new Organism(Helper.id(), offset, orgs.freeIndex, parent, code);
+        const org     = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code, isOrg) ||
+                        new Organism(Helper.id(), offset, orgs.freeIndex, parent, code, isOrg);
 
         orgs.add(org);
         this._world.org(offset, org);

@@ -67,7 +67,6 @@ describe('src/irma/VM', () => {
             orgAmount                  : 1,
             orgLucaAmount              : 1,
             orgMaxAge                  : 2000000,
-            orgEnergy                  : 49,
             orgStepEnergy              : .001,
             orgEnergyPeriod            : 0,
             orgColor                   : 0xff0000,

@@ -12,19 +12,26 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, offs, item, parent = null, code = null) {
+    constructor(id, offs, item, parent = null, code = null, isOrg = false) {
         return this.init(...arguments);
     }
 
-    init(id, offs, item, parent = null, code = null) {
+    init(id, offs, item, parent = null, code = null, isOrg = false) {
         this.id         = id;
         this.item       = item;
         this.offset     = offs;
-        /**
-         * {Number} Organism's age - amount of iteration from born
-         */
-        this.packet     = null;
+        this.isOrg      = isOrg;
+        this.color      = Config.orgColor;
+        //
+        // For simple molecules we don't need to store all commands related data
+        //
+        if (!isOrg) {
+            this.code = this._generateCode();
+            return this;
+        }
+
         this.mutations  = 0;
+        this.packet     = null;
         this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
         this._memIdx    = -1;
         this.age        = 1;
@@ -33,13 +40,13 @@ class Organism {
             return this;
         }
 
-        this.color      = Config.orgColor;
-        this.freq       = 0;
-        this.generation = 0;
-        this.line       = 0;
         this.probs      = Config.orgProbs.slice();
         this.period     = Config.orgMutationPeriod;
         this.percent    = Config.orgMutationPercent;
+
+        this.freq       = 0;
+        this.generation = 0;
+        this.line       = 0;
 
         this.regs       = (new Array(Config.codeRegs)).fill(0);
         this.rIndex     = 0;

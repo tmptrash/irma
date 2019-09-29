@@ -40,7 +40,7 @@ module.exports = {
      * {Number} Functions call stack size
      */
     CODE_STACK_SIZE            : 300,
-    codeLinesPerIteration      : 5,
+    codeLinesPerIteration      : 1,
     codeTimesPerRun            : 10,
     codeMutateEveryClone       : 3,
     codeRegs                   : 6,
@@ -215,15 +215,14 @@ module.exports = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 20000,
-    orgLucaAmount              : 500,
+    orgAmount                  : 100000,
+    orgLucaAmount              : 3000,
     orgMaxAge                  : 2000000,
-    orgEnergy                  : 49,
     orgStepEnergy              : .001,
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 5001,
+    orgMutationPeriod          : 6001,
     orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
     /**
