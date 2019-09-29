@@ -11,8 +11,8 @@
  * @constant
  */
 // TODO: review all configs
-const WIDTH     = 1920 / 3;
-const HEIGHT    = 1080 / 3;
+const WIDTH     = 1920 / 4;
+const HEIGHT    = 1080 / 4;
 const CODE_OFFS = 1024;
 
 
@@ -215,13 +215,13 @@ module.exports = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 120000,
+    orgAmount                  : 110000,
     orgLucaAmount              : 5000,
     orgMaxAge                  : 2000000,
     orgStepEnergy              : .001,
     orgEnergyPeriod            : 0,
     orgColor                   : 0xff0000,
-    orgMutationPercent         : .01,
+    orgMutationPercent         : .005,
     orgMutationPeriod          : 8001,
     orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
