@@ -12,11 +12,11 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, offs, item, parent = null, code = null, isOrg = false) {
+    constructor(id, offs, item, orgItem, parent = null, code = null, isOrg = false) {
         return this.init(...arguments);
     }
 
-    init(id, offs, item, parent = null, code = null, isOrg = false) {
+    init(id, offs, item, orgItem, parent = null, code = null, isOrg = false) {
         this.id         = id;
         this.item       = item;
         this.offset     = offs;
@@ -26,10 +26,11 @@ class Organism {
         // For simple molecules we don't need to store all commands related data
         //
         if (!isOrg) {
-            this.code = this._generateCode();
+            this.code = code && code.slice() || this._generateCode();
             return this;
         }
 
+        this.orgItem    = orgItem;
         this.mutations  = 0;
         this.packet     = null;
         this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);

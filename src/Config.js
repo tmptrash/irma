@@ -10,11 +10,12 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 / 4;
-const HEIGHT    = 1080 / 4;
+const WIDTH     = 1920 * 2;
+const HEIGHT    = 1080 * 2;
 const CODE_OFFS = 1024;
 
 
+// TODO: rename all molecules related names to prefix "mol"
 module.exports = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
@@ -44,6 +45,7 @@ module.exports = {
     codeMutateEveryClone       : 5,
     codeRegs                   : 6,
     codeMixTimes               : 4,
+    codeMutateMutations        : false,
     codeLuca                   : [
         CODE_OFFS + 24, // func
         3,              //   3
@@ -104,6 +106,8 @@ module.exports = {
         CODE_OFFS + 48, //   len
         CODE_OFFS + 7,  //   sub
         CODE_OFFS,      //   toggle
+        17,             //   17
+        CODE_OFFS + 28, //   axret
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 34, //   split
@@ -111,6 +115,8 @@ module.exports = {
         CODE_OFFS + 24, // func
         -1,             //   -1
         CODE_OFFS + 14, //   rand
+        CODE_OFFS + 35, //   step
+        CODE_OFFS + 35, //   step
         CODE_OFFS + 35, //   step
         CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
@@ -137,6 +143,8 @@ module.exports = {
         CODE_OFFS + 14, //   rand
         CODE_OFFS + 6,  //   add
         CODE_OFFS,      //   toggle
+        0,              //   0
+        CODE_OFFS + 28, //   axret
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 34, //   split
@@ -169,9 +177,9 @@ module.exports = {
         1,              //   1
         CODE_OFFS + 23, //   call
         CODE_OFFS + 26, // end
-        2,              // 2
-        CODE_OFFS + 23, // call
         0,              // 0
+        CODE_OFFS + 23, // call
+        2,              // 2
         CODE_OFFS + 23, // call
         CODE_OFFS + 25, // ret
         CODE_OFFS + 5   // nop
@@ -207,14 +215,13 @@ module.exports = {
      * @constant
      */
     ORG_PROB_MAX_VALUE         : 50,
-    ORG_MASK                   : 0x80000000,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 110000,
-    orgLucaAmount              : 5000,
+    orgAmount                  : 500000,
+    orgLucaAmount              : 500,
     orgMaxAge                  : 200000,
     orgColor                   : 0xff0000,
-    orgMutationPercent         : .005,
-    orgMutationPeriod          : 8001,
+    orgMutationPercent         : .01,
+    orgMutationPeriod          : 50001,
     orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
     /**

@@ -4,13 +4,13 @@
  *
  * @author flatline
  */
-const Config    = require('./../Config');
-const FastArray = require('./../common/FastArray');
-const Helper    = require('./../common/Helper');
-const Db        = require('./../common/Db');
-const Organism  = require('./Organism');
-const Mutations = require('./Mutations');
-const World     = require('./World');
+const Config     = require('./../Config');
+const FastArray2 = require('./../common/FastArray2');
+const Helper     = require('./../common/Helper');
+const Db         = require('./../common/Db');
+const Organism   = require('./Organism');
+const Mutations  = require('./Mutations');
+const World      = require('./World');
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -23,6 +23,12 @@ const CODE_MAX_RAND     = CODE_CMD_OFFS + Config.CODE_COMMANDS;
 const CODE_STACK_SIZE   = Config.CODE_STACK_SIZE;
 const RET_OK            = 1;
 const RET_ERR           = 0;
+/**
+ * {Number} Unique identifier, which should be set to ret register before split
+ * command to keep child organism workable (interpretable with VM). Molecules
+ * don't run with VM
+ */
+const IS_ORG_ID         = 17;
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
@@ -56,6 +62,7 @@ const abs               = Math.abs;
 class VM {
     constructor() {
         this._world           = new World();
+        this._orgsAndMols     = null;
         this._orgs            = null;
         this._iterations      = 0;
         this._population      = 0;
@@ -71,11 +78,11 @@ class VM {
 
     destroy() {
         this._world.destroy();
-        this._orgs.destroy();
+        this._orgsAndMols.destroy();
         this._db && this._db.destroy();
-        this._world    = null;
-        this._orgs     = null;
-        this._db       = null;
+        this._world       = null;
+        this._orgsAndMols = null;
+        this._db          = null;
     }
 
     get ready() {
@@ -92,13 +99,13 @@ class VM {
     run() {
         const times            = Config.codeTimesPerRun;
         const lines            = Config.codeLinesPerIteration;
-        const stepEnergy       = Config.energyStepCoef;
+        const stepEnergyCoef   = Config.energyStepCoef;
         const world            = this._world;
         const mutationPeriod   = Config.orgMutationPeriod;
+        const orgsAndMols      = this._orgsAndMols;
+        const orgsAndMolsRef   = orgsAndMols.ref();
         const orgs             = this._orgs;
-        const orgsRef          = orgs.getRef();
-        const orgAmount        = orgs.size;
-        let   aliveAmount      = 0;
+        const orgsRef          = orgs.ref();
         //
         // Loop X times through population
         //
@@ -106,13 +113,10 @@ class VM {
             //
             // Loop through population
             //
-            aliveAmount = 0;
-            let o = orgAmount;
+            let o = orgs.items;
             while (--o > -1) {
                 const org  = orgsRef[o];
-                if (org === null) {break}
-                if (!org.isOrg || org.energy < 1) {continue}
-                aliveAmount++;
+                if (org.energy < 1) {continue}
                 const code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
@@ -351,7 +355,7 @@ class VM {
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
                             if (!dot) {org.ret = RET_ERR; continue}
-                            const nearOrg = orgsRef[dot];
+                            const nearOrg = orgsAndMolsRef[dot];
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; continue}
                             code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
                             org.energy += (nearOrg.code.length * Config.energyMultiplier);
@@ -362,19 +366,19 @@ class VM {
 
                         case CODE_CMD_OFFS + 34: {// split
                             ++line;
-                            if (orgs.full) {org.ret = RET_ERR; continue}
+                            if (orgsAndMols.full) {org.ret = RET_ERR; continue}
                             const offset  = org.offset + DIR[abs(org.ret) % 8];
                             if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
                             const dot     = world.getOrgIdx(offset);
                             if (dot) {org.ret = RET_ERR; continue} // organism on the way
                             if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; continue}
                             const newCode = code.splice(ax, bx - ax);
-                            if (newCode.length < 1) {org.ret = RET_ERR; continue}
-                            const clone   = this._createOrg(offset, org, newCode, true);
+                            if (newCode.length < 1 || org.ret === IS_ORG_ID && orgs.full) {org.ret = RET_ERR; continue}
+                            const clone   = this._createOrg(offset, org, newCode, org.ret === IS_ORG_ID);
                             this._db && this._db.put(clone, org);
                             const energy = clone.code.length * Config.energyMultiplier;
                             clone.energy = energy;
-                            if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0) {
+                            if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.isOrg) {
                                 Mutations.mutate(clone);
                             }
                             if (code.length < 1) {this._removeOrg(org); break}
@@ -387,7 +391,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 35: {// step
                             ++line;
-                            org.energy -= Math.floor(code.length * stepEnergy);
+                            org.energy -= Math.floor(code.length * stepEnergyCoef);
                             let offset = org.offset + DIR[abs(ax) % 8];
                             if (offset < -1) {offset = LINE_OFFS + org.offset}
                             else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
@@ -448,7 +452,7 @@ class VM {
                         case CODE_CMD_OFFS + 38:  // see
                             ++line;
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
-                            ax = (dot === 0 ? 0 : orgsRef[dot].color);
+                            ax = (dot === 0 ? 0 : orgsAndMolsRef[dot].color);
                             continue;
 
                         case CODE_CMD_OFFS + 39: {// say
@@ -469,7 +473,7 @@ class VM {
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
                             if (!dot) {org.ret = RET_ERR; continue}
-                            const nearOrg = orgsRef[dot];
+                            const nearOrg = orgsAndMolsRef[dot];
                             ax = nearOrg.code[bx] || 0;
                             org.ret = RET_OK;
                             continue;
@@ -478,7 +482,7 @@ class VM {
                         case CODE_CMD_OFFS + 42: {// nsplit
                             ++line;
                             if (org.ret !== 1) {org.ret = RET_ERR; continue}
-                            if (orgs.full) {org.ret = RET_ERR; continue}
+                            if (orgsAndMols.full) {org.ret = RET_ERR; continue}
                             const offset  = org.offset + DIR[abs(ax) % 8];
                             const dOffset = org.offset + DIR[abs(org.ret) % 8];
                             if (offset === dOffset) {org.ret = RET_ERR; continue}
@@ -486,7 +490,7 @@ class VM {
                             if (!dot) {org.ret = RET_ERR; continue}
                             const dDot    = world.getOrgIdx(dOffset);
                             if (dDot) {org.ret = RET_ERR; continue}
-                            const nearOrg = orgsRef[dot];
+                            const nearOrg = orgsAndMolsRef[dot];
                             const newCode = nearOrg.code.splice(0, bx);
                             if (newCode.length < 1) {org.ret = RET_ERR; continue}
                             const cutOrg  = this._createOrg(dOffset, nearOrg, newCode);
@@ -505,14 +509,14 @@ class VM {
                             if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; continue}
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
                             if (!dot) {org.ret = RET_ERR; continue}
-                            this._removeOrg(org.packet = orgsRef[dot]);
+                            this._removeOrg(org.packet = orgsAndMolsRef[dot]);
                             continue;
                         }
 
                         case CODE_CMD_OFFS + 44: {// put
                             ++line;
                             if (!org.packet) {org.ret = RET_ERR; continue}
-                            if (orgs.full) {org.ret = RET_ERR; continue}
+                            if (orgsAndMols.full) {org.ret = RET_ERR; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
                             if (dot || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
@@ -588,11 +592,12 @@ class VM {
         //
         const ts = Date.now();
         if (ts - this._ts > 1000) {
-            world.title(`inps:${round(((this._i / aliveAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${aliveAmount} gen:${this._population}`);
+            const orgAmount = this._orgs.items;
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this._population}`);
             this._ts = ts;
             this._i  = 0;
 
-            if (orgs.items === 0) {this._createOrgs()}
+            if (orgsAndMols.items === 0) {this._createOrgs()}
         }
     }
 
@@ -607,7 +612,9 @@ class VM {
         const packet = org.packet;
 
         org.energy = 0;
-        this._orgs.del(org.item, false);
+        this._removeFromOrgMolArr(org.item);
+        org.isOrg && this._removeFromOrgArr(org.orgItem);
+        org.isOrg  = false;
         this._world.empty(offset);
         packet && this._createOrg(offset, packet);
     }
@@ -631,7 +638,22 @@ class VM {
             code.push(...code.splice(pos1, pos1 + rand(coreLen - pos1)));
             code.push(...code.splice(pos2, pos2 + rand(len - pos2)));
         }
+        org.isOrg && this._removeFromOrgArr(org.orgItem);
         org.isOrg = false;
+    }
+
+    _removeFromOrgArr(item) {
+        const orgs = this._orgs;
+        orgs.del(item);
+        item < orgs.items && (orgs.get(item).orgItem = item);
+    }
+
+    _removeFromOrgMolArr(item) {
+        const movedOrg = this._orgsAndMols.del(item);
+        if (movedOrg) {
+            movedOrg.item = item;
+            this._world.setItem(movedOrg.offset, item);
+        }
     }
 
     /**
@@ -639,13 +661,15 @@ class VM {
      * Organisms will be placed randomly in a world
      */
     _createOrgs() {
+        const cfg   = Config;
         const world = this._world;
 
-        this._orgs = new FastArray(Config.orgAmount + Config.orgLucaAmount);
+        this._orgsAndMols = new FastArray2(cfg.orgAmount + cfg.orgLucaAmount + 1);
+        this._orgs = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / cfg.codeLuca.length) + cfg.orgLucaAmount + 1);
         //
         // Creates molecules and LUCA as last organism
         //
-        let molecules = Config.orgAmount;
+        let molecules = cfg.orgAmount;
         while (molecules-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) !== 0) {molecules++; continue}
@@ -653,7 +677,7 @@ class VM {
             this._db && this._db.put(org);
         }
         //
-        // Adds LUCA to the world
+        // Adds LUCA organisms to the world
         //
         let orgs = Config.orgLucaAmount;
         while (orgs-- > 0) {
@@ -674,12 +698,14 @@ class VM {
      * @returns {Object} Item in FastArray class
      */
     _createOrg(offset, parent = null, code = null, isOrg = false) {
-        const orgs    = this._orgs;
-        const deadOrg = orgs.get(orgs.freeIndex);
-        const org     = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, parent, code, isOrg) ||
-                        new Organism(Helper.id(), offset, orgs.freeIndex, parent, code, isOrg);
+        const orgsAndMols = this._orgsAndMols;
+        const orgs        = this._orgs;
+        const deadOrg     = orgsAndMols.get(orgsAndMols.freeIndex);
+        const org         = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, deadOrg.orgItem, parent, code, isOrg) ||
+                            new Organism(Helper.id(), offset, orgsAndMols.freeIndex, orgs.freeIndex, parent, code, isOrg);
 
-        orgs.add(org);
+        orgsAndMols.add(org);
+        isOrg && orgs.add(org);
         this._world.org(offset, org);
 
         return org;

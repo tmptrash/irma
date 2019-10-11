@@ -47,6 +47,10 @@ class World {
         this._canvas.dot(offset, org.color);
     }
 
+    setItem(offset, item) {
+        this._data[offset] = item + 1;
+    }
+
     getOrgIdx(offset) {
         const dot = this._data[offset];
         return !dot ? 0 : dot - 1;

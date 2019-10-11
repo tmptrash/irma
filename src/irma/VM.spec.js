@@ -61,7 +61,6 @@ describe('src/irma/VM', () => {
             DB_ON                      : false,
             DB_CHUNK_SIZE              : 100,
             ORG_PROB_MAX_VALUE         : 50,
-            ORG_MASK                   : 0x80000000,
             ORG_MIN_COLOR              : 0x96,
             orgAmount                  : 1,
             orgLucaAmount              : 1,

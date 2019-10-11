@@ -57,6 +57,8 @@ func             # func 0
   len            # ax=len     bx=sepIdx1
   sub            # ax=copyIdx bx=sepIdx1
   toggle         # ax=sepIdx1 bx=copyIdx
+  17             # ax=17      bx=copyIdx
+  axret          # ax=17      bx=copyIdx ret=17  
   len            # ax=len     bx=copyIdx
   toggle         # ax=copyIdx bx=len
   split          # ax=copyIdx bx=len
@@ -64,6 +66,8 @@ end
 func             # func 1
   -1             # ax=-1      bx=?
   rand           # ax=2       bx=?
+  step           # ax=2       bx=?
+  step           # ax=2       bx=?
   step           # ax=2       bx=?
   toggle         # ax=?       bx=2
   len            # ax=len     bx=2
@@ -90,6 +94,8 @@ func             # func 2
   rand           # ax=rnd     bx=sepIdx
   add            # ax=cutIdx  bx=sepIdx
   toggle         # ax=sepIdx  bx=cutIdx
+  0              # ax=0       bx=cutIdx
+  axret          # ax=0       bx=cutIdx ret=0
   len            # ax=len     bx=cutIdx
   toggle         # ax=cutIdx  bx=len
   split          # ax=cutIdx  bx=len
@@ -122,9 +128,9 @@ loop
   1              # ax=1       bx=?
   call           # eating
 end
-2                # ax=2       bx=?
-call             # ax=2       bx=?
 0
 call             # try clone
+2                # ax=2       bx=?
+call             # ax=2       bx=?
 ret              # this is how we disable food segment
 nop              # separator between code and food
