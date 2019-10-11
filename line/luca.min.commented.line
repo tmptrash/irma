@@ -100,7 +100,7 @@ func             # func 2
   toggle         # ax=cutIdx  bx=len
   split          # ax=cutIdx  bx=len
 end
-func
+func             # func 3
   0              # ax=0       bx=?
   axret          # ax=0       bx=?         ret=0
   1023           # ax=1023    bx=?
@@ -131,6 +131,6 @@ end
 0
 call             # try clone
 2                # ax=2       bx=?
-call             # ax=2       bx=?
+call             # out wastes
 ret              # this is how we disable food segment
 nop              # separator between code and food

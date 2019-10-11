@@ -185,14 +185,16 @@ class Organism {
         this.fCount     = parent.fCount;
         this.stackIndex = parent.stackIndex;
         this.loopIndex  = parent.loopIndex;
+        this.loops      = parent.loops.slice();
+        this.stack      = parent.stack.slice();
         this.offs       = parent.offs.slice();
         this.funcs      = parent.funcs.slice();
-        this.stack      = parent.stack.slice();
-        this.loops      = parent.loops.slice();
-        this.mem        = parent.mem.slice();
         this.code       = code ? code : parent.code.slice();
+        this.mem        = parent.mem.slice();
         this.generation = parent.generation + 1;
         this.freq       = parent.freq;
+
+        this.preprocess();
     }
 }
 

@@ -24,7 +24,7 @@ class Bytes2Code {
         // Create fake organism to preprocess his code to know where
         // blocks are located (func/ifxx/loop...end)
         //
-        const org = new Organism(-1, -1, -1, null, bytes, true);
+        const org = new Organism(-1, -1, -1, -1, null, bytes, true);
 
         const offs = org.offs;
         let code   = firstLineEmpty ? '\n' : '';

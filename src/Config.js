@@ -40,7 +40,7 @@ module.exports = {
      * {Number} Functions call stack size
      */
     CODE_STACK_SIZE            : 300,
-    codeLinesPerIteration      : 1,
+    codeLinesPerIteration      : 10,
     codeTimesPerRun            : 30,
     codeMutateEveryClone       : 5,
     codeRegs                   : 6,
@@ -182,6 +182,148 @@ module.exports = {
         2,              // 2
         CODE_OFFS + 23, // call
         CODE_OFFS + 25, // ret
+        CODE_OFFS + 5,  // nop
+
+        1,
+        2,
+        3,
+        4,
+
+        CODE_OFFS + 35, //   step
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 4,  //   push
+        1,              //   1
+        CODE_OFFS + 28, //   axret
+        CODE_OFFS + 3,  //   pop
+        CODE_OFFS + 33, //   join
+        CODE_OFFS + 26, // end
+        CODE_OFFS + 24, // func
+        3,              //   3
+        CODE_OFFS + 23, //   call
+        CODE_OFFS + 27, //   retax
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 4,  //   push
+        CODE_OFFS + 1,  //   shift
+        CODE_OFFS + 3,  //   pop
+        CODE_OFFS,      //   toggle
+        0,              //   0
+        CODE_OFFS + 36, //     find
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS + 27, //     retax
+        CODE_OFFS + 17, //     ifz
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 1,  //       shift
+        CODE_OFFS + 1,  //       shift
+        CODE_OFFS + 25, //       ret
+        CODE_OFFS + 26, //     end
+        CODE_OFFS + 1,  //     shift
+        CODE_OFFS + 1,  //     shift
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 28, //     axret
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 1,  //     shift
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 27, //     retax
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 10, //   inc
+        CODE_OFFS + 22, //   loop
+        CODE_OFFS + 28, //     axret
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS + 2,  //     eq
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS + 11, //     dec
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 18, //     ifg
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 3,  //       pop
+        CODE_OFFS + 1,  //       shift
+        CODE_OFFS + 1,  //       shift
+        CODE_OFFS + 25, //       ret
+        CODE_OFFS + 26, //     end
+        CODE_OFFS + 48, //     len
+        CODE_OFFS + 37, //     move
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS + 10, //     inc
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS + 26, //   end
+        CODE_OFFS + 14, //   rand
+        CODE_OFFS + 35, //   step
+        CODE_OFFS + 35, //   step
+        CODE_OFFS + 24, // func
+        900,            //   900
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS + 19, //   ifl
+        CODE_OFFS + 25, //     ret
+        CODE_OFFS + 26, //   end
+        3,              //   3
+        CODE_OFFS + 23, //   call
+        CODE_OFFS + 27, //   retax
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS + 7,  //   sub
+        CODE_OFFS + 14, //   rand
+        CODE_OFFS + 6,  //   add
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 48, //   len
+        CODE_OFFS + 7,  //   sub
+        CODE_OFFS,      //   toggle
+        17,             //   17
+        CODE_OFFS + 28, //   axret
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 34, //   split
+        CODE_OFFS + 26, // end
+        CODE_OFFS + 24, // func
+        -1,             //   -1
+        CODE_OFFS,      //   toggle
+        0,              //   0
+        CODE_OFFS + 28, //   axret
+        CODE_OFFS + 48, //   len
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 34, //   split
+        CODE_OFFS + 26, // end
+        CODE_OFFS + 24, // func
+        0,              //   0
+        CODE_OFFS + 28, //   axret
+        1023,           //   1023
+        CODE_OFFS,      //   toggle
+        6,              //   6
+        CODE_OFFS + 6,  //   add
+        CODE_OFFS,      //   toggle
+        -1,             //   -1
+        CODE_OFFS,      //   toggle
+        CODE_OFFS + 36, //   find
+        CODE_OFFS + 28, //   axret
+        CODE_OFFS + 26, // end
+        255,            // 255
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 49, // color
+        50,             // 50
+        CODE_OFFS + 22, // loop
+        1,              //   1
+        CODE_OFFS + 23, //   call
+        CODE_OFFS + 26, // end
+        0,              // 0
+        CODE_OFFS + 23, // call
+        2,              // 2
+        CODE_OFFS + 23, // call
+        CODE_OFFS + 25, // ret
         CODE_OFFS + 5   // nop
     ],
 
@@ -217,7 +359,7 @@ module.exports = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
     orgAmount                  : 500000,
-    orgLucaAmount              : 500,
+    orgLucaAmount              : 1,
     orgMaxAge                  : 200000,
     orgColor                   : 0xff0000,
     orgMutationPercent         : .01,

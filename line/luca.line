@@ -13,7 +13,7 @@ func             # func 0
   # and tail offset	
   #
   3              # ax=3       bx=?
-  call           # ax=3       bx=?
+  call           # find separator index
   retax          # ax=sepIdx  bx=?
   toggle         # ax=?       bx=sepIdx
   len            # ax=len     bx=sepIdx
@@ -54,7 +54,7 @@ func             # func 0
     shift        # ax=sepIdx  bx=len      (regs: 0,1)
     toggle       # ax=len     bx=sepIdx
     axret        # ax=len     bx=sepIdx   ret=len
-	toggle       # ax=sepIdx  bx=len      ret=len
+	  toggle       # ax=sepIdx  bx=len      ret=len
     shift        # ax=1       bx=0        ret=len
     pop          # ax=findIdx bx=0        ret=len
     toggle       # ax=0       bx=findIdx  ret=len
