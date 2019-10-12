@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 2;
-const HEIGHT    = 1080 * 2;
+const WIDTH     = 1920;
+const HEIGHT    = 1080;
 const CODE_OFFS = 1024;
 
 
@@ -40,9 +40,9 @@ module.exports = {
      * {Number} Functions call stack size
      */
     CODE_STACK_SIZE            : 300,
-    codeLinesPerIteration      : 10,
+    codeLinesPerIteration      : 1,
     codeTimesPerRun            : 30,
-    codeMutateEveryClone       : 5,
+    codeMutateEveryClone       : 7,
     codeRegs                   : 6,
     codeMixTimes               : 4,
     codeMutateMutations        : false,
@@ -216,7 +216,7 @@ module.exports = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 500000,
+    orgAmount                  : 300000,
     orgLucaAmount              : 1,
     orgMaxAge                  : 200000,
     orgColor                   : 0xff0000,
