@@ -250,6 +250,11 @@ class VM {
 
                         case CODE_CMD_OFFS + 22: {// loop
                             const loops = org.loops;
+                            //
+                            // previous line was "end", so this is next iteration cicle
+                            //
+                            if (!org.isLoop) {loops[line] = -1}
+                            org.isLoop = false;
                             if (loops[line] < 0 && org.offs[line] > line + 1) {
                                 loops[line] = ax;
                             }
@@ -303,6 +308,7 @@ class VM {
                             switch (code[org.offs[line]]) {
                                 case CODE_CMD_OFFS + 22: // loop
                                     line = org.offs[line];
+                                    org.isLoop = true;
                                     break;
                                 case CODE_CMD_OFFS + 24: // func
                                     const stack = org.stack;

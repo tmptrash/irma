@@ -62,6 +62,7 @@ class Organism {
         this.ret        = 0;
         this.find0      = 0;
         this.find1      = 0;
+        this.isLoop     = false;
         /**
          * {Number} Amount of functions in a code
          */
@@ -182,6 +183,7 @@ class Organism {
         this.ret        = parent.ret;
         this.find0      = parent.find0;
         this.find1      = parent.find1;
+        this.isLoop     = parent.isLoop;
         this.fCount     = parent.fCount;
         this.stackIndex = parent.stackIndex;
         this.loopIndex  = parent.loopIndex;
