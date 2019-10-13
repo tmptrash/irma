@@ -1,7 +1,6 @@
 describe('src/irma/VM', () => {
     const VM        = require('./VM');
     let   Config    = require('./../Config');
-    //const Helper    = require('./../common/Helper');
     const TG        = Config.CODE_CMD_OFFS;
     const SH        = Config.CODE_CMD_OFFS+1;
     const EQ        = Config.CODE_CMD_OFFS+2;
@@ -45,30 +44,34 @@ describe('src/irma/VM', () => {
 
     beforeEach(() => {
         Object.assign(Config, {
+            // constants
             DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
             CODE_CMD_OFFS              : 1024,
             CODE_COMMANDS              : 50,
             CODE_STACK_SIZE            : 100,
+            WORLD_WIDTH                : WIDTH,
+            WORLD_HEIGHT               : HEIGHT,
+            DB_ON                      : false,
+            DB_CHUNK_SIZE              : 100,
+            ORG_PROB_MAX_VALUE         : 50,
+            ORG_MIN_COLOR              : 0x96,
+            // variables
             codeLinesPerIteration      : 1,
             codeTimesPerRun            : 1,
             codeMutateEveryClone       : 1000,
             codeRegs                   : 6,
             codeMixTimes               : 3,
+            codeMutateMutations        : false,
             codeLuca                   : [],
-            WORLD_WIDTH                : WIDTH,
-            WORLD_HEIGHT               : HEIGHT,
+            worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
-            DB_ON                      : false,
-            DB_CHUNK_SIZE              : 100,
-            ORG_PROB_MAX_VALUE         : 50,
-            ORG_MIN_COLOR              : 0x96,
             orgAmount                  : 1,
             orgLucaAmount              : 1,
             orgMaxAge                  : 2000000,
             orgColor                   : 0xff0000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
-            orgMaxCodeSize             : 5,
+            orgMaxCodeSize             : 50,
             orgMoleculeCodeSize        : 8,
             orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
             energyMove                 : 20,
@@ -77,7 +80,6 @@ describe('src/irma/VM', () => {
         });
 
         vm = new VM();
-        vm._orgs.added().energy = 1000;
     });
 
     afterEach(() => {
@@ -91,7 +93,7 @@ describe('src/irma/VM', () => {
     //
     function run(code, ax = 0, bx = 0, ret = 0, checkLen = true, lines = null) {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
-        const org = vm._orgs.added();
+        const org = vm._orgs.get(0);
         org.code  = code.slice(); // code copy
         org.preprocess();
         expect(org.ax).toBe(0);
@@ -112,7 +114,10 @@ describe('src/irma/VM', () => {
         });
 
         it('Checks amount of created organisms', () => {
-            expect(vm._orgs.items).toBe(Config.orgAmount + Config.orgLucaAmount);
+            expect(vm._orgs.items).toBe(Config.orgLucaAmount);
+        });
+        it('Checks amount of created organisms and molecules', () => {
+            expect(vm._orgsAndMols.items).toBeLessThanOrEqual(Config.orgAmount + Config.orgLucaAmount);
         });
     });
 
@@ -171,7 +176,7 @@ describe('src/irma/VM', () => {
         describe('push tests', () => {
             it('push0', () => run([PU]));
             it('push2', () => run([1,PU,0,PO], 1));
-            it('push2', () => run([1,PU,PU,PU,PU,PU,2,PU,PO], 1));
+            it('push3', () => run([1,PU,PU,PU,PU,PU,2,PU,PO], 2));
         });
 
         describe('nop tests', () => {
@@ -264,7 +269,7 @@ describe('src/irma/VM', () => {
             it('rand0', () => {
                 const code = [RA];
                 Config.codeLinesPerIteration = code.length;
-                const org  = vm._orgs.added();
+                const org  = vm._orgs.get(0);
                 org.code  = code;
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);

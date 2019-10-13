@@ -62,11 +62,11 @@ const abs               = Math.abs;
 class VM {
     constructor() {
         this._world           = new World();
+        this._ts              = Date.now();
         this._orgsAndMols     = null;
         this._orgs            = null;
         this._iterations      = 0;
         this._population      = 0;
-        this._ts              = Date.now();
         this._i               = 0;
         this._freq            = {};
         for (let i = 0; i < Config.worldFrequency; i++) {this._freq[i] = 0}
@@ -673,7 +673,7 @@ class VM {
         //
         if (!this._orgsAndMols) {
             this._orgsAndMols = new FastArray2(cfg.orgAmount + cfg.orgLucaAmount + 1);
-            this._orgs        = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / cfg.codeLuca.length) + cfg.orgLucaAmount + 1);
+            this._orgs        = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
             //
             // Creates molecules and LUCA as last organism
             //

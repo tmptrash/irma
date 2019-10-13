@@ -1,233 +1,232 @@
-nop                           
-toggle                        
 func                          
-  3
   call                        
   retax                       
   toggle                      
   len                         
   toggle                      
   push                        
-  pop                         
-  toggle                      
-  0
-  toggle                      
-  inc                         
-  loop                        
-    axret                     
-    push                      
-    eq                        
-    push                      
-    find                      
-    push                      
-    retax                     
-    ifz                       
-      pop                     
-      pop                     
-      pop                     
-      shift                   
-      shift                   
-      ret                     
-    end                       
-    shift                     
-    shift                     
-    toggle                    
-    axret                     
-    toggle                    
-    shift                     
-    pop                       
-    toggle                    
-    retax                     
-    dec                       
-    toggle                    
-    ifg                       
-      pop                     
-      pop                     
-      shift                   
-      shift                   
-      ret                     
-    end                       
-    len                       
-    move                      
-    pop                       
-    inc                       
-    toggle                    
-    pop                       
-  end                         
-  toggle                      
-  len                         
-  sub                         
-  toggle                      
-  17
-  axret                       
-  len                         
-  toggle                      
-  split                       
-end                           
-func                          
-  -1
-  rand                        
-  step                        
-  step                        
-  step                        
-  toggle                      
-  len                         
-  toggle                      
-  push                        
-  1
-  axret                       
-  pop                         
-  join                        
-end                           
-func                          
-900
-toggle                        
-len                           
-ifg                           
-  ifl                         
-    ret                       
-  end                         
-  3
-  call                        
-  retax                       
-  toggle                      
-  len                         
-  sub                         
-  rand                        
-  add                         
-  toggle                      
-  0
-  3
-  call                        
-  retax                       
-  toggle                      
-  len                         
-  toggle                      
-  push                        
-  ret                         
-end                           
-len                           
-ifl                           
-  ret                         
-end                           
-3
-call                          
-retax                         
-toggle                        
-xor                           
-or                            
--640
-add                           
-get                           
-loop                          
-div                           
-axret                         
-toggle                        
-shift                         
-pop                           
-toggle                        
-retax                         
-dec                           
-toggle                        
-0
-toggle                        
-inc                           
-loop                          
-axret                         
-push                          
-eq                            
-push                          
-ifp                           
-retax                         
-split                         
-add                           
-find                          
-xor                           
-ifp                           
-move                          
-eq                            
-split                         
-xor                           
-dec                           
-step                          
-get                           
-xor                           
-pop                           
-loop                          
-axret                         
-push                          
-eq                            
-push                          
-find                          
-push                          
-retax                         
-1
-2
-3
-4
-step                          
-toggle                        
-len                           
-toggle                        
-ifg                           
-pop                           
-pop                           
-shift                         
-ifl                           
-  shift                       
-  ret                         
-end                           
-len                           
-3
-4
-step                          
-toggle                        
-len                           
-toggle                        
-push                          
-1
-listen                        
-find                          
-offs                          
-ifn                           
-  listen                      
-  -529
-  axret                       
-  len                         
-  toggle                      
-  split                       
-end                           
-func                          
-  push                        
-  axret                       
-  1023
-  toggle                      
-  6
-  add                         
-  toggle                      
-  -1
-  toggle                      
-  find                        
-  axret                       
-end                           
-255
-lshift                        
-lshift                        
-lshift                        
-lshift                        
-lshift                        
-lshift                        
-lshift                        
-lshift                        
-color                         
-50
-loop                          
-  line                        
-  call                        
-end                           
-0
-call                          
-2
-call                          
-ret                           
-nop                           
+  pop          
+0    255
+1    div                           
+2    end                           
+3    find                          
+4    func                          
+5      call                        
+6      retax                       
+7      toggle                      
+8      len                         
+9      toggle                      
+10     push                        
+11     pop                         
+12     toggle                      
+13     0
+14     toggle                      
+15     inc                         
+16     loop                        
+17       axret                     
+18       push                      
+19       eq                        
+20       push                      
+21       find                      
+22       push                      
+23       retax                     
+24       ifz                       
+25         pop                     
+26         pop                     
+27         pop                     
+28         ret                     
+29       end                       
+30       shift                     
+31       shift                     
+32       toggle                    
+33       axret                     
+34       toggle                    
+35       shift                     
+36       pop                       
+37       toggle                    
+38       retax                     
+39       dec                       
+40       toggle                    
+41       ifg                       
+42         pop                     
+43         pop                     
+44         shift                   
+45         shift                   
+46         ret                     
+47       end                       
+48       len                       
+49       move                      
+50       pop                       
+51       inc                       
+52       toggle                    
+53       pop                       
+54     end                         
+55     toggle                      
+56     len                         
+57     sub                         
+58     toggle                      
+59     17
+60     axret                       
+61     len                         
+62     toggle                      
+63     split                       
+64   end                           
+65   func                          
+66     -1
+67     rand                        
+68     step                        
+69     step                        
+70     step                        
+71     toggle                      
+72     len                         
+73     toggle                      
+74     push                        
+75     1
+76     axret                       
+77     pop                         
+78     join                        
+79   end                           
+80   func                          
+81     900
+82     toggle                      
+83     len                         
+84     ifl                         
+85       ret                       
+86     end                         
+87     3
+88     call                        
+89     retax                       
+90     toggle                      
+91     len                         
+92     sub                         
+93     rand                        
+94     add                         
+95     toggle                      
+96     0
+97     axret                       
+98     len                         
+99     toggle                      
+100    split                       
+101  end                           
+102  func                          
+103    0
+104    axret                       
+105    1023
+106    toggle                      
+107    6
+108    add                         
+109    toggle                      
+110    -1
+111    toggle                      
+112    find                        
+113    axret                       
+114  end                           
+115  255
+116  lshift                        
+117  lshift                        
+118  lshift                        
+119  lshift                        
+120  lshift                        
+121  lshift                        
+122  lshift                        
+123  lshift                        
+124  color                         
+125  50
+126  loop                          
+127    1
+128    call                        
+129  end                           
+130  0
+131  call                          
+132  2
+133  call                          
+134  ret                           
+135  nop                           
+136  shift                         
+137  shift                         
+138  ret                           
+139  end                           
+140  shift                         
+141  shift                         
+142  toggle                        
+143  axret                         
+144  push                          
+145  find                          
+146  push                          
+147  retax                         
+148  ifz                           
+149    pop                         
+150    pop                         
+151    pop                         
+152    inc                         
+153    166
+154    find                        
+155    color                       
+156  end                           
+157  pop                           
+158  inc                           
+159  ife                           
+160  offs                          
+161  pop                           
+162  age                           
+163  retax                         
+164  or                            
+165  ifg                           
+166  age                           
+167  push                          
+168  ifp                           
+169  color                         
+170  sub                           
+171  mul                           
+172  call                          
+173  rand                          
+174  join                          
+175  call                          
+176  call                          
+177  pop                           
+178  eq                            
+179  step                          
+180  say                           
+181  axret                         
+182  div                           
+183  nsplit                        
+184  lshift                        
+185  lshift                        
+186  lshift                        
+187  lshift                        
+188  lshift                        
+189  lshift                        
+190  lshift                        
+191  color                         
+192  mul                           
+193  nop                           
+194  toggle                        
+195  see                           
+196  dec                           
+197  add                           
+198  loop                          
+199  and                           
+200  -751
+201  put                           
+202  ifz                           
+203  join                          
+204  rshift                        
+205  ife                           
+206  mul                           
+207  put                           
+208  shift                         
+209  sub                           
+210  see                           
+211  split                         
+212  len                           
+213  find                          
+214  push                          
+215  ife                           
+216  shift                         
+217  listen                        
+218  push                          
+219  ifl                           
+220  end                           
+221  nop                           
+222  ret                           
+223  ifp                           
