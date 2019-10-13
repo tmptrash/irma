@@ -116,7 +116,6 @@ class VM {
             let o = orgs.items;
             while (--o > -1) {
                 const org  = orgsRef[o];
-                if (org.energy < 1) {continue}
                 const code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
@@ -603,7 +602,7 @@ class VM {
             this._ts = ts;
             this._i  = 0;
 
-            if (orgsAndMols.items === 0) {this._createOrgs()}
+            if (orgs.items < 1) {this._createOrgs()}
         }
     }
 
@@ -669,18 +668,22 @@ class VM {
     _createOrgs() {
         const cfg   = Config;
         const world = this._world;
-
-        this._orgsAndMols = new FastArray2(cfg.orgAmount + cfg.orgLucaAmount + 1);
-        this._orgs = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / cfg.codeLuca.length) + cfg.orgLucaAmount + 1);
         //
-        // Creates molecules and LUCA as last organism
+        // Molecules and organisms array should be created only once
         //
-        let molecules = cfg.orgAmount;
-        while (molecules-- > 0) {
-            const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) !== 0) {molecules++; continue}
-            const org = this._createOrg(offset);
-            this._db && this._db.put(org);
+        if (!this._orgsAndMols) {
+            this._orgsAndMols = new FastArray2(cfg.orgAmount + cfg.orgLucaAmount + 1);
+            this._orgs        = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / cfg.codeLuca.length) + cfg.orgLucaAmount + 1);
+            //
+            // Creates molecules and LUCA as last organism
+            //
+            let molecules = cfg.orgAmount;
+            while (molecules-- > 0) {
+                const offset = rand(MAX_OFFS);
+                if (world.getOrgIdx(offset) !== 0) {molecules++; continue}
+                const org = this._createOrg(offset);
+                this._db && this._db.put(org);
+            }
         }
         //
         // Adds LUCA organisms to the world

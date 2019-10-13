@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920;
-const HEIGHT    = 1080;
+const WIDTH     = 1920 * 2;
+const HEIGHT    = 1080 * 2;
 const CODE_OFFS = 1024;
 
 
@@ -42,7 +42,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 1,
     codeTimesPerRun            : 30,
-    codeMutateEveryClone       : 7,
+    codeMutateEveryClone       : 10,
     codeRegs                   : 6,
     codeMixTimes               : 4,
     codeMutateMutations        : false,
@@ -216,12 +216,12 @@ module.exports = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 300000,
-    orgLucaAmount              : 1,
+    orgAmount                  : 900000,
+    orgLucaAmount              : 3,
     orgMaxAge                  : 200000,
     orgColor                   : 0xff0000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 50001,
+    orgMutationPeriod          : 120001,
     orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
     /**
