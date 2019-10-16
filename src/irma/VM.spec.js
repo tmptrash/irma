@@ -500,8 +500,8 @@ describe('src/irma/VM', () => {
         });
 
         describe('join tests', () => {
-            xit('join0',  () => {
-                Config.orgAmount = 2;
+            it('join0',  () => {
+                Config.orgAmount = 0;
                 Config.orgLucaAmount = 2;
                 const vm1  = new VM();
                 const org1 = vm1._orgs.get(0);
@@ -510,9 +510,13 @@ describe('src/irma/VM', () => {
                 vm1._world.moveOrg(org1, 0);
                 vm1._world.moveOrg(org2, 1);
                 org1.code = [2,JO];
+                org2.code = [2];
                 org1.preprocess();
+                org2.preprocess();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
+                // TODO:
+                vm1.destroy();
             });
         })
     });

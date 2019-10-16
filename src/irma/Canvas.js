@@ -9,14 +9,9 @@ const Config   = require('./../Config');
 
 class Canvas {
     constructor() {
-        const id  = 'world';
-        const doc = document;
-
-        doc.body.innerHTML += `<canvas id="${id}" width="${Config.WORLD_WIDTH}" height="${Config.WORLD_HEIGHT}"></canvas>`;
-
         this._width         = Config.WORLD_WIDTH;
         this._height        = Config.WORLD_HEIGHT;
-        this._canvasEl      = doc.getElementById(id);
+        this._canvasEl      = this._createCanvas();
         this._headerEl      = this._createHeader();
         this._ctx           = this._canvasEl.getContext('2d');
         this._imgData       = this._ctx.createImageData(this._width, this._height);
@@ -40,13 +35,13 @@ class Canvas {
     }
 
     destroy() {
-        const parentNode = this._canvasEl.parentNode;
+        const parentNode = document.body;
 
         this._panZoom.dispose();
         parentNode.removeChild(this._canvasEl);
         parentNode.removeChild(this._fullEl);
         parentNode.removeChild(this._visualizeEl);
-        this._headerEl.parentNode.removeChild(this._headerEl);
+        parentNode.removeChild(this._headerEl);
         this._headerEl    = null;
         this._canvasEl    = null;
         this._fullEl      = null;
@@ -141,12 +136,12 @@ class Canvas {
         //
         // Inner div
         //
-        const innerEl = document.body.appendChild(Helper.setStyles('DIV', {
+        const innerEl = el.appendChild(Helper.setStyles('DIV', {
             position       : 'absolute',
-            width          : '10px',
-            height         : '10px',
-            top            : '12px',
-            left           : '12px',
+            width          : '12px',
+            height         : '12px',
+            top            : '8px',
+            left           : '8px',
             border         : '1px #000 solid',
             backgroundColor: '#f7ed0e',
             borderRadius   : '3px',
@@ -241,6 +236,23 @@ class Canvas {
         document.addEventListener('keydown', this._onKeyDown.bind(this));
     }
 
+    _createCanvas() {
+        return document.body.appendChild(Helper.setStyles('CANVAS', {
+            id             : `world-${(new Date()).getTime()}`,
+            width          : Config.WORLD_WIDTH,
+            height         : Config.WORLD_HEIGHT,
+            position       : 'absolute',
+            width          : '20px',
+            height         : '20px',
+            top            : '7px',
+            left           : '7px',
+            border         : '1px #000 solid',
+            backgroundColor: '#f7ed0e',
+            borderRadius   : '6px',
+            cursor         : 'pointer'
+        }));
+    }
+
     _createHeader() {
         return document.body.appendChild(Helper.setStyles('DIV', {
             position  : 'absolute',
@@ -286,7 +298,7 @@ class Canvas {
     _onZoom() {
         if (!this._canvasEl) {return}
         const transform     = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
-        if (transform === 'none') {return}
+        if (!transform || transform === 'none') {return}
         const matrix        = transform.split('(')[1].split(')')[0].split(',');
         const dx            = +matrix[4];
         const dy            = +matrix[5];
