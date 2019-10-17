@@ -216,7 +216,7 @@ module.exports = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 900000,
+    orgAmount                  : 3000000,
     orgLucaAmount              : 3,
     orgMaxAge                  : 200000,
     orgColor                   : 0xff0000,

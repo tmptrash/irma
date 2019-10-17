@@ -237,20 +237,12 @@ class Canvas {
     }
 
     _createCanvas() {
-        return document.body.appendChild(Helper.setStyles('CANVAS', {
-            id             : `world-${(new Date()).getTime()}`,
-            width          : Config.WORLD_WIDTH,
-            height         : Config.WORLD_HEIGHT,
-            position       : 'absolute',
-            width          : '20px',
-            height         : '20px',
-            top            : '7px',
-            left           : '7px',
-            border         : '1px #000 solid',
-            backgroundColor: '#f7ed0e',
-            borderRadius   : '6px',
-            cursor         : 'pointer'
-        }));
+        const canvas = document.createElement('CANVAS');
+
+        canvas.setAttribute('width', Config.WORLD_WIDTH);
+        canvas.setAttribute('height', Config.WORLD_HEIGHT);
+
+        return document.body.appendChild(canvas);
     }
 
     _createHeader() {

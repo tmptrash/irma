@@ -93,7 +93,7 @@ describe('src/irma/VM', () => {
     //
     function run(code, ax = 0, bx = 0, ret = 0, checkLen = true, lines = null) {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
-        const org = vm._orgs.get(0);
+        const org = vm.orgs.get(0);
         org.code  = code.slice(); // code copy
         org.preprocess();
         expect(org.ax).toBe(0);
@@ -114,10 +114,10 @@ describe('src/irma/VM', () => {
         });
 
         it('Checks amount of created organisms', () => {
-            expect(vm._orgs.items).toBe(Config.orgLucaAmount);
+            expect(vm.orgs.items).toBe(Config.orgLucaAmount);
         });
         it('Checks amount of created organisms and molecules', () => {
-            expect(vm._orgsAndMols.items).toBeLessThanOrEqual(Config.orgAmount + Config.orgLucaAmount);
+            expect(vm.orgsAndMols.items).toBeLessThanOrEqual(Config.orgAmount + Config.orgLucaAmount);
         });
     });
 
@@ -269,7 +269,7 @@ describe('src/irma/VM', () => {
             it('rand0', () => {
                 const code = [RA];
                 Config.codeLinesPerIteration = code.length;
-                const org  = vm._orgs.get(0);
+                const org  = vm.orgs.get(0);
                 org.code  = code;
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
@@ -504,18 +504,18 @@ describe('src/irma/VM', () => {
                 Config.orgAmount = 0;
                 Config.orgLucaAmount = 2;
                 const vm1  = new VM();
-                const org1 = vm1._orgs.get(0);
-                const org2 = vm1._orgs.get(1);
+                const org1 = vm1.orgs.get(0);
+                const org2 = vm1.orgs.get(1);
 
-                vm1._world.moveOrg(org1, 0);
-                vm1._world.moveOrg(org2, 1);
-                org1.code = [2,JO];
+                vm1.world.moveOrg(org1, 0);
+                vm1.world.moveOrg(org2, 1);
+                org1.code = [1,AR,2,JO];
                 org2.code = [2];
                 org1.preprocess();
                 org2.preprocess();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
-                // TODO:
+                expect(vm1.orgs.items).toBe(1);
                 vm1.destroy();
             });
         })

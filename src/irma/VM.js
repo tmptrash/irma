@@ -61,12 +61,11 @@ const abs               = Math.abs;
 
 class VM {
     constructor() {
-        this._world           = new World();
+        this.world            = new World();
+        this.orgsAndMols      = null;
+        this.orgs             = null;
+        this.population       = 0;
         this._ts              = Date.now();
-        this._orgsAndMols     = null;
-        this._orgs            = null;
-        this._iterations      = 0;
-        this._population      = 0;
         this._i               = 0;
         this._freq            = {};
         for (let i = 0; i < Config.worldFrequency; i++) {this._freq[i] = 0}
@@ -77,11 +76,11 @@ class VM {
     }
 
     destroy() {
-        this._world.destroy();
-        this._orgsAndMols.destroy();
+        this.world.destroy();
+        this.orgsAndMols.destroy();
         this._db && this._db.destroy();
-        this._world       = null;
-        this._orgsAndMols = null;
+        this.world        = null;
+        this.orgsAndMols  = null;
         this._db          = null;
     }
 
@@ -100,11 +99,11 @@ class VM {
         const times            = Config.codeTimesPerRun;
         const lines            = Config.codeLinesPerIteration;
         const stepEnergyCoef   = Config.energyStepCoef;
-        const world            = this._world;
+        const world            = this.world;
         const mutationPeriod   = Config.orgMutationPeriod;
-        const orgsAndMols      = this._orgsAndMols;
+        const orgsAndMols      = this.orgsAndMols;
         const orgsAndMolsRef   = orgsAndMols.ref();
-        const orgs             = this._orgs;
+        const orgs             = this.orgs;
         const orgsRef          = orgs.ref();
         //
         // Loop X times through population
@@ -590,15 +589,14 @@ class VM {
                 org.energy--;
                 this._i += lines;
             }
-            this._iterations++;
         }
         //
         // Updates status line at the top of screen
         //
         const ts = Date.now();
         if (ts - this._ts > 1000) {
-            const orgAmount = this._orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this._population}`);
+            const orgAmount = this.orgs.items;
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -620,7 +618,7 @@ class VM {
         this._removeFromOrgMolArr(org.item);
         org.isOrg && this._removeFromOrgArr(org.orgItem);
         org.isOrg  = false;
-        this._world.empty(offset);
+        this.world.empty(offset);
         packet && this._createOrg(offset, packet);
     }
 
@@ -648,16 +646,16 @@ class VM {
     }
 
     _removeFromOrgArr(item) {
-        const orgs = this._orgs;
+        const orgs = this.orgs;
         orgs.del(item);
         item < orgs.items && (orgs.get(item).orgItem = item);
     }
 
     _removeFromOrgMolArr(item) {
-        const movedOrg = this._orgsAndMols.del(item);
+        const movedOrg = this.orgsAndMols.del(item);
         if (movedOrg) {
             movedOrg.item = item;
-            this._world.setItem(movedOrg.offset, item);
+            this.world.setItem(movedOrg.offset, item);
         }
     }
 
@@ -667,13 +665,13 @@ class VM {
      */
     _createOrgs() {
         const cfg   = Config;
-        const world = this._world;
+        const world = this.world;
         //
         // Molecules and organisms array should be created only once
         //
-        if (!this._orgsAndMols) {
-            this._orgsAndMols = new FastArray2(cfg.orgAmount + cfg.orgLucaAmount + 1);
-            this._orgs        = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
+        if (!this.orgsAndMols) {
+            this.orgsAndMols = new FastArray2(cfg.orgAmount + cfg.orgLucaAmount + 1);
+            this.orgs        = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
             //
             // Creates molecules and LUCA as last organism
             //
@@ -695,7 +693,7 @@ class VM {
             const luca = this._createOrg(offset, null, Config.codeLuca.slice(), true);
             this._db && this._db.put(luca);
         }
-        this._population++;
+        this.population++;
     }
 
     /**
@@ -707,15 +705,15 @@ class VM {
      * @returns {Object} Item in FastArray class
      */
     _createOrg(offset, parent = null, code = null, isOrg = false) {
-        const orgsAndMols = this._orgsAndMols;
-        const orgs        = this._orgs;
+        const orgsAndMols = this.orgsAndMols;
+        const orgs        = this.orgs;
         const deadOrg     = orgsAndMols.get(orgsAndMols.freeIndex);
         const org         = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, deadOrg.orgItem, parent, code, isOrg) ||
                             new Organism(Helper.id(), offset, orgsAndMols.freeIndex, orgs.freeIndex, parent, code, isOrg);
 
         orgsAndMols.add(org);
         isOrg && orgs.add(org);
-        this._world.org(offset, org);
+        this.world.org(offset, org);
 
         return org;
     }
