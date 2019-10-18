@@ -71,6 +71,7 @@ describe('src/irma/VM', () => {
             orgColor                   : 0xff0000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
+            molDecayPeriod             : 100,
             orgMaxCodeSize             : 50,
             orgMoleculeCodeSize        : 8,
             orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),

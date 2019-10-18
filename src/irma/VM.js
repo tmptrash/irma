@@ -5,12 +5,13 @@
  * @author flatline
  */
 const Config     = require('./../Config');
-const FastArray2 = require('./../common/FastArray2');
+const FastArray  = require('../common/FastArray');
 const Helper     = require('./../common/Helper');
 const Db         = require('./../common/Db');
 const Organism   = require('./Organism');
 const Mutations  = require('./Mutations');
 const World      = require('./World');
+const Decay      = require('./Decay');
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -62,12 +63,14 @@ const abs               = Math.abs;
 class VM {
     constructor() {
         this.world            = new World();
+        this.decay            = new Decay({createOrg: this._createOrg.bind(this)}, this.world);
         this.orgsAndMols      = null;
         this.orgs             = null;
         this.population       = 0;
         this._ts              = Date.now();
         this._i               = 0;
         this._freq            = {};
+        this._iteration       = 0;
         for (let i = 0; i < Config.worldFrequency; i++) {this._freq[i] = 0}
         if (Config.DB_ON) {
             this._db          = new Db();
@@ -77,9 +80,11 @@ class VM {
 
     destroy() {
         this.world.destroy();
+        this.decay.destroy();
         this.orgsAndMols.destroy();
         this._db && this._db.destroy();
         this.world        = null;
+        this.decay        = null;
         this.orgsAndMols  = null;
         this._db          = null;
     }
@@ -589,6 +594,11 @@ class VM {
                 org.energy--;
                 this._i += lines;
             }
+            //
+            // Decay
+            //
+            if (this._iteration % Config.molDecayPeriod === 0) {this.decay.decay()}
+            this._iteration++;
         }
         //
         // Updates status line at the top of screen
@@ -670,8 +680,9 @@ class VM {
         // Molecules and organisms array should be created only once
         //
         if (!this.orgsAndMols) {
-            this.orgsAndMols = new FastArray2(cfg.orgAmount + cfg.orgLucaAmount + 1);
-            this.orgs        = new FastArray2(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
+            this.orgsAndMols = new FastArray(cfg.orgAmount + cfg.orgLucaAmount + 1);
+            this.orgs        = new FastArray(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
+            this.decay.setMolsAndOrgs(this.orgsAndMols);
             //
             // Creates molecules and LUCA as last organism
             //

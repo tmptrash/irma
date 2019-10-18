@@ -222,6 +222,7 @@ module.exports = {
     orgColor                   : 0xff0000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
+    molDecayPeriod             : 10,
     orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
     /**

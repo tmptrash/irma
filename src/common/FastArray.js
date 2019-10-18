@@ -13,7 +13,7 @@
  * 
  * @author flatline
  */
-class FastArray2 {
+class FastArray {
     /**
      * Creates array instance. Size is a maximum amount of items
      * @param {Number} size Max elements in array
@@ -25,7 +25,7 @@ class FastArray2 {
         this._arr    = new Array(size).fill(null);
         /**
          * {Number} Allocated size of array. This is maximum amount
-         * of items, which may be stored in FastArray2
+         * of items, which may be stored in FastArray
          */
         this._size   = size;
         /**
@@ -98,4 +98,4 @@ class FastArray2 {
     }
 }
 
-module.exports = FastArray2;
+module.exports = FastArray;
