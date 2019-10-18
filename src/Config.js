@@ -222,7 +222,6 @@ module.exports = {
     orgColor                   : 0xff0000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
-    molDecayPeriod             : 10,
     orgMaxCodeSize             : 1024,
     orgMoleculeCodeSize        : 8,
     /**
@@ -231,6 +230,10 @@ module.exports = {
      * organism properties will be inherited.
      */
     orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
+    /**
+     * Molecules related configs
+     */
+    molDecayPeriod             : 1,
     /**
      * {Number} Ages we decrease from organism is case of running these commands.
      * In some sense this is amount of energy for commands
