@@ -605,8 +605,8 @@ class VM {
         //
         const ts = Date.now();
         if (ts - this._ts > 1000) {
-            const orgAmount = this.orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
+            const molAmount = this.orgs.items;
+            world.title(`inps:${round(((this._i / molAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${molAmount} gen:${this.population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -670,7 +670,7 @@ class VM {
     }
 
     /**
-     * Creates organisms population according to Config.orgAmount amount.
+     * Creates organisms population according to Config.molAmount amount.
      * Organisms will be placed randomly in a world
      */
     _createOrgs() {
@@ -680,13 +680,13 @@ class VM {
         // Molecules and organisms array should be created only once
         //
         if (!this.orgsAndMols) {
-            this.orgsAndMols = new FastArray(cfg.orgAmount + cfg.orgLucaAmount + 1);
-            this.orgs        = new FastArray(round(cfg.orgAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
+            this.orgsAndMols = new FastArray(cfg.molAmount * cfg.orgMoleculeCodeSize + cfg.orgLucaAmount + 1);
+            this.orgs        = new FastArray(round(cfg.molAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
             this.decay.setMolsAndOrgs(this.orgsAndMols);
             //
             // Creates molecules and LUCA as last organism
             //
-            let molecules = cfg.orgAmount;
+            let molecules = cfg.molAmount;
             while (molecules-- > 0) {
                 const offset = rand(MAX_OFFS);
                 if (world.getOrgIdx(offset) !== 0) {molecules++; continue}

@@ -30,7 +30,7 @@ class Decay {
         this._molsAndOrgs = molsAndOrgs;
         this._world = world;
         this._api = api;
-        this._index = 0;
+        this._index = -1;
     }
 
     destroy() {
@@ -46,7 +46,7 @@ class Decay {
     decay() {
         const molsAndOrgs = this._molsAndOrgs;
         if (molsAndOrgs.full) {return}
-        if (this._index >= molsAndOrgs.items) {this._index = 0}
+        if (++this._index >= molsAndOrgs.items) {this._index = 0}
         const org = molsAndOrgs.get(this._index);
         if (org.isOrg || org.code.length < 2) {return} // Skip atoms
         const offset = org.offset + DIR[Math.floor(Math.random() * 8)];
@@ -55,7 +55,6 @@ class Decay {
         if (dot) {return} // organism or molecule on the way
         const newCode = org.code.splice(0, Math.floor(org.code.length / 2));
         this._api.createOrg(offset, org, newCode);
-        this._index++;
     }
 }
 

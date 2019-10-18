@@ -65,7 +65,7 @@ describe('src/irma/VM', () => {
             codeLuca                   : [],
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
-            orgAmount                  : 1,
+            molAmount                  : 1,
             orgLucaAmount              : 1,
             orgMaxAge                  : 2000000,
             orgColor                   : 0xff0000,
@@ -118,7 +118,7 @@ describe('src/irma/VM', () => {
             expect(vm.orgs.items).toBe(Config.orgLucaAmount);
         });
         it('Checks amount of created organisms and molecules', () => {
-            expect(vm.orgsAndMols.items).toBeLessThanOrEqual(Config.orgAmount + Config.orgLucaAmount);
+            expect(vm.orgsAndMols.items).toBeLessThanOrEqual(Config.molAmount + Config.orgLucaAmount);
         });
     });
 
@@ -502,7 +502,7 @@ describe('src/irma/VM', () => {
 
         describe('join tests', () => {
             it('join0',  () => {
-                Config.orgAmount = 0;
+                Config.molAmount = 0;
                 Config.orgLucaAmount = 2;
                 const vm1  = new VM();
                 const org1 = vm1.orgs.get(0);
