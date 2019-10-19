@@ -517,42 +517,24 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
+                expect(org1.code).toEqual([2,1,AR,2,JO]);
+                vm1.destroy();
+            });
+            it('join1',  () => {
+                Config.molAmount = 0;
+                Config.orgLucaAmount = 1;
+                const vm1  = new VM();
+                const org1 = vm1.orgs.get(0);
+
+                vm1.world.moveOrg(org1, 0);
+                org1.code = [1,AR,2,JO];
+                org1.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(org1.code).toEqual([1,AR,2,JO]);
                 vm1.destroy();
             });
         })
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

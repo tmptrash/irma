@@ -1,7 +1,8 @@
 /**
- * Represents molecules decay process. It tooks one molecule and splits it into two peaces
+ * Represents molecules decay process. It tooks one molecule and splits it into two,
  * if there is free space near it. One additional dot appears near current after that. If
- * the size of molecule is 1, then it's an atom and decay is impossible.
+ * the size of molecule is bigger or equal than molCodeSize, then it's an atom and decay 
+ * is impossible.
  *  
  * @plugin
  * @author flatline
@@ -49,6 +50,11 @@ class Decay {
         if (offset < 0 || offset > MAX_OFFS) {return}
         const dot = this._world.getOrgIdx(offset);
         if (dot) {return} // organism or molecule on the way
+        //
+        // This line moves index back to current item to decay it till the end.
+        // It's good for big (with long code) molecules
+        //
+        this._index--;
         const newCode = org.code.splice(0, Math.floor(org.code.length / 2));
         this._api.createOrg(offset, org, newCode);
     }

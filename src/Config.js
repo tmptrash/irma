@@ -231,7 +231,7 @@ module.exports = {
     /**
      * Molecules related configs
      */
-    molDecayPeriod             : 10,
+    molDecayPeriod             : 1,
     molAmount                  : 2000000,
     molCodeSize                : 8,
     /**
