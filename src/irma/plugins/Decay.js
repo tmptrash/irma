@@ -2,11 +2,11 @@
  * Represents molecules decay process. It tooks one molecule and splits it into two peaces
  * if there is free space near it. One additional dot appears near current after that. If
  * the size of molecule is 1, then it's an atom and decay is impossible.
- * 
+ *  
+ * @plugin
  * @author flatline
  */
-const Config            = require('./../Config');
-const World             = require('./World');
+const Config            = require('../../Config');
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
@@ -21,34 +21,30 @@ const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
 
 class Decay {
     /**
-     * Array od molecules and arganisms we going to decay by time
-     * @param {Object} api
-     * @param {World} world
-     * @param {FastArray} molsAndOrgs
+     * Stores all needed properties from VM class
+     * @param {VM} vm Virtual Machine instance
      */
-    constructor(api, world, molsAndOrgs = null) {
-        this._molsAndOrgs = molsAndOrgs;
-        this._world = world;
-        this._api = api;
+    constructor(vm) {
+        this._orgsAndMols = vm.orgsAndMols;
+        this._world = vm.world;
+        this._api = vm.api;
         this._index = -1;
     }
 
     destroy() {
-        this._molsAndOrgs = null;
+        this._orgsAndMols = null;
         this._world = null;
         this._index = 0;
     }
 
-    setMolsAndOrgs(molsAndOrgs) {
-        this._molsAndOrgs = molsAndOrgs;
-    }
+    run(iteration) {
+        if (iteration % Config.molDecayPeriod !== 0) {return}
 
-    decay() {
-        const molsAndOrgs = this._molsAndOrgs;
-        if (molsAndOrgs.full) {return}
-        if (++this._index >= molsAndOrgs.items) {this._index = 0}
-        const org = molsAndOrgs.get(this._index);
-        if (org.isOrg || org.code.length < 2) {return} // Skip atoms
+        const orgsAndMols = this._orgsAndMols;
+        if (orgsAndMols.full) {return}
+        if (++this._index >= orgsAndMols.items) {this._index = 0}
+        const org = orgsAndMols.get(this._index);
+        if (org.isOrg || org.code.length <= Config.molCodeSize) {return} // Skip atoms
         const offset = org.offset + DIR[Math.floor(Math.random() * 8)];
         if (offset < 0 || offset > MAX_OFFS) {return}
         const dot = this._world.getOrgIdx(offset);

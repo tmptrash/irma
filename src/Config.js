@@ -222,7 +222,6 @@ module.exports = {
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
     orgMaxCodeSize             : 1024,
-    orgMoleculeCodeSize        : 8,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all
@@ -232,13 +231,18 @@ module.exports = {
     /**
      * Molecules related configs
      */
-    molDecayPeriod             : 100,
-    molAmount                  : 500000,
+    molDecayPeriod             : 10,
+    molAmount                  : 2000000,
+    molCodeSize                : 8,
     /**
      * {Number} Ages we decrease from organism is case of running these commands.
      * In some sense this is amount of energy for commands
      */
     energyMove                 : 10,
     energyStepCoef             : .01,
-    energyMultiplier           : 4000
+    energyMultiplier           : 4000,
+    /**
+     * Plugins. Extends irma core by additional functionality
+     */
+    plugins                    : ['Decay']
 };

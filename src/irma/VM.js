@@ -11,7 +11,7 @@ const Db         = require('./../common/Db');
 const Organism   = require('./Organism');
 const Mutations  = require('./Mutations');
 const World      = require('./World');
-const Decay      = require('./Decay');
+const PLUGINS    = Helper.requirePlugins(Config.plugins);
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -63,28 +63,38 @@ const abs               = Math.abs;
 class VM {
     constructor() {
         this.world            = new World();
-        this.decay            = new Decay({createOrg: this._createOrg.bind(this)}, this.world);
         this.orgsAndMols      = null;
         this.orgs             = null;
         this.population       = 0;
+        this.api              = {createOrg: this._createOrg.bind(this)};
+
         this._ts              = Date.now();
         this._i               = 0;
         this._freq            = {};
         this._iteration       = 0;
         for (let i = 0; i < Config.worldFrequency; i++) {this._freq[i] = 0}
+        //
+        // Plugins should be created at the end after all needed properties exist
+        //
         if (Config.DB_ON) {
             this._db          = new Db();
-            this._db.ready.then(() => this._createOrgs());
-        } else {this._createOrgs()}
+            this._db.ready.then(() => {
+                this._createOrgs();
+                this.plugins = Helper.loadPlugins(PLUGINS, [this]);
+            });
+        } else {
+            this._createOrgs();
+            this.plugins = Helper.loadPlugins(PLUGINS, [this]);
+        }
     }
 
     destroy() {
         this.world.destroy();
-        this.decay.destroy();
+        Helper.destroyPlugins(this.plugins);
         this.orgsAndMols.destroy();
         this._db && this._db.destroy();
         this.world        = null;
-        this.decay        = null;
+        this.plugins      = null;
         this.orgsAndMols  = null;
         this._db          = null;
     }
@@ -595,9 +605,9 @@ class VM {
                 this._i += lines;
             }
             //
-            // Decay
+            // Plugins
             //
-            if (this._iteration % Config.molDecayPeriod === 0) {this.decay.decay()}
+            for (let p = 0, pl = this.plugins.length; p < pl; p++) {this.plugins[p].run(this._iteration)}
             this._iteration++;
         }
         //
@@ -605,8 +615,8 @@ class VM {
         //
         const ts = Date.now();
         if (ts - this._ts > 1000) {
-            const molAmount = this.orgs.items;
-            world.title(`inps:${round(((this._i / molAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${molAmount} gen:${this.population}`);
+            const orgAmount = this.orgs.items;
+            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -680,9 +690,8 @@ class VM {
         // Molecules and organisms array should be created only once
         //
         if (!this.orgsAndMols) {
-            this.orgsAndMols = new FastArray(cfg.molAmount * cfg.orgMoleculeCodeSize + cfg.orgLucaAmount + 1);
-            this.orgs        = new FastArray(round(cfg.molAmount * cfg.orgMoleculeCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
-            this.decay.setMolsAndOrgs(this.orgsAndMols);
+            this.orgsAndMols = new FastArray(cfg.molAmount + cfg.orgLucaAmount + 1);
+            this.orgs        = new FastArray(round(cfg.molAmount * cfg.molCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
             //
             // Creates molecules and LUCA as last organism
             //

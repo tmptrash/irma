@@ -73,7 +73,7 @@ describe('src/irma/VM', () => {
             orgMutationPeriod          : 2000001,
             molDecayPeriod             : 100,
             orgMaxCodeSize             : 50,
-            orgMoleculeCodeSize        : 8,
+            molCodeSize                : 8,
             orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
             energyMove                 : 20,
             energyStepCoef             : 0.01,
