@@ -373,7 +373,7 @@ class VM {
                             if (org.ret !== 1) {org.ret = RET_ERR; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
-                            if (!dot) {org.ret = RET_ERR; continue}
+                            if (dot < 0) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsAndMolsRef[dot];
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; continue}
                             code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
@@ -389,7 +389,7 @@ class VM {
                             const offset  = org.offset + DIR[abs(org.ret) % 8];
                             if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
                             const dot     = world.getOrgIdx(offset);
-                            if (dot) {org.ret = RET_ERR; continue} // organism on the way
+                            if (dot > -1) {org.ret = RET_ERR; continue} // organism on the way
                             if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; continue}
                             const newCode = code.splice(ax, bx - ax);
                             if (newCode.length < 1 || org.ret === IS_ORG_ID && orgs.full) {org.ret = RET_ERR; continue}
@@ -414,7 +414,7 @@ class VM {
                             let offset = org.offset + DIR[abs(ax) % 8];
                             if (offset < -1) {offset = LINE_OFFS + org.offset}
                             else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
-                            if (world.getOrgIdx(offset) !== 0) {org.ret = RET_ERR; continue}
+                            if (world.getOrgIdx(offset) > -1) {org.ret = RET_ERR; continue}
                             world.moveOrg(org, offset);
                             org.ret = RET_OK;
                             continue;
@@ -471,7 +471,7 @@ class VM {
                         case CODE_CMD_OFFS + 38:  // see
                             ++line;
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
-                            ax = (dot === 0 ? 0 : orgsAndMolsRef[dot].color);
+                            ax = (dot < 0 ? 0 : orgsAndMolsRef[dot].color);
                             continue;
 
                         case CODE_CMD_OFFS + 39: {// say
@@ -491,7 +491,7 @@ class VM {
                             ++line;
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
-                            if (!dot) {org.ret = RET_ERR; continue}
+                            if (dot < 0) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsAndMolsRef[dot];
                             ax = nearOrg.code[bx] || 0;
                             org.ret = RET_OK;
@@ -506,9 +506,9 @@ class VM {
                             const dOffset = org.offset + DIR[abs(org.ret) % 8];
                             if (offset === dOffset) {org.ret = RET_ERR; continue}
                             const dot     = world.getOrgIdx(offset);
-                            if (!dot) {org.ret = RET_ERR; continue}
+                            if (dot < 0) {org.ret = RET_ERR; continue}
                             const dDot    = world.getOrgIdx(dOffset);
-                            if (dDot) {org.ret = RET_ERR; continue}
+                            if (dDot > -1) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsAndMolsRef[dot];
                             const newCode = nearOrg.code.splice(0, bx);
                             if (newCode.length < 1) {org.ret = RET_ERR; continue}
@@ -527,7 +527,7 @@ class VM {
                             ++line;
                             if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; continue}
                             const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
-                            if (!dot) {org.ret = RET_ERR; continue}
+                            if (dot < 0) {org.ret = RET_ERR; continue}
                             this._removeOrg(org.packet = orgsAndMolsRef[dot]);
                             continue;
                         }
@@ -538,7 +538,7 @@ class VM {
                             if (orgsAndMols.full) {org.ret = RET_ERR; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
-                            if (dot || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
+                            if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
                             this._createOrg(offset, org.packet);
                             this._db && this._db.put(org.packet);
                             org.packet = null;
@@ -698,7 +698,7 @@ class VM {
             let molecules = cfg.molAmount;
             while (molecules-- > 0) {
                 const offset = rand(MAX_OFFS);
-                if (world.getOrgIdx(offset) !== 0) {molecules++; continue}
+                if (world.getOrgIdx(offset) > -1) {molecules++; continue}
                 const org = this._createOrg(offset);
                 this._db && this._db.put(org);
             }
@@ -709,7 +709,7 @@ class VM {
         let orgs = Config.orgLucaAmount;
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) !== 0) {orgs++; continue}
+            if (world.getOrgIdx(offset) > -1) {orgs++; continue}
             const luca = this._createOrg(offset, null, Config.codeLuca.slice(), true);
             this._db && this._db.put(luca);
         }

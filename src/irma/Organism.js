@@ -21,7 +21,7 @@ class Organism {
         this.item       = item;
         this.offset     = offs;
         this.isOrg      = isOrg;
-        this.color      = Config.orgColor;
+        this.color      = Config.molColor;
         //
         // For simple molecules we don't need to store all commands related data
         //

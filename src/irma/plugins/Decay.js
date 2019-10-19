@@ -49,7 +49,7 @@ class Decay {
         const offset = org.offset + DIR[Math.floor(Math.random() * 8)];
         if (offset < 0 || offset > MAX_OFFS) {return}
         const dot = this._world.getOrgIdx(offset);
-        if (dot) {return} // organism or molecule on the way
+        if (dot > -1) {return} // organism or molecule on the way
         //
         // This line moves index back to current item to decay it till the end.
         // It's good for big (with long code) molecules

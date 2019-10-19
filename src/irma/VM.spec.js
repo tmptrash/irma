@@ -68,10 +68,10 @@ describe('src/irma/VM', () => {
             molAmount                  : 1,
             orgLucaAmount              : 1,
             orgMaxAge                  : 2000000,
-            orgColor                   : 0xff0000,
+            molColor                   : 0xff0000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
-            molDecayPeriod             : 100,
+            molDecayPeriod             : 1000,
             orgMaxCodeSize             : 50,
             molCodeSize                : 8,
             orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
@@ -501,7 +501,7 @@ describe('src/irma/VM', () => {
         });
 
         describe('join tests', () => {
-            it('join0',  () => {
+            it('Checks joining right organism',  () => {
                 Config.molAmount = 0;
                 Config.orgLucaAmount = 2;
                 const vm1  = new VM();
@@ -520,7 +520,7 @@ describe('src/irma/VM', () => {
                 expect(org1.code).toEqual([2,1,AR,2,JO]);
                 vm1.destroy();
             });
-            it('join1',  () => {
+            it('Checks joining empty cell',  () => {
                 Config.molAmount = 0;
                 Config.orgLucaAmount = 1;
                 const vm1  = new VM();
@@ -533,6 +533,100 @@ describe('src/irma/VM', () => {
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
                 expect(org1.code).toEqual([1,AR,2,JO]);
+                vm1.destroy();
+            });
+            it('Checks joining if command is blocked',  () => {
+                Config.molAmount = 0;
+                Config.orgLucaAmount = 2;
+                const vm1  = new VM();
+                const org1 = vm1.orgs.get(0);
+                const org2 = vm1.orgs.get(1);
+
+                vm1.world.moveOrg(org1, 0);
+                vm1.world.moveOrg(org2, 1);
+                org1.code = [2,JO];
+                org2.code = [2];
+                org1.preprocess();
+                org2.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(2);
+                expect(org1.code).toEqual([2,JO]);
+                expect(org2.code).toEqual([2]);
+                vm1.destroy();
+            });
+            it('Checks joining if command is activated incorrectly',  () => {
+                Config.molAmount = 0;
+                Config.orgLucaAmount = 2;
+                const vm1  = new VM();
+                const org1 = vm1.orgs.get(0);
+                const org2 = vm1.orgs.get(1);
+
+                vm1.world.moveOrg(org1, 0);
+                vm1.world.moveOrg(org2, 1);
+                org1.code = [-1,AR,2,JO];
+                org2.code = [2];
+                org1.preprocess();
+                org2.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(2);
+                expect(org1.code).toEqual([-1,AR,2,JO]);
+                expect(org2.code).toEqual([2]);
+                vm1.destroy();
+            });
+            it('Checks joining if command is activated incorrectly 1',  () => {
+                Config.molAmount = 0;
+                Config.orgLucaAmount = 2;
+                const vm1  = new VM();
+                const org1 = vm1.orgs.get(0);
+                const org2 = vm1.orgs.get(1);
+
+                vm1.world.moveOrg(org1, 0);
+                vm1.world.moveOrg(org2, 1);
+                org1.code = [2,AR,2,JO];
+                org2.code = [2];
+                org1.preprocess();
+                org2.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(2);
+                expect(org1.code).toEqual([2,AR,2,JO]);
+                expect(org2.code).toEqual([2]);
+                vm1.destroy();
+            });
+            it('Checks joining if organism is at the edge of the world',  () => {
+                Config.molAmount = 0;
+                Config.orgLucaAmount = 1;
+                const vm1  = new VM();
+                const org1 = vm1.orgs.get(0);
+
+                vm1.world.moveOrg(org1, WIDTH - 1);
+                org1.code = [1,AR,2,JO];
+                org1.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(org1.code).toEqual([1,AR,2,JO]);
+                vm1.destroy();
+            });
+            it('Checks joining right molecule',  () => {
+                Config.molAmount = 1;
+                Config.orgLucaAmount = 1;
+                const vm1  = new VM();
+                const org1 = vm1.orgs.get(0);
+                const mol1 = vm1.orgsAndMols.get(0);
+
+                vm1.world.moveOrg(org1, 0);
+                vm1.world.moveOrg(mol1, 1);
+                org1.code = [1,AR,2,JO];
+                mol1.code = [5];
+                org1.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(org1.code).toEqual([5,1,AR,2,JO]);
+                expect(vm1.orgsAndMols.items).toBe(1);
                 vm1.destroy();
             });
         })

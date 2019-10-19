@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 2;
-const HEIGHT    = 1080 * 2;
+const WIDTH     = 1920 * 1.5;
+const HEIGHT    = 1080 * 1.5;
 const CODE_OFFS = 1024;
 
 
@@ -218,7 +218,6 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     orgLucaAmount              : 3,
     orgMaxAge                  : 200000,
-    orgColor                   : 0xff0000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
     orgMaxCodeSize             : 1024,
@@ -232,8 +231,9 @@ module.exports = {
      * Molecules related configs
      */
     molDecayPeriod             : 1,
-    molAmount                  : 2000000,
+    molAmount                  : 1500000,
     molCodeSize                : 8,
+    molColor                   : 0xff0000,
     /**
      * {Number} Ages we decrease from organism is case of running these commands.
      * In some sense this is amount of energy for commands
