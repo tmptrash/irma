@@ -42,7 +42,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 1,
     codeTimesPerRun            : 1,
-    codeMutateEveryClone       : 10,
+    codeMutateEveryClone       : 5,
     codeRegs                   : 6,
     codeMixTimes               : 4,
     codeMutateMutations        : false,
@@ -113,11 +113,18 @@ module.exports = {
         CODE_OFFS + 34, //   split
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
-        -1,             //   -1
-        CODE_OFFS + 14, //   rand
-        CODE_OFFS + 35, //   step
-        CODE_OFFS + 35, //   step
-        CODE_OFFS + 35, //   step
+        1,              //   1
+        CODE_OFFS + 38, //   see
+        CODE_OFFS + 15, //   ifp
+        2,              //     2
+        CODE_OFFS + 26, //   end
+        CODE_OFFS + 17, //   ifz
+        -1,             //     -1
+        CODE_OFFS + 14, //     rand
+        CODE_OFFS + 35, //     step
+        CODE_OFFS + 35, //     step
+        CODE_OFFS + 35, //     step
+        CODE_OFFS + 26, //   end
         CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
@@ -231,6 +238,7 @@ module.exports = {
      * Molecules related configs
      */
     molDecayPeriod             : 1,
+    molDecayDistance           : 100,
     molAmount                  : 1500000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,

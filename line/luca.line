@@ -99,11 +99,18 @@ end
 # eats every organism, which is on the way
 #
 func             # func 1
-  -1             # ax=-1      bx=?
-  rand           # ax=2       bx=?
-  step           # ax=2       bx=?
-  step           # ax=2       bx=?
-  step           # ax=2       bx=?
+  1              # ax=1       bx=?      right side
+  see            # ax=dot     bx=?
+  ifp            # ax=dot     bx=?
+    2            # ax=2       bx=?      right side
+  end
+  ifz
+    -1           # ax=-1      bx=?
+    rand         # ax=2       bx=?
+    step         # ax=2       bx=?
+    step         # ax=2       bx=?
+    step         # ax=2       bx=?
+  end
   toggle         # ax=?       bx=2
   len            # ax=len     bx=2
   toggle         # ax=2       bx=len

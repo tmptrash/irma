@@ -22,7 +22,7 @@ func             # func 0
     retax        # ax=1       bx=0
     ifz          # ax=0 - not found
       pop
-	  pop
+      pop
       pop        # resets stack
       shift
       shift
@@ -32,7 +32,7 @@ func             # func 0
     shift        # ax=sepIdx  bx=len      (regs: 0,1)
     toggle       # ax=len     bx=sepIdx
     axret        # ax=len     bx=sepIdx   ret=len
-	toggle       # ax=sepIdx  bx=len      ret=len
+    toggle       # ax=sepIdx  bx=len      ret=len
     shift        # ax=1       bx=0        ret=len
     pop          # ax=findIdx bx=0        ret=len
     toggle       # ax=0       bx=findIdx  ret=len
@@ -64,19 +64,26 @@ func             # func 0
   split          # ax=copyIdx bx=len
 end
 func             # func 1
-  -1             # ax=-1      bx=?
-  rand           # ax=2       bx=?
-  step           # ax=2       bx=?
-  step           # ax=2       bx=?
-  step           # ax=2       bx=?
+  1              # ax=1       bx=?       right side
+  see            # ax=dot     bx=?
+  ifp            # ax=dot     bx=?
+    2            # ax=2       bx=?       right side
+  end
+  ifz
+    -1           # ax=-1      bx=?
+    rand         # ax=2       bx=?
+    step         # ax=2       bx=?
+    step         # ax=2       bx=?
+    step         # ax=2       bx=?
+  end
   toggle         # ax=?       bx=2
   len            # ax=len     bx=2
   toggle         # ax=2       bx=len
   push           # ax=2       bx=len
   1              # ax=0       bx=len
-  axret          # ax=1       bx=len    ret=1
+  axret          # ax=1       bx=len     ret=1
   pop            # ax=2       bx=len
-  join           # ax=2       bx=len    ret=1
+  join           # ax=2       bx=len     ret=1
 end
 func             # func 2
   900            # ax=900     bx=0

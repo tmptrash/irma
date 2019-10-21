@@ -470,7 +470,9 @@ class VM {
 
                         case CODE_CMD_OFFS + 38:  // see
                             ++line;
-                            const dot = world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
+                            const offset = org.offset + ax;
+                            if (offset < 0 || offset > MAX_OFFS) {ax = 0; continue}
+                            const dot = world.getOrgIdx(offset);
                             ax = (dot < 0 ? 0 : orgsAndMolsRef[dot].color);
                             continue;
 
