@@ -5,6 +5,34 @@
  */
 class Helper {
     /**
+     * Imports plugin module
+     * @param {Array} names plugin file names without extension
+     * @return {Object} Object of imported module
+     */
+    static requirePlugins(names) {
+        const plugins = [];
+        names.forEach(name => plugins.push(require(`./../irma/plugins/${name}.js`)));
+        return plugins;
+    }
+    /**
+     * Creates instances of plugin classes and returns instances array
+     * @param {Array} plugins Array of functions(classes) of plugins 
+     * @param {Array} args Array of arguments
+     * @return {Array} Instances array
+     */
+    static loadPlugins(plugins, args) {
+        const instances = new Array(plugins.length);
+        plugins.forEach((Plugin, i) => instances[i] = new Plugin(...args));
+        return instances;
+    }
+    /**
+     * Destroys plugins. Calls destroy() method of each one
+     * @param {Array} plugins Array of plugin instances
+     */
+    static destroyPlugins(plugins) {
+        plugins.forEach(plugin => plugin.destroy());
+    }
+    /**
      * Generates random Int number in range 0:n-1
      * @param {Number} n Right number value in a range
      * @return {Number}

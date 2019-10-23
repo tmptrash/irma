@@ -1,158 +1,100 @@
 /**
- * Implementation of fast array. Purpose of this class is in fast access to custom
- * element of array, ability to add/remove elements. First, this class uses fixed
- * array size. Second, get(), add(), del() methods will be called must of the time,
- * then resize(). Resize is possible, but should be rare to keep it fast. Is used
- * for storing organisms population. Removing element means setting null to
- * specified index. This is how del() method works. Difference between items and
- * size is: items - returns amount of elements in a array, size - returns amount
- * of cells allocated for this array.
- *
+ * Implementation of array-like class for storing custom objects. Main goal in 
+ * fast items access during iteration, fast add and remove. The algorithm of
+ * working is the following:
+ *   - size of array is static (at least in first version) and allocated on
+ *     class creation in a constructor
+ *   - all items of array are always at the beginning. Tail items just empty
+ *   - iteration through items should stop on first empty (null) element
+ *   - adding item means adding it after last not empty item (in the tail)
+ *   - removing item means: get last not empty item and set it into removed
+ *     one. So the length of not empty items will be shorter on 1
+ *   - class contain private field with not empty items amount
+ * 
  * @author flatline
  */
 class FastArray {
     /**
-     * Creates fast array instance. Size is maximum amount of elements you may access to
-     * @param {Number} size Max elements in a array
+     * Creates array instance. Size is a maximum amount of items
+     * @param {Number} size Max elements in array
      */
     constructor(size) {
-        this._init(size);
+        /**
+         * {Array} Container for custom objects
+         */
+        this._arr    = new Array(size).fill(null);
+        /**
+         * {Number} Allocated size of array. This is maximum amount
+         * of items, which may be stored in FastArray
+         */
+        this._size   = size;
+        /**
+         * {Number} Amount of not empty items in array
+         */
+        this._amount = 0;
     }
 
     destroy() {
-        this._arr         = null;
-        this._freeIndexes = null;
-        this._size        = null;
-        this._index       = -1;
+        delete this._arr;
+        delete this._size;
+        delete this._amount; 
     }
 
     /**
-     * Analog of Array.length
-     * @returns {Number} Amount of not empty elements in FastArray.
-     * Not all cells in an array may be filled by values. 0 or less
-     * then zero means no items in an array.
+     * Amount of not empty items in array
+     * @return {Number}
      */
-    get items() {return this._size - this._index - 1}
+    get items() {return this._amount}
 
     /**
-     * Returns allocated size
+     * Returns allocated size (amount of cells)
      * @returns {Number}
      */
     get size() {return this._size}
 
     /**
-     * Returns next free index in FastArray or undefined if there is no free index
-     * @returns {Number|undefined}
-     */
-    get freeIndex() {
-        return this._freeIndexes[this._index];
-    }
-
-    /**
      * Checks if array is full of items and you can't call add() on it
      * @return {Boolean}
      */
-    get full() {
-        return this._index < 0;
-    }
+    get full() {return this._amount >= this._size}
 
     /**
-     * Returns index of first not empty element in array
-     * @return {Number}
+     * Returns next free index in FastArrays or undefined if there is no free index
+     * @returns {Number}
      */
-    get first() {
-        return this._index + 1;
-    }
+    get freeIndex() {return this._amount}
 
     /**
-     * Sets value to FastArray. You can't set value index due to
-     * optimization reason. Only a value
-     * @param {*|false} v Any value or false if value hasn't added
+     * Adds one item into array at the end. To keep adding fast it doesn't check
+     * if it's full or not
+     * @param {*} value Any value to add
      */
-    add(v) {this._index > -1 && (this._arr[this._freeIndexes[this._index--]] = v)}
+    add(value) {this._arr[this._amount++] = value}
 
     /**
-     * Returns a value by index
+     * Returns value by index
      * @param {Number} i Value index
-     * @returns {null|undefined|*} null - if cell is empty, undefined - if index out of bounds, * - value
+     * @returns {*|null} null - if cell is empty, undefined - if index out of bounds, * - value
      */
     get(i) {return this._arr[i]}
 
     /**
-     * Returns reference to this._arr for fast access to the data
+     * Returns reference to this._arr for fast access to the items
      * @return {Array} Data array
      */
-    getRef() {
-        return this._arr;
-    }
+    ref() {return this._arr}
 
     /**
-     * Removes(sets it to null) a value by index.
+     * Removes value by index. To keep this class fast we dont check if
+     * index is correct and amount of items > 0
      * @param {Number} i Value index
-     * @param {Boolean} remove true to null cell, false - don't
+     * @return {*} Moved value
      */
-    del(i, remove = true) {
-        if (this._arr[i] !== null) {
-            remove && (this._arr[i] = null);
-            this._freeIndexes[++this._index] = i;
-        }
-    }
-
-    /**
-     * Returns last added value by set() method
-     * @returns {*|undefined} Value or undefined if there is no value
-     */
-    added() {
-        return this._arr[this._freeIndexes[this._index + 1]];
-    }
-
-    /**
-     * Resize an array. Values will not be removed during resize.
-     * This method is very slow and should be called not often.
-     * @param {Number} size New array size
-     */
-    resize(size) {
-        if (size <= 0) {return}
-        const oldArr  = this._arr.slice();
-        const oldSize = Math.min(this._size, size);
-
-        this._init(size);
-        for (let i = 0; i < oldSize; i++) {
-            oldArr[i] !== null && this.add(oldArr[i]);
-        }
-    }
-
-    /**
-     * We can't call constructor directly. It triggers error during
-     * jasmine tests.
-     * @param {Number} size Array size
-     * @private
-     */
-    _init(size) {
-        /**
-         * {Array} Source container for custom objects
-         */
-        this._arr         = new Array(size);
-        /**
-         * {Array} Array of free indexes in _arr. Every time
-         * user calls del() method _arr obtains hole in it.
-         * Index of this hole wil be stored in this array
-         */
-        this._freeIndexes = new Array(size);
-        /**
-         * {Number} Index of last free index in _freeIndexes array
-         */
-        this._index       = size - 1;
-        /**
-         * {Number} Allocated size of array. This is maximum amount
-         * of elements, which may be stored in FastArray
-         */
-        this._size        = size;
-
-        for (let i = 0; i < size; i++) {
-            this._freeIndexes[i] = i;
-            this._arr[i]         = null;
-        }
+    del(i) {
+        if (this._arr[i] === null) {return}
+        this._arr[i] = this._arr[--this._amount];
+        this._arr[this._amount] = null;
+        return this._arr[i];
     }
 }
 

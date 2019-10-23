@@ -6,13 +6,10 @@
 const Config   = require('./../Config');
 const Canvas   = require('./Canvas');
 
-const ORG_MASK = Config.ORG_MASK;
-const ENERGY_COLOR = Config.worldSurfaces[0].color;
-
 class World {
     constructor() {
         this._canvas = new Canvas();
-        this._data   = this._createData();
+        this._data   = new Uint32Array(Config.WORLD_HEIGHT * Config.WORLD_WIDTH);
     }
 
     destroy() {
@@ -25,71 +22,55 @@ class World {
         return this._data;
     }
 
-    dot(x, y, c) {
-        this._data[x][y] = c;
-        this._canvas.dot(x, y, c);
+    dot(offset, c) {
+        this._data[offset] = c;
+        this._canvas.dot(offset, c);
     }
 
-    swap(x, y, x1, y1) {
-        const DATA = this._data;
-        const DOT  = DATA[x1][y1];
+    swap(offset, offset1) {
+        const data = this._data;
+        const dot  = data[offset1];
 
-        DATA[x1][y1] = DATA[x][y];
-        this._canvas.dot(x1, y1, DATA[x][y]);
-        DATA[x][y]   = DOT;
-        this._canvas.dot(x, y, DOT);
+        data[offset1] = data[offset];
+        this._canvas.dot(offset1, data[offset]);
+        data[offset]  = dot;
+        this._canvas.dot(offset, dot);
     }
 
-    energy(x, y, index) {
-        this._data[x][y] = index;
-        this._canvas.dot(x, y, ENERGY_COLOR);
+    empty(offset) {
+        this._data[offset] = 0;
+        this._canvas.empty(offset);
     }
 
-    empty(x, y) {
-        this._data[x][y] = 0;
-        this._canvas.empty(x, y);
+    org(offset, org) {
+        this._data[offset] = org.item + 1;
+        this._canvas.dot(offset, org.color);
     }
 
-    org(x, y, org) {
-        this._data[x][y] = ORG_MASK | org.item;
-        this._canvas.dot(x, y, Config.orgColor);
+    setItem(offset, item) {
+        this._data[offset] = item + 1;
     }
 
-    moveOrg(org, x, y) {
-        this._data[org.x][org.y] = 0;
-        this._data[x][y] = ORG_MASK | org.item;
-        this._canvas.move(org.x, org.y, x, y, Config.orgColor);
+    getOrgIdx(offset) {
+        const dot = this._data[offset];
+        return !dot ? -1 : dot - 1;
     }
 
-    moveDot(x0, y0, x1, y1, color) {
-        this._data[x0][y0] = 0;
-        this._data[x1][y1] = color;
-        this._canvas.move(x0, y0, x1, y1, color);
+    moveOrg(org, offset) {
+        this._data[org.offset] = 0;
+        this._data[offset] = org.item + 1;
+        this._canvas.move(org.offset, offset, org.color);
+        org.offset = offset;
     }
 
-    moveEnergy(x0, y0, x1, y1, index) {
-        this._data[x0][y0] = 0;
-        this._data[x1][y1] = index;
-        this._canvas.move(x0, y0, x1, y1, ENERGY_COLOR);
+    moveDot(offset, offset1, color) {
+        this._data[offset]  = 0;
+        this._data[offset1] = color;
+        this._canvas.move(offset, offset1, color);
     }
 
     title(text) {
         this._canvas.header(text);
-    }
-    /**
-     * Created world's data. Is a two dimensions array of dots, which
-     * contains dots and organisms of the world.
-     * @returns {Array} Data array
-     * @private
-     */
-    _createData() {
-        const data   = [];
-        const HEIGHT = Config.WORLD_HEIGHT;
-        const WIDTH  = Config.WORLD_WIDTH;
-
-        for (let x = 0; x < WIDTH; x++) {data[x] = (new Array(HEIGHT)).fill(0)}
-
-        return data;
     }
 }
 

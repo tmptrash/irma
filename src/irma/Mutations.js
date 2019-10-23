@@ -44,7 +44,7 @@ class Mutations {
     }
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
-
+    // TODO: do we need this?
     static crossover(destOrg, srcOrg) {
         const destCode = destOrg.code;
         const srcCode  = srcOrg.code;
@@ -59,8 +59,8 @@ class Mutations {
 
     static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.mutations++; org.preprocess()}
     static _onDel    (code, org) {code.splice(rand(code.length), 1); org.mutations++; org.preprocess()}
-    static _onPeriod (code, org) {org.period = rand(Config.orgMaxAge) + 1; org.mutations++}
-    static _onPercent(code, org) {org.percent = Math.random() || CODE_MUTATION_AMOUNT; org.mutations++}
+    static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1; org.mutations++}
+    static _onPercent(code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT; org.mutations++}
     static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.mutations++}
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}

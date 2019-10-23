@@ -1,0 +1,205 @@
+#
+# Makes cloning of organism. Takes all commands from the
+# beginning (replication segment) and till "nop" separator 
+# and find them in food/elements segment. After that copy 
+# found commands in food/elements section into the organism's 
+# tail (after food segment). After that, splits tail and 
+# replication segment calling "split" command. Requires 6
+# registers (0,1..4,5).
+#
+func             # func 0
+  #
+  # Finds separator offset between replicator code and food segment
+  # and tail offset	
+  #
+  3              # ax=3       bx=?
+  call           # find separator index
+  retax          # ax=sepIdx  bx=?
+  toggle         # ax=?       bx=sepIdx
+  len            # ax=len     bx=sepIdx
+  toggle         # ax=sepIdx  bx=len
+  push           # ax=sepIdx  bx=len      (regs: 0,1)
+  shift          # ax=?       bx=?        (regs: 2,3)
+  #
+  # Loops through replicator code and copy it to the tail
+  #
+  pop            # ax=sepIdx  bx=?
+  toggle         # ax=?       bx=sepIdx
+  0              # ax=0       bx=sepIdx
+  toggle         # ax=sepIdx  bx=0
+  inc            # ax=sepIdx1 bx=0
+  loop           # ax=sepIdx1 bx=0        (ax-code len, bx-code index)
+    axret        # ax=sepIdx1 bx=0        ret=sepIdx1
+    push         # ax=sepIdx1 bx=0        ret=sepIdx1
+    eq           # ax=0       bx=0        (ax-idx of cur cmd to copy)
+    push         # ax=0       bx=0
+    find         # ax=findIdx bx=0
+    push         # ax=findIdx bx=0
+    retax        # ax=1       bx=0
+    #
+    # If command is not found
+    #
+    ifz          # ax=0 - not found
+      pop
+      pop
+      pop        # resets stack
+      shift
+      shift
+      ret
+    end
+    #
+    # If command is out of food segment
+    #
+    shift        # ax=?       bx=?
+    shift        # ax=sepIdx  bx=len      (regs: 0,1)
+    toggle       # ax=len     bx=sepIdx
+    axret        # ax=len     bx=sepIdx   ret=len
+    toggle       # ax=sepIdx  bx=len      ret=len
+    shift        # ax=1       bx=0        ret=len
+    pop          # ax=findIdx bx=0        ret=len
+    toggle       # ax=0       bx=findIdx  ret=len
+    retax        # ax=len     bx=findIdx
+    dec          # ax=len-1   bx=findIdx
+    toggle       # ax=findIdx bx=len-1
+    ifg
+      pop
+      pop        # resets stack
+      shift
+      shift
+      ret
+    end
+    #
+    # Moves current instruction to the tail
+    #
+    len          # ax=len     bx=len-1
+    move
+    #
+    # Inc code segment counter
+    #
+    pop          # ax=0       bx=len-1
+    inc          # ax=1       bx=len-1
+    toggle       # ax=len-1   bx=1
+    pop          # ax=sepIdx1 bx=1
+  end
+  #
+  # Splits tail with it's copy to create separate organism
+  #
+  toggle         # ax=?       bx=sepIdx1
+  len            # ax=len     bx=sepIdx1
+  sub            # ax=copyIdx bx=sepIdx1
+  toggle         # ax=sepIdx1 bx=copyIdx
+  17             # ax=17      bx=copyIdx
+  axret          # ax=17      bx=copyIdx ret=17  
+  len            # ax=len     bx=copyIdx
+  toggle         # ax=copyIdx bx=len
+  split          # ax=copyIdx bx=len
+end
+#
+# Eating function. Randomly change direction and
+# eats every organism, which is on the way
+#
+func             # func 1
+  1              # ax=1       bx=?      right side
+  see            # ax=dot     bx=?
+  ifp            # ax=dot     bx=?
+    2            # ax=2       bx=?      right side
+  end
+  ifz
+    -1           # ax=-1      bx=?
+    rand         # ax=2       bx=?
+    step         # ax=2       bx=?
+    step         # ax=2       bx=?
+    step         # ax=2       bx=?
+  end
+  toggle         # ax=?       bx=2
+  len            # ax=len     bx=2
+  toggle         # ax=2       bx=len
+  push           # ax=2       bx=len
+  1              # ax=0       bx=len
+  axret          # ax=1       bx=len    ret=1
+  pop            # ax=2       bx=len
+  join           # ax=2       bx=len    ret=1
+end
+#
+# Checks if body length is long to cut random peace of it 
+#
+func             # func 2
+  900            # ax=900     bx=0
+  toggle         # ax=0       bx=900
+  len            # ax=len     bx=900
+  ifl            # ax=len     bx=900
+    ret
+  end
+  3
+  call
+  retax          # ax=sepIdx  bx=?
+  toggle         # ax=?       bx=sepIdx
+  len            # ax=len     bx=sepIdx
+  sub            # ax=rndLen  bx=sepIdx
+  rand           # ax=rnd     bx=sepIdx
+  add            # ax=cutIdx  bx=sepIdx
+  toggle         # ax=sepIdx  bx=cutIdx
+  0              # ax=0       bx=cutIdx
+  axret          # ax=0       bx=cutIdx ret=0
+  len            # ax=len     bx=cutIdx
+  toggle         # ax=cutIdx  bx=len
+  split          # ax=cutIdx  bx=len
+end
+#
+# Finds separator index and puts it into ret register
+#
+func             # func 3
+  0              # ax=0       bx=?
+  axret          # ax=0       bx=?         ret=0
+  1023           # ax=1023    bx=?
+  toggle         # ax=?       bx=1023
+  6              # ax=6       bx=1023
+  add            # ax=1029    bx=1023     (1029 - nop command)
+  toggle         # ax=1023    bx=1029
+  -1             # ax=-1      bx=1029
+  toggle         # ax=1029    bx=-1  
+  find           # ax=sepIdx  bx=-1
+  axret          # ax=sepIdx  bx=-1
+end
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# main (entry point). General approach: organism
+# sets it's color, 50 times eating and 1 time 
+# dispose wastes and 1 time cloning himself. after 
+# that repeat all above...
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+255              # ax=255     bx=0 
+lshift
+lshift
+lshift
+lshift
+lshift
+lshift
+lshift
+lshift           # ax=0xFF00  bx=0
+color            # ax=0xFF00  bx=0
+#
+# Eating...
+#
+50               # ax=50      bx=0
+loop
+  1              # ax=1       bx=?
+  call           # eating
+end
+#
+# This method checks if organism may produce
+# it's clone if it has enough food inside.
+#
+0
+call             # try clone
+#
+# Dispose wastes...
+#
+2                # ax=2       bx=?
+call             # ax=2       bx=?
+ret              # this is how we disable food segment
+nop              # separator between code and food
+#
+# Here and further food is located
+#

@@ -9,14 +9,9 @@ const Config   = require('./../Config');
 
 class Canvas {
     constructor() {
-        const id  = 'world';
-        const doc = document;
-
-        doc.body.innerHTML += `<canvas id="${id}" width="${Config.WORLD_WIDTH}" height="${Config.WORLD_HEIGHT}"></canvas>`;
-
         this._width         = Config.WORLD_WIDTH;
         this._height        = Config.WORLD_HEIGHT;
-        this._canvasEl      = doc.getElementById(id);
+        this._canvasEl      = this._createCanvas();
         this._headerEl      = this._createHeader();
         this._ctx           = this._canvasEl.getContext('2d');
         this._imgData       = this._ctx.createImageData(this._width, this._height);
@@ -40,13 +35,13 @@ class Canvas {
     }
 
     destroy() {
-        const parentNode = this._canvasEl.parentNode;
+        const parentNode = document.body;
 
         this._panZoom.dispose();
         parentNode.removeChild(this._canvasEl);
         parentNode.removeChild(this._fullEl);
         parentNode.removeChild(this._visualizeEl);
-        this._headerEl.parentNode.removeChild(this._headerEl);
+        parentNode.removeChild(this._headerEl);
         this._headerEl    = null;
         this._canvasEl    = null;
         this._fullEl      = null;
@@ -54,6 +49,7 @@ class Canvas {
         this._ctx         = null;
         this._imgData     = null;
         this._data        = null;
+        this._panZoom     = null;
     }
 
     visualize(visualize = true) {
@@ -68,13 +64,12 @@ class Canvas {
      * decimal number. For example: 16777215 is #FFFFFF - white.
      * In case of invalid coordinates 0 value for x, color and y will
      * be used.
-     * @param {Number} x X coordinate
-     * @param {Number} y Y coordinate
+     * @param {Number} offs Absolute dot offset
      * @param {Number} color Decimal color
      */
-    dot(x, y, color) {
+    dot(offs, color) {
         const data = this._data;
-        const offs = (y * this._width + x) * 4;
+        offs <<= 2;
 
         data[offs    ] = (color >>> 16) & 0xff;
         data[offs + 1] = (color >>> 8)  & 0xff;
@@ -83,30 +78,27 @@ class Canvas {
 
     /**
      * Sets pixel with 0 color with specified coordinates.
-     * @param {Number} x X coordinate
-     * @param {Number} y Y coordinate
+     * @param {Number} offs Absolute dot affset
      */
-    empty(x, y) {
+    empty(offs) {
         const data = this._data;
-        const offs = (y * this._width + x) * 4;
+        offs <<= 2;
         data[offs] = data[offs + 1] = data[offs + 2] = 0;
     }
 
     /**
      * This method is optimized for speed. It contains code duplication
      * with dot() method.
-     * @param {Number} x0 Start X position
-     * @param {Number} y0 Start Y position
-     * @param {Number} x1 End X position
-     * @param {Number} y1 End Y position
+     * @param {Number} offs Absolute source dot affset
+     * @param {Number} offs1 Absolute desctination dot affset
      * @param {Number} color
      */
-    move(x0, y0, x1, y1, color) {
-        const data  = this._data;
-        const offs0 = (y0 * this._width + x0) * 4;
-        const offs1 = (y1 * this._width + x1) * 4;
+    move(offs, offs1, color) {
+        const data = this._data;
+        offs  <<= 2;
+        offs1 <<= 2;
 
-        data[offs0] = data[offs0 + 1] = data[offs0 + 2] = 0;
+        data[offs] = data[offs + 1] = data[offs + 2] = 0;
 
         data[offs1    ] = (color >>> 16) & 0xff;
         data[offs1 + 1] = (color >>> 8)  & 0xff;
@@ -144,12 +136,12 @@ class Canvas {
         //
         // Inner div
         //
-        const innerEl = document.body.appendChild(Helper.setStyles('DIV', {
+        const innerEl = el.appendChild(Helper.setStyles('DIV', {
             position       : 'absolute',
-            width          : '10px',
-            height         : '10px',
-            top            : '12px',
-            left           : '12px',
+            width          : '12px',
+            height         : '12px',
+            top            : '8px',
+            left           : '8px',
             border         : '1px #000 solid',
             backgroundColor: '#f7ed0e',
             borderRadius   : '3px',
@@ -198,6 +190,7 @@ class Canvas {
     }
 
     _onAnimate() {
+        if (!this._panZoom) {return}
         this._ctx.putImageData(this._imgData, 0, 0, this._xDataOffs, this._yDataOffs, this._visibleWidth, this._visibleHeight);
 
         if (this._visualize === true) {
@@ -243,6 +236,15 @@ class Canvas {
         document.addEventListener('keydown', this._onKeyDown.bind(this));
     }
 
+    _createCanvas() {
+        const canvas = document.createElement('CANVAS');
+
+        canvas.setAttribute('width', Config.WORLD_WIDTH);
+        canvas.setAttribute('height', Config.WORLD_HEIGHT);
+
+        return document.body.appendChild(canvas);
+    }
+
     _createHeader() {
         return document.body.appendChild(Helper.setStyles('DIV', {
             position  : 'absolute',
@@ -286,8 +288,9 @@ class Canvas {
      * memory (see this._imgData).
      */
     _onZoom() {
+        if (!this._canvasEl) {return}
         const transform     = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
-        if (transform === 'none') {return}
+        if (!transform || transform === 'none') {return}
         const matrix        = transform.split('(')[1].split(')')[0].split(',');
         const dx            = +matrix[4];
         const dy            = +matrix[5];
