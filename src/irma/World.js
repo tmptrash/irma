@@ -1,15 +1,16 @@
 /**
  * Simple implementation of canvas based world, where all organisms leave.
+ * It uses internal Uint32Array instance, where all dots are stored.
  *
  * @author flatline
  */
-const Config   = require('./../Config');
-const Canvas   = require('./Canvas');
+const Config = require('./../Config');
+const Canvas = require('./Canvas');
 
 class World {
     constructor() {
-        this._canvas = new Canvas();
         this._data   = new Uint32Array(Config.WORLD_HEIGHT * Config.WORLD_WIDTH);
+        this._canvas = new Canvas(this._data);
     }
 
     destroy() {

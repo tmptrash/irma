@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 1.5;
-const HEIGHT    = 1080 * 1.5;
+const WIDTH     = 1920 * 8;
+const HEIGHT    = 1080 * 8;
 const CODE_OFFS = 1024;
 
 
@@ -193,15 +193,17 @@ module.exports = {
     ],
 
     /**
-     * World width in pixels
+     * World width and height in pixels
      * @constant
      */
     WORLD_WIDTH                : WIDTH,
+    WORLD_HEIGHT               : HEIGHT,
     /**
-     * World height in pixels
+     * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_HEIGHT               : HEIGHT,
+    WORLD_CANVAS_WIDTH         : 1920,
+    WORLD_CANVAS_HEIGHT        : 1080,
     /**
      * {Number} Zoom speed 0..1
      */

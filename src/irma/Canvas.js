@@ -8,9 +8,15 @@ const Helper   = require('./../common/Helper');
 const Config   = require('./../Config');
 
 class Canvas {
-    constructor() {
-        this._width         = Config.WORLD_WIDTH;
-        this._height        = Config.WORLD_HEIGHT;
+    /**
+     * {Uint32Array} Reference to one dimension array of dots which should
+     * be mapped into the canvas
+     */
+    constructor(data) {
+        this._srcData       = data;
+        this._zoomCoef      = 1;
+        this._width         = Config.WORLD_CANVAS_WIDTH;
+        this._height        = Config.WORLD_CANVAS_HEIGHT;
         this._canvasEl      = this._createCanvas();
         this._headerEl      = this._createHeader();
         this._ctx           = this._canvasEl.getContext('2d');
@@ -24,8 +30,8 @@ class Canvas {
         this._visualizeEl   = this._createVisualizeBtn();
         this._xDataOffs     = 0;
         this._yDataOffs     = 0;
-        this._visibleWidth  = Config.WORLD_WIDTH;
-        this._visibleHeight = Config.WORLD_HEIGHT;
+        this._visibleWidth  = Config.WORLD_CANVAS_WIDTH;
+        this._visibleHeight = Config.WORLD_CANVAS_HEIGHT;
 
         this._prepareDom();
         this._initPanZoomLib();
@@ -239,8 +245,8 @@ class Canvas {
     _createCanvas() {
         const canvas = document.createElement('CANVAS');
 
-        canvas.setAttribute('width', Config.WORLD_WIDTH);
-        canvas.setAttribute('height', Config.WORLD_HEIGHT);
+        canvas.setAttribute('width', Config.WORLD_CANVAS_WIDTH);
+        canvas.setAttribute('height', Config.WORLD_CANVAS_HEIGHT);
 
         return document.body.appendChild(canvas);
     }
@@ -277,9 +283,23 @@ class Canvas {
         this._canvasEl.style.imageRendering = 'pixelated';
         this._panZoom   = Panzoom(this._canvasEl, {
             zoomSpeed   : Config.worldZoomSpeed,
-            smoothScroll: false
+            smoothScroll: false,
+            minZoom     : 1,
+            beforeWheel : this._onBeforeZoom.bind(this)
         });
         this._panZoom.zoomAbs(0, 0, 1.0);
+    }
+
+    _onBeforeZoom(e) {
+        const zoom = this._getZoom()[0];
+        //
+        // Works old mechanism of panzoom based zoom
+        //
+        if (!zoom || zoom !== 1 || zoom === 1 && e.deltaY < 0) {return}
+        console.log(e, `x:${this._xDataOffs}, y:${this._yDataOffs}, w:${this._visibleWidth}, h:${this._visibleHeight}`);
+        if (e.deltaY < 0) {this._zoomCoef--}
+        else if (e.deltaY > 0) {this._zoomCoef++}
+        this._fillBySrc();
     }
 
     /**
@@ -289,9 +309,8 @@ class Canvas {
      */
     _onZoom() {
         if (!this._canvasEl) {return}
-        const transform     = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
-        if (!transform || transform === 'none') {return}
-        const matrix        = transform.split('(')[1].split(')')[0].split(',');
+        const matrix        = this._getZoom();
+        if (!matrix) {return}
         const dx            = +matrix[4];
         const dy            = +matrix[5];
         const coef          = +matrix[0];
@@ -299,14 +318,24 @@ class Canvas {
         const windowHeight  = window.innerHeight;
         const viewWidth     = windowWidth  * coef;
         const viewHeight    = windowHeight * coef;
-        const xCoef         = Config.WORLD_WIDTH  / windowWidth;
-        const yCoef         = Config.WORLD_HEIGHT / windowHeight;
+        const xCoef         = Config.WORLD_CANVAS_WIDTH  / windowWidth;
+        const yCoef         = Config.WORLD_CANVAS_HEIGHT / windowHeight;
 
         this._xDataOffs = (dx < 0 ? (coef > 1 ? -dx / coef : -dx * coef) : 0) * xCoef;
         this._yDataOffs = (dy < 0 ? (coef > 1 ? -dy / coef : -dy * coef) : 0) * yCoef;
 
-        this._visibleWidth  = (viewWidth  + dx > windowWidth  ? (coef > 1 ? (windowWidth  - (dx > 0 ? dx : 0)) / coef : (windowWidth  - (dx > 0 ? dx : 0)) * coef) : windowWidth) * xCoef;
-        this._visibleHeight = (viewHeight + dy > windowHeight ? (coef > 1 ? (windowHeight - (dy > 0 ? dy : 0)) / coef : (windowHeight - (dy > 0 ? dy : 0)) * coef) : windowWidth) * yCoef;
+        this._visibleWidth  = (viewWidth  + dx > windowWidth  ? (coef > 1 ? (windowWidth  - (dx > 0 ? dx : 0)) / coef : (windowWidth  - (dx > 0 ? dx : 0)) * coef) : windowWidth ) * xCoef;
+        this._visibleHeight = (viewHeight + dy > windowHeight ? (coef > 1 ? (windowHeight - (dy > 0 ? dy : 0)) / coef : (windowHeight - (dy > 0 ? dy : 0)) * coef) : windowHeight) * yCoef;
+    }
+
+    _getZoom() {
+        const transform = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
+        if (!transform || transform === 'none') {return null}
+        return (transform.split('(')[1].split(')')[0].split(',')).map((e) => +e);
+    }
+
+    _fillBySrc() {
+        // TODO:
     }
 }
 
