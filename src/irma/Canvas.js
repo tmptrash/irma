@@ -8,13 +8,8 @@ const Helper   = require('./../common/Helper');
 const Config   = require('./../Config');
 
 class Canvas {
-    /**
-     * {Uint32Array} Reference to one dimension array of dots which should
-     * be mapped into the canvas
-     */
-    constructor(data) {
-        this._srcData       = data;
-        this._zoomCoef      = 1;
+    constructor(options) {
+        this._options       = options;
         this._width         = Config.WORLD_CANVAS_WIDTH;
         this._height        = Config.WORLD_CANVAS_HEIGHT;
         this._canvasEl      = this._createCanvas();
@@ -285,21 +280,9 @@ class Canvas {
             zoomSpeed   : Config.worldZoomSpeed,
             smoothScroll: false,
             minZoom     : 1,
-            beforeWheel : this._onBeforeZoom.bind(this)
+            filterKey   : this._options.scroll
         });
         this._panZoom.zoomAbs(0, 0, 1.0);
-    }
-
-    _onBeforeZoom(e) {
-        const zoom = this._getZoom()[0];
-        //
-        // Works old mechanism of panzoom based zoom
-        //
-        if (!zoom || zoom !== 1 || zoom === 1 && e.deltaY < 0) {return}
-        console.log(e, `x:${this._xDataOffs}, y:${this._yDataOffs}, w:${this._visibleWidth}, h:${this._visibleHeight}`);
-        if (e.deltaY < 0) {this._zoomCoef--}
-        else if (e.deltaY > 0) {this._zoomCoef++}
-        this._fillBySrc();
     }
 
     /**
@@ -332,10 +315,6 @@ class Canvas {
         const transform = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
         if (!transform || transform === 'none') {return null}
         return (transform.split('(')[1].split(')')[0].split(',')).map((e) => +e);
-    }
-
-    _fillBySrc() {
-        // TODO:
     }
 }
 

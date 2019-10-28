@@ -202,8 +202,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : 1920,
-    WORLD_CANVAS_HEIGHT        : 1080,
+    WORLD_CANVAS_WIDTH         : 1535,
+    WORLD_CANVAS_HEIGHT        : 864,
     /**
      * {Number} Zoom speed 0..1
      */

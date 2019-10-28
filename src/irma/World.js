@@ -8,9 +8,9 @@ const Config = require('./../Config');
 const Canvas = require('./Canvas');
 
 class World {
-    constructor() {
+    constructor(options) {
         this._data   = new Uint32Array(Config.WORLD_HEIGHT * Config.WORLD_WIDTH);
-        this._canvas = new Canvas(this._data);
+        this._canvas = new Canvas(options);
     }
 
     destroy() {
@@ -21,6 +21,10 @@ class World {
 
     get data() {
         return this._data;
+    }
+
+    get canvas() {
+        return this._canvas;
     }
 
     dot(offset, c) {

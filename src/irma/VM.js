@@ -62,12 +62,13 @@ const abs               = Math.abs;
 
 class VM {
     constructor() {
-        this.world            = new World();
+        this.world            = new World({scroll: this._onScroll.bind(this)});
         this.orgsAndMols      = null;
         this.orgs             = null;
         this.population       = 0;
         this.api              = {createOrg: this._createOrg.bind(this)};
 
+        this._viewOffs        = 0;
         this._ts              = Date.now();
         this._i               = 0;
         this._freq            = {};
@@ -739,6 +740,23 @@ class VM {
 
         return org;
     }
-}
 
+    _onScroll(e) {
+        this._viewOffs += 30;
+        // TODO: _viewOffs should be updated already
+        let   offs   = this._viewOffs;
+        const world  = this.world;
+        const data   = world.data;
+        const canvas = world.canvas;
+        const width  = Config.WORLD_CANVAS_WIDTH;
+
+        for (let y = 0, height = Config.WORLD_CANVAS_HEIGHT; y < height; y++) {
+            const yOffs = y * width;
+            for (let x = 0; x < width; x++) {
+                const org = world.getOrgIdx(offs++);
+                canvas.dot(yOffs + x, org === -1 ? 0x000000 : org.color);
+            }
+        }
+    }
+}
 module.exports = VM;
