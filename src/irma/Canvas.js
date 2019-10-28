@@ -278,7 +278,7 @@ class Canvas {
         this._canvasEl.style.imageRendering = 'pixelated';
         this._panZoom   = Panzoom(this._canvasEl, {
             zoomSpeed   : Config.worldZoomSpeed,
-            smoothScroll: false,
+            smoothScroll: true,
             minZoom     : 1,
             filterKey   : this._options.scroll
         });

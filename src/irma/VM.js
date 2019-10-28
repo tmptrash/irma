@@ -68,7 +68,6 @@ class VM {
         this.population       = 0;
         this.api              = {createOrg: this._createOrg.bind(this)};
 
-        this._viewOffs        = 0;
         this._ts              = Date.now();
         this._i               = 0;
         this._freq            = {};
@@ -741,22 +740,47 @@ class VM {
         return org;
     }
 
+    /**
+     * Is called on pressing one of arrow buttons. Scrolls world inside canvas
+     * to appropriate direction till the it's edge and stops at the end or
+     * beginning.
+     * @param {MouseEvent} e
+     */
     _onScroll(e) {
-        this._viewOffs += 30;
-        // TODO: _viewOffs should be updated already
-        let   offs   = this._viewOffs;
         const world  = this.world;
-        const data   = world.data;
-        const canvas = world.canvas;
         const width  = Config.WORLD_CANVAS_WIDTH;
+        const row    = Config.WORLD_WIDTH  - width;
+        const col    = Config.WORLD_HEIGHT - Config.WORLD_CANVAS_HEIGHT;
+
+        switch (e.which) {
+            case 37: // left
+                if ((world.viewX -= Config.worldScrollValue) < 0) {world.viewX = 0}
+                break;
+            case 39: // right
+                if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row}
+                break;
+            case 38: // up
+                if ((world.viewY -= Config.worldScrollValue) < 0) {world.viewY = 0}
+                break;
+            case 40: // down
+                if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col}
+                break;
+        }
+
+        let   offs   = world.viewY * Config.WORLD_WIDTH + world.viewX;
+        const canvas = world.canvas;
+        const orgs   = this.orgsAndMols.ref();
 
         for (let y = 0, height = Config.WORLD_CANVAS_HEIGHT; y < height; y++) {
             const yOffs = y * width;
             for (let x = 0; x < width; x++) {
                 const org = world.getOrgIdx(offs++);
-                canvas.dot(yOffs + x, org === -1 ? 0x000000 : org.color);
+                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgs[org].color);
             }
+            offs += row;
         }
+
+        return true;
     }
 }
 module.exports = VM;

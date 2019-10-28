@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 8;
-const HEIGHT    = 1080 * 8;
+const WIDTH     = 1920 * 5;
+const HEIGHT    = 1080 * 5;
 const CODE_OFFS = 1024;
 
 
@@ -208,6 +208,7 @@ module.exports = {
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,
+    worldScrollValue           : 30,
     /**
      * {Number} Amount of frequencies in a world. It uses with say/listen commands
      */
@@ -241,7 +242,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 100,
-    molAmount                  : 1500000,
+    molAmount                  : 8000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**

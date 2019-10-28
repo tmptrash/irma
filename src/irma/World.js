@@ -9,6 +9,8 @@ const Canvas = require('./Canvas');
 
 class World {
     constructor(options) {
+        this.viewX   = 0;
+        this.viewY   = 0;
         this._data   = new Uint32Array(Config.WORLD_HEIGHT * Config.WORLD_WIDTH);
         this._canvas = new Canvas(options);
     }

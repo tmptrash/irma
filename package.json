@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "dexie": "^2.0.4",
-    "panzoom": "^4.5.0"
+    "panzoom": "^8.4.0"
   },
   "scripts": {
     "test": "SET NODE_ENV=production& npx karma start",
