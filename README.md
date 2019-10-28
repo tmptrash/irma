@@ -11,7 +11,7 @@ The image above represents common irma 2D world with organisms (red dots), rocks
 1. git clone https://github.com/tmptrash/irma
 2. cd irma
 3. npm i
-4. npm run build
+4. npm run prod
 5. cd dist
 6. run index.html in Chrome
 
