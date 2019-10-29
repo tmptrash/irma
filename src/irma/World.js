@@ -4,14 +4,19 @@
  *
  * @author flatline
  */
-const Config = require('./../Config');
-const Canvas = require('./Canvas');
+const Config              = require('./../Config');
+const Canvas              = require('./Canvas');
+
+const WORLD_WIDTH         = Config.WORLD_WIDTH;
+const WORLD_HEIGHT        = Config.WORLD_HEIGHT;
+const WORLD_CANVAS_WIDTH  = Config.WORLD_CANVAS_WIDTH;
+const WORLD_CANVAS_HEIGHT = Config.WORLD_CANVAS_HEIGHT;
 
 class World {
     constructor(options) {
         this.viewX   = 0;
         this.viewY   = 0;
-        this._data   = new Uint32Array(Config.WORLD_HEIGHT * Config.WORLD_WIDTH);
+        this._data   = new Uint32Array(WORLD_HEIGHT * WORLD_WIDTH);
         this._canvas = new Canvas(options);
     }
 
@@ -31,7 +36,12 @@ class World {
 
     dot(offset, c) {
         this._data[offset] = c;
-        this._canvas.dot(offset, c);
+
+        const x = offset % WORLD_WIDTH;
+        if (x < this.viewX || x >= this.viewX + WORLD_CANVAS_WIDTH) {return}
+        const y = Math.floor(offset / WORLD_WIDTH);
+        if (y < this.viewY || y >= this.viewY + WORLD_CANVAS_HEIGHT) {return}
+        this._canvas.dot((y - this.viewY) * WORLD_CANVAS_WIDTH + (x - this.viewX), c);
     }
 
     swap(offset, offset1) {
@@ -39,19 +49,40 @@ class World {
         const dot  = data[offset1];
 
         data[offset1] = data[offset];
-        this._canvas.dot(offset1, data[offset]);
+        const x = offset1 % WORLD_WIDTH;
+        const y = Math.floor(offset1 / WORLD_WIDTH);
+        if (x >= this.viewX && x < this.viewX + WORLD_CANVAS_WIDTH &&
+            y >= this.viewY && y < this.viewY + WORLD_CANVAS_HEIGHT) {
+            this._canvas.dot((y - this.viewY) * WORLD_CANVAS_WIDTH + (x - this.viewX), data[offset]);
+        }
+
         data[offset]  = dot;
-        this._canvas.dot(offset, dot);
+        const x1 = offset % WORLD_WIDTH;
+        const y1 = Math.floor(offset / WORLD_WIDTH);
+        if (x1 >= this.viewX && x1 < this.viewX + WORLD_CANVAS_WIDTH &&
+            y1 >= this.viewY && y1 < this.viewY + WORLD_CANVAS_HEIGHT) {
+            this._canvas.dot((y1 - this.viewY) * WORLD_CANVAS_WIDTH + (x1 - this.viewX), dot);
+        }
     }
 
     empty(offset) {
         this._data[offset] = 0;
-        this._canvas.empty(offset);
+
+        const x = offset % WORLD_WIDTH;
+        if (x < this.viewX || x >= this.viewX + WORLD_CANVAS_WIDTH) {return}
+        const y = Math.floor(offset / WORLD_WIDTH);
+        if (y < this.viewY || y >= this.viewY + WORLD_CANVAS_HEIGHT) {return}
+        this._canvas.empty((y - this.viewY) * WORLD_CANVAS_WIDTH + (x - this.viewX));
     }
 
     org(offset, org) {
         this._data[offset] = org.item + 1;
-        this._canvas.dot(offset, org.color);
+
+        const x = offset % WORLD_WIDTH;
+        if (x < this.viewX || x >= this.viewX + WORLD_CANVAS_WIDTH) {return}
+        const y = Math.floor(offset / WORLD_WIDTH);
+        if (y < this.viewY || y >= this.viewY + WORLD_CANVAS_HEIGHT) {return}
+        this._canvas.dot((y - this.viewY) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color || Config.molColor);
     }
 
     setItem(offset, item) {
@@ -66,14 +97,39 @@ class World {
     moveOrg(org, offset) {
         this._data[org.offset] = 0;
         this._data[offset] = org.item + 1;
-        this._canvas.move(org.offset, offset, org.color);
+
+        const x = org.offset % WORLD_WIDTH;
+        const y = Math.floor(org.offset / WORLD_WIDTH);
+        if (x >= this.viewX && x < this.viewX + WORLD_CANVAS_WIDTH &&
+            y >= this.viewY && y < this.viewY + WORLD_CANVAS_HEIGHT) {
+            this._canvas.dot((y - this.viewY) * WORLD_CANVAS_WIDTH + (x - this.viewX), 0);
+        }
+        const x1 = offset % WORLD_WIDTH;
+        const y1 = Math.floor(offset / WORLD_WIDTH);
+        if (x1 >= this.viewX && x1 < this.viewX + WORLD_CANVAS_WIDTH &&
+            y1 >= this.viewY && y1 < this.viewY + WORLD_CANVAS_HEIGHT) {
+            this._canvas.dot((y1 - this.viewY) * WORLD_CANVAS_WIDTH + (x1 - this.viewX), org.color);
+        }
+
         org.offset = offset;
     }
 
     moveDot(offset, offset1, color) {
         this._data[offset]  = 0;
         this._data[offset1] = color;
-        this._canvas.move(offset, offset1, color);
+
+        const x = offset % WORLD_WIDTH;
+        const y = Math.floor(offset / WORLD_WIDTH);
+        if (x >= this.viewX && x < this.viewX + WORLD_CANVAS_WIDTH &&
+            y >= this.viewY && y < this.viewY + WORLD_CANVAS_HEIGHT) {
+            this._canvas.dot((y - this.viewY) * WORLD_CANVAS_WIDTH + (x - this.viewX), 0);
+        }
+        const x1 = offset1 % WORLD_WIDTH;
+        const y1 = Math.floor(offset1 / WORLD_WIDTH);
+        if (x1 >= this.viewX && x1 < this.viewX + WORLD_CANVAS_WIDTH &&
+            y1 >= this.viewY && y1 < this.viewY + WORLD_CANVAS_HEIGHT) {
+            this._canvas.dot((y1 - this.viewY) * WORLD_CANVAS_WIDTH + (x1 - this.viewX), color);
+        }
     }
 
     title(text) {

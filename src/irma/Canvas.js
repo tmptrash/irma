@@ -121,6 +121,44 @@ class Canvas {
     header(text) {
         this._headerEl.textContent = text;
     }
+ 
+    _prepareDom() {
+        const bodyEl = document.body;
+        const htmlEl = document.querySelector('html');
+
+        Helper.setStyles(bodyEl, {
+            width          : '100%',
+            height         : '100%',
+            margin         : 0,
+            backgroundColor: '#9e9e9e'
+        });
+        Helper.setStyles(htmlEl, {
+            width          : '100%',
+            height         : '100%',
+            margin         : 0
+        });
+
+        this._ctx.font      = "18px Consolas";
+        this._ctx.fillStyle = "white";
+        //
+        // This style hides scroll bars on full screen 2d canvas
+        //
+        document.querySelector('html').style.overflow = 'hidden';
+        //
+        // Adds listener to change of canvas transform matrix. We need it
+        // to handle zooming of the canvas
+        //
+        this._zoomObserver = new MutationObserver(this._onZoom.bind(this));
+        this._zoomObserver.observe(this._canvasEl, {
+            attributes     : true,
+            childList      : false,
+            attributeFilter: ['style']
+        });
+        //
+        // Global keyup event handler
+        //
+        document.addEventListener('keydown', this._onKeyDown.bind(this));
+    }
 
     _createFullScreenBtn() {
         const el = document.body.appendChild(Helper.setStyles('DIV', {
@@ -199,44 +237,6 @@ class Canvas {
         }
     }
 
-    _prepareDom() {
-        const bodyEl = document.body;
-        const htmlEl = document.querySelector('html');
-
-        Helper.setStyles(bodyEl, {
-            width          : '100%',
-            height         : '100%',
-            margin         : 0,
-            backgroundColor: '#9e9e9e'
-        });
-        Helper.setStyles(htmlEl, {
-            width          : '100%',
-            height         : '100%',
-            margin         : 0
-        });
-
-        this._ctx.font      = "18px Consolas";
-        this._ctx.fillStyle = "white";
-        //
-        // This style hides scroll bars on full screen 2d canvas
-        //
-        document.querySelector('html').style.overflow = 'hidden';
-        //
-        // Adds listener to change of canvas transform matrix. We need it
-        // to handle zooming of the canvas
-        //
-        this._zoomObserver = new MutationObserver(this._onZoom.bind(this));
-        this._zoomObserver.observe(this._canvasEl, {
-            attributes     : true,
-            childList      : false,
-            attributeFilter: ['style']
-        });
-        //
-        // Global keyup event handler
-        //
-        document.addEventListener('keydown', this._onKeyDown.bind(this));
-    }
-
     _createCanvas() {
         const canvas = document.createElement('CANVAS');
 
@@ -278,7 +278,7 @@ class Canvas {
         this._canvasEl.style.imageRendering = 'pixelated';
         this._panZoom   = Panzoom(this._canvasEl, {
             zoomSpeed   : Config.worldZoomSpeed,
-            smoothScroll: true,
+            smoothScroll: false,
             minZoom     : 1,
             filterKey   : this._options.scroll
         });
@@ -292,7 +292,7 @@ class Canvas {
      */
     _onZoom() {
         if (!this._canvasEl) {return}
-        const matrix        = this._getZoom();
+        const matrix        = this._getZoomMatrix();
         if (!matrix) {return}
         const dx            = +matrix[4];
         const dy            = +matrix[5];
@@ -311,7 +311,7 @@ class Canvas {
         this._visibleHeight = (viewHeight + dy > windowHeight ? (coef > 1 ? (windowHeight - (dy > 0 ? dy : 0)) / coef : (windowHeight - (dy > 0 ? dy : 0)) * coef) : windowHeight) * yCoef;
     }
 
-    _getZoom() {
+    _getZoomMatrix() {
         const transform = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
         if (!transform || transform === 'none') {return null}
         return (transform.split('(')[1].split(')')[0].split(',')).map((e) => +e);

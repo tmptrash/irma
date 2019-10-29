@@ -11,7 +11,7 @@ const Db         = require('./../common/Db');
 const Organism   = require('./Organism');
 const Mutations  = require('./Mutations');
 const World      = require('./World');
-const PLUGINS    = Helper.requirePlugins(Config.plugins);
+const PLUGINS    = Helper.requirePlugins(Config.PLUGINS);
 /**
  * {Number} This offset will be added to commands value. This is how we
  * add an ability to use numbers in a code, just putting them as command
@@ -473,7 +473,7 @@ class VM {
                             const offset = org.offset + ax;
                             if (offset < 0 || offset > MAX_OFFS) {ax = 0; continue}
                             const dot = world.getOrgIdx(offset);
-                            ax = (dot < 0 ? 0 : orgsAndMolsRef[dot].color);
+                            ax = (dot < 0 ? 0 : orgsAndMolsRef[dot].color || Config.molColor);
                             continue;
 
                         case CODE_CMD_OFFS + 39: {// say
@@ -767,15 +767,16 @@ class VM {
                 break;
         }
 
-        let   offs   = world.viewY * Config.WORLD_WIDTH + world.viewX;
-        const canvas = world.canvas;
-        const orgs   = this.orgsAndMols.ref();
+        let   offs     = world.viewY * Config.WORLD_WIDTH + world.viewX;
+        const canvas   = world.canvas;
+        const orgs     = this.orgsAndMols.ref();
+        const molColor = Config.molColor;
 
         for (let y = 0, height = Config.WORLD_CANVAS_HEIGHT; y < height; y++) {
             const yOffs = y * width;
             for (let x = 0; x < width; x++) {
                 const org = world.getOrgIdx(offs++);
-                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgs[org].color);
+                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgs[org].color || molColor);
             }
             offs += row;
         }
