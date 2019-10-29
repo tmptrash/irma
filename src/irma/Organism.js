@@ -17,11 +17,9 @@ class Organism {
     }
 
     init(id, offs, item, orgItem, parent = null, code = null, isOrg = false) {
-        this.id         = id;
         this.item       = item;
         this.offset     = offs;
         this.isOrg      = isOrg;
-        this.color      = Config.molColor;
         //
         // For simple molecules we don't need to store all commands related data
         //
@@ -30,6 +28,8 @@ class Organism {
             return this;
         }
 
+        this.id         = id;
+        this.color      = 0x000000;
         this.orgItem    = orgItem;
         this.mutations  = 0;
         this.packet     = null;

@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 1.5;
-const HEIGHT    = 1080 * 1.5;
+const WIDTH     = 1920 * 5;
+const HEIGHT    = 1080 * 5;
 const CODE_OFFS = 1024;
 
 
@@ -38,6 +38,7 @@ module.exports = {
     CODE_COMMANDS              : 50,
     /**
      * {Number} Functions call stack size
+     * @constant
      */
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 1,
@@ -193,19 +194,22 @@ module.exports = {
     ],
 
     /**
-     * World width in pixels
+     * World width and height in pixels
      * @constant
      */
     WORLD_WIDTH                : WIDTH,
+    WORLD_HEIGHT               : HEIGHT,
     /**
-     * World height in pixels
+     * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_HEIGHT               : HEIGHT,
+    WORLD_CANVAS_WIDTH         : 1024,
+    WORLD_CANVAS_HEIGHT        : 768,
     /**
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,
+    worldScrollValue           : 30,
     /**
      * {Number} Amount of frequencies in a world. It uses with say/listen commands
      */
@@ -239,7 +243,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 100,
-    molAmount                  : 1500000,
+    molAmount                  : 3000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
@@ -251,6 +255,7 @@ module.exports = {
     energyMultiplier           : 4000,
     /**
      * Plugins. Extends irma core by additional functionality
+     * @constant
      */
-    plugins                    : ['Decay']
+    PLUGINS                    : ['Decay']
 };

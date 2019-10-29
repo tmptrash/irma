@@ -8,9 +8,10 @@ const Helper   = require('./../common/Helper');
 const Config   = require('./../Config');
 
 class Canvas {
-    constructor() {
-        this._width         = Config.WORLD_WIDTH;
-        this._height        = Config.WORLD_HEIGHT;
+    constructor(options) {
+        this._options       = options;
+        this._width         = Config.WORLD_CANVAS_WIDTH;
+        this._height        = Config.WORLD_CANVAS_HEIGHT;
         this._canvasEl      = this._createCanvas();
         this._headerEl      = this._createHeader();
         this._ctx           = this._canvasEl.getContext('2d');
@@ -24,8 +25,8 @@ class Canvas {
         this._visualizeEl   = this._createVisualizeBtn();
         this._xDataOffs     = 0;
         this._yDataOffs     = 0;
-        this._visibleWidth  = Config.WORLD_WIDTH;
-        this._visibleHeight = Config.WORLD_HEIGHT;
+        this._visibleWidth  = Config.WORLD_CANVAS_WIDTH;
+        this._visibleHeight = Config.WORLD_CANVAS_HEIGHT;
 
         this._prepareDom();
         this._initPanZoomLib();
@@ -120,6 +121,44 @@ class Canvas {
     header(text) {
         this._headerEl.textContent = text;
     }
+ 
+    _prepareDom() {
+        const bodyEl = document.body;
+        const htmlEl = document.querySelector('html');
+
+        Helper.setStyles(bodyEl, {
+            width          : '100%',
+            height         : '100%',
+            margin         : 0,
+            backgroundColor: '#9e9e9e'
+        });
+        Helper.setStyles(htmlEl, {
+            width          : '100%',
+            height         : '100%',
+            margin         : 0
+        });
+
+        this._ctx.font      = "18px Consolas";
+        this._ctx.fillStyle = "white";
+        //
+        // This style hides scroll bars on full screen 2d canvas
+        //
+        document.querySelector('html').style.overflow = 'hidden';
+        //
+        // Adds listener to change of canvas transform matrix. We need it
+        // to handle zooming of the canvas
+        //
+        this._zoomObserver = new MutationObserver(this._onZoom.bind(this));
+        this._zoomObserver.observe(this._canvasEl, {
+            attributes     : true,
+            childList      : false,
+            attributeFilter: ['style']
+        });
+        //
+        // Global keyup event handler
+        //
+        document.addEventListener('keydown', this._onKeyDown.bind(this));
+    }
 
     _createFullScreenBtn() {
         const el = document.body.appendChild(Helper.setStyles('DIV', {
@@ -198,49 +237,11 @@ class Canvas {
         }
     }
 
-    _prepareDom() {
-        const bodyEl = document.body;
-        const htmlEl = document.querySelector('html');
-
-        Helper.setStyles(bodyEl, {
-            width          : '100%',
-            height         : '100%',
-            margin         : 0,
-            backgroundColor: '#9e9e9e'
-        });
-        Helper.setStyles(htmlEl, {
-            width          : '100%',
-            height         : '100%',
-            margin         : 0
-        });
-
-        this._ctx.font      = "18px Consolas";
-        this._ctx.fillStyle = "white";
-        //
-        // This style hides scroll bars on full screen 2d canvas
-        //
-        document.querySelector('html').style.overflow = 'hidden';
-        //
-        // Adds listener to change of canvas transform matrix. We need it
-        // to handle zooming of the canvas
-        //
-        this._zoomObserver = new MutationObserver(this._onZoom.bind(this));
-        this._zoomObserver.observe(this._canvasEl, {
-            attributes     : true,
-            childList      : false,
-            attributeFilter: ['style']
-        });
-        //
-        // Global keyup event handler
-        //
-        document.addEventListener('keydown', this._onKeyDown.bind(this));
-    }
-
     _createCanvas() {
         const canvas = document.createElement('CANVAS');
 
-        canvas.setAttribute('width', Config.WORLD_WIDTH);
-        canvas.setAttribute('height', Config.WORLD_HEIGHT);
+        canvas.setAttribute('width', Config.WORLD_CANVAS_WIDTH);
+        canvas.setAttribute('height', Config.WORLD_CANVAS_HEIGHT);
 
         return document.body.appendChild(canvas);
     }
@@ -277,7 +278,9 @@ class Canvas {
         this._canvasEl.style.imageRendering = 'pixelated';
         this._panZoom   = Panzoom(this._canvasEl, {
             zoomSpeed   : Config.worldZoomSpeed,
-            smoothScroll: false
+            smoothScroll: false,
+            minZoom     : 1,
+            filterKey   : this._options.scroll
         });
         this._panZoom.zoomAbs(0, 0, 1.0);
     }
@@ -289,9 +292,8 @@ class Canvas {
      */
     _onZoom() {
         if (!this._canvasEl) {return}
-        const transform     = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
-        if (!transform || transform === 'none') {return}
-        const matrix        = transform.split('(')[1].split(')')[0].split(',');
+        const matrix        = this._getZoomMatrix();
+        if (!matrix) {return}
         const dx            = +matrix[4];
         const dy            = +matrix[5];
         const coef          = +matrix[0];
@@ -299,14 +301,20 @@ class Canvas {
         const windowHeight  = window.innerHeight;
         const viewWidth     = windowWidth  * coef;
         const viewHeight    = windowHeight * coef;
-        const xCoef         = Config.WORLD_WIDTH  / windowWidth;
-        const yCoef         = Config.WORLD_HEIGHT / windowHeight;
+        const xCoef         = Config.WORLD_CANVAS_WIDTH  / windowWidth;
+        const yCoef         = Config.WORLD_CANVAS_HEIGHT / windowHeight;
 
         this._xDataOffs = (dx < 0 ? (coef > 1 ? -dx / coef : -dx * coef) : 0) * xCoef;
         this._yDataOffs = (dy < 0 ? (coef > 1 ? -dy / coef : -dy * coef) : 0) * yCoef;
 
-        this._visibleWidth  = (viewWidth  + dx > windowWidth  ? (coef > 1 ? (windowWidth  - (dx > 0 ? dx : 0)) / coef : (windowWidth  - (dx > 0 ? dx : 0)) * coef) : windowWidth) * xCoef;
-        this._visibleHeight = (viewHeight + dy > windowHeight ? (coef > 1 ? (windowHeight - (dy > 0 ? dy : 0)) / coef : (windowHeight - (dy > 0 ? dy : 0)) * coef) : windowWidth) * yCoef;
+        this._visibleWidth  = (viewWidth  + dx > windowWidth  ? (coef > 1 ? (windowWidth  - (dx > 0 ? dx : 0)) / coef : (windowWidth  - (dx > 0 ? dx : 0)) * coef) : windowWidth ) * xCoef;
+        this._visibleHeight = (viewHeight + dy > windowHeight ? (coef > 1 ? (windowHeight - (dy > 0 ? dy : 0)) / coef : (windowHeight - (dy > 0 ? dy : 0)) * coef) : windowHeight) * yCoef;
+    }
+
+    _getZoomMatrix() {
+        const transform = window.getComputedStyle(this._canvasEl, null).getPropertyValue('transform');
+        if (!transform || transform === 'none') {return null}
+        return (transform.split('(')[1].split(')')[0].split(',')).map((e) => +e);
     }
 }
 
