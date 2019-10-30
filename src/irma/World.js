@@ -36,6 +36,12 @@ class World {
         return this._canvas;
     }
 
+    /**
+     * Draws a dot in a world always and in a canvas, if it's there. This method
+     * is optimized by speed.
+     * @param {Number} offset Dot offset 
+     * @param {Number} c Dot color 
+     */
     dot(offset, c) {
         this._data[offset] = c;
 
