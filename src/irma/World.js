@@ -67,6 +67,7 @@ class World {
         }
     }
 
+    // TODO:
     empty(offset) {
         this._data[offset] = 0;
 
