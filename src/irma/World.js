@@ -11,10 +11,12 @@ const WORLD_WIDTH         = Config.WORLD_WIDTH;
 const WORLD_HEIGHT        = Config.WORLD_HEIGHT;
 const WORLD_CANVAS_WIDTH  = Config.WORLD_CANVAS_WIDTH;
 const WORLD_CANVAS_HEIGHT = Config.WORLD_CANVAS_HEIGHT;
+const WORLD_COEF          = WORLD_CANVAS_WIDTH / WORLD_WIDTH;
 
 class World {
     constructor(options) {
         this.viewX     = 0; // X coordinate of canvas
+        this.viewX1    = WORLD_CANVAS_WIDTH - 1;
         this.viewY     = 0; // Y coordinate of canvas
         this.viewOffs  = 0; // offset of canvas top left corner
         this.viewOffs1 = 0; // offset of canvas right-bottom corner
@@ -37,18 +39,18 @@ class World {
     }
 
     /**
-     * Draws a dot in a world always and in a canvas, if it's there. This method
+     * Draws a dot in a world and if it's within canvas draws it there. This method
      * is optimized by speed.
      * @param {Number} offset Dot offset 
-     * @param {Number} c Dot color 
+     * @param {Number} c Dot color
      */
     dot(offset, c) {
         this._data[offset] = c;
 
-        if (offset < this.viewOffs  || offset > this.viewOffs1) {return}
+        if (offset < this.viewOffs || offset > this.viewOffs1) {return}
         const x = offset % WORLD_WIDTH;
-        if (x < this.viewX || x >= this.viewX + WORLD_CANVAS_WIDTH) {return}
-        this._canvas.dot((offset - this.viewOffs) / WORLD_WIDTH * WORLD_CANVAS_WIDTH + (x - this.viewX), c);
+        if (x < this.viewX || x >= this.viewX1) {return}
+        this._canvas.dot(Math.floor((offset - this.viewOffs) * WORLD_COEF) + (x - this.viewX), c);
     }
 
     // TODO:

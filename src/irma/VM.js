@@ -780,6 +780,7 @@ class VM {
             }
             offs += row;
         }
+        world.viewX1    = world.viewX + width;
         world.viewOffs  = offs;
         world.viewOffs1 = offs + Config.WORLD_CANVAS_HEIGHT * Config.WORLD_WIDTH;
 
