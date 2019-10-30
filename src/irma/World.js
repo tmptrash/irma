@@ -14,10 +14,12 @@ const WORLD_CANVAS_HEIGHT = Config.WORLD_CANVAS_HEIGHT;
 
 class World {
     constructor(options) {
-        this.viewX   = 0;
-        this.viewY   = 0;
-        this._data   = new Uint32Array(WORLD_HEIGHT * WORLD_WIDTH);
-        this._canvas = new Canvas(options);
+        this.viewX     = 0; // X coordinate of canvas
+        this.viewY     = 0; // Y coordinate of canvas
+        this.viewOffs  = 0; // offset of canvas top left corner
+        this.viewOffs1 = 0; // offset of canvas right-bottom corner
+        this._data     = new Uint32Array(WORLD_HEIGHT * WORLD_WIDTH);
+        this._canvas   = new Canvas(options);
     }
 
     destroy() {
@@ -37,11 +39,10 @@ class World {
     dot(offset, c) {
         this._data[offset] = c;
 
+        if (offset < this.viewOffs  || offset > this.viewOffs1) {return}
         const x = offset % WORLD_WIDTH;
         if (x < this.viewX || x >= this.viewX + WORLD_CANVAS_WIDTH) {return}
-        const y = Math.floor(offset / WORLD_WIDTH);
-        if (y < this.viewY || y >= this.viewY + WORLD_CANVAS_HEIGHT) {return}
-        this._canvas.dot((y - this.viewY) * WORLD_CANVAS_WIDTH + (x - this.viewX), c);
+        this._canvas.dot((offset - this.viewOffs) / WORLD_WIDTH * WORLD_CANVAS_WIDTH + (x - this.viewX), c);
     }
 
     swap(offset, offset1) {
