@@ -45,6 +45,7 @@ class World {
         this._canvas.dot((offset - this.viewOffs) / WORLD_WIDTH * WORLD_CANVAS_WIDTH + (x - this.viewX), c);
     }
 
+    // TODO:
     swap(offset, offset1) {
         const data = this._data;
         const dot  = data[offset1];
