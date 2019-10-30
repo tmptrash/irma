@@ -622,7 +622,8 @@ class VM {
             this._ts = ts;
             this._i  = 0;
 
-            if (orgs.items < 1) {this._createOrgs()}
+            // TODO:
+            //if (orgs.items < 1) {this._createOrgs()}
         }
     }
 
@@ -697,22 +698,32 @@ class VM {
             //
             // Creates molecules and LUCA as last organism
             //
-            let molecules = cfg.molAmount;
+            // let molecules = cfg.molAmount;
+            // while (molecules-- > 0) {
+            //     const offset = rand(MAX_OFFS);
+            //     if (world.getOrgIdx(offset) > -1) {molecules++; continue}
+            //     const org = this._createOrg();
+            //     this._db && this._db.put(org);
+            // }
+
+            let molecules = 6;//cfg.molAmount;
+            const poses = [0, 29, 80, 1520, 1549, 4799];
             while (molecules-- > 0) {
                 const offset = rand(MAX_OFFS);
                 if (world.getOrgIdx(offset) > -1) {molecules++; continue}
-                const org = this._createOrg(offset);
+                const org = this._createOrg(poses[molecules]);
                 this._db && this._db.put(org);
             }
         }
         //
         // Adds LUCA organisms to the world
         //
-        let orgs = Config.orgLucaAmount;
+        let orgs = 6;//Config.orgLucaAmount;
+        const poses = [0, 29, 80, 1520, 1549, 4799];
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            const luca = this._createOrg(offset, null, Config.codeLuca.slice(), true);
+            const luca = this._createOrg(poses[orgs], null, Config.codeLuca.slice(), true);
             this._db && this._db.put(luca);
         }
         this.population++;
@@ -780,7 +791,7 @@ class VM {
             }
             offs += row;
         }
-        world.viewX1    = world.viewX + width;
+        world.viewX1    = world.viewX + width - 1;
         world.viewOffs  = offs;
         world.viewOffs1 = offs + Config.WORLD_CANVAS_HEIGHT * Config.WORLD_WIDTH;
 
