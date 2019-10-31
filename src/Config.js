@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 80;
-const HEIGHT    = 60;
+const WIDTH     = 1920 * 5;
+const HEIGHT    = 1080 * 5;
 const CODE_OFFS = 1024;
 
 
@@ -122,9 +122,9 @@ module.exports = {
         CODE_OFFS + 17, //   ifz
         -1,             //     -1
         CODE_OFFS + 14, //     rand
-        //CODE_OFFS + 35, //     step
-        //CODE_OFFS + 35, //     step
-        //CODE_OFFS + 35, //     step
+        CODE_OFFS + 35, //     step
+        CODE_OFFS + 35, //     step
+        CODE_OFFS + 35, //     step
         CODE_OFFS + 26, //   end
         CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
@@ -203,13 +203,13 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : 30,
-    WORLD_CANVAS_HEIGHT        : 20,
+    WORLD_CANVAS_WIDTH         : 800,
+    WORLD_CANVAS_HEIGHT        : 600,
     /**
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,
-    worldScrollValue           : 2,
+    worldScrollValue           : 30,
     /**
      * {Number} Amount of frequencies in a world. It uses with say/listen commands
      */
@@ -227,8 +227,8 @@ module.exports = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
-    orgLucaAmount              : 0,
-    orgMaxAge                  : 200000,
+    orgLucaAmount              : 100,
+    orgMaxAge                  : 3000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
     orgMaxCodeSize             : 1024,
@@ -243,7 +243,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 100,
-    molAmount                  : 100000,
+    molAmount                  : 5000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
