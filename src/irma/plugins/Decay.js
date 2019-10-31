@@ -46,9 +46,8 @@ class Decay {
         if (++this._index >= orgsAndMols.items) {this._index = 0}
         const org = orgsAndMols.get(this._index);
         if (org.isOrg || org.code.length <= Config.molCodeSize) {return} // Skip atoms
-        const offset = org.offset + DIR[Math.floor(Math.random() * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
-        if (offset < 0 || offset > MAX_OFFS) {return}
-        const dot = this._world.getOrgIdx(offset);
+        const offset = this._getNearPos(org);
+        let dot = this._world.getOrgIdx(offset);
         if (dot > -1) {return} // organism or molecule on the way
         //
         // This line moves index back to current item to decay it till the end.
@@ -57,6 +56,24 @@ class Decay {
         this._index--;
         const newCode = org.code.splice(0, Math.floor(org.code.length / 2));
         this._api.createOrg(offset, org, newCode);
+    }
+
+    /**
+     * Try to get free position near specified organism
+     * @param {Organism} org 
+     * @return {Number} Offset
+     */
+    _getNearPos(org) {
+        const startOffs = org.offset;
+        let offset = startOffs + DIR[Math.floor(Math.random() * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+        if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
+            offset = startOffs + DIR[Math.floor(Math.random() * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+            if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
+                offset = startOffs + DIR[Math.floor(Math.random() * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+            }
+        }
+
+        return offset;
     }
 }
 

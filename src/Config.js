@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 5;
-const HEIGHT    = 1080 * 5;
+const WIDTH     = 1920 * 3;
+const HEIGHT    = 1080 * 3;
 const CODE_OFFS = 1024;
 
 
@@ -204,7 +204,7 @@ module.exports = {
      * @constant
      */
     WORLD_CANVAS_WIDTH         : 800,
-    WORLD_CANVAS_HEIGHT        : 600,
+    WORLD_CANVAS_HEIGHT        : 500,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -243,7 +243,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 100,
-    molAmount                  : 5000000,
+    molAmount                  : 3000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
