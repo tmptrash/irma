@@ -767,7 +767,7 @@ class VM {
                 break;
         }
 
-        let   offs     = world.viewY * Config.WORLD_WIDTH + world.viewX;
+        let   offs     = world.viewOffs = world.viewY * Config.WORLD_WIDTH + world.viewX;
         const canvas   = world.canvas;
         const orgs     = this.orgsAndMols.ref();
         const molColor = Config.molColor;
@@ -780,6 +780,8 @@ class VM {
             }
             offs += row;
         }
+        world.viewX1    = world.viewX + width - 1;
+        world.viewOffs1 = offs - 1;
 
         return true;
     }
