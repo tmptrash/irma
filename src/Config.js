@@ -228,7 +228,7 @@ module.exports = {
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
     orgLucaAmount              : 100,
-    orgMaxAge                  : 3000000,
+    orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
     orgMaxCodeSize             : 1024,
@@ -242,8 +242,8 @@ module.exports = {
      * Molecules related configs
      */
     molDecayPeriod             : 1,
-    molDecayDistance           : 100,
-    molAmount                  : 3000000,
+    molDecayDistance           : 60,
+    molAmount                  : 4000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
@@ -251,7 +251,7 @@ module.exports = {
      * In some sense this is amount of energy for commands
      */
     energyMove                 : 10,
-    energyStepCoef             : .01,
+    energyStepCoef             : .02,
     energyMultiplier           : 4000,
     /**
      * Plugins. Extends irma core by additional functionality
