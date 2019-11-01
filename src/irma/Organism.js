@@ -33,7 +33,7 @@ class Organism {
         this.orgItem    = orgItem;
         this.mutations  = 0;
         this.packet     = null;
-        this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
+        this.mem        = (new Array(Config.orgMaxMemSize)).fill(0);
         this._memIdx    = -1;
         this.age        = 1;
         if (parent !== null) {
@@ -73,9 +73,9 @@ class Organism {
         this.stackIndex = -1;
         this.loopIndex  = -1;
         this.loops      = new Array(Config.orgMaxCodeSize).fill(-1); // TODO: use {}
-        this.stack      = new Array(Config.CODE_STACK_SIZE * 3); // 2 registers + back line
-        this.offs       = new Array(Config.orgMaxCodeSize); // TODO: use {}
-        this.funcs      = new Array(Config.orgMaxCodeSize); // TODO: use {}
+        this.stack      = new Array(Config.CODE_STACK_SIZE * 3);     // 2 registers + back line
+        this.offs       = new Array(Config.orgMaxCodeSize);          // TODO: use {}
+        this.funcs      = new Array(Config.orgMaxCodeSize);          // TODO: use {}
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
@@ -92,7 +92,7 @@ class Organism {
     }
 
     push(val) {
-        if (this._memIdx >= Config.orgMaxCodeSize - 1) {return 0}
+        if (this._memIdx >= Config.orgMaxMemSize - 1) {return 0}
         this.mem[++this._memIdx] = val;
     }
 
