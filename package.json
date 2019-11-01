@@ -1,6 +1,6 @@
 {
   "name": "irma",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "irma - JavaScript digital organisms simulator",
   "main": "irma.js",
   "directories": {
