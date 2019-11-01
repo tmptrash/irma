@@ -43,7 +43,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 1,
     codeTimesPerRun            : 1,
-    codeMutateEveryClone       : 5,
+    codeMutateEveryClone       : 2,
     codeRegs                   : 6,
     codeMixTimes               : 4,
     codeMutateMutations        : false,
