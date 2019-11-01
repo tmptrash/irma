@@ -753,25 +753,20 @@ class VM {
         const col    = Config.WORLD_HEIGHT - Config.WORLD_CANVAS_HEIGHT;
 
         switch (e.which) {
-            case 37: // left
-                if ((world.viewX -= Config.worldScrollValue) < 0) {world.viewX = 0}
-                break;
-            case 39: // right
-                if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row}
-                break;
-            case 38: // up
-                if ((world.viewY -= Config.worldScrollValue) < 0) {world.viewY = 0}
-                break;
-            case 40: // down
-                if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col}
-                break;
+            case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._scrollHorizontally(true)}  break; // left
+            case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._scrollHorizontally(false)} break; // right
+            case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._scrollVertically(true)}    break; // up
+            case 40: if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col; this._scrollVertically(false)}   break; // down
+            default: return;
         }
 
-        let   offs     = world.viewY * Config.WORLD_WIDTH + world.viewX;
+        let   offs     = world.viewOffs = world.viewY * Config.WORLD_WIDTH + world.viewX;
         const canvas   = world.canvas;
         const orgs     = this.orgsAndMols.ref();
         const molColor = Config.molColor;
-
+        //
+        // Copy world's part into the canvas accodring to new scroll offsets
+        //
         for (let y = 0, height = Config.WORLD_CANVAS_HEIGHT; y < height; y++) {
             const yOffs = y * width;
             for (let x = 0; x < width; x++) {
@@ -780,8 +775,18 @@ class VM {
             }
             offs += row;
         }
+        world.viewX1    = world.viewX + width - 1;
+        world.viewOffs1 = world.viewOffs + (Config.WORLD_CANVAS_HEIGHT - 1) * Config.WORLD_WIDTH + row + Config.WORLD_CANVAS_WIDTH - 1;
 
         return true;
+    }
+
+    _scrollHorizontally(right) {
+        
+    }
+
+    _scrollVertically(down) {
+
     }
 }
 module.exports = VM;

@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 5;
-const HEIGHT    = 1080 * 5;
+const WIDTH     = 1920 * 3;
+const HEIGHT    = 1080 * 3;
 const CODE_OFFS = 1024;
 
 
@@ -43,7 +43,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 1,
     codeTimesPerRun            : 1,
-    codeMutateEveryClone       : 5,
+    codeMutateEveryClone       : 2,
     codeRegs                   : 6,
     codeMixTimes               : 4,
     codeMutateMutations        : false,
@@ -203,8 +203,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : 1024,
-    WORLD_CANVAS_HEIGHT        : 768,
+    WORLD_CANVAS_WIDTH         : 800,
+    WORLD_CANVAS_HEIGHT        : 500,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -227,11 +227,12 @@ module.exports = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
-    orgLucaAmount              : 3,
-    orgMaxAge                  : 200000,
+    orgLucaAmount              : 100,
+    orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
     orgMaxCodeSize             : 1024,
+    orgMaxMemSize              : 128,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all
@@ -242,8 +243,8 @@ module.exports = {
      * Molecules related configs
      */
     molDecayPeriod             : 1,
-    molDecayDistance           : 100,
-    molAmount                  : 3000000,
+    molDecayDistance           : 60,
+    molAmount                  : 4000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
@@ -251,7 +252,7 @@ module.exports = {
      * In some sense this is amount of energy for commands
      */
     energyMove                 : 10,
-    energyStepCoef             : .01,
+    energyStepCoef             : .02,
     energyMultiplier           : 4000,
     /**
      * Plugins. Extends irma core by additional functionality
