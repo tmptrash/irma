@@ -130,7 +130,7 @@ class VM {
             let o = orgs.items;
             while (--o > -1) {
                 const org  = orgsRef[o];
-                const code = org.code;
+                let   code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
                 let   line = org.line;
@@ -370,13 +370,21 @@ class VM {
 
                         case CODE_CMD_OFFS + 33: {// join
                             ++line;
-                            if (org.ret !== 1) {org.ret = RET_ERR; continue}
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
                             if (dot < 0) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsAndMolsRef[dot];
                             if (nearOrg.code.length + code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; continue}
-                            code.splice(bx >= code.length || bx < 0 ? code.length : bx, 0, ...nearOrg.code);
+                            org.code = code = code.push(nearOrg.code);
+                            //
+                            // Important: joining new commands into the script may break it, because it's
+                            // offsets, stack and context may be invalid. Generally, we have to preprocess
+                            // it after join. But this process resets stack and current running script line
+                            // to zero line and script start running from the beginning. To fix this we 
+                            // add any joined command to the end of script and skip preprocessing. So, next
+                            // line should not be uncommented
+                            // org.preprocess();
+                            //
                             org.energy += (nearOrg.code.length * Config.energyMultiplier);
                             this._removeOrg(nearOrg);
                             org.ret = RET_OK;
@@ -391,7 +399,8 @@ class VM {
                             const dot     = world.getOrgIdx(offset);
                             if (dot > -1) {org.ret = RET_ERR; continue} // organism on the way
                             if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; continue}
-                            const newCode = code.splice(ax, bx - ax);
+                            const newCode = code.subarray(ax, bx);
+                            org.code = code = code.splice(ax, bx - ax);
                             if (newCode.length < 1 || org.ret === IS_ORG_ID && orgs.full) {org.ret = RET_ERR; continue}
                             const clone   = this._createOrg(offset, org, newCode, org.ret === IS_ORG_ID);
                             this._db && this._db.put(clone, org);
@@ -402,7 +411,15 @@ class VM {
                             }
                             if (code.length < 1) {this._removeOrg(org); break}
                             org.energy  -= energy;
-                            org.preprocess();
+                            //
+                            // Important: after split, sequence of commands have been changed and it may break
+                            // entire script. Generally, we have to preprocess new script to fix all offsets
+                            // and run t again from the beginning. Preprocessing resets the context and stack.                            // 
+                            // So nothing will be running after split command. To fix this, we just assume that 
+                            // we split commands from tail, which don't affect main (replicator) part. Next line
+                            // should be commented
+                            // org.preprocess();
+                            //
                             line = 0;
                             org.ret = RET_OK;
                             continue;
@@ -462,8 +479,18 @@ class VM {
                             const newAx    = ax < 0 ? 0 : (ax > code.length ? code.length : ax);
                             const offs     = newAx > find1 ? newAx - len : (newAx < find0 ? newAx : find0);
                             if (find0 === offs) {org.ret = RET_OK; continue}
-                            code.splice(find0, len);
-                            code.splice(offs, 0, ...moveCode);
+                            code = code.splice(find0, len);
+                            org.code = code = code.splice(offs, 0, moveCode);
+                            //
+                            // Important: moving new commands insie the script may break it, because it's
+                            // offsets, stack and context may be invalid. Generally, we have to preprocess
+                            // it after move. But this process resets stack and current running script line
+                            // to zero line and script start running from the beginning. To fix this we 
+                            // just assume that moving command doesn't belong to main (replicator) script
+                            // part and skip preprocessing. So, next line should not be uncommented
+                            // org.preprocess();
+                            //
+                            line = 0;
                             org.ret = RET_OK;
                             continue;
                         }
@@ -512,7 +539,8 @@ class VM {
                             const dDot    = world.getOrgIdx(dOffset);
                             if (dDot > -1) {org.ret = RET_ERR; continue}
                             const nearOrg = orgsAndMolsRef[dot];
-                            const newCode = nearOrg.code.splice(0, bx);
+                            const newCode = nearOrg.code.subarray(0, bx);
+                            nearOrg.code  = nearOrg.code.splice(0, bx);
                             if (newCode.length < 1) {org.ret = RET_ERR; continue}
                             const cutOrg  = this._createOrg(dOffset, nearOrg, newCode);
                             this._db && this._db.put(cutOrg, nearOrg);
@@ -660,8 +688,8 @@ class VM {
         for (let i = 0, iLen = Config.codeMixTimes; i < iLen; i++) {
             const pos1 = rand(coreLen);
             const pos2 = rand(len);
-            code.push(...code.splice(pos1, pos1 + rand(coreLen - pos1)));
-            code.push(...code.splice(pos2, pos2 + rand(len - pos2)));
+            org.code = code.push(code.splice(pos1, pos1 + rand(coreLen - pos1)));
+            org.code = code.push(code.splice(pos2, pos2 + rand(len - pos2)));
         }
         org.isOrg && this._removeFromOrgArr(org.orgItem);
         org.isOrg = false;

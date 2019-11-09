@@ -10,9 +10,9 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 3;
-const HEIGHT    = 1080 * 3;
-const CODE_OFFS = 1024;
+const WIDTH     = 1920 * 2;
+const HEIGHT    = 1080 * 2;
+const CODE_OFFS = 256 - 64;
 
 
 // TODO: rename all molecules related names to prefix "mol"
@@ -41,13 +41,13 @@ module.exports = {
      * @constant
      */
     CODE_STACK_SIZE            : 300,
-    codeLinesPerIteration      : 1,
-    codeTimesPerRun            : 1,
+    codeLinesPerIteration      : 10,
+    codeTimesPerRun            : 10,
     codeMutateEveryClone       : 2,
     codeRegs                   : 6,
     codeMixTimes               : 4,
     codeMutateMutations        : false,
-    codeLuca                   : [
+    codeLuca                   : Uint8Array.from([
         CODE_OFFS + 24, // func
         3,              //   3
         CODE_OFFS + 23, //   call
@@ -120,7 +120,8 @@ module.exports = {
         2,              //     2
         CODE_OFFS + 26, //   end
         CODE_OFFS + 17, //   ifz
-        -1,             //     -1
+        0,              //     0
+        CODE_OFFS + 32, //     not
         CODE_OFFS + 14, //     rand
         CODE_OFFS + 35, //     step
         CODE_OFFS + 35, //     step
@@ -136,7 +137,10 @@ module.exports = {
         CODE_OFFS + 33, //   join
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
-        900,            //   900
+        100,            //   100
+        CODE_OFFS,      //   toggle
+        5,              //   5
+        CODE_OFFS + 8,  //   mul
         CODE_OFFS,      //   toggle
         CODE_OFFS + 48, //   len
         CODE_OFFS + 19, //   ifl
@@ -160,17 +164,20 @@ module.exports = {
         CODE_OFFS + 24, // func
         0,              //   0
         CODE_OFFS + 28, //   axret
-        1023,           //   1023
+        191,            //   192
         CODE_OFFS,      //   toggle
-        6,              //   6
+        5,              //   5
         CODE_OFFS + 6,  //   add
         CODE_OFFS,      //   toggle
-        -1,             //   -1
+        0,              //   0
+        CODE_OFFS + 32, //   not
         CODE_OFFS,      //   toggle
         CODE_OFFS + 36, //   find
         CODE_OFFS + 28, //   axret
         CODE_OFFS + 26, // end
-        255,            // 255
+        128,            // 128
+        CODE_OFFS + 13, // lshift
+        CODE_OFFS + 11, // dec
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
@@ -191,7 +198,7 @@ module.exports = {
         CODE_OFFS + 23, // call
         CODE_OFFS + 25, // ret
         CODE_OFFS + 5   // nop
-    ],
+    ]),
 
     /**
      * World width and height in pixels
@@ -227,7 +234,7 @@ module.exports = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
-    orgLucaAmount              : 100,
+    orgLucaAmount              : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
@@ -244,7 +251,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 4000000,
+    molAmount                  : 1000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**

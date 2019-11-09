@@ -54,7 +54,8 @@ class Decay {
         // It's good for big (with long code) molecules
         //
         this._index--;
-        const newCode = org.code.splice(0, Math.floor(org.code.length / 2));
+        const newCode = org.code.subarray(0, Math.floor(org.code.length / 2));
+        org.code = org.code.splice(0, Math.floor(org.code.length / 2));
         this._api.createOrg(offset, org, newCode);
     }
 
