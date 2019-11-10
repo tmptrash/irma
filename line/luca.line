@@ -116,8 +116,6 @@ func             # func 1
   len            # ax=len     bx=2
   toggle         # ax=2       bx=len
   push           # ax=2       bx=len
-  1              # ax=0       bx=len
-  axret          # ax=1       bx=len    ret=1
   pop            # ax=2       bx=len
   join           # ax=2       bx=len    ret=1
 end

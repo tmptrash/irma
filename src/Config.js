@@ -131,8 +131,6 @@ module.exports = {
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 4,  //   push
-        1,              //   1
-        CODE_OFFS + 28, //   axret
         CODE_OFFS + 3,  //   pop
         CODE_OFFS + 33, //   join
         CODE_OFFS + 26, // end
