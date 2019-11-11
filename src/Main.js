@@ -4,6 +4,7 @@
  *
  * @author flatline
  */
+const PJson      = require('./../package.json');
 const Bytes2Code = require('./irma/Bytes2Code');
 const Config     = require('./Config');
 const Irma       = require('./irma/Irma');
@@ -13,7 +14,8 @@ const Irma       = require('./irma/Irma');
 window.irma  = {
     code: Bytes2Code.toCode,
     app : new Irma(),
-    cfg : Config
+    cfg : Config,
+    ver : PJson.version
 };
 window.irma.app.ready
     .then(() => irma.app.run())
