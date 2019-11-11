@@ -30,7 +30,7 @@ The image above represents common irma 2D world with organisms (red dots), rocks
 # Old research
 #### Presentations
 - [jevo 2016 (rus)](https://www.youtube.com/watch?v=tF77s_4RA08) - this presentation is about first attempts of obtaining complex behavior of organisms. Julia language was used for that. All details are presented in presentation.
-- [construct 2017 (rus)](https://www.youtube.com/watch?v=9ykr9KzcKq) - this is next attempt to create complex behavior using distributed network of chrome browsers (NodeJs + browsers).
+- [construct 2017 (rus)](https://www.youtube.com/watch?v=9ykr9KzcKq8) - this is next attempt to create complex behavior using distributed network of chrome browsers (NodeJs + browsers).
 
 #### Videos
 - [construct (rus)](https://www.youtube.com/watch?v=cfgcEVQ5A-A) - Introduction to Genetic Algorithm and construct project
