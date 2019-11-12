@@ -60,7 +60,6 @@ describe('src/irma/VM', () => {
             codeTimesPerRun            : 1,
             codeMutateEveryClone       : 1000,
             codeRegs                   : 6,
-            codeMixTimes               : 3,
             codeMutateMutations        : false,
             codeLuca                   : [],
             worldZoomSpeed             : 0.1,

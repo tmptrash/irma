@@ -45,7 +45,6 @@ module.exports = {
     codeTimesPerRun            : 10,
     codeMutateEveryClone       : 2,
     codeRegs                   : 6,
-    codeMixTimes               : 4,
     codeMutateMutations        : false,
     codeLuca                   : Uint8Array.from([
         CODE_OFFS + 24, // func

@@ -172,7 +172,7 @@ Helper._id = 0;
  * @return {Uint32Array} New array
  */
 Uint8Array.prototype.splice = function splice(start, deleted, numbers) {
-    if (arguments.length < 2 || start > this.length) {return this}
+    if (arguments.length < 2 || start > this.length || start < 0 || deleted < 0) {return this}
     const amount  = numbers && numbers.length || 0;
     if (deleted > this.length - start) {deleted = this.length - start}
     const newSize = this.length - deleted + amount;

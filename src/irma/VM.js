@@ -681,18 +681,24 @@ class VM {
      * @private
      */
     _mixAtoms(org) {
-        const code    = org.code;
-        const coreLen = Config.codeLuca.length;
-        const len     = code.length;
-        if (len < 1) {return}
-        for (let i = 0, iLen = Config.codeMixTimes; i < iLen; i++) {
-            const pos1 = rand(coreLen);
-            const pos2 = rand(len);
-            org.code = code.push(code.splice(pos1, pos1 + rand(coreLen - pos1)));
-            org.code = code.push(code.splice(pos2, pos2 + rand(len - pos2)));
+        let   code    = org.code;
+        const world   = this.world;
+        const offset  = org.offset;
+        const molSize = Config.molCodeSize;
+        if (code.length < 1) {return}
+
+        while (code.length > 0) {
+            const offs = world.freeDot(offset);
+            if (offs === -1) {
+                this._removeOrg(org);
+                this._createOrg(offset, null, code);
+                return;
+            }
+            
+            this._createOrg(offs, null, code.slice(0, molSize));
+            code = code.splice(0, molSize)
         }
-        org.isOrg && this._removeFromOrgArr(org.orgItem);
-        org.isOrg = false;
+        this._removeOrg(org);
     }
 
     _removeFromOrgArr(item) {
