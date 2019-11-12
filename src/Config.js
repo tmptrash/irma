@@ -161,9 +161,9 @@ module.exports = {
         CODE_OFFS + 24, // func
         0,              //   0
         CODE_OFFS + 28, //   axret
-        191,            //   192
+        191,            //   191
         CODE_OFFS,      //   toggle
-        5,              //   5
+        6,              //   6
         CODE_OFFS + 6,  //   add
         CODE_OFFS,      //   toggle
         0,              //   0
@@ -231,7 +231,7 @@ module.exports = {
      */
     ORG_PROB_MAX_VALUE         : 50,
     ORG_MIN_COLOR              : 0x96,
-    orgLucaAmount              : 300,
+    orgLucaAmount              : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 120001,
