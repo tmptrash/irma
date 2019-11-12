@@ -414,13 +414,13 @@ class VM {
                             //
                             // Important: after split, sequence of commands have been changed and it may break
                             // entire script. Generally, we have to preprocess new script to fix all offsets
-                            // and run t again from the beginning. Preprocessing resets the context and stack.                            // 
+                            // and run t again from the beginning. Preprocessing resets the context and stack.
                             // So nothing will be running after split command. To fix this, we just assume that 
                             // we split commands from tail, which don't affect main (replicator) part. Next line
                             // should be commented
                             // org.preprocess();
+                            // line = 0;
                             //
-                            line = 0;
                             org.ret = RET_OK;
                             continue;
                         }
@@ -489,8 +489,8 @@ class VM {
                             // just assume that moving command doesn't belong to main (replicator) script
                             // part and skip preprocessing. So, next line should not be uncommented
                             // org.preprocess();
+                            // line = 0;
                             //
-                            line = 0;
                             org.ret = RET_OK;
                             continue;
                         }

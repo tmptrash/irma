@@ -74,7 +74,7 @@ class Organism {
         this.loopIndex  = -1;
         this.loops      = new Array(Config.orgMaxCodeSize).fill(-1);   // TODO: use {}
         this.stack      = new Int32Array(Config.CODE_STACK_SIZE * 3);  // 2 registers + back line
-        this.offs       = new Array(Config.orgMaxCodeSize);            // TODO: use {}
+        this.offs       = (new Array(Config.orgMaxCodeSize)).fill(0);
         this.funcs      = new Array(Config.orgMaxCodeSize);            // TODO: use {}
         /**
          * {Array} Array of numbers. Code (DNA) of organism
