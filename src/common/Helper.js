@@ -175,8 +175,7 @@ Uint8Array.prototype.splice = function splice(start, deleted, numbers) {
     if (arguments.length < 2 || start > this.length) {return this}
     const amount  = numbers && numbers.length || 0;
     if (deleted > this.length - start) {deleted = this.length - start}
-    const newSize = this.length - deleted + amount;
-    const newArr  = new Uint8Array(newSize);
+    const newArr  = new Uint8Array(this.length - deleted + amount);
   
     newArr.set(this.subarray(0, start));
     amount > 0 && newArr.set(numbers, start);

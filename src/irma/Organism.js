@@ -31,6 +31,7 @@ class Organism {
         this.id         = id;
         this.color      = 0x000000;
         this.orgItem    = orgItem;
+        // TODO: remove this property
         this.mutations  = 0;
         this.packet     = null;
         this.mem        = (new Int32Array(Config.orgMaxMemSize)).fill(0);
