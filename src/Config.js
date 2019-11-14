@@ -89,6 +89,13 @@ module.exports = {
         CODE_OFFS + 27, //     retax
         CODE_OFFS + 11, //     dec
         CODE_OFFS,      //     toggle
+        CODE_OFFS + 28, //     axret
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 7,  //     sub
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 27, //     retax
         CODE_OFFS + 18, //     ifg
         CODE_OFFS + 3,  //       pop
         CODE_OFFS + 3,  //       pop
