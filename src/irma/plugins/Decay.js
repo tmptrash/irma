@@ -27,9 +27,9 @@ class Decay {
      */
     constructor(vm) {
         this._orgsAndMols = vm.orgsAndMols;
-        this._world = vm.world;
-        this._api = vm.api;
-        this._index = -1;
+        this._world       = vm.world;
+        this._api         = vm.api;
+        this._index       = -1;
     }
 
     destroy() {

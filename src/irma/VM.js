@@ -787,6 +787,7 @@ class VM {
         const col    = Config.WORLD_HEIGHT - Config.WORLD_CANVAS_HEIGHT;
 
         switch (e.which) {
+            // TODO: not done
             case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._scrollHorizontally(true)}  break; // left
             case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._scrollHorizontally(false)} break; // right
             case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._scrollVertically(true)}    break; // up
@@ -815,10 +816,12 @@ class VM {
         return true;
     }
 
+    // TODO: not done
     _scrollHorizontally(right) {
         
     }
 
+    // TODO: not done
     _scrollVertically(down) {
 
     }

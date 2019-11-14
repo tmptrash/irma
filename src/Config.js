@@ -15,7 +15,8 @@ const HEIGHT    = 1080 * 2;
 const CODE_OFFS = 256 - 64;
 
 
-// TODO: rename all molecules related names to prefix "mol"
+// TODO: rename all molecules related names to prefix "mol".
+// TODO: do we really can change all non constants in real time? codeRegs, codeLuca, worldZoomSpeed,...
 module.exports = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
