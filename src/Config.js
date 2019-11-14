@@ -44,7 +44,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 10,
     codeTimesPerRun            : 10,
-    codeMutateEveryClone       : 0,
+    codeMutateEveryClone       : 7,
     codeRegs                   : 6,
     codeMutateMutations        : false,
     codeLuca                   : Uint8Array.from([
@@ -242,7 +242,7 @@ module.exports = {
     orgLucaAmount              : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 12000001,
+    orgMutationPeriod          : 1200001,
     orgMaxCodeSize             : 1024,
     orgMaxMemSize              : 128,
     /**
