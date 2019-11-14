@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 2;
-const HEIGHT    = 1080 * 2;
+const WIDTH     = 1920 / 2;
+const HEIGHT    = 1080 / 2;
 const CODE_OFFS = 256 - 64;
 
 
@@ -43,7 +43,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 10,
     codeTimesPerRun            : 10,
-    codeMutateEveryClone       : 2,
+    codeMutateEveryClone       : 0,
     codeRegs                   : 6,
     codeMutateMutations        : false,
     codeLuca                   : Uint8Array.from([
@@ -234,7 +234,7 @@ module.exports = {
     orgLucaAmount              : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 120001,
+    orgMutationPeriod          : 12000001,
     orgMaxCodeSize             : 1024,
     orgMaxMemSize              : 128,
     /**
@@ -248,7 +248,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 1000000,
+    molAmount                  : 200000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
