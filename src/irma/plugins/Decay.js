@@ -27,9 +27,9 @@ class Decay {
      */
     constructor(vm) {
         this._orgsAndMols = vm.orgsAndMols;
-        this._world = vm.world;
-        this._api = vm.api;
-        this._index = -1;
+        this._world       = vm.world;
+        this._api         = vm.api;
+        this._index       = -1;
     }
 
     destroy() {
@@ -67,11 +67,11 @@ class Decay {
     _getNearPos(org) {
         const startOffs = org.offset;
         const mol = org.code[0];
-        let offset = startOffs + DIR[Math.floor(mol * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+        let offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
         if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
-            offset = startOffs + DIR[Math.floor(mol * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+            offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
             if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
-                offset = startOffs + DIR[Math.floor(mol * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+                offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
             }
         }
 

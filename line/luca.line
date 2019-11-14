@@ -60,7 +60,14 @@ func             # func 0
     toggle       # ax=0       bx=findIdx  ret=len
     retax        # ax=len     bx=findIdx
     dec          # ax=len-1   bx=findIdx
-    toggle       # ax=findIdx bx=len-1
+	toggle       # ax=findIdx bx=len-1
+	axret        # ax=findIdx bx=len-1    ret=findIdx
+	pop          # ax=0       bx=len-1
+	push         # ax=0       bx=len-1
+	toggle       # ax=len-1   bx=0
+	sub          # ax=len-1   bx=0
+	toggle       # ax=0       bx=len-1
+	retax        # ax=findIdx bx=len-1
     ifg
       pop
       pop        # resets stack
@@ -142,7 +149,7 @@ func             # func 2
   add            # ax=cutIdx  bx=sepIdx
   toggle         # ax=sepIdx  bx=cutIdx
   0              # ax=0       bx=cutIdx
-  axret          # ax=0       bx=cutIdx ret=0
+  axret          # ax=0       bx=cutIdx    ret=0
   len            # ax=len     bx=cutIdx
   toggle         # ax=cutIdx  bx=len
   split          # ax=cutIdx  bx=len
@@ -153,14 +160,14 @@ end
 func             # func 3
   0              # ax=0       bx=?
   axret          # ax=0       bx=?         ret=0
-  192            # ax=192     bx=?
-  toggle         # ax=?       bx=192
-  5              # ax=5       bx=192
-  add            # ax=197     bx=192      (192 - nop command)
-  toggle         # ax=197     bx=192
-  0              # ax=0       bx=192
-  not            # ax=-1      bx=192
-  toggle         # ax=192     bx=-1  
+  191            # ax=191     bx=?
+  toggle         # ax=?       bx=191
+  6              # ax=5       bx=191
+  add            # ax=197     bx=191      (197 - nop command)
+  toggle         # ax=197     bx=191
+  0              # ax=0       bx=191
+  not            # ax=-1      bx=191
+  toggle         # ax=191     bx=-1  
   find           # ax=sepIdx  bx=-1
   axret          # ax=sepIdx  bx=-1
 end

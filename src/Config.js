@@ -10,12 +10,13 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 * 2;
-const HEIGHT    = 1080 * 2;
+const WIDTH     = 1920 / 2;
+const HEIGHT    = 1080 / 2;
 const CODE_OFFS = 256 - 64;
 
 
-// TODO: rename all molecules related names to prefix "mol"
+// TODO: rename all molecules related names to prefix "mol".
+// TODO: do we really can change all non constants in real time? codeRegs, codeLuca, worldZoomSpeed,...
 module.exports = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
@@ -43,9 +44,8 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     codeLinesPerIteration      : 10,
     codeTimesPerRun            : 10,
-    codeMutateEveryClone       : 2,
+    codeMutateEveryClone       : 7,
     codeRegs                   : 6,
-    codeMixTimes               : 4,
     codeMutateMutations        : false,
     codeLuca                   : Uint8Array.from([
         CODE_OFFS + 24, // func
@@ -89,6 +89,13 @@ module.exports = {
         CODE_OFFS + 27, //     retax
         CODE_OFFS + 11, //     dec
         CODE_OFFS,      //     toggle
+        CODE_OFFS + 28, //     axret
+        CODE_OFFS + 3,  //     pop
+        CODE_OFFS + 4,  //     push
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 7,  //     sub
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 27, //     retax
         CODE_OFFS + 18, //     ifg
         CODE_OFFS + 3,  //       pop
         CODE_OFFS + 3,  //       pop
@@ -162,9 +169,9 @@ module.exports = {
         CODE_OFFS + 24, // func
         0,              //   0
         CODE_OFFS + 28, //   axret
-        191,            //   192
+        191,            //   191
         CODE_OFFS,      //   toggle
-        5,              //   5
+        6,              //   6
         CODE_OFFS + 6,  //   add
         CODE_OFFS,      //   toggle
         0,              //   0
@@ -235,7 +242,7 @@ module.exports = {
     orgLucaAmount              : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 120001,
+    orgMutationPeriod          : 1200001,
     orgMaxCodeSize             : 1024,
     orgMaxMemSize              : 128,
     /**
@@ -249,7 +256,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 1000000,
+    molAmount                  : 200000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**

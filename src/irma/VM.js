@@ -414,13 +414,13 @@ class VM {
                             //
                             // Important: after split, sequence of commands have been changed and it may break
                             // entire script. Generally, we have to preprocess new script to fix all offsets
-                            // and run t again from the beginning. Preprocessing resets the context and stack.                            // 
+                            // and run t again from the beginning. Preprocessing resets the context and stack.
                             // So nothing will be running after split command. To fix this, we just assume that 
                             // we split commands from tail, which don't affect main (replicator) part. Next line
                             // should be commented
                             // org.preprocess();
+                            // line = 0;
                             //
-                            line = 0;
                             org.ret = RET_OK;
                             continue;
                         }
@@ -489,8 +489,8 @@ class VM {
                             // just assume that moving command doesn't belong to main (replicator) script
                             // part and skip preprocessing. So, next line should not be uncommented
                             // org.preprocess();
+                            // line = 0;
                             //
-                            line = 0;
                             org.ret = RET_OK;
                             continue;
                         }
@@ -681,18 +681,24 @@ class VM {
      * @private
      */
     _mixAtoms(org) {
-        const code    = org.code;
-        const coreLen = Config.codeLuca.length;
-        const len     = code.length;
-        if (len < 1) {return}
-        for (let i = 0, iLen = Config.codeMixTimes; i < iLen; i++) {
-            const pos1 = rand(coreLen);
-            const pos2 = rand(len);
-            org.code = code.push(code.splice(pos1, pos1 + rand(coreLen - pos1)));
-            org.code = code.push(code.splice(pos2, pos2 + rand(len - pos2)));
+        let   code    = org.code;
+        const world   = this.world;
+        const offset  = org.offset;
+        const molSize = Config.molCodeSize;
+        if (code.length < 1) {return}
+
+        while (code.length > 0) {
+            const offs = world.freeDot(offset);
+            if (offs === -1) {
+                this._removeOrg(org);
+                this._createOrg(offset, null, code);
+                return;
+            }
+            
+            this._createOrg(offs, null, code.slice(0, molSize));
+            code = code.splice(0, molSize)
         }
-        org.isOrg && this._removeFromOrgArr(org.orgItem);
-        org.isOrg = false;
+        this._removeOrg(org);
     }
 
     _removeFromOrgArr(item) {
@@ -781,6 +787,7 @@ class VM {
         const col    = Config.WORLD_HEIGHT - Config.WORLD_CANVAS_HEIGHT;
 
         switch (e.which) {
+            // TODO: not done
             case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._scrollHorizontally(true)}  break; // left
             case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._scrollHorizontally(false)} break; // right
             case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._scrollVertically(true)}    break; // up
@@ -809,10 +816,12 @@ class VM {
         return true;
     }
 
+    // TODO: not done
     _scrollHorizontally(right) {
         
     }
 
+    // TODO: not done
     _scrollVertically(down) {
 
     }
