@@ -211,6 +211,10 @@ module.exports = {
      */
     worldFrequency             : 10,
     /**
+     * {Number} Number of milliseconds between two screen refreshes. Used only when ThrottleVisualize mode is enabled.
+     */
+    THROTTLE_VISUALIZE_DELAY   : 5000,
+    /**
      * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
      * @constant
      */

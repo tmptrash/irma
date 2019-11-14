@@ -9,23 +9,26 @@ const Config   = require('./../Config');
 
 class Canvas {
     constructor() {
-        this._width         = Config.WORLD_WIDTH;
-        this._height        = Config.WORLD_HEIGHT;
-        this._canvasEl      = this._createCanvas();
-        this._headerEl      = this._createHeader();
-        this._ctx           = this._canvasEl.getContext('2d');
-        this._imgData       = this._ctx.createImageData(this._width, this._height);
-        this._data          = this._imgData.data;
-        this._animate       = this._onAnimate.bind(this);
-        this._visualize     = true;
-        this._panZoom       = null;
-        this._zoomObserver  = null;
-        this._fullEl        = this._createFullScreenBtn();
-        this._visualizeEl   = this._createVisualizeBtn();
-        this._xDataOffs     = 0;
-        this._yDataOffs     = 0;
-        this._visibleWidth  = Config.WORLD_WIDTH;
-        this._visibleHeight = Config.WORLD_HEIGHT;
+        this._width                     = Config.WORLD_WIDTH;
+        this._height                    = Config.WORLD_HEIGHT;
+        this._canvasEl                  = this._createCanvas();
+        this._headerEl                  = this._createHeader();
+        this._ctx                       = this._canvasEl.getContext('2d');
+        this._imgData                   = this._ctx.createImageData(this._width, this._height);
+        this._data                      = this._imgData.data;
+        this._animate                   = this._onAnimate.bind(this);
+        this._visualize                 = true;
+        this._panZoom                   = null;
+        this._zoomObserver              = null;
+        this._fullEl                    = this._createFullScreenBtn();
+        this._visualizeEl               = this._createVisualizeBtn();
+        this._throttledVisualizeEl      = this._createThrottledVisualizeBtn();
+        this._xDataOffs                 = 0;
+        this._yDataOffs                 = 0;
+        this._visibleWidth              = Config.WORLD_WIDTH;
+        this._visibleHeight             = Config.WORLD_HEIGHT;
+        this._throttledVisualize        = false;
+        this._throttledVisualizeCancel  = null;
 
         this._prepareDom();
         this._initPanZoomLib();
@@ -41,11 +44,13 @@ class Canvas {
         parentNode.removeChild(this._canvasEl);
         parentNode.removeChild(this._fullEl);
         parentNode.removeChild(this._visualizeEl);
+        parentNode.removeChild(this._throttledVisualizeEl);
         parentNode.removeChild(this._headerEl);
         this._headerEl    = null;
         this._canvasEl    = null;
         this._fullEl      = null;
         this._visualizeEl = null;
+        this._throttledVisualizeEl = null;
         this._ctx         = null;
         this._imgData     = null;
         this._data        = null;
@@ -176,6 +181,27 @@ class Canvas {
         return el;
     }
 
+    _createThrottledVisualizeBtn() {
+        const el = document.body.appendChild(Helper.setStyles('DIV', {
+            position       : 'absolute',
+            width          : '20px',
+            height         : '20px',
+            top            : '7px',
+            left           : '60px',
+            border         : '1px #FFEB3B solid',
+            backgroundSize : '8px 8px',
+            borderRadius   : '6px',
+            background     : 'radial-gradient(#F44336 15%, transparent 16%) 0 0, radial-gradient(#F44336 15%, transparent 16%) 4px 4px, radial-gradient(rgba(255,255,253,.1) 15%, transparent 20%) 0 1px, radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 8px',
+            backgroundColor: '#000',
+            cursor         : 'pointer'
+        }));
+
+        el.title   = 'throttled visualize (Ctrl-T)';
+        el.onclick = this._onThrottledVizualize.bind(this);
+
+        return el;
+    }
+
     _onFullscreen() {
         this._panZoom.zoomAbs(0, 0, 1.0);
         this._panZoom.moveTo(0, 0);
@@ -189,12 +215,26 @@ class Canvas {
         this._onAnimate();
     }
 
+    _onThrottledVizualize(enableThrottling) {
+        this._throttledVisualize = typeof(enableThrottling) == 'boolean' ? enableThrottling : !this._throttledVisualize;
+        this._throttledVisualizeEl.style.backgroundColor = this._throttledVisualize ? '#FFEB3B' : '#000';
+        if (!this._throttledVisualize && this._throttledVisualizeCancel) {
+            clearTimeout(this._throttledVisualizeCancel);
+            this._throttledVisualizeCancel = null;
+        }
+        this._onAnimate();
+    }
+
     _onAnimate() {
         if (!this._panZoom) {return}
         this._ctx.putImageData(this._imgData, 0, 0, this._xDataOffs, this._yDataOffs, this._visibleWidth, this._visibleHeight);
 
-        if (this._visualize === true) {
-            window.requestAnimationFrame(this._animate);
+        if (this._visualize === true && this._throttledVisualize === true) {
+            this._throttledVisualizeCancel = setTimeout(() => {
+                window.requestAnimationFrame(this._animate);
+            }, Config.THROTTLE_VISUALIZE_DELAY)
+        } else if (this._visualize === true) {
+            window.requestAnimationFrame(this._animate)
         }
     }
 
