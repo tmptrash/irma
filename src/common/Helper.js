@@ -164,5 +164,36 @@ class Helper {
  * @private
  */
 Helper._id = 0;
+/**
+ * Analog of Array.prototype.splice(), but for Uint8Array
+ * @param {Number} start index for deleting and inserting elements
+ * @param {Number} deleted Amount of items to delete in 'start' index
+ * @param {Array} numbers Numbers array, which will be added by 'start' index
+ * @return {Uint32Array} New array
+ */
+Uint8Array.prototype.splice = function splice(start, deleted, numbers) {
+    if (arguments.length < 2 || start > this.length || start < 0 || deleted < 0) {return this}
+    const amount  = numbers && numbers.length || 0;
+    if (deleted > this.length - start) {deleted = this.length - start}
+    const newArr  = new Uint8Array(this.length - deleted + amount);
+  
+    newArr.set(this.subarray(0, start));
+    amount > 0 && newArr.set(numbers, start);
+    newArr.set(this.subarray(start + deleted), start + amount);
+
+    return newArr;
+}
+/**
+ * Array.prototype.push analog
+ * @param {Uint8Array} pushedArr
+ */
+Uint8Array.prototype.push = function push(pushedArr) {
+    const newArr = new Uint8Array(this.length + pushedArr.length);
+
+    newArr.set(this, 0);
+    newArr.set(pushedArr, this.length);
+
+    return newArr;
+}
 
 module.exports = Helper;

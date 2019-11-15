@@ -31,9 +31,10 @@ class Organism {
         this.id         = id;
         this.color      = 0x000000;
         this.orgItem    = orgItem;
+        // TODO: remove this property
         this.mutations  = 0;
         this.packet     = null;
-        this.mem        = (new Array(Config.orgMaxCodeSize)).fill(0);
+        this.mem        = (new Int32Array(Config.orgMaxMemSize)).fill(0);
         this._memIdx    = -1;
         this.age        = 1;
         if (parent !== null) {
@@ -49,7 +50,7 @@ class Organism {
         this.generation = 0;
         this.line       = 0;
 
-        this.regs       = (new Array(Config.codeRegs)).fill(0);
+        this.regs       = (new Int32Array(Config.codeRegs)).fill(0);
         this.rIndex     = 0;
         /**
          * {Number} Register ax
@@ -72,10 +73,10 @@ class Organism {
          */
         this.stackIndex = -1;
         this.loopIndex  = -1;
-        this.loops      = new Array(Config.orgMaxCodeSize).fill(-1); // TODO: use {}
-        this.stack      = new Array(Config.CODE_STACK_SIZE * 3); // 2 registers + back line
-        this.offs       = new Array(Config.orgMaxCodeSize); // TODO: use {}
-        this.funcs      = new Array(Config.orgMaxCodeSize); // TODO: use {}
+        this.loops      = new Array(Config.orgMaxCodeSize).fill(-1);   // TODO: use {}
+        this.stack      = new Int32Array(Config.CODE_STACK_SIZE * 3);  // 2 registers + back line
+        this.offs       = (new Array(Config.orgMaxCodeSize)).fill(0);
+        this.funcs      = new Array(Config.orgMaxCodeSize);            // TODO: use {}
         /**
          * {Array} Array of numbers. Code (DNA) of organism
          */
@@ -92,7 +93,7 @@ class Organism {
     }
 
     push(val) {
-        if (this._memIdx >= Config.orgMaxCodeSize - 1) {return 0}
+        if (this._memIdx >= Config.orgMaxMemSize - 1) {return 0}
         this.mem[++this._memIdx] = val;
     }
 
@@ -158,16 +159,16 @@ class Organism {
      * @private
      */
     _generateCode() {
+        const size = Config.molCodeSize;
         if (Math.random() > .5) {
-            const size = Config.molCodeSize;
-            const code = new Array(size);
+            const code = new Uint8Array(size);
             for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
             return code;
         }
         const code  = Config.codeLuca;
         const len   = code.length;
-        const start = Math.floor(Math.random() * (len - Config.molCodeSize));
-        return code.slice(start, start + Config.molCodeSize);
+        const start = Math.floor(Math.random() * (len - size));
+        return code.slice(start, start + size);
     }
 
     _clone(parent, code) {

@@ -27,9 +27,9 @@ class Decay {
      */
     constructor(vm) {
         this._orgsAndMols = vm.orgsAndMols;
-        this._world = vm.world;
-        this._api = vm.api;
-        this._index = -1;
+        this._world       = vm.world;
+        this._api         = vm.api;
+        this._index       = -1;
     }
 
     destroy() {
@@ -46,17 +46,36 @@ class Decay {
         if (++this._index >= orgsAndMols.items) {this._index = 0}
         const org = orgsAndMols.get(this._index);
         if (org.isOrg || org.code.length <= Config.molCodeSize) {return} // Skip atoms
-        const offset = org.offset + DIR[Math.floor(Math.random() * 8)] * Math.floor(Math.random() * Config.molDecayDistance);
-        if (offset < 0 || offset > MAX_OFFS) {return}
-        const dot = this._world.getOrgIdx(offset);
+        const offset = this._getNearPos(org);
+        let dot = this._world.getOrgIdx(offset);
         if (dot > -1) {return} // organism or molecule on the way
         //
         // This line moves index back to current item to decay it till the end.
         // It's good for big (with long code) molecules
         //
         this._index--;
-        const newCode = org.code.splice(0, Math.floor(org.code.length / 2));
+        const newCode = org.code.subarray(0, Math.floor(org.code.length / 2));
+        org.code = org.code.splice(0, Math.floor(org.code.length / 2));
         this._api.createOrg(offset, org, newCode);
+    }
+
+    /**
+     * Try to get free position near specified organism
+     * @param {Organism} org 
+     * @return {Number} Offset
+     */
+    _getNearPos(org) {
+        const startOffs = org.offset;
+        const mol = org.code[0];
+        let offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+        if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
+            offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+            if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
+                offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+            }
+        }
+
+        return offset;
     }
 }
 

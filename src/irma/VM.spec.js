@@ -60,7 +60,6 @@ describe('src/irma/VM', () => {
             codeTimesPerRun            : 1,
             codeMutateEveryClone       : 1000,
             codeRegs                   : 6,
-            codeMixTimes               : 3,
             codeMutateMutations        : false,
             codeLuca                   : [],
             worldZoomSpeed             : 0.1,
@@ -510,14 +509,14 @@ describe('src/irma/VM', () => {
 
                 vm1.world.moveOrg(org1, 0);
                 vm1.world.moveOrg(org2, 1);
-                org1.code = [1,AR,2,JO];
-                org2.code = [2];
+                org1.code = Uint8Array.from([1,AR,2,JO]);
+                org2.code = Uint8Array.from([2]);
                 org1.preprocess();
                 org2.preprocess();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual([2,1,AR,2,JO]);
+                expect(org1.code).toEqual(Uint8Array.from([2,1,AR,2,JO]));
                 vm1.destroy();
             });
             it('Checks joining empty cell',  () => {
@@ -630,5 +629,24 @@ describe('src/irma/VM', () => {
                 vm1.destroy();
             });
         })
+
+        xdescribe('split tests', () => {
+            it('Checks basic organism splitting',  () => {
+                Config.molAmount = 0;
+                const vm1  = new VM();
+                const org = vm1.orgs.get(0);
+
+                vm1.world.moveOrg(org, 0);
+                org1.code = [1,AR,2,JO];
+                org2.code = [2];
+                org1.preprocess();
+                org2.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(org1.code).toEqual([2,1,AR,2,JO]);
+                vm1.destroy();
+            });
+        });
     });
 });

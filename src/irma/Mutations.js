@@ -43,28 +43,28 @@ class Mutations {
         for (let m = 0; m < mutations; m++) {mutCbs[prob(org.probs)](org.code, org)}
     }
 
-    static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS * 2) - CODE_CMD_OFFS : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
+    static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
     // TODO: do we need this?
     static crossover(destOrg, srcOrg) {
-        const destCode = destOrg.code;
+        let   destCode = destOrg.code;
         const srcCode  = srcOrg.code;
         const codeLen  = destCode.length < srcCode.length ? destCode.length : srcCode.length;
         const start    = rand(codeLen);
         const end      = start + rand(codeLen - start);
 
-        destCode.splice(start, end - start + 1, ...srcCode.slice(start, end + 1));
+        destOrg.code = destCode.splice(start, end - start + 1, srcCode.slice(start, end + 1));
         destOrg.mutations += (end - start);
         destOrg.preprocess();
     }
 
     static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.mutations++; org.preprocess()}
-    static _onDel    (code, org) {code.splice(rand(code.length), 1); org.mutations++; org.preprocess()}
+    static _onDel    (code, org) {org.code = code.splice(rand(code.length), 1); org.mutations++; org.preprocess()}
     static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1; org.mutations++}
     static _onPercent(code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT; org.mutations++}
     static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.mutations++}
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
-        code.splice(rand(code.length), 0, Mutations.randCmd());
+        org.code = code.splice(rand(code.length), 0, [Mutations.randCmd()]);
         org.mutations++;
         org.preprocess();
     }
@@ -91,12 +91,12 @@ class Mutations {
         // We may insert copied piece before "start" (0) or after "end" (1)
         //
         if (rand(2) === 0) {
-            code.splice(rand(start), 0, ...code.slice(start, end));
+            org.code = code.splice(rand(start), 0, code.slice(start, end));
             org.preprocess();
             return end - start;
         }
 
-        code.splice(end + rand(codeLen - end + 1), 0, ...code.slice(start, end));
+        org.code = code.splice(end + rand(codeLen - end + 1), 0, code.slice(start, end));
         org.preprocess();
 
         return end - start;
@@ -104,7 +104,7 @@ class Mutations {
     static _onCut    (code, org)  {
         const start = rand(code.length);
         const end   = rand(code.length - start);
-        code.splice(start, end);
+        org.code    = code.splice(start, end - start);
         org.mutations += (end - start);
         org.preprocess();
     }

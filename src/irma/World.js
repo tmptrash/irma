@@ -11,6 +11,12 @@ const WORLD_WIDTH         = Config.WORLD_WIDTH;
 const WORLD_HEIGHT        = Config.WORLD_HEIGHT;
 const WORLD_CANVAS_WIDTH  = Config.WORLD_CANVAS_WIDTH;
 const WORLD_CANVAS_HEIGHT = Config.WORLD_CANVAS_HEIGHT;
+/**
+ * {Array} Array of increments. Using it we may obtain coordinates of the
+ * point depending on one of 8 directions. We use these values in any command
+ * related to sight, moving and so on
+ */
+const DIR                 = Config.DIR;
 
 class World {
     constructor(options) {
@@ -102,6 +108,23 @@ class World {
         const x = offset % WORLD_WIDTH;
         if (x < this.viewX || x > this.viewX1) {return}
         this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color || Config.molColor);
+    }
+
+    /**
+     * Returns offset of nearest free dot or -1 if no free dot near current
+     * @param {Number} offset Offet of dot, near which we are looking 
+     * @return {Number} Free dot ofset or -1 if no free space
+     */
+    freeDot(offset) {
+        const distance  = Config.molDecayDistance;
+        const distance2 = Math.floor(distance / 2);
+
+        for (let i = 0; i < distance * distance; i++) {
+            const offs = offset + DIR[Math.floor(Math.random() * 8)] * distance + Math.floor(Math.random() * distance) - distance2;
+            if (this._data[offs] === 0) {return offs}
+        }
+
+        return -1;
     }
 
     setItem(offset, item) {
