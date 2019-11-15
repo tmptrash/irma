@@ -13,6 +13,8 @@
   "scripts": {
     "test": "SET NODE_ENV=production& npx karma start",
     "dtest": "SET NODE_ENV=development& npx karma start",
+    "test_linux": "export NODE_ENV=production;export CHROME_BIN=$(which chromium);npx karma start",
+    "dtest_linux": "export NODE_ENV=development;export CHROME_BIN=$(which chromium);npx karma start",
     "cover": "istanbul cover tests/run.js",
     "prod": "npx webpack --mode=production",
     "dev": "npx webpack --mode=development"
