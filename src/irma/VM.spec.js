@@ -46,7 +46,7 @@ describe('src/irma/VM', () => {
         Object.assign(Config, {
             // constants
             DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
-            CODE_CMD_OFFS              : 1024,
+            CODE_CMD_OFFS              : 256 - 64,
             CODE_COMMANDS              : 50,
             CODE_STACK_SIZE            : 100,
             WORLD_WIDTH                : WIDTH,
@@ -94,7 +94,7 @@ describe('src/irma/VM', () => {
     function run(code, ax = 0, bx = 0, ret = 0, checkLen = true, lines = null) {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm.orgs.get(0);
-        org.code  = code.slice(); // code copy
+        org.code  = Uint8Array.from(code).slice(); // code copy
         org.preprocess();
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
@@ -104,7 +104,7 @@ describe('src/irma/VM', () => {
         expect(org.ax).toBe(ax);
         expect(org.bx).toBe(bx);
         expect(org.ret).toBe(ret);
-        expect(org.code).toEqual(code);
+        expect(org.code).toEqual(Uint8Array.from(code));
         checkLen && expect(org.line).toEqual(org.code.length);
     }
 
@@ -123,18 +123,25 @@ describe('src/irma/VM', () => {
 
     describe('Scripts run', () => {
         describe('Constants tests', () => {
-            it('constant0',  () => run([-1], -1));
+            it('constant0',  () => run([0]));
+            it('constant01', () => run([1], 1));
+            it('constant02', () => run([3], 3));
             it('constant1',  () => run([0], 0));
             it('constant2',  () => run([1], 1));
             it('constant3',  () => run([2], 2));
             it('constant4',  () => run([1, 2], 2));
-            it('constant5',  () => run([1, -1], -1));
-            it('constant6',  () => run([1, -1], -1));
-            it('constant7',  () => run([0, -1], -1));
-            it('constant8',  () => run([-1, -1], -1));
-            it('constant9',  () => run([-1, 0, 2], 2));
-            it('constant10', () => run([-1, 0, 2], 2));
+            it('constant5',  () => run([1, NT], -2));
+            it('constant6',  () => run([1, 2, 1], 1));
+            it('constant7',  () => run([0, 1], 1));
+            it('constant8',  () => run([1, 1], 1));
+            it('constant9',  () => run([1, 0, 2], 2));
+            it('constant10', () => run([1, 3, 2], 2));
+            it('constant11', () => run([IN,10], 10));
+            it('constant12', () => run([IN,10,IN], 11));
+            it('constant13', () => run([1,TG,2,Config.CODE_CMD_OFFS], 1, 2));
+            it('constant14', () => run([1,TG,2], 2, 1));
         });
+
         describe('toggle tests', () => {
             it('toggle0', () => run([TG]));
             it('toggle1', () => run([TG,TG]));
@@ -191,25 +198,23 @@ describe('src/irma/VM', () => {
             it('add1', () => run([1,TG,2,AD], 3, 1));
             it('add2', () => run([1,TG,0,AD], 1, 1));
             it('add3', () => run([1,TG,AD,AD], 2, 1));
-            it('add4', () => run([-1,TG,AD,AD], -2, -1));
-            it('add5', () => run([-1,TG,2,AD], 1, -1));
+            it('add4', () => run([1,TG,2,AD], 3, 1));
         });
 
         describe('sub tests', () => {
             it('sub0', () => run([SU]));
             it('sub1', () => run([1,TG,2,SU], 1, 1));
             it('sub2', () => run([1,TG,SU], -1, 1));
-            it('sub3', () => run([-1,TG,-2,SU], -1, -1));
-            it('sub4', () => run([3,TG,-1,SU], -4, 3));
-            it('sub5', () => run([3,TG,1,SU], -2, 3));
+            it('sub3', () => run([NT,TG,1,NT,SU], -1, -1));
+            it('sub4', () => run([3,TG,1,SU], -2, 3));
         });
 
         describe('mul tests', () => {
             it('mul0', () => run([MU]));
             it('mul1', () => run([2,TG,3,MU], 6, 2));
             it('mul2', () => run([1,TG,MU], 0, 1));
-            it('mul3', () => run([-1,TG,MU], 0, -1));
-            it('mul4', () => run([-3,TG,-2,MU], 6, -3));
+            it('mul3', () => run([NT,TG,MU], 0, -1));
+            it('mul4', () => run([2,NT,TG,1,NT,MU], 6, -3));
             it('mul5', () => run([1,TG,2,MU], 2, 1));
         });
 
@@ -217,10 +222,10 @@ describe('src/irma/VM', () => {
             it('div0', () => run([DI], -Number.MAX_VALUE));
             it('div1', () => run([3,TG,2,DI], 1, 3));
             it('div2', () => run([1,TG,DI], 0, 1));
-            it('div3', () => run([-1,TG,DI], 0, -1));
-            it('div4', () => run([-3,TG,-2,DI], 1, -3));
+            it('div3', () => run([NT,TG,DI], 0, -1));
+            it('div4', () => run([2,NT,TG,1,NT,DI], 1, -3));
             it('div5', () => run([1,TG,2,DI], 2, 1));
-            it('div6', () => run([2,TG,-1,DI], 0, 2));
+            it('div6', () => run([2,TG,NT,DI], 0, 2));
             it('div7', () => run([2,DI], -Number.MAX_VALUE));
             it('div8', () => run([5,TG,10,DI], 2, 5));
         });
@@ -230,8 +235,9 @@ describe('src/irma/VM', () => {
             it('inc1', () => run([2,IN], 3));
             it('inc2', () => run([2,IN,IN,IN], 5));
             it('inc3', () => run([2,IN,IN,2,IN], 3));
-            it('inc4', () => run([-2,IN], -1));
-            it('inc5', () => run([-1,IN]));
+            it('inc4', () => run([1,NT,IN], -1));
+            it('inc5', () => run([1,IN], 2));
+            it('inc6', () => run([NT,IN]));
         });
 
         describe('dec tests', () => {
@@ -239,7 +245,7 @@ describe('src/irma/VM', () => {
             it('dec1', () => run([2,DE], 1));
             it('dec2', () => run([2,DE,DE,DE], -1));
             it('dec3', () => run([2,DE,DE,2,DE], 1));
-            it('dec4', () => run([-2,DE], -3));
+            it('dec4', () => run([1,NT,DE], -3));
             it('dec5', () => run([1,DE]));
         });
 
@@ -250,8 +256,8 @@ describe('src/irma/VM', () => {
             it('rshift3', () => run([8,RS], 4));
             it('rshift4', () => run([8,RS,RS], 2));
             it('rshift5', () => run([3,RS], 1));
-            it('rshift6', () => run([-3,RS], -2));
-            it('rshift7', () => run([-4,RS], -2));
+            it('rshift6', () => run([2,NT,RS], -2));
+            it('rshift7', () => run([4,RS], 2));
         });
 
         describe('lshift tests', () => {
@@ -261,8 +267,8 @@ describe('src/irma/VM', () => {
             it('lshift3', () => run([8,LS], 16));
             it('lshift4', () => run([8,LS,LS], 32));
             it('lshift5', () => run([3,LS], 6));
-            it('lshift6', () => run([-3,LS], -6));
-            it('lshift7', () => run([-4,LS], -8));
+            it('lshift6', () => run([2,NT,LS], -6));
+            it('lshift7', () => run([3,NT,LS], -8));
         });
 
         describe('rand tests', () => {
@@ -304,12 +310,12 @@ describe('src/irma/VM', () => {
             it('ifn1',   () => run([FN,2,EN], 0, 0, 0, false, 2));
             it('ifn2',   () => run([FN,2,3,EN], 0, 0, 0, false, 2));
             it('ifn3',   () => run([FN,1,FN,2,EN,3,EN], 0, 0, 0, false, 2));
-            it('ifn4',   () => run([-1,FN,-2,FN,4,EN,EN], 4, 0, 0, false, 5));
-            it('ifn5',   () => run([-1,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifn4',   () => run([NT,FN,1,NT,FN,4,EN,EN], 4, 0, 0, false, 6));
+            it('ifn5',   () => run([NT,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
             it('ifn6',   () => run([FN,1,FN,2,EN,3], 3, 0, 0, false, 4));
             it('ifn7',   () => run([FN,2,EN,3,EN], 3, 0, 0, false, 3));
-            it('ifn8',   () => run([-1,FN,1,EN,3,EN], 3, 0, 0, false, 5));
-            it('ifn9',   () => run([FN,-1,FN,2,EN], 2, 0, 0, false, 4));
+            it('ifn8',   () => run([NT,FN,1,EN,3,EN], 3, 0, 0, false, 5));
+            it('ifn9',   () => run([FN,1,FN,2,EN], 1, 0, 0, false, 4));
             it('ifn10',  () => run([FN,FN,2,EN], 0, 0, 0, false, 3));
             it('ifn11',  () => run([FN,FN,2], 2, 0, 0, false, 3));
             it('ifn12',  () => run([FN,2], 2, 0, 0, false, 2));
@@ -320,12 +326,12 @@ describe('src/irma/VM', () => {
             it('ifz1',   () => run([FZ,2,EN], 2, 0, 0, false, 2));
             it('ifz2',   () => run([FZ,2,3,EN], 3, 0, 0, false, 3));
             it('ifz3',   () => run([FZ,1,FZ,2,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifz4',   () => run([-1,FZ,-2,FZ,4,EN,EN], -1, 0, 0, false, 3));
+            it('ifz4',   () => run([NT,FZ,1,NT,FZ,4,EN,EN], -1, 0, 0, false, 3));
             it('ifz5',   () => run([FZ,0,FZ,4,EN,EN], 4, 0, 0, false, 5));
             it('ifz6',   () => run([FZ,1,FZ,2,EN,3], 3, 0, 0, false, 4));
             it('ifz7',   () => run([FZ,2,EN,3,EN], 3, 0, 0, false, 4));
             it('ifz8',   () => run([FZ,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifz9',   () => run([FZ,-1,FZ,2,EN], -1, 0, 0, false, 4));
+            it('ifz9',   () => run([FZ,NT,FZ,2,EN], -1, 0, 0, false, 4));
             it('ifz10',  () => run([FZ,FZ,2,EN], 2, 0, 0, false, 3));
             it('ifz11',  () => run([FZ,FZ,2], 2, 0, 0, false, 3));
             it('ifz12',  () => run([FZ,2], 2, 0, 0, false, 2));
@@ -336,12 +342,12 @@ describe('src/irma/VM', () => {
             it('ifg1',   () => run([1,FG,2,EN], 2, 0, 0, false, 3));
             it('ifg2',   () => run([FG,2,3,EN], 0, 0, 0, false, 2));
             it('ifg3',   () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, 0, false, 8));
-            it('ifg4',   () => run([-1,FG,-2,FG,4,EN,EN], -1, 0, 0, false, 3));
+            it('ifg4',   () => run([NT,FG,1,NT,FG,4,EN,EN], -1, 0, 0, false, 3));
             it('ifg5',   () => run([1,FG,0,FG,4,EN,EN], 0, 0, 0, false, 5));
             it('ifg6',   () => run([FG,1,FG,2,EN,3], 3, 0, 0, false, 6));
             it('ifg7',   () => run([FG,2,EN,3,EN], 3, 0, 0, false, 4));
             it('ifg8',   () => run([FG,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifg9',   () => run([FG,-1,FG,2,EN], -1, 0, 0, false, 4));
+            it('ifg9',   () => run([FG,NT,FG,2,EN], -1, 0, 0, false, 4));
             it('ifg10',  () => run([FG,FG,2,EN], 0, 0, 0, false, 3));
             it('ifg11',  () => run([FG,FG,2], 2, 0, 0, false, 3));
             it('ifg12',  () => run([FG,2], 2, 0, 0, false, 2));
@@ -351,13 +357,13 @@ describe('src/irma/VM', () => {
             it('ifl0',   () => run([FL,2,EN], 0, 0, 0, false, 2));
             it('ifl1',   () => run([1,FL,2,EN], 1, 0, 0, false, 3));
             it('ifl2',   () => run([FL,2,3,EN], 0, 0, 0, false, 2));
-            it('ifl3',   () => run([-1,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
-            it('ifl4',   () => run([-1,FL,-2,FL,4,EN,EN], 4, 0, 0, false, 7));
+            it('ifl3',   () => run([NT,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
+            it('ifl4',   () => run([NT,FL,1,NT,FL,4,EN,EN], 4, 0, 0, false, 8));
             it('ifl5',   () => run([1,FL,0,FL,4,EN,EN], 1, 0, 0, false, 3));
             it('ifl6',   () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 5));
             it('ifl7',   () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
             it('ifl8',   () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ifl9',   () => run([FL,-1,FL,2,EN], 2, 0, 0, false, 4));
+            it('ifl9',   () => run([FL,NT,FL,2,EN], 2, 0, 0, false, 4));
             it('ifl10',  () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
             it('ifl11',  () => run([FL,FL,2], 2, 0, 0, false, 3));
             it('ifl12',  () => run([FL,2], 2, 0, 0, false, 2));
@@ -367,13 +373,13 @@ describe('src/irma/VM', () => {
             it('ife0',   () => run([FE,2,EN], 2, 0, 0, false, 2));
             it('ife1',   () => run([1,FE,2,EN], 1, 0, 0, false, 4));
             it('ife2',   () => run([FE,2,3,EN], 3, 0, 0, false, 4));
-            it('ife3',   () => run([-1,FE,2,FE,3,EN,4,EN], -1, 0, 0, false, 3));
-            it('ife4',   () => run([-1,FE,-2,FE,4,EN,EN], -1, 0, 0, false, 7));
+            it('ife3',   () => run([NT,FE,2,FE,3,EN,4,EN], -1, 0, 0, false, 3));
+            it('ife4',   () => run([NT,FE,1,NT,FE,4,EN,EN], -1, 0, 0, false, 3));
             it('ife5',   () => run([FE,0,FE,4,EN,EN], 4, 0, 0, false, 6));
             it('ife6',   () => run([FE,1,FE,2,EN,3], 3, 0, 0, false, 5));
             it('ife7',   () => run([FE,2,EN,3,EN], 3, 0, 0, false, 5));
             it('ife8',   () => run([1,FE,1,EN,3,EN], 3, 0, 0, false, 4));
-            it('ife9',   () => run([FE,-1,FE,2,EN], -1, 0, 0, false, 4));
+            it('ife9',   () => run([FE,NT,FE,2,EN], -1, 0, 0, false, 4));
             it('ife10',  () => run([FE,FE,2,EN], 2, 0, 0, false, 4));
             it('ife11',  () => run([FE,FE,2], 2, 0, 0, false, 3));
             it('ife12',  () => run([FE,2], 2, 0, 0, false, 2));
@@ -383,13 +389,13 @@ describe('src/irma/VM', () => {
             it('ifne0',  () => run([FNE,2,EN], 0, 0, 0, false, 2));
             it('ifne1',  () => run([1,FNE,2,EN], 2, 0, 0, false, 4));
             it('ifne2',  () => run([FNE,2,3,EN], 0, 0, 0, false, 4));
-            it('ifne3',  () => run([-1,FNE,2,FNE,3,EN,4,EN], 4, 0, 0, false, 8));
-            it('ifne4',  () => run([-1,FNE,-2,FNE,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifne3',  () => run([NT,FNE,2,FNE,3,EN,4,EN], 4, 0, 0, false, 8));
+            it('ifne4',  () => run([NT,FNE,1,NT,FNE,4,EN,EN], 4, 0, 0, false, 6));
             it('ifne5',  () => run([FNE,0,FNE,4,EN,EN], 0, 0, 0, false, 2));
             it('ifne6',  () => run([FNE,1,FNE,2,EN,3], 3, 0, 0, false, 6));
             it('ifne7',  () => run([FNE,2,EN,3,EN], 3, 0, 0, false, 4));
             it('ifne8',  () => run([1,FNE,1,EN,3,EN], 3, 0, 0, false, 5));
-            it('ifne9',  () => run([FNE,-1,FNE,2,EN], 2, 0, 0, false, 5));
+            it('ifne9',  () => run([FNE,NT,FNE,2,EN], 2, 0, 0, false, 5));
             it('ifne10', () => run([FNE,FNE,2,EN], 0, 0, 0, false, 4));
             it('ifne11', () => run([FNE,FNE,2], 2, 0, 0, false, 3));
             it('ifne12', () => run([FNE,2], 2, 0, 0, false, 2));
@@ -404,7 +410,7 @@ describe('src/irma/VM', () => {
             it('loop5',  () => run([1,LP,IN,EN], 2, 0, 0, false, 4));
             it('loop6',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
             it('loop7',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
-            it('loop8',  () => run([-1,LP,IN,EN], -1, 0, 0, false, 3));
+            it('loop8',  () => run([1,LP,IN,EN], 2, 0, 0, false, 5));
             it('loop9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, 0, false, 10));
             it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
         });
@@ -418,7 +424,7 @@ describe('src/irma/VM', () => {
             it('call5',  () => run([FU,IN,CA], 1, 0, 0, false, 4));
             it('call6',  () => run([FU,FU,IN,EN,CA], 0, 0, 0, false, 5));
             it('call7',  () => run([FU,IN,EN,2,CA], 3, 0, 0, false, 4));
-            it('call8',  () => run([FU,IN,EN,-2,CA], -1, 0, 0, false, 4));
+            it('call8',  () => run([FU,IN,EN,1,NT,CA], -1, 0, 0, false, 5));
             it('call9',  () => run([FU,IN,CA,EN,CA], 2, 0, 0, false, 5));
             it('call10', () => run([CA,CA,FU,IN,EN], 0, 0, 0, false, 7));
             it('call11', () => run([CA,CA,FU,IN,EN], 1, 0, 0, false, 5));
@@ -441,19 +447,6 @@ describe('src/irma/VM', () => {
             it('ret11',  () => run([RE], 0, 0, 0, false, 10));
         });
 
-        describe('numeric constant tests', () => {
-            it('const0', () => run([0]));
-            it('const1', () => run([1], 1));
-            it('const2', () => run([-1], -1));
-            it('const3', () => run([-3], -3));
-            it('const4', () => run([-3,1], 1));
-            it('const5', () => run([-3,-1], -1));
-            it('const6', () => run([IN,10], 10));
-            it('const7', () => run([IN,10,IN], 11));
-            it('const8', () => run([1,TG,2,Config.CODE_CMD_OFFS], 1, 2));
-            it('const9', () => run([1,TG,2], 2, 1));
-        });
-
         describe('retax tests', () => {
             it('retax0', () => run([RX]));
             it('retax1', () => run([2,AR,1,RX], 2, 0, 2));
@@ -471,7 +464,7 @@ describe('src/irma/VM', () => {
             it('and2',   () => run([1,AN]));
             it('and3',   () => run([1,TG,AN], 0, 1));
             it('and4',   () => run([3,TG,2,AN], 2, 3));
-            it('and4',   () => run([-3,TG,-2,AN], -4, -3));
+            it('and4',   () => run([2,NT,TG,1,NT,AN], -4, -3));
             it('and5',   () => run([3,AR,0,AN], 0, 0, 3));
         });
 
@@ -481,7 +474,7 @@ describe('src/irma/VM', () => {
             it('or2',    () => run([1,TG,2,OR], 3, 1));
             it('or3',    () => run([1,TG,OR],1, 1));
             it('or4',    () => run([3,TG,2,OR], 3, 3));
-            it('or4',    () => run([-3,TG,-2,OR], -1, -3));
+            it('or4',    () => run([2,NT,TG,1,NT,OR], -1, -3));
         });
 
         describe('xor tests', () => {
@@ -489,14 +482,14 @@ describe('src/irma/VM', () => {
             it('xor1',   () => run([1,TG,1,XO], 0, 1));
             it('xor2',   () => run([1,XO], 1));
             it('xor3',   () => run([1,TG,2,XO], 3, 1));
-            it('xor4',   () => run([-2,XO], -2));
+            it('xor4',   () => run([1,NT,XO], -2));
             it('xor5',   () => run([2,TG,1,XO,XO], 1, 2));
         });
 
         describe('not tests', () => {
             it('not0',   () => run([NT], -1));
             it('not1',   () => run([1,TG,1,NT], -2, 1));
-            it('not2',   () => run([-1,NT]));
+            it('not2',   () => run([1,NT], -2));
         });
 
         describe('join tests', () => {
@@ -516,7 +509,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([2,1,AR,2,JO]));
+                expect(org1.code).toEqual(Uint8Array.from([1,AR,2,JO,2]));
                 vm1.destroy();
             });
             it('Checks joining empty cell',  () => {
@@ -526,72 +519,12 @@ describe('src/irma/VM', () => {
                 const org1 = vm1.orgs.get(0);
 
                 vm1.world.moveOrg(org1, 0);
-                org1.code = [1,AR,2,JO];
+                org1.code = Uint8Array.from([1,AR,2,JO]);
                 org1.preprocess();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual([1,AR,2,JO]);
-                vm1.destroy();
-            });
-            it('Checks joining if command is blocked',  () => {
-                Config.molAmount = 0;
-                Config.orgLucaAmount = 2;
-                const vm1  = new VM();
-                const org1 = vm1.orgs.get(0);
-                const org2 = vm1.orgs.get(1);
-
-                vm1.world.moveOrg(org1, 0);
-                vm1.world.moveOrg(org2, 1);
-                org1.code = [2,JO];
-                org2.code = [2];
-                org1.preprocess();
-                org2.preprocess();
-                Config.codeLinesPerIteration = org1.code.length;
-                vm1.run();
-                expect(vm1.orgs.items).toBe(2);
-                expect(org1.code).toEqual([2,JO]);
-                expect(org2.code).toEqual([2]);
-                vm1.destroy();
-            });
-            it('Checks joining if command is activated incorrectly',  () => {
-                Config.molAmount = 0;
-                Config.orgLucaAmount = 2;
-                const vm1  = new VM();
-                const org1 = vm1.orgs.get(0);
-                const org2 = vm1.orgs.get(1);
-
-                vm1.world.moveOrg(org1, 0);
-                vm1.world.moveOrg(org2, 1);
-                org1.code = [-1,AR,2,JO];
-                org2.code = [2];
-                org1.preprocess();
-                org2.preprocess();
-                Config.codeLinesPerIteration = org1.code.length;
-                vm1.run();
-                expect(vm1.orgs.items).toBe(2);
-                expect(org1.code).toEqual([-1,AR,2,JO]);
-                expect(org2.code).toEqual([2]);
-                vm1.destroy();
-            });
-            it('Checks joining if command is activated incorrectly 1',  () => {
-                Config.molAmount = 0;
-                Config.orgLucaAmount = 2;
-                const vm1  = new VM();
-                const org1 = vm1.orgs.get(0);
-                const org2 = vm1.orgs.get(1);
-
-                vm1.world.moveOrg(org1, 0);
-                vm1.world.moveOrg(org2, 1);
-                org1.code = [2,AR,2,JO];
-                org2.code = [2];
-                org1.preprocess();
-                org2.preprocess();
-                Config.codeLinesPerIteration = org1.code.length;
-                vm1.run();
-                expect(vm1.orgs.items).toBe(2);
-                expect(org1.code).toEqual([2,AR,2,JO]);
-                expect(org2.code).toEqual([2]);
+                expect(org1.code).toEqual(Uint8Array.from([1,AR,2,JO]));
                 vm1.destroy();
             });
             it('Checks joining if organism is at the edge of the world',  () => {
@@ -618,13 +551,13 @@ describe('src/irma/VM', () => {
 
                 vm1.world.moveOrg(org1, 0);
                 vm1.world.moveOrg(mol1, 1);
-                org1.code = [1,AR,2,JO];
-                mol1.code = [5];
+                org1.code = Uint8Array.from([1,AR,2,JO]);
+                mol1.code = Uint8Array.from([5]);
                 org1.preprocess();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual([5,1,AR,2,JO]);
+                expect(org1.code).toEqual(Uint8Array.from([1,AR,2,JO,5]));
                 expect(vm1.orgsAndMols.items).toBe(1);
                 vm1.destroy();
             });
