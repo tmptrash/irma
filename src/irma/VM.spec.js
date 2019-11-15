@@ -564,19 +564,20 @@ describe('src/irma/VM', () => {
             });
         })
 
-        xdescribe('split tests', () => {
+        describe('split tests', () => {
             it('Checks basic organism splitting',  () => {
                 Config.molAmount = 0;
                 const vm1  = new VM();
                 const org = vm1.orgs.get(0);
-
+                
                 vm1.world.moveOrg(org, 0);
-                org.code = Uint8Array.from([1,TG,0,SP]);
+                org.code = Uint8Array.from([2,AR,1,TG,0,SP]);
+                org.energy = org.code.length * Config.energyMultiplier;
                 org.preprocess();
                 Config.codeLinesPerIteration = org.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(org.code).toEqual(Uint8Array.from([TG,0,SP]));
+                expect(org.code).toEqual(Uint8Array.from([AR,1,TG,0,SP]));
                 vm1.destroy();
             });
         });
