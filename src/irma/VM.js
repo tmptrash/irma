@@ -673,10 +673,7 @@ class VM {
     }
 
     /**
-     * Mix organism commands. Change it's atoms to random sequence. In this case
-     * organism will stay non living thing. Just a bundle of atoms without
-     * an ability to reproduce. Simply, it will be changed to one big molecule.
-     * It will be present in a world. See _removeOrg().
+     * Mix organism commands by cut them into small molecules. It kills him
      * @param {Organism} org Organism to kill.
      * @private
      */
@@ -687,6 +684,7 @@ class VM {
         const molSize = Config.molCodeSize;
         if (code.length < 1) {return}
 
+        let firstCut = true;
         while (code.length > 0) {
             const offs = world.freeDot(offset);
             if (offs === -1) {
@@ -695,8 +693,15 @@ class VM {
                 return;
             }
             
-            this._createOrg(offs, null, code.slice(0, molSize));
-            code = code.splice(0, molSize)
+            if (firstCut) {
+                const cutLen = Math.floor(Math.random * molSize);
+                this._createOrg(offs, null, code.slice(0, cutLen));
+                code = code.splice(0, cutLen);
+                firstCut = false;
+            } else {
+                this._createOrg(offs, null, code.slice(0, molSize));
+                code = code.splice(0, molSize)
+            }
         }
         this._removeOrg(org);
     }
