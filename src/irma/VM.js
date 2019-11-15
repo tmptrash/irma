@@ -694,7 +694,7 @@ class VM {
             }
             
             if (firstCut) {
-                const cutLen = Math.floor(Math.random * molSize);
+                const cutLen = Math.floor(Math.random() * molSize);
                 this._createOrg(offs, null, code.slice(0, cutLen));
                 code = code.splice(0, cutLen);
                 firstCut = false;
