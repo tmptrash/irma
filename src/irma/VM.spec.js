@@ -35,6 +35,7 @@ describe('src/irma/VM', () => {
     const XO        = Config.CODE_CMD_OFFS+31;
     const NT        = Config.CODE_CMD_OFFS+32;
     const JO        = Config.CODE_CMD_OFFS+33;
+    const SP        = Config.CODE_CMD_OFFS+34;
 
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -570,14 +571,12 @@ describe('src/irma/VM', () => {
                 const org = vm1.orgs.get(0);
 
                 vm1.world.moveOrg(org, 0);
-                org1.code = [1,AR,2,JO];
-                org2.code = [2];
-                org1.preprocess();
-                org2.preprocess();
-                Config.codeLinesPerIteration = org1.code.length;
+                org.code = Uint8Array.from([1,TG,0,SP]);
+                org.preprocess();
+                Config.codeLinesPerIteration = org.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual([2,1,AR,2,JO]);
+                expect(org.code).toEqual(Uint8Array.from([TG,0,SP]));
                 vm1.destroy();
             });
         });
