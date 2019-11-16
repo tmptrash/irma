@@ -92,6 +92,11 @@ class Organism {
         return this.mem[this._memIdx--];
     }
 
+    cur() {
+        if (this._memIdx < 0) {return 0}
+        return this.mem[this._memIdx];
+    }
+
     push(val) {
         if (this._memIdx >= Config.orgMaxMemSize - 1) {return 0}
         this.mem[++this._memIdx] = val;

@@ -65,10 +65,11 @@ func             # func 0
   sub            # ax=copyIdx bx=sepIdx1
   toggle         # ax=sepIdx1 bx=copyIdx
   17             # ax=17      bx=copyIdx
-  axret          # ax=17      bx=copyIdx ret=17  
+  push           # ax=17      bx=copyIdx
   len            # ax=len     bx=copyIdx
   toggle         # ax=copyIdx bx=len
   split          # ax=copyIdx bx=len
+  pop            # ax=17      bx=len
 end
 func             # func 1
   1              # ax=1       bx=?       right side

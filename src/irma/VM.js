@@ -401,13 +401,12 @@ class VM {
                             if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; continue}
                             const newCode = code.subarray(ax, bx);
                             org.code = code = code.splice(ax, bx - ax);
-                            if (newCode.length < 1 || org.ret === IS_ORG_ID && orgs.full) {org.ret = RET_ERR; continue}
+                            if (newCode.length < 1 || org.cur() === IS_ORG_ID && orgs.full) {org.ret = RET_ERR; continue}
                             //
                             // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
-                            // TODO: should be esupported by organism from parent to child and clone direction may be
-                            // TODO: only one - IS_ORG_ID % 8
+                            // TODO: should be esupported by organism from parent to child
                             //
-                            const clone   = this._createOrg(offset, org, newCode, org.ret === IS_ORG_ID);
+                            const clone   = this._createOrg(offset, org, newCode, org.cur() === IS_ORG_ID);
                             this._db && this._db.put(clone, org);
                             const energy = clone.code.length * Config.energyMultiplier;
                             clone.energy = energy;
@@ -478,10 +477,10 @@ class VM {
                             const find0    = org.find0;
                             const find1    = org.find1;
                             if (find1 < find0) {org.ret = RET_ERR; continue}
-                            const len      = find1 - find0 + 1;
                             const moveCode = code.slice(find0, find1 + 1);
                             if (moveCode.length < 1) {org.ret = RET_ERR; continue}
                             const newAx    = ax < 0 ? 0 : (ax > code.length ? code.length : ax);
+                            const len      = find1 - find0 + 1;
                             const offs     = newAx > find1 ? newAx - len : (newAx < find0 ? newAx : find0);
                             if (find0 === offs) {org.ret = RET_OK; continue}
                             code = code.splice(find0, len);
@@ -574,7 +573,7 @@ class VM {
                             const offset = org.offset + DIR[abs(ax) % 8];
                             const dot    = world.getOrgIdx(offset);
                             if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; continue}
-                            this._createOrg(offset, org.packet);
+                            this._createOrg(offset, org.packet.isOrg ? org.packet : null, org.packet.code);
                             this._db && this._db.put(org.packet);
                             org.packet = null;
                             continue;
@@ -632,8 +631,10 @@ class VM {
                 //
                 const age = org.age;
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
-                if (age > Config.orgMaxAge) {this._mixAtoms(org)}
-                if (org.energy < 0) {this._mixAtoms(org)}
+                if (org.energy < 0 || age > Config.orgMaxAge) {
+                    this._removeOrg(org);
+                    this._createOrg(org.offset, null, org.code);
+                }
 
                 org.age++;
                 org.energy--;
@@ -661,7 +662,7 @@ class VM {
 
     /**
      * Removes organism from the world totally. Places "packet" organism
-     * instead original if exists on the same position. See _mixAtoms().
+     * instead original if exists on the same position.
      * @param {Organism} org Organism to remove
      * @private
      */
@@ -675,40 +676,6 @@ class VM {
         org.isOrg  = false;
         this.world.empty(offset);
         packet && this._createOrg(offset, packet);
-    }
-
-    /**
-     * Mix organism commands by cut them into small molecules. It kills him
-     * @param {Organism} org Organism to kill.
-     * @private
-     */
-    _mixAtoms(org) {
-        let   code    = org.code;
-        const world   = this.world;
-        const offset  = org.offset;
-        const molSize = Config.molCodeSize;
-        if (code.length < 1) {return}
-
-        let firstCut = true;
-        while (code.length > 0) {
-            const offs = world.freeDot(offset);
-            if (offs === -1) {
-                this._removeOrg(org);
-                this._createOrg(offset, null, code);
-                return;
-            }
-            
-            if (firstCut) {
-                const cutLen = Math.floor(Math.random() * molSize);
-                this._createOrg(offs, null, code.slice(0, cutLen));
-                code = code.splice(0, cutLen);
-                firstCut = false;
-            } else {
-                this._createOrg(offs, null, code.slice(0, molSize));
-                code = code.splice(0, molSize)
-            }
-        }
-        this._removeOrg(org);
     }
 
     _removeFromOrgArr(item) {

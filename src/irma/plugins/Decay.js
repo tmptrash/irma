@@ -45,7 +45,8 @@ class Decay {
         if (orgsAndMols.full) {return}
         if (++this._index >= orgsAndMols.items) {this._index = 0}
         const org = orgsAndMols.get(this._index);
-        if (org.isOrg || org.code.length <= Config.molCodeSize) {return} // Skip atoms
+        const molSize = Config.molCodeSize;
+        if (org.isOrg || org.code.length <= molSize) {return} // Skip organisms
         const offset = this._getNearPos(org);
         let dot = this._world.getOrgIdx(offset);
         if (dot > -1) {return} // organism or molecule on the way
@@ -54,9 +55,10 @@ class Decay {
         // It's good for big (with long code) molecules
         //
         this._index--;
-        const newCode = org.code.subarray(0, Math.floor(org.code.length / 2));
-        org.code = org.code.splice(0, Math.floor(org.code.length / 2));
-        this._api.createOrg(offset, org, newCode);
+        
+        const newCode = org.code.subarray(0, molSize);
+        org.code = org.code.splice(0, molSize);
+        this._api.createOrg(offset, null, newCode);
     }
 
     /**

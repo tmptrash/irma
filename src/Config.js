@@ -115,10 +115,11 @@ module.exports = {
         CODE_OFFS + 7,  //   sub
         CODE_OFFS,      //   toggle
         17,             //   17
-        CODE_OFFS + 28, //   axret
+        CODE_OFFS + 4,  //   push
         CODE_OFFS + 48, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 34, //   split
+        CODE_OFFS + 3,  //   pop
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
         1,              //   1
@@ -215,8 +216,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : 800,
-    WORLD_CANVAS_HEIGHT        : 500,
+    WORLD_CANVAS_WIDTH         : WIDTH,
+    WORLD_CANVAS_HEIGHT        : HEIGHT,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -250,7 +251,7 @@ module.exports = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
+    orgProbs                   : new Uint32Array([10,1,1,1,1,1,1,1]),
     /**
      * Molecules related configs
      */

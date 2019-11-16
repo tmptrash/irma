@@ -734,7 +734,7 @@ describe('src/irma/VM', () => {
                 const org        = vm1.orgs.get(0);
                 
                 vm1.world.moveOrg(org, 10);
-                org.code = Uint8Array.from([17,AR,1,TG,0,SP]);
+                org.code = Uint8Array.from([1,AR,17,PU,1,TG,0,SP,PO]);
                 org.energy = org.code.length * Config.energyMultiplier;
                 org.preprocess();
                 Config.codeLinesPerIteration = org.code.length;
@@ -746,8 +746,8 @@ describe('src/irma/VM', () => {
                 expect(vm1.orgsAndMols.items).toBe(2); 
                 expect(vm1.orgs.get(1).isOrg).toBe(true); 
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([AR,1,TG,0,SP]));
-                expect(vm1.orgs.get(1).code).toEqual(Uint8Array.from([17]));
+                expect(org.code).toEqual(Uint8Array.from([AR,17,PU,1,TG,0,SP,PO]));
+                expect(vm1.orgs.get(1).code).toEqual(Uint8Array.from([1]));
                 vm1.destroy();
             });
         });
