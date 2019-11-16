@@ -402,6 +402,11 @@ class VM {
                             const newCode = code.subarray(ax, bx);
                             org.code = code = code.splice(ax, bx - ax);
                             if (newCode.length < 1 || org.ret === IS_ORG_ID && orgs.full) {org.ret = RET_ERR; continue}
+                            //
+                            // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
+                            // TODO: should be esupported by organism from parent to child and clone direction may be
+                            // TODO: only one - IS_ORG_ID % 8
+                            //
                             const clone   = this._createOrg(offset, org, newCode, org.ret === IS_ORG_ID);
                             this._db && this._db.put(clone, org);
                             const energy = clone.code.length * Config.energyMultiplier;

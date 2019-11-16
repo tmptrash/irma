@@ -1,6 +1,15 @@
 describe('src/irma/VM', () => {
-    const VM        = require('./VM');
     let   Config    = require('./../Config');
+    let   oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
+    const WIDTH     = 10;
+    const HEIGHT    = 10;
+    //
+    // This call should be before require('./VM') to setup our 
+    // configuration instead of default
+    //
+    _beforeEach();
+    const VM        = require('./VM');
+
     const TG        = Config.CODE_CMD_OFFS;
     const SH        = Config.CODE_CMD_OFFS+1;
     const EQ        = Config.CODE_CMD_OFFS+2;
@@ -37,13 +46,9 @@ describe('src/irma/VM', () => {
     const JO        = Config.CODE_CMD_OFFS+33;
     const SP        = Config.CODE_CMD_OFFS+34;
 
-    const WIDTH     = 10;
-    const HEIGHT    = 10;
-
-    let   oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
     let   vm        = null;
 
-    beforeEach(() => {
+    function _beforeEach() {
         Object.assign(Config, {
             // constants
             DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
@@ -56,6 +61,7 @@ describe('src/irma/VM', () => {
             DB_CHUNK_SIZE              : 100,
             ORG_PROB_MAX_VALUE         : 50,
             ORG_MIN_COLOR              : 0x96,
+            PLUGINS                    : [],
             // variables
             codeLinesPerIteration      : 1,
             codeTimesPerRun            : 1,
@@ -79,7 +85,9 @@ describe('src/irma/VM', () => {
             energyStepCoef             : 0.01,
             energyMultiplier           : 10000
         });
-
+    }
+    beforeEach(() => {
+        _beforeEach();
         vm = new VM();
     });
 
@@ -575,9 +583,171 @@ describe('src/irma/VM', () => {
                 org.energy = org.code.length * Config.energyMultiplier;
                 org.preprocess();
                 Config.codeLinesPerIteration = org.code.length;
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([AR,1,TG,0,SP]));
+                vm1.destroy();
+            });
+            it('Checks organism splitting fail, because position is not free',  () => {
+                Config.molAmount = 0;
+                Config.orgLucaAmount = 2;
+                const vm1  = new VM();
+                const org1 = vm1.orgs.get(0);
+                const org2 = vm1.orgs.get(1);
+                
+                vm1.world.moveOrg(org1, 0);
+                vm1.world.moveOrg(org2, 1);
+                org1.code = Uint8Array.from([2,AR,1,TG,0,SP]);
+                org2.code = Uint8Array.from([2]);
+                org1.energy = org1.code.length * Config.energyMultiplier;
+                org2.energy = org2.code.length * Config.energyMultiplier;
+                org1.preprocess();
+                Config.codeLinesPerIteration = org1.code.length;
+                expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(2);
+                expect(vm1.orgs.items).toBe(2);
+                vm1.run();
+                expect(vm1.orgs.items).toBe(2);
+                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
+                expect(org1.offset).toBe(0);
+                expect(org2.offset).toBe(1);
+                expect(org1.code).toEqual(Uint8Array.from([2,AR,1,TG,0,SP]));
+                vm1.destroy();
+            });
+            it('Checks organism splitting fail, because orgsAndMols is full',  () => {
+                Config.molAmount = 0;
+                const vm1  = new VM();
+                const org = vm1.orgs.get(0);
+                // split to the right
+                vm1.world.moveOrg(org, 0);
+                org.code = Uint8Array.from([2,2,AR,1,TG,0,SP]);
+                org.energy = org.code.length * Config.energyMultiplier;
+                org.preprocess();
+                Config.codeLinesPerIteration = org.code.length;
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,0,SP]));
+                // split to the bottom
+                org.code[0] = 4;
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.world.getOrgIdx(10)).toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([4,AR,1,TG,0,SP]));
+
+                vm1.destroy();
+            });
+            it('Checks basic organism splitting fail, because out of the world',  () => {
+                Config.molAmount = 0;
+                const vm1  = new VM();
+                const org = vm1.orgs.get(0);
+                
+                vm1.world.moveOrg(org, 0);
+                org.code = Uint8Array.from([0,AR,1,TG,0,SP]);
+                org.energy = org.code.length * Config.energyMultiplier;
+                org.preprocess();
+                Config.codeLinesPerIteration = org.code.length;
+                expect(vm1.world.getOrgIdx(0)).not.toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.world.getOrgIdx(0)).not.toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([0,AR,1,TG,0,SP]));
+                vm1.destroy();
+            });
+            it('Checks basic organism splitting fail, because ax < 0',  () => {
+                Config.molAmount = 0;
+                const vm1  = new VM();
+                const org = vm1.orgs.get(0);
+                
+                vm1.world.moveOrg(org, 0);
+                org.code = Uint8Array.from([2,AR,1,TG,1,NT,SP]);
+                org.energy = org.code.length * Config.energyMultiplier;
+                org.preprocess();
+                Config.codeLinesPerIteration = org.code.length;
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,1,NT,SP]));
+                vm1.destroy();
+            });
+            it('Checks basic organism splitting fail, because ax > org.code.length',  () => {
+                Config.molAmount = 0;
+                const vm1        = new VM();
+                const org        = vm1.orgs.get(0);
+                
+                vm1.world.moveOrg(org, 0);
+                org.code = Uint8Array.from([2,AR,1,TG,100,NT,SP]);
+                org.energy = org.code.length * Config.energyMultiplier;
+                org.preprocess();
+                Config.codeLinesPerIteration = org.code.length;
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,100,NT,SP]));
+                vm1.destroy();
+            });
+            it('Checks basic organism splitting fail, because bx < 0',  () => {
+                Config.molAmount = 0;
+                const vm1  = new VM();
+                const org = vm1.orgs.get(0);
+                
+                vm1.world.moveOrg(org, 0);
+                org.code = Uint8Array.from([2,AR,1,NT,TG,1,SP]);
+                org.energy = org.code.length * Config.energyMultiplier;
+                org.preprocess();
+                Config.codeLinesPerIteration = org.code.length;
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
+                vm1.run();
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([2,AR,1,NT,TG,1,SP]));
+                vm1.destroy();
+            });
+            it('Checks basic organism cloning',  () => {
+                Config.molAmount = 0;
+                const vm1        = new VM();
+                const org        = vm1.orgs.get(0);
+                
+                vm1.world.moveOrg(org, 10);
+                org.code = Uint8Array.from([17,AR,1,TG,0,SP]);
+                org.energy = org.code.length * Config.energyMultiplier;
+                org.preprocess();
+                Config.codeLinesPerIteration = org.code.length;
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
+                vm1.run();
+                expect(vm1.orgs.items).toBe(2);
+                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.orgs.get(1).isOrg).toBe(true); 
+                expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([AR,1,TG,0,SP]));
+                expect(vm1.orgs.get(1).code).toEqual(Uint8Array.from([17]));
                 vm1.destroy();
             });
         });
