@@ -473,7 +473,6 @@ class VM {
 
                         case CODE_CMD_OFFS + 37: {// move
                             ++line;
-                            org.energy -= Config.energyMove;
                             const find0    = org.find0;
                             const find1    = org.find1;
                             if (find1 < find0) {org.ret = RET_ERR; continue}

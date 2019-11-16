@@ -42,8 +42,8 @@ module.exports = {
      * @constant
      */
     CODE_STACK_SIZE            : 300,
-    codeLinesPerIteration      : 10,
-    codeTimesPerRun            : 10,
+    codeLinesPerIteration      : 1,
+    codeTimesPerRun            : 20,
     codeMutateEveryClone       : 7,
     codeRegs                   : 6,
     codeMutateMutations        : false,
@@ -261,12 +261,10 @@ module.exports = {
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
-     * {Number} Ages we decrease from organism is case of running these commands.
-     * In some sense this is amount of energy for commands
+     * {Number} Energy related configuration
      */
-    energyMove                 : 10,
-    energyStepCoef             : .02,
-    energyMultiplier           : 4000,
+    energyStepCoef             : .015,
+    energyMultiplier           : 1000,
     /**
      * Plugins. Extends irma core by additional functionality
      * @constant
