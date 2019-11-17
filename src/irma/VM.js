@@ -635,7 +635,7 @@ class VM {
                 if (age > Config.orgMaxAge) {this._mixAtoms(org)}
                 if (org.energy < 0) {this._mixAtoms(org)}
 
-                org.age++;
+                org.age++
                 org.energy--;
                 this._i += lines;
             }
