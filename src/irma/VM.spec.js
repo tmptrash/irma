@@ -80,7 +80,7 @@ describe('src/irma/VM', () => {
             molDecayPeriod             : 1000,
             orgMaxCodeSize             : 50,
             molCodeSize                : 8,
-            orgProbs                   : new Uint32Array([10,1,2,3,1,5,1,1]),
+            orgProbs                   : new Uint32Array([10,1,3,1,5,1,1]),
             energyStepCoef             : 0.01,
             energyMultiplier           : 10000
         });
