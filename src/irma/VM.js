@@ -635,7 +635,7 @@ class VM {
                     this._createOrg(org.offset, null, org.code);
                 }
 
-                org.age++;
+                org.age++
                 org.energy--;
                 this._i += lines;
             }
