@@ -11,7 +11,7 @@ const Cleaner  = require('clean-webpack-plugin');
  * {String} Determine development mode. Possible values: 'development', 'production'.
  * In package.json may be set as parameter: npx webpack --mode=development
  */
-const NODE_ENV = process.env.NODE_ENV;
+const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 /**
  * {Boolean} Means development mode. In this mode we have to suppress code minification
  * and add source maps into it for debug
