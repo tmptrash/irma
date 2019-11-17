@@ -1,0 +1,157 @@
+func                          
+  3
+  call                        
+  retax                       
+  toggle                      
+  len                         
+  toggle                      
+  push                        
+  shift                       
+  pop                         
+  toggle                      
+  0
+  toggle                      
+  inc                         
+  loop                        
+    axret                     
+    push                      
+    eq                        
+    push                      
+    find                      
+    push                      
+    retax                     
+    ifz                       
+      pop                     
+      pop                     
+      pop                     
+      shift                   
+      shift                   
+      ret                     
+    end                       
+    shift                     
+    shift                     
+    toggle                    
+    axret                     
+    toggle                    
+    shift                     
+    pop                       
+    toggle                    
+    retax                     
+    dec                       
+    toggle                    
+    axret                     
+    pop                       
+    push                      
+    toggle                    
+    sub                       
+    toggle                    
+    retax                     
+    ifg                       
+      pop                     
+      pop                     
+      shift                   
+      shift                   
+      ret                     
+    end                       
+    len                       
+    move                      
+    pop                       
+    inc                       
+    toggle                    
+    pop                       
+  end                         
+  toggle                      
+  len                         
+  sub                         
+  toggle                      
+  17
+  push                        
+  len                         
+  toggle                      
+  split                       
+  pop                         
+end                           
+func                          
+  step                        
+  see                         
+  ifp                         
+    2
+  end                         
+  ifz                         
+    0
+    not                       
+    rand                      
+    step                      
+    step                      
+    step                      
+  end                         
+  toggle                      
+  len                         
+  toggle                      
+  push                        
+  pop                         
+  join                        
+end                           
+func                          
+  100
+  toggle                      
+  5
+  mul                         
+  toggle                      
+  len                         
+  ifl                         
+    ret                       
+  end                         
+  3
+  call                        
+  retax                       
+  toggle                      
+  len                         
+  sub                         
+  rand                        
+  add                         
+  toggle                      
+  0
+  axret                       
+  len                         
+  toggle                      
+  split                       
+end                           
+func                          
+  step                        
+  0
+  axret                       
+  191
+  toggle                      
+  6
+  add                         
+  toggle                      
+  0
+  not                         
+  toggle                      
+  find                        
+  axret                       
+end                           
+128
+lshift                        
+dec                           
+lshift                        
+lshift                        
+lshift                        
+lshift                        
+lshift                        
+lshift                        
+lshift                        
+lshift                        
+color                         
+50
+loop                          
+  1
+  call                        
+end                           
+0
+call                          
+2
+call                          
+ret                           
+nop                           

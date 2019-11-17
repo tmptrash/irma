@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 / 2;
-const HEIGHT    = 1080 / 2;
+const WIDTH     = 1920 * 3;
+const HEIGHT    = 1080 * 3;
 const CODE_OFFS = 256 - 64;
 
 
@@ -216,8 +216,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH,
-    WORLD_CANVAS_HEIGHT        : HEIGHT,
+    WORLD_CANVAS_WIDTH         : 800,
+    WORLD_CANVAS_HEIGHT        : 500,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -242,7 +242,7 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     orgLucaAmount              : 1,
     orgMaxAge                  : 5000000,
-    orgMutationPercent         : .01,
+    orgMutationPercent         : .02,
     orgMutationPeriod          : 1200001,
     orgMaxCodeSize             : 1024,
     orgMaxMemSize              : 128,
@@ -257,13 +257,13 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 200000,
+    molAmount                  : 5000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .015,
+    energyStepCoef             : .03,
     energyMultiplier           : 1000,
     /**
      * Plugins. Extends irma core by additional functionality
