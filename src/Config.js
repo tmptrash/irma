@@ -10,13 +10,14 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH     = 1920 / 2;
-const HEIGHT    = 1080 / 2;
-const CODE_OFFS = 256 - 64;
-
+const WIDTH       = 1920 / 4;
+const HEIGHT      = 1080 / 4;
+const CODE_OFFS   = 256 - 64;
+const CODE_ORG_ID = 17;
 
 // TODO: rename all molecules related names to prefix "mol".
 // TODO: do we really can change all non constants in real time? codeRegs, codeLuca, worldZoomSpeed,...
+// TODO: add comments for every config parameter
 module.exports = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
@@ -42,6 +43,9 @@ module.exports = {
      * @constant
      */
     CODE_STACK_SIZE            : 300,
+    CODE_RET_OK                : 1,
+    CODE_RET_ERR               : 0,
+    CODE_ORG_ID                : CODE_ORG_ID,
     codeLinesPerIteration      : 1,
     codeTimesPerRun            : 20,
     codeMutateEveryClone       : 7,
@@ -114,7 +118,7 @@ module.exports = {
         CODE_OFFS + 37, //   len
         CODE_OFFS + 7,  //   sub
         CODE_OFFS,      //   toggle
-        17,             //   17
+        CODE_ORG_ID,    //   17
         CODE_OFFS + 4,  //   push
         CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
@@ -239,6 +243,10 @@ module.exports = {
      * @constant
      */
     ORG_PROB_MAX_VALUE         : 50,
+    /**
+     * {Number} This color is a simple fix of black organism. In this case we
+     * don't see him in a world
+     */
     ORG_MIN_COLOR              : 0x96,
     orgLucaAmount              : 1,
     orgMaxAge                  : 5000000,

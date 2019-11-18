@@ -22,20 +22,8 @@ const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
  */
 const CODE_MAX_RAND     = CODE_CMD_OFFS + Config.CODE_COMMANDS;
 const CODE_STACK_SIZE   = Config.CODE_STACK_SIZE;
-const RET_OK            = 1;
-const RET_ERR           = 0;
-/**
- * {Number} Unique identifier, which should be set to ret register before split
- * command to keep child organism workable (interpretable with VM). Molecules
- * don't run with VM
- */
-const IS_ORG_ID         = 17;
-/**
- * {Array} Array of increments. Using it we may obtain coordinates of the
- * point depending on one of 8 directions. We use these values in any command
- * related to sight, moving and so on
- */
-const DIR               = Config.DIR;
+const RET_OK            = Config.CODE_RET_OK;
+const RET_ERR           = Config.CODE_RET_ERR;
 /**
  * {Number} World size. Pay attention, that width and height is -1
  */
@@ -43,22 +31,11 @@ const WIDTH             = Config.WORLD_WIDTH - 1;
 const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
 const HEIGHT1           = HEIGHT + 1;
-const LINE_OFFS         = HEIGHT * WIDTH1;
 const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
 const MAX               = Number.MAX_VALUE;
 const MIN               = -MAX;
 
-const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
-/**
- * {Number} This color is a simple fix of black organism. In this case we
- * don't see him in a world
- */
-const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
-
-const round             = Math.round;
 const rand              = Helper.rand;
-const fin               = Number.isFinite;
-const abs               = Math.abs;
 
 class VM {
     /**
@@ -72,10 +49,9 @@ class VM {
 
     constructor() {
         this.world            = new World({scroll: this._onScroll.bind(this)});
-        this.orgsAndMols      = null;
         this.orgs             = null;
         this.population       = 0;
-        this.api              = {createOrg: this._createOrg.bind(this)};
+        this.api              = {createOrg: this.createOrg.bind(this)};
 
         this._ts              = Date.now();
         this._i               = 0;
@@ -100,11 +76,9 @@ class VM {
     destroy() {
         this.world.destroy();
         Helper.destroyPlugins(this.plugins);
-        this.orgsAndMols.destroy();
         this._db && this._db.destroy();
         this.world        = null;
         this.plugins      = null;
-        this.orgsAndMols  = null;
         this._db          = null;
     }
 
@@ -191,37 +165,37 @@ class VM {
                         case CODE_CMD_OFFS + 6:  // add
                             ++line;
                             ax += bx;
-                            if (!fin(ax)) {ax = MAX}
+                            if (!Number.isFinite(ax)) {ax = MAX}
                             continue;
 
                         case CODE_CMD_OFFS + 7:  // sub
                             ++line;
                             ax -= bx;
-                            if (!fin(ax)) {ax = MIN}
+                            if (!Number.isFinite(ax)) {ax = MIN}
                             continue;
 
                         case CODE_CMD_OFFS + 8:  // mul
                             ++line;
                             ax *= bx;
-                            if (!fin(ax)) {ax = MAX}
+                            if (!Number.isFinite(ax)) {ax = MAX}
                             continue;
 
                         case CODE_CMD_OFFS + 9:  // div
                             ++line;
-                            ax = round(ax / bx);
-                            if (!fin(ax)) {ax = MIN}
+                            ax = Math.round(ax / bx);
+                            if (!Number.isFinite(ax)) {ax = MIN}
                             continue;
 
                         case CODE_CMD_OFFS + 10: // inc
                             ++line;
                             ax++;
-                            if (!fin(ax)) {ax = MAX}
+                            if (!Number.isFinite(ax)) {ax = MAX}
                             continue;
 
                         case CODE_CMD_OFFS + 11:  // dec
                             ++line;
                             ax--;
-                            if (!fin(ax)) {ax = MIN}
+                            if (!Number.isFinite(ax)) {ax = MIN}
                             continue;
 
                         case CODE_CMD_OFFS + 12:  // rshift
@@ -289,7 +263,7 @@ class VM {
                             if (org.fCount === 0) {++line; continue}
                             let index = org.stackIndex;
                             if (index >= CODE_STACK_SIZE * 3) {index = -1}
-                            const func     = abs(ax) % org.fCount;
+                            const func     = Math.abs(ax) % org.fCount;
                             const stack    = org.stack;
                             const newLine  = org.funcs[func];
                             if (org.offs[newLine - 1] === newLine) {++line; continue}
@@ -478,8 +452,8 @@ class VM {
                 const age = org.age;
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 if (org.energy < 0 || age > Config.orgMaxAge) {
-                    this._removeOrg(org);
-                    this._createOrg(org.offset, null, org.code);
+                    this.removeOrg(org);
+                    this.createOrg(org.offset, null, null, org.code);
                 }
                 //
                 // Age and energy should be changed every iteration
@@ -501,7 +475,7 @@ class VM {
         const ts = Date.now();
         if (ts - this._ts > 1000) {
             const orgAmount = this.orgs.items;
-            world.title(`inps:${round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
+            world.title(`inps:${Math.round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
             this._ts = ts;
             this._i  = 0;
 
@@ -510,36 +484,42 @@ class VM {
     }
 
     /**
+     * Creates one organism with default parameters and empty code
+     * @param {Number} offset Absolute org offset
+     * @param {Organism=} parent Create from parent
+     * @param {Array=} code New org code
+     * @param {Boolean} isOrg Current molecule is an organism
+     * @returns {Object} Item in FastArray class
+     */
+    createOrg(offset, freeIndex = null, parent = null, code = null, isOrg = false) {
+        const orgs        = this.orgs;
+        const org         = new Organism(Helper.id(), offset, orgs.freeIndex, freeIndex, parent, code, isOrg);
+
+        isOrg && orgs.add(org);
+
+        return org;
+    }
+
+    /**
      * Removes organism from the world totally. Places "packet" organism
      * instead original if exists on the same position.
      * @param {Organism} org Organism to remove
-     * @private
      */
-    // TODO: should be public
-    _removeOrg(org) {
+    removeOrg(org) {
         const offset = org.offset;
         const packet = org.packet;
 
         org.energy = 0;
-        this._removeFromOrgMolArr(org.item);
         org.isOrg && this._removeFromOrgArr(org.orgItem);
         org.isOrg  = false;
         this.world.empty(offset);
-        packet && this._createOrg(offset, packet);
+        packet && this.createOrg(offset, null, packet);
     }
 
     _removeFromOrgArr(item) {
         const orgs = this.orgs;
         orgs.del(item);
         item < orgs.items && (orgs.get(item).orgItem = item);
-    }
-
-    _removeFromOrgMolArr(item) {
-        const movedOrg = this.orgsAndMols.del(item);
-        if (movedOrg) {
-            movedOrg.item = item;
-            this.world.setItem(movedOrg.offset, item);
-        }
     }
 
     /**
@@ -554,7 +534,7 @@ class VM {
         //
         if (!this.orgsAndMols) {
             this.orgsAndMols = new FastArray(cfg.molAmount + cfg.orgLucaAmount + 1);
-            this.orgs        = new FastArray(round(cfg.molAmount * cfg.molCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
+            this.orgs        = new FastArray(Math.round(cfg.molAmount * cfg.molCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
             //
             // Creates molecules and LUCA as last organism
             //
@@ -562,7 +542,7 @@ class VM {
             while (molecules-- > 0) {
                 const offset = rand(MAX_OFFS);
                 if (world.getOrgIdx(offset) > -1) {molecules++; continue}
-                const org = this._createOrg(offset);
+                const org = this.createOrg(offset);
                 this._db && this._db.put(org);
             }
         }
@@ -573,32 +553,10 @@ class VM {
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            const luca = this._createOrg(offset, null, Config.codeLuca.slice(), true);
+            const luca = this.createOrg(offset, null, null, Config.codeLuca.slice(), true);
             this._db && this._db.put(luca);
         }
         this.population++;
-    }
-
-    /**
-     * Creates one organism with default parameters and empty code
-     * @param {Number} offset Absolute org offset
-     * @param {Organism=} parent Create from parent
-     * @param {Array=} code New org code
-     * @param {Boolean} isOrg Current molecule is an organism
-     * @returns {Object} Item in FastArray class
-     */
-    _createOrg(offset, parent = null, code = null, isOrg = false) {
-        const orgsAndMols = this.orgsAndMols;
-        const orgs        = this.orgs;
-        const deadOrg     = orgsAndMols.get(orgsAndMols.freeIndex);
-        const org         = deadOrg && deadOrg.init(Helper.id(), offset, deadOrg.item, deadOrg.orgItem, parent, code, isOrg) ||
-                            new Organism(Helper.id(), offset, orgsAndMols.freeIndex, orgs.freeIndex, parent, code, isOrg);
-
-        orgsAndMols.add(org);
-        isOrg && orgs.add(org);
-        this.world.org(offset, org);
-
-        return org;
     }
 
     /**

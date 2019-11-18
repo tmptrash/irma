@@ -12,11 +12,11 @@ const Mutations = require('./Mutations');
 const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
 class Organism {
-    constructor(id, offs, item, orgItem, parent = null, code = null, isOrg = false) {
+    constructor(id, offs, orgItem, item = null, parent = null, code = null, isOrg = false) {
         return this.init(...arguments);
     }
 
-    init(id, offs, item, orgItem, parent = null, code = null, isOrg = false) {
+    init(id, offs, orgItem, item = null, parent = null, code = null, isOrg = false) {
         this.item       = item;
         this.offset     = offs;
         this.isOrg      = isOrg;
