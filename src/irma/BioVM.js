@@ -16,7 +16,7 @@ class BioVM extends VM {
      */
     runCmd(org, cmd) {
         switch (cmd) {
-            case CODE_CMD_OFFS + 33: {// join
+            case CODE_CMD_OFFS + 38: {// join
                 ++line;
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -30,7 +30,7 @@ class BioVM extends VM {
                 // it after join. But this process resets stack and current running script line
                 // to zero line and script start running from the beginning. To fix this we 
                 // add any joined command to the end of script and skip preprocessing. So, next
-                // line should not be uncommented
+                // line should not be uncommented:
                 // org.preprocess();
                 //
                 org.energy += (nearOrg.code.length * Config.energyMultiplier);
@@ -39,7 +39,7 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 34: {// split
+            case CODE_CMD_OFFS + 39: {// split
                 ++line;
                 if (this.orgsAndMols.full) {org.ret = RET_ERR; continue}
                 const offset  = org.offset + DIR[abs(org.ret) % 8];
@@ -78,7 +78,7 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 35: {// step
+            case CODE_CMD_OFFS + 40: {// step
                 ++line;
                 org.energy -= Math.floor(org.code.length * Config.energyStepCoef);
                 let offset = org.offset + DIR[abs(ax) % 8];
@@ -90,7 +90,7 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 38:  // see
+            case CODE_CMD_OFFS + 41:  // see
                 ++line;
                 const offset = org.offset + ax;
                 if (offset < 0 || offset > MAX_OFFS) {ax = 0; continue}
@@ -98,7 +98,7 @@ class BioVM extends VM {
                 ax = (dot < 0 ? 0 : this.orgsAndMolsRef[dot].color || Config.molColor);
                 continue;
 
-            case CODE_CMD_OFFS + 39: {// say
+            case CODE_CMD_OFFS + 42: {// say
                 ++line;
                 const freq = abs(bx) % Config.worldFrequency;
                 this._freq[freq] = ax;
@@ -106,12 +106,12 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 40:  // listen
+            case CODE_CMD_OFFS + 43:  // listen
                 ++line;
                 ax = this._freq[abs(bx) % Config.worldFrequency];
                 continue;
 
-            case CODE_CMD_OFFS + 41: {// nread
+            case CODE_CMD_OFFS + 44: {// nread
                 ++line;
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -122,7 +122,7 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 42: {// nsplit
+            case CODE_CMD_OFFS + 45: {// nsplit
                 ++line;
                 if (org.ret !== 1) {org.ret = RET_ERR; continue}
                 if (this.orgsAndMols.full) {org.ret = RET_ERR; continue}
@@ -148,7 +148,7 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 43: {// get
+            case CODE_CMD_OFFS + 46: {// get
                 ++line;
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; continue}
                 const dot = this.world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
@@ -157,7 +157,7 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 44: {// put
+            case CODE_CMD_OFFS + 47: {// put
                 ++line;
                 if (!org.packet) {org.ret = RET_ERR; continue}
                 if (this.orgsAndMols.full) {org.ret = RET_ERR; continue}
@@ -170,7 +170,7 @@ class BioVM extends VM {
                 continue;
             }
 
-            case CODE_CMD_OFFS + 45:  // offs
+            case CODE_CMD_OFFS + 48:  // offs
                 ++line;
                 ax = org.offset;
                 continue;

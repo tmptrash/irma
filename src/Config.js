@@ -53,7 +53,7 @@ module.exports = {
         CODE_OFFS + 23, //   call
         CODE_OFFS + 27, //   retax
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 48, //   len
+        CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 4,  //   push
         CODE_OFFS + 1,  //   shift
@@ -67,7 +67,7 @@ module.exports = {
         CODE_OFFS + 4,  //     push
         CODE_OFFS + 2,  //     eq
         CODE_OFFS + 4,  //     push
-        CODE_OFFS + 36, //     find
+        CODE_OFFS + 33, //     find
         CODE_OFFS + 4,  //     push
         CODE_OFFS + 27, //     retax
         CODE_OFFS + 17, //     ifz
@@ -103,27 +103,27 @@ module.exports = {
         CODE_OFFS + 1,  //       shift
         CODE_OFFS + 25, //       ret
         CODE_OFFS + 26, //     end
-        CODE_OFFS + 48, //     len
-        CODE_OFFS + 37, //     move
+        CODE_OFFS + 37, //     len
+        CODE_OFFS + 34, //     move
         CODE_OFFS + 3,  //     pop
         CODE_OFFS + 10, //     inc
         CODE_OFFS,      //     toggle
         CODE_OFFS + 3,  //     pop
         CODE_OFFS + 26, //   end
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 48, //   len
+        CODE_OFFS + 37, //   len
         CODE_OFFS + 7,  //   sub
         CODE_OFFS,      //   toggle
         17,             //   17
         CODE_OFFS + 4,  //   push
-        CODE_OFFS + 48, //   len
+        CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 34, //   split
+        CODE_OFFS + 39, //   split
         CODE_OFFS + 3,  //   pop
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
         1,              //   1
-        CODE_OFFS + 38, //   see
+        CODE_OFFS + 41, //   see
         CODE_OFFS + 15, //   ifp
         2,              //     2
         CODE_OFFS + 26, //   end
@@ -131,16 +131,16 @@ module.exports = {
         0,              //     0
         CODE_OFFS + 32, //     not
         CODE_OFFS + 14, //     rand
-        CODE_OFFS + 35, //     step
-        CODE_OFFS + 35, //     step
-        CODE_OFFS + 35, //     step
+        CODE_OFFS + 40, //     step
+        CODE_OFFS + 40, //     step
+        CODE_OFFS + 40, //     step
         CODE_OFFS + 26, //   end
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 48, //   len
+        CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 4,  //   push
         CODE_OFFS + 3,  //   pop
-        CODE_OFFS + 33, //   join
+        CODE_OFFS + 38, //   join
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
         100,            //   100
@@ -148,7 +148,7 @@ module.exports = {
         5,              //   5
         CODE_OFFS + 8,  //   mul
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 48, //   len
+        CODE_OFFS + 37, //   len
         CODE_OFFS + 19, //   ifl
         CODE_OFFS + 25, //     ret
         CODE_OFFS + 26, //   end
@@ -156,16 +156,16 @@ module.exports = {
         CODE_OFFS + 23, //   call
         CODE_OFFS + 27, //   retax
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 48, //   len
+        CODE_OFFS + 37, //   len
         CODE_OFFS + 7,  //   sub
         CODE_OFFS + 14, //   rand
         CODE_OFFS + 6,  //   add
         CODE_OFFS,      //   toggle
         0,              //   0
         CODE_OFFS + 28, //   axret
-        CODE_OFFS + 48, //   len
+        CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 34, //   split
+        CODE_OFFS + 39, //   split
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
         0,              //   0
@@ -178,7 +178,7 @@ module.exports = {
         0,              //   0
         CODE_OFFS + 32, //   not
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 36, //   find
+        CODE_OFFS + 33, //   find
         CODE_OFFS + 28, //   axret
         CODE_OFFS + 26, // end
         128,            // 128

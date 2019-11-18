@@ -57,6 +57,9 @@ class Bytes2Code {
 }
 
 Bytes2Code.MAP = {
+    //
+    // "line" language core operators
+    //
     [CODE_CMD_OFFS     ]: ['toggle', 'swap ax,bx'],
     [CODE_CMD_OFFS + 1 ]: ['shift',  'shifts ax,bx'],
     [CODE_CMD_OFFS + 2 ]: ['eq',     'ax=bx'],
@@ -90,23 +93,23 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 30]: ['or',     'ax|=bx'],
     [CODE_CMD_OFFS + 31]: ['xor',    'ax^=bx'],
     [CODE_CMD_OFFS + 32]: ['not',    'ax=~ax'],
+    [CODE_CMD_OFFS + 33]: ['find',   'ax=find(ax:cmd|offs1,bx=-1|offs2):ret'],
+    [CODE_CMD_OFFS + 34]: ['move',   'move(ax:offs):ret'],
+    [CODE_CMD_OFFS + 35]: ['age',    'ax=org.age'],
+    [CODE_CMD_OFFS + 36]: ['line',   'ax=org.line'],
+    [CODE_CMD_OFFS + 37]: ['len',    'ax=org.code.length'],
 
-    [CODE_CMD_OFFS + 33]: ['join',   'ret=join(ax:dir,bx:offs)'],
-    [CODE_CMD_OFFS + 34]: ['split',  'ret=split(ax:from,bx:to,ret:dir)'],
-    [CODE_CMD_OFFS + 35]: ['step',   'step(ax:dir)'],
-    [CODE_CMD_OFFS + 36]: ['find',   'ax=find(ax:cmd|offs1,bx=-1|offs2):ret'],
-    [CODE_CMD_OFFS + 37]: ['move',   'move(ax:offs):ret'],
-    [CODE_CMD_OFFS + 38]: ['see',    'ax=see(ax:offs)'],
-    [CODE_CMD_OFFS + 39]: ['say',    'ax=say(ax:val,bx:freq)'],
-    [CODE_CMD_OFFS + 40]: ['listen', 'ax:val,ret:dir=listen(bx:freq)'],
-    [CODE_CMD_OFFS + 41]: ['nread',  'ax=nread(ax:dir,bx:offs)'],
-    [CODE_CMD_OFFS + 42]: ['nsplit', 'nsplit(ax:dir,bx:offs,ret:offs):ret'],
-    [CODE_CMD_OFFS + 43]: ['get',    'get(ax:dir)'],
-    [CODE_CMD_OFFS + 44]: ['put',    'put(ax:dir)'],
-    [CODE_CMD_OFFS + 45]: ['offs',   'ax=org.offset'],
-    [CODE_CMD_OFFS + 46]: ['age',    'ax=org.age'],
-    [CODE_CMD_OFFS + 47]: ['line',   'ax=org.line'],
-    [CODE_CMD_OFFS + 48]: ['len',    'ax=org.code.length'],
+    [CODE_CMD_OFFS + 38]: ['join',   'ret=join(ax:dir,bx:offs)'],
+    [CODE_CMD_OFFS + 39]: ['split',  'ret=split(ax:from,bx:to,ret:dir)'],
+    [CODE_CMD_OFFS + 40]: ['step',   'step(ax:dir)'],
+    [CODE_CMD_OFFS + 41]: ['see',    'ax=see(ax:offs)'],
+    [CODE_CMD_OFFS + 42]: ['say',    'ax=say(ax:val,bx:freq)'],
+    [CODE_CMD_OFFS + 43]: ['listen', 'ax:val,ret:dir=listen(bx:freq)'],
+    [CODE_CMD_OFFS + 44]: ['nread',  'ax=nread(ax:dir,bx:offs)'],
+    [CODE_CMD_OFFS + 45]: ['nsplit', 'nsplit(ax:dir,bx:offs,ret:offs):ret'],
+    [CODE_CMD_OFFS + 46]: ['get',    'get(ax:dir)'],
+    [CODE_CMD_OFFS + 47]: ['put',    'put(ax:dir)'],
+    [CODE_CMD_OFFS + 48]: ['offs',   'ax=org.offset'],
     [CODE_CMD_OFFS + 49]: ['color',  'org.color=ax % 0xffffff']
 };
 

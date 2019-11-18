@@ -43,8 +43,10 @@ describe('src/irma/VM', () => {
     const OR        = Config.CODE_CMD_OFFS+30;
     const XO        = Config.CODE_CMD_OFFS+31;
     const NT        = Config.CODE_CMD_OFFS+32;
-    const JO        = Config.CODE_CMD_OFFS+33;
-    const SP        = Config.CODE_CMD_OFFS+34;
+    const FI        = Config.CODE_CMD_OFFS+33;
+    
+    const JO        = Config.CODE_CMD_OFFS+38;
+    const SP        = Config.CODE_CMD_OFFS+39;
 
     let   vm        = null;
 

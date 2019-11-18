@@ -374,7 +374,7 @@ class VM {
                             ax = ~ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 36:  // find
+                        case CODE_CMD_OFFS + 33:  // find
                             ++line;
                             if (bx < 0) {
                                 const ret   = org.ret;
@@ -404,7 +404,7 @@ class VM {
                             }
                             continue;
 
-                        case CODE_CMD_OFFS + 37: {// move
+                        case CODE_CMD_OFFS + 34: {// move
                             ++line;
                             const find0    = org.find0;
                             const find1    = org.find1;
@@ -431,16 +431,16 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 46:  // age
+                        case CODE_CMD_OFFS + 35:  // age
                             ++line;
                             ax = org.age;
                             continue;
 
-                        case CODE_CMD_OFFS + 47:  // line
+                        case CODE_CMD_OFFS + 36:  // line
                             ax = line++;
                             continue;
 
-                        case CODE_CMD_OFFS + 48:  // len
+                        case CODE_CMD_OFFS + 37:  // len
                             line++;
                             ax = code.length;
                             continue;
