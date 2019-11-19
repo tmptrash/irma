@@ -3,6 +3,10 @@
  * in a population should be maximum. We should use typed arrays for that
  * and mimimum amount of properties. Compilation means code preprocessing
  * before run. It produces code metadata, which is used during code run.
+ * There are two types of organisms: normal and simple. Normal is an organism
+ * with all properties defined in this class. This is what we call digital
+ * organism. Simple, is a short organism only with code and index within 
+ * population list.
  *
  * @author flatline
  */

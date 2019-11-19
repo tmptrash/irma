@@ -9,7 +9,6 @@ const BioVM = require('./BioVM');
 class Irma {
     constructor() {
         this._pause = false;
-        debugger;
         this._vm    = new BioVM();
         this._runCb = this.run.bind(this);
 

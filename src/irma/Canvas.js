@@ -3,9 +3,9 @@
  *
  * @author flatline
  */
-const Panzoom  = require('panzoom');
-const Helper   = require('./../common/Helper');
-const Config   = require('./../Config');
+const Panzoom = require('panzoom');
+const Helper  = require('./../common/Helper');
+const Config  = require('./../Config');
 
 class Canvas {
     constructor(options) {

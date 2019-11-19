@@ -1,8 +1,8 @@
 /**
- * Virtual Machine (VM) class. Runs "line" scripts, switches between them,
+ * Virtual Machine (VM) class. Runs "line" scripts. Switches between them,
  * works with registers and understands all available commands. Simulates
  * multithreading using coroutines technique. This class understands only
- * basic commands. To extend line language use class extension.
+ * basic commands. To extend it, use class extension.
  *
  * @author flatline
  */
@@ -10,16 +10,14 @@ const Config            = require('./../Config');
 const Helper            = require('./../common/Helper');
 const Organism          = require('./Organism');
 const Mutations         = require('./Mutations');
+const PLUGINS           = Helper.requirePlugins(Config.PLUGINS);
+const rand              = Helper.rand;
 
 const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
 const CODE_MAX_RAND     = CODE_CMD_OFFS + Config.CODE_COMMANDS;
 const CODE_STACK_SIZE   = Config.CODE_STACK_SIZE;
 const RET_OK            = Config.CODE_RET_OK;
 const RET_ERR           = Config.CODE_RET_ERR;
-const MAX               = Number.MAX_VALUE;
-const MIN               = -MAX;
-
-const rand              = Helper.rand;
 
 class VM {
     /**
@@ -28,6 +26,20 @@ class VM {
      * @interface
      */
     beforeIteration() {}
+
+    /**
+     * Is called after organism iteration
+     * @param {Organism} org
+     * @interface
+     */
+    afterIteration() {}
+
+    /**
+     * Is called at the end of run() method to do post processing
+     * @interface
+     */
+    afterRun() {}
+
     /**
      * Should be overridden in child class to support other commands. For
      * example biological stuff
@@ -37,38 +49,31 @@ class VM {
      */
     runCmd() {}
 
+    /**
+     * Creates and initializes VM instance and it's plugins
+     */
     constructor() {
         this.orgs       = null;
         this.population = 0;
-        this.api        = {createOrg: this.createOrg.bind(this)};
-
-        this._ts        = Date.now();
-        this._i         = 0;
-        this._iteration = 0;
+        this.iteration  = 0;
+        this.plugins    = Helper.loadPlugins(PLUGINS, [this]);
     }
 
+    /**
+     * Destroys all internal instances and data. Should be called from outside
+     */
     destroy() {
         Helper.destroyPlugins(this.plugins);
-        this._db && this._db.destroy();
-        this.plugins      = null;
-        this._db          = null;
-    }
-
-    get ready() {
-        if (this._db) {
-            return this._db.ready;
-        }
-        return new Promise(resolve => resolve());
+        this.plugins = null;
     }
 
     /**
      * Runs code of all organisms Config.codeTimesPerRun time and return. Big
-     * times value may slow down user and browser interaction
+     * Config.codeTimesPerRun value may slow down user and browser interaction
      */
     run() {
         const times            = Config.codeTimesPerRun;
         const lines            = Config.codeLinesPerIteration;
-        const world            = this.world;
         const mutationPeriod   = Config.orgMutationPeriod;
         const orgs             = this.orgs;
         const orgsRef          = orgs.ref();
@@ -86,7 +91,10 @@ class VM {
                 let   ax   = org.ax;
                 let   bx   = org.bx;
                 let   line = org.line;
-                this.beforeIteration();
+                //
+                // Is called once before every organism iteration
+                //
+                this.beforeIteration(org);
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
@@ -134,37 +142,43 @@ class VM {
                         case CODE_CMD_OFFS + 6:  // add
                             ++line;
                             ax += bx;
-                            if (!Number.isFinite(ax)) {ax = MAX}
+                            if (Number.isFinite(ax)) {continue}
+                            ax = Number.MAX_VALUE;
                             continue;
 
                         case CODE_CMD_OFFS + 7:  // sub
                             ++line;
                             ax -= bx;
-                            if (!Number.isFinite(ax)) {ax = MIN}
+                            if (Number.isFinite(ax)) {continue}
+                            ax = -Number.MAX_VALUE;
                             continue;
 
                         case CODE_CMD_OFFS + 8:  // mul
                             ++line;
                             ax *= bx;
-                            if (!Number.isFinite(ax)) {ax = MAX}
+                            if (Number.isFinite(ax)) {continue}
+                            ax = Number.MAX_VALUE;
                             continue;
 
                         case CODE_CMD_OFFS + 9:  // div
                             ++line;
                             ax = Math.round(ax / bx);
-                            if (!Number.isFinite(ax)) {ax = MIN}
+                            if (Number.isFinite(ax)) {continue}
+                            ax = -Number.MAX_VALUE;
                             continue;
 
                         case CODE_CMD_OFFS + 10: // inc
                             ++line;
                             ax++;
-                            if (!Number.isFinite(ax)) {ax = MAX}
+                            if (Number.isFinite(ax)) {continue}
+                            ax = Number.MAX_VALUE;
                             continue;
 
                         case CODE_CMD_OFFS + 11:  // dec
                             ++line;
                             ax--;
-                            if (!Number.isFinite(ax)) {ax = MIN}
+                            if (Number.isFinite(ax)) {continue}
+                            ax = -Number.MAX_VALUE;
                             continue;
 
                         case CODE_CMD_OFFS + 12:  // rshift
@@ -409,7 +423,7 @@ class VM {
                             continue;
                     }
                     //
-                    // This is constant value
+                    // This is a constant
                     //
                     if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {ax = cmd; ++line; continue}
                     //
@@ -427,7 +441,7 @@ class VM {
                         }
                     } else {
                         //
-                        // Current command is not from standart list. Call child class if exist
+                        // Current command is not from standart list. Call child class to handle it
                         //
                         this.runCmd(cmd);
                     }
@@ -436,41 +450,22 @@ class VM {
                 org.ax   = ax;
                 org.bx   = bx;
                 //
-                // Organism age related updates
+                // Cosmic ray mutations
                 //
-                // TODO: this code should be outside this class, because it's related world
-                const age = org.age;
-                if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
-                if (org.energy < 0 || age > Config.orgMaxAge) {
-                    this.removeOrg(org);
-                    this.createOrg(org.offset, null, org.code);
-                }
+                if (org.age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
+                this.afterIteration(org);
                 //
                 // Age and energy should be changed every iteration
                 //
-                org.age++
-                org.energy--;
-                this._i += lines;
+                org.age++;
             }
             //
             // Plugins should be run after all organism iterations
             //
-            for (let p = 0, pl = this.plugins.length; p < pl; p++) {this.plugins[p].run(this._iteration)}
-            this._iteration++;
+            for (let p = 0, pLen = this.plugins.length; p < pLen; p++) {this.plugins[p].run(this.iteration)}
+            this.iteration++;
         }
-        //
-        // Updates status line at the top of screen
-        //
-        // TODO: shis code should be moved to Status plugin
-        const ts = Date.now();
-        if (ts - this._ts > 1000) {
-            const orgAmount = this.orgs.items;
-            world.title(`inps:${Math.round(((this._i / orgAmount) / (((ts - this._ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
-            this._ts = ts;
-            this._i  = 0;
-
-            if (orgs.items < 1) {this.createOrgs()}
-        }
+        this.afterRun();
     }
 
     /**
@@ -479,7 +474,6 @@ class VM {
      * @param {Uint8Array} code Code to set
      * @param {Boolean} simple simple organism or not
      * @return {Organism} Created organism
-     * @override
      */
     createOrg(index, code = null, simple = false) {
         const org = new Organism(index, code, simple);
@@ -488,19 +482,21 @@ class VM {
     }
 
     /**
-     * Removes organism from the world totally. Places "packet" organism
-     * instead original if exists on the same position.
+     * Removes organism from the world totally
      * @param {Organism} org Organism to remove
-     * @override
      */
     removeOrg(org) {
         this._removeFromOrgArr(org.index);
     }
 
-    _removeFromOrgArr(item) {
+    /**
+     * Removes organism from population list
+     * @param {Number} index Organism index in a population list
+     */
+    _removeFromOrgArr(index) {
         const orgs = this.orgs;
-        orgs.del(item);
-        item < orgs.items && (orgs.get(item).index = item);
+        orgs.del(index);
+        index < orgs.items && (orgs.get(index).index = index);
     }
 }
 

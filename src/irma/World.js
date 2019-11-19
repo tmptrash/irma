@@ -20,6 +20,7 @@ const DIR                 = Config.DIR;
 
 class World {
     constructor(options) {
+        // TODO: these properties should be private
         this.viewX     = 0;                        // X coordinate of canvas
         this.viewX1    = WORLD_CANVAS_WIDTH - 1;   // X1 coordinate of canvas (right X)
         this.viewY     = 0;                        // Y coordinate of canvas
@@ -102,7 +103,7 @@ class World {
      * @param {Organism} org Organism instance
      */
     org(offset, org) {
-        this._data[offset] = org.item + 1;
+        this._data[offset] = org.index + 1;
 
         if (offset < this.viewOffs || offset > this.viewOffs1) {return}
         const x = offset % WORLD_WIDTH;
@@ -127,8 +128,8 @@ class World {
         return -1;
     }
 
-    setItem(offset, item) {
-        this._data[offset] = item + 1;
+    setItem(offset, index) {
+        this._data[offset] = index + 1;
     }
 
     /**
@@ -148,7 +149,7 @@ class World {
      */
     moveOrg(org, offset) {
         this._data[org.offset] = 0;
-        this._data[offset] = org.item + 1;
+        this._data[offset] = org.index + 1;
 
         let x;
         if (org.offset >= this.viewOffs && org.offset <= this.viewOffs1 && (x = org.offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {

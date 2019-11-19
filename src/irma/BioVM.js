@@ -4,10 +4,13 @@
  * 
  * @author flatline
  */
+const Helper            = require('./../common/Helper');
 const Config            = require('./../Config');
 const VM                = require('./VM');
 const Mutations         = require('./Mutations');
-const PLUGINS           = Helper.requirePlugins(Config.PLUGINS);
+const World             = require('./World');
+const FastArray         = require('./../common/FastArray');
+const rand              = Helper.rand;
 
 const RET_OK            = Config.CODE_RET_OK;
 const RET_ERR           = Config.CODE_RET_ERR;
@@ -18,41 +21,65 @@ const DIR               = Config.DIR;
 const WIDTH             = Config.WORLD_WIDTH - 1;
 const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
+const HEIGHT1           = HEIGHT + 1;
 const LINE_OFFS         = HEIGHT * WIDTH1;
+const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
+
+
 const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
 
 class BioVM extends VM {
     constructor() {
         super(...arguments);
 
-        this.orgsAndMols      = null;
-        this.world            = new World({scroll: this._onScroll.bind(this)});
+        this.orgsAndMols   = null;
+        this.world         = new World({scroll: this._onScroll.bind(this)});
+        this.freq          = new Int32Array(Config.worldFrequency);
+        this.ts            = Date.now();
+        this.i             = 0;
+
         this.createOrgs();
-        this.plugins          = Helper.loadPlugins(PLUGINS, [this]);
-        this.freq             = new Int32Array(Config.worldFrequency);
-        // TOOD: add argsAndMols
-        // TODO: add org.color
-        // TODO: add org.molItem
-        // TODO: add org.packet
-        // TODO: add org.energy = this.code.length * Config.energyMultiplier;
-        // TODO: add org.offset
     }
 
     destroy() {
-        this.super();
+        super.destory();
 
         this.orgsAndMols.destroy();
         this.world.destroy();
+        this.db && this.db.destroy();
 
         this.orgsAndMols = null;
         this.world       = null;
+        this.db         = null;
     }
 
+    get ready() {
+        if (this.db) {
+            return this.db.ready;
+        }
+        return new Promise(resolve => resolve());
+    }
+
+    /**
+     * @override
+     */
     beforeIteration(org) {
         //
         // Resets value of 'say' command
         //
         if (org.freq) {org.freq = this.freq[org.freq] = 0}
+    }
+
+    /**
+     * @override
+     */
+    afterIteration(org) {
+        if (org.energy < 0 || org.age > Config.orgMaxAge) {
+            this.removeOrg(org);
+            this.createOrg(org.offset, null, org.code);
+        }
+        org.energy--;
+        this.i += Config.codeLinesPerIteration;
     }
 
     /**
@@ -104,7 +131,7 @@ class BioVM extends VM {
                 // TODO: should be esupported by organism from parent to child
                 //
                 const clone   = this.createOrg(offset, org, newCode, org.cur() === IS_ORG_ID);
-                this._db && this._db.put(clone, org);
+                this.db && this.db.put(clone, org);
                 const energy = clone.code.length * Config.energyMultiplier;
                 clone.energy = energy;
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.isOrg) {
@@ -186,7 +213,7 @@ class BioVM extends VM {
                 nearOrg.code  = nearOrg.code.splice(0, bx);
                 if (newCode.length < 1) {org.ret = RET_ERR; return}
                 const cutOrg  = this.createOrg(dOffset, null, newCode);
-                this._db && this._db.put(cutOrg, nearOrg);
+                this.db && this.db.put(cutOrg, nearOrg);
                 if (nearOrg.code.length < 1) {this.removeOrg(nearOrg)}
                 const energy = newCode.length * Config.energyMultiplier;
                 nearOrg.energy -= energy;
@@ -213,7 +240,7 @@ class BioVM extends VM {
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
                 this.createOrg(offset, org.packet.isOrg ? org.packet : null, org.packet.code);
-                this._db && this._db.put(org.packet);
+                this.db && this.db.put(org.packet);
                 org.packet = null;
                 return;
             }
@@ -231,11 +258,41 @@ class BioVM extends VM {
         }
     }
 
+    /**
+     * Is called at the end of run() method to do post processing
+     * @override
+     */
+    afterRun() {
+        //
+        // Updates status line at the top of screen
+        //
+        const ts = Date.now();
+        if (ts - this.ts > 1000) {
+            const orgAmount = this.orgs.items;
+            this.world.title(`inps:${Math.round(((this.i / orgAmount) / (((ts - this.ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
+            this.ts = ts;
+            this.i  = 0;
+
+            if (orgs.items < 1) {this.createOrgs()}
+        }
+    }
+
+    /**
+     * @override
+     */
     createOrg (offset, code, isOrg = false) {
         const orgsAndMols = this.orgsAndMols;
-        const org = this.super(isOrg ? this.orgs.freeIndex : orgsAndMols.freeIndex, code, !isOrg);
-
+        const org = super.createOrg(isOrg ? this.orgs.freeIndex : orgsAndMols.freeIndex, code, !isOrg);
+        //
+        // Extends organism properties
+        //
         org.offset = offset;
+        if (isOrg) {
+            org.color  = Config.ORG_MIN_COLOR;
+            org.packet = null;
+            org.energy = this.code.length * Config.energyMultiplier
+        }
+
         orgsAndMols.add(org);
         this.world.org(offset, org);
 
@@ -253,8 +310,8 @@ class BioVM extends VM {
         const packet = org.packet;
 
         if (org.isOrg) {
-            this._removeFromOrgMolArr(org.item);
-            this.super(org);
+            this._removeFromOrgMolArr(org.molIndex);
+            super.removeOrg(org);
         }
         org.energy = 0;
         org.isOrg  = false;
@@ -279,7 +336,7 @@ class BioVM extends VM {
                 const offset = rand(MAX_OFFS);
                 if (world.getOrgIdx(offset) > -1) {molecules++; continue}
                 const org = this.createOrg(offset, this._createMolCode());
-                this._db && this._db.put(org);
+                this.db && this.db.put(org);
             }
         }
 
@@ -289,15 +346,15 @@ class BioVM extends VM {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
             const luca = this.createOrg(offset, null, code.slice(), true);
-            this._db && this._db.put(luca);
+            this.db && this.db.put(luca);
         }
     }
 
-    _removeFromOrgMolArr(item) {
-        const movedOrg = this.orgsAndMols.del(item);
+    _removeFromOrgMolArr(index) {
+        const movedOrg = this.orgsAndMols.del(index);
         if (movedOrg) {
-            movedOrg.item = item;
-            this.world.setItem(movedOrg.offset, item);
+            movedOrg.molIndex = index;
+            this.world.setItem(movedOrg.offset, index);
         }
     }
 
@@ -325,6 +382,7 @@ class BioVM extends VM {
      * beginning.
      * @param {MouseEvent} e
      */
+    // TODO: this method should be in World class
     _onScroll(e) {
         const world  = this.world;
         const width  = Config.WORLD_CANVAS_WIDTH;

@@ -26,14 +26,13 @@ class Decay {
      * @param {VM} vm Virtual Machine instance
      */
     constructor(vm) {
-        this._orgsAndMols = vm.orgsAndMols;
-        this._world       = vm.world;
-        this._api         = vm.api;
-        this._index       = -1;
+        this._vm    = vm;
+        this._world = vm.world;
+        this._index = -1;
     }
 
     destroy() {
-        this._orgsAndMols = null;
+        this._vm    = null;
         this._world = null;
         this._index = 0;
     }
@@ -41,7 +40,7 @@ class Decay {
     run(iteration) {
         if (iteration % Config.molDecayPeriod !== 0) {return}
 
-        const orgsAndMols = this._orgsAndMols;
+        const orgsAndMols = this._vm.orgsAndMols;
         if (orgsAndMols.full) {return}
         if (++this._index >= orgsAndMols.items) {this._index = 0}
         const org = orgsAndMols.get(this._index);
@@ -58,7 +57,7 @@ class Decay {
         
         const newCode = org.code.subarray(0, molSize);
         org.code = org.code.splice(0, molSize);
-        this._api.createOrg(offset, null, newCode);
+        this._vm.createOrg(offset, null, newCode);
     }
 
     /**
