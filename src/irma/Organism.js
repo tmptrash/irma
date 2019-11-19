@@ -1,150 +1,83 @@
 /**
- * Class of one organism
+ * Container for organism. Optimized for size, because amout of organisms
+ * in a population should be maximum. We should use typed arrays for that
+ * and mimimum amount of properties. Compilation means code preprocessing
+ * before run. It produces code metadata, which is used during code run.
  *
  * @author flatline
  */
-const Config    = require('./../Config');
-const Mutations = require('./Mutations');
-/**
- * {Number} This offset will be added to commands value. This is how we
- * add an ability to use numbers in a code, just putting them as command
- */
-const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
+const Config = require('./../Config');
 
 class Organism {
-    constructor(id, offs, orgItem, item = null, parent = null, code = null, isOrg = false) {
-        return this.init(...arguments);
-    }
-
-    init(id, offs, orgItem, item = null, parent = null, code = null, isOrg = false) {
-        this.item       = item;
-        this.offset     = offs;
-        this.isOrg      = isOrg;
-        //
-        // For simple molecules we don't need to store all commands related data
-        //
-        if (!isOrg) {
-            this.code = code && code.slice() || this._generateCode();
-            return this;
-        }
-
-        this.id         = id;
-        this.color      = 0x000000;
-        this.orgItem    = orgItem;
-        // TODO: remove this property
-        this.mutations  = 0;
-        this.packet     = null;
-        this.mem        = (new Int32Array(Config.orgMaxMemSize)).fill(0);
-        this._memIdx    = -1;
-        this.age        = 1;
-        if (parent !== null) {
-            this._clone(parent, code);
-            return this;
-        }
-
-        this.probs      = Config.orgProbs.slice();
-        this.period     = Config.orgMutationPeriod;
-        this.percent    = Config.orgMutationPercent;
-
-        this.freq       = 0;
-        this.generation = 0;
-        this.line       = 0;
-
-        this.regs       = (new Int32Array(Config.codeRegs)).fill(0);
-        this.rIndex     = 0;
-        /**
-         * {Number} Register ax
-         */
-        this.ax         = 0;
-        /**
-         * {Number} Register bx
-         */
-        this.bx         = 0;
-        this.ret        = 0;
-        this.find0      = 0;
-        this.find1      = 0;
-        this.isLoop     = false;
-        /**
-         * {Number} Amount of functions in a code
-         */
-        this.fCount     = 0;
-        /**
-         * {Number} Current index in function call stack
-         */
-        this.stackIndex = -1;
-        this.loopIndex  = -1;
-        this.loops      = new Array(Config.orgMaxCodeSize).fill(-1);   // TODO: use {}
-        this.stack      = new Int32Array(Config.CODE_STACK_SIZE * 3);  // 2 registers + back line
-        this.offs       = (new Array(Config.orgMaxCodeSize)).fill(0);
-        this.funcs      = new Array(Config.orgMaxCodeSize);            // TODO: use {}
-        /**
-         * {Array} Array of numbers. Code (DNA) of organism
-         */
-        this.code       = code !== null ? code.slice() : this._generateCode();
-        this.energy     = this.code.length * Config.energyMultiplier;
-        this.preprocess();
-
-        return this;
-    }
-
-    pop() {
-        if (this._memIdx < 0) {return 0}
-        return this.mem[this._memIdx--];
-    }
-
-    cur() {
-        if (this._memIdx < 0) {return 0}
-        return this.mem[this._memIdx];
-    }
-
-    push(val) {
-        if (this._memIdx >= Config.orgMaxMemSize - 1) {return 0}
-        this.mem[++this._memIdx] = val;
-    }
-
     /**
-     * Shifts ax, bx to the next two values in this.regs array
+     * Creates new, default organism. We don't do code copy! May create 
+     * simple organism only with code and world position reference.
+     * @param {Number} index Index of this organism in population list
+     * @param {Uint8Array} code Code of organism we need to set
+     * @param {Boolean} simple Create simple organism
      */
-    shift() {
-        this.regs[this.rIndex] = this.ax;
-        this.regs[this.rIndex + 1] = this.bx;
-        if ((this.rIndex += 2) >= this.regs.length) {this.rIndex = 0}
-        this.ax = this.regs[this.rIndex];
-        this.bx = this.regs[this.rIndex + 1];
+    constructor(index, code, simple = false) {
+        this.index      = index;                                       // Index in population list
+        this.code       = code;                                        // Organism's code on "line" language
+        if (simple) {return this}
+        this.mem        = new Int32Array(Config.orgMaxMemSize);        // Organism's memory
+        this.pos        = 0;                                           // Memory cell position
+        this.age        = 1;                                           // Organism's age. Increases every iteration
+        this.probs      = Config.orgProbs.slice();                     // Probabilities for different types of mutations
+        this.period     = Config.orgMutationPeriod;                    // Amount of iterations between mutations
+        this.percent    = Config.orgMutationPercent;                   // Percent of mutations
+        this.freq       = 0;                                           // Frequency for say, listen commands
+        this.line       = 0;                                           // Current code line index
+        this.rIndex     = 0;                                           // Pointer to additional register. Depricated
+        this.ax         = 0;                                           // Register ax
+        this.bx         = 0;                                           // Register bx
+        this.ret        = 0;                                           // Register ret
+        this.find0      = 0;                                           // Offsets0 in code for move command (was set by find command)
+        this.find1      = 0;                                           // Offsets1 in code for move command (was set by find command)
+        this.isLoop     = false;                                       // Uses with loop command (see loop+end commands)
+        this.fCount     = 0;                                           // Amount of functions in a code
+        this.stackIndex = -1;                                          // Current index in stack (used for function calls)
+
+        const codeSize = Config.orgMaxCodeSize;
+        this.loops      = new Int16Array(codeSize).fill(-1);           // Offsets of end operator for loop operator
+        this.stack      = new Int32Array(Config.CODE_STACK_SIZE * 3);  // 2 registers + back line
+        this.offs       = new Uint16Array(codeSize);                   // General offsets array (ifxx, loop, func, end operators)
+        this.funcs      = new Array(codeSize);                         // Array for function offsets
     }
 
     /**
      * Preprocesses code before run it. Finds all functions and map them
      * in org.funcs map. After this call operator start to work.
      */
-    preprocess() {
-        const code    = this.code;
-        const offs    = this.offs;
-        const funcs   = this.funcs;
-        const stack   = new Array(Config.orgMaxCodeSize);
-        let   sCount  = -1;
-        let   fCount  = 0;
+    compile() {
+        const CMD_OFFS = Config.CODE_CMD_OFFS;
+        const code     = this.code;
+        const offs     = this.offs;
+        const funcs    = this.funcs;
+        const stack    = new Int16Array(Config.orgMaxCodeSize);
+        let   sCount   = -1;
+        let   fCount   = 0;
 
         for (let i = 0, len = code.length; i < len; i++) {
             switch(code[i]) {
-                case CODE_CMD_OFFS + 24: // func
+                case CMD_OFFS + 24: // func
                     funcs[fCount++] = offs[i] = i + 1;
                     stack[++sCount] = i;
                     break;
 
-                case CODE_CMD_OFFS + 22: // loop
-                case CODE_CMD_OFFS + 15: // ifp
-                case CODE_CMD_OFFS + 16: // ifn
-                case CODE_CMD_OFFS + 17: // ifz
-                case CODE_CMD_OFFS + 18: // ifg
-                case CODE_CMD_OFFS + 19: // ifl
-                case CODE_CMD_OFFS + 20: // ife
-                case CODE_CMD_OFFS + 21: // ifne
+                case CMD_OFFS + 22: // loop
+                case CMD_OFFS + 15: // ifp
+                case CMD_OFFS + 16: // ifn
+                case CMD_OFFS + 17: // ifz
+                case CMD_OFFS + 18: // ifg
+                case CMD_OFFS + 19: // ifl
+                case CMD_OFFS + 20: // ife
+                case CMD_OFFS + 21: // ifne
                     stack[++sCount] = i;
                     offs[i] = i + 1;
                     break;
 
-                case CODE_CMD_OFFS + 26: // end
+                case CMD_OFFS + 26: // end
                     if (sCount < 0) {break}
                     offs[i] = stack[sCount];
                     offs[stack[sCount--]] = i + 1;
@@ -154,55 +87,7 @@ class Organism {
 
         this.fCount     = fCount;
         this.stackIndex = -1;
-        this.loopIndex  = -1;
         this.line       = 0;
-    }
-
-    /**
-     * Generates random code and code based on organism parts
-     * @returns {Array}
-     * @private
-     */
-    _generateCode() {
-        const size = Config.molCodeSize;
-        if (Math.random() > .5) {
-            const code = new Uint8Array(size);
-            for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
-            return code;
-        }
-        const code  = Config.codeLuca;
-        const len   = code.length;
-        const start = Math.floor(Math.random() * (len - size));
-        return code.slice(start, start + size);
-    }
-
-    _clone(parent, code) {
-        this.color      = parent.color;
-        this.probs      = parent.probs.slice();
-        this.period     = parent.period;
-        this.percent    = parent.percent;
-        this.line       = parent.line;
-        this.regs       = parent.regs.slice();
-        this.rIndex     = parent.rIndex;
-        this.ax         = parent.ax;
-        this.bx         = parent.bx;
-        this.ret        = parent.ret;
-        this.find0      = parent.find0;
-        this.find1      = parent.find1;
-        this.isLoop     = parent.isLoop;
-        this.fCount     = parent.fCount;
-        this.stackIndex = parent.stackIndex;
-        this.loopIndex  = parent.loopIndex;
-        this.loops      = parent.loops.slice();
-        this.stack      = parent.stack.slice();
-        this.offs       = parent.offs.slice();
-        this.funcs      = parent.funcs.slice();
-        this.code       = code ? code : parent.code.slice();
-        this.mem        = parent.mem.slice();
-        this.generation = parent.generation + 1;
-        this.freq       = parent.freq;
-
-        this.preprocess();
     }
 }
 

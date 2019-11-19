@@ -7,6 +7,7 @@
 const Config            = require('./../Config');
 const VM                = require('./VM');
 const Mutations         = require('./Mutations');
+const PLUGINS           = Helper.requirePlugins(Config.PLUGINS);
 
 const RET_OK            = Config.CODE_RET_OK;
 const RET_ERR           = Config.CODE_RET_ERR;
@@ -25,13 +26,33 @@ class BioVM extends VM {
         super(...arguments);
 
         this.orgsAndMols      = null;
+        this.world            = new World({scroll: this._onScroll.bind(this)});
+        this.createOrgs();
+        this.plugins          = Helper.loadPlugins(PLUGINS, [this]);
+        this.freq             = new Int32Array(Config.worldFrequency);
+        // TOOD: add argsAndMols
+        // TODO: add org.color
+        // TODO: add org.molItem
+        // TODO: add org.packet
+        // TODO: add org.energy = this.code.length * Config.energyMultiplier;
+        // TODO: add org.offset
     }
 
     destroy() {
         this.super();
 
         this.orgsAndMols.destroy();
+        this.world.destroy();
+
         this.orgsAndMols = null;
+        this.world       = null;
+    }
+
+    beforeIteration(org) {
+        //
+        // Resets value of 'say' command
+        //
+        if (org.freq) {org.freq = this.freq[org.freq] = 0}
     }
 
     /**
@@ -43,7 +64,7 @@ class BioVM extends VM {
      */
     runCmd(org, cmd) {
         switch (cmd) {
-            case CODE_CMD_OFFS + 38: {// join
+            case CODE_CMD_OFFS + 42: {// join
                 ++line;
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -53,12 +74,12 @@ class BioVM extends VM {
                 org.code = org.code.push(nearOrg.code);
                 //
                 // Important: joining new commands into the script may break it, because it's
-                // offsets, stack and context may be invalid. Generally, we have to preprocess
+                // offsets, stack and context may be invalid. Generally, we have to compile
                 // it after join. But this process resets stack and current running script line
                 // to zero line and script start running from the beginning. To fix this we 
-                // add any joined command to the end of script and skip preprocessing. So, next
+                // add any joined command to the end of script and skip compile. So, next
                 // line should not be uncommented:
-                // org.preprocess();
+                // org.compile();
                 //
                 org.energy += (nearOrg.code.length * Config.energyMultiplier);
                 this.removeOrg(nearOrg);
@@ -66,7 +87,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 39: {// split
+            case CODE_CMD_OFFS + 43: {// split
                 ++line;
                 if (this.orgsAndMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[abs(org.ret) % 8];
@@ -82,7 +103,7 @@ class BioVM extends VM {
                 // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
                 // TODO: should be esupported by organism from parent to child
                 //
-                const clone   = this._createOrg(offset, org, newCode, org.cur() === IS_ORG_ID);
+                const clone   = this.createOrg(offset, org, newCode, org.cur() === IS_ORG_ID);
                 this._db && this._db.put(clone, org);
                 const energy = clone.code.length * Config.energyMultiplier;
                 clone.energy = energy;
@@ -93,19 +114,19 @@ class BioVM extends VM {
                 org.energy  -= energy;
                 //
                 // Important: after split, sequence of commands have been changed and it may break
-                // entire script. Generally, we have to preprocess new script to fix all offsets
+                // entire script. Generally, we have to compile new script to fix all offsets
                 // and run t again from the beginning. Preprocessing resets the context and stack.
                 // So nothing will be running after split command. To fix this, we just assume that 
                 // we split commands from tail, which don't affect main (replicator) part. Next line
                 // should be commented
-                // org.preprocess();
+                // org.compile();
                 // line = 0;
                 //
                 org.ret = RET_OK;
                 return;
             }
 
-            case CODE_CMD_OFFS + 40: {// step
+            case CODE_CMD_OFFS + 44: {// step
                 ++line;
                 org.energy -= Math.floor(org.code.length * Config.energyStepCoef);
                 let offset = org.offset + DIR[abs(ax) % 8];
@@ -117,7 +138,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 41:  // see
+            case CODE_CMD_OFFS + 45:  // see
                 ++line;
                 const offset = org.offset + ax;
                 if (offset < 0 || offset > MAX_OFFS) {ax = 0; return}
@@ -125,20 +146,20 @@ class BioVM extends VM {
                 ax = (dot < 0 ? 0 : this.orgsAndMolsRef[dot].color || Config.molColor);
                 return;
 
-            case CODE_CMD_OFFS + 42: {// say
+            case CODE_CMD_OFFS + 46: {// say
                 ++line;
                 const freq = abs(bx) % Config.worldFrequency;
-                this._freq[freq] = ax;
+                this.freq[freq] = ax;
                 org.freq = freq;
                 return;
             }
 
-            case CODE_CMD_OFFS + 43:  // listen
+            case CODE_CMD_OFFS + 47:  // listen
                 ++line;
-                ax = this._freq[abs(bx) % Config.worldFrequency];
+                ax = this.freq[abs(bx) % Config.worldFrequency];
                 return;
 
-            case CODE_CMD_OFFS + 44: {// nread
+            case CODE_CMD_OFFS + 48: {// nread
                 ++line;
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -149,7 +170,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 45: {// nsplit
+            case CODE_CMD_OFFS + 49: {// nsplit
                 ++line;
                 if (org.ret !== 1) {org.ret = RET_ERR; return}
                 if (this.orgsAndMols.full) {org.ret = RET_ERR; return}
@@ -164,7 +185,7 @@ class BioVM extends VM {
                 const newCode = nearOrg.code.subarray(0, bx);
                 nearOrg.code  = nearOrg.code.splice(0, bx);
                 if (newCode.length < 1) {org.ret = RET_ERR; return}
-                const cutOrg  = this._createOrg(dOffset, nearOrg, newCode);
+                const cutOrg  = this.createOrg(dOffset, null, newCode);
                 this._db && this._db.put(cutOrg, nearOrg);
                 if (nearOrg.code.length < 1) {this.removeOrg(nearOrg)}
                 const energy = newCode.length * Config.energyMultiplier;
@@ -175,7 +196,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 46: {// get
+            case CODE_CMD_OFFS + 50: {// get
                 ++line;
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
                 const dot = this.world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
@@ -184,25 +205,25 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 47: {// put
+            case CODE_CMD_OFFS + 51: {// put
                 ++line;
                 if (!org.packet) {org.ret = RET_ERR; return}
                 if (this.orgsAndMols.full) {org.ret = RET_ERR; return}
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
-                this._createOrg(offset, org.packet.isOrg ? org.packet : null, org.packet.code);
+                this.createOrg(offset, org.packet.isOrg ? org.packet : null, org.packet.code);
                 this._db && this._db.put(org.packet);
                 org.packet = null;
                 return;
             }
 
-            case CODE_CMD_OFFS + 48:  // offs
+            case CODE_CMD_OFFS + 52:  // offs
                 ++line;
                 ax = org.offset;
                 return;
 
-            case CODE_CMD_OFFS + 49:  // color
+            case CODE_CMD_OFFS + 53:  // color
                 line++;
                 const newAx = abs(ax);
                 org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;
@@ -210,19 +231,66 @@ class BioVM extends VM {
         }
     }
 
-    createOrg (offset, freeIndex = null, parent = null, code = null, isOrg = false) {
+    createOrg (offset, code, isOrg = false) {
         const orgsAndMols = this.orgsAndMols;
-        const org         = this.super(offset, orgsAndMols.freeIndex, parent, code, isOrg);
+        const org = this.super(isOrg ? this.orgs.freeIndex : orgsAndMols.freeIndex, code, !isOrg);
+
+        org.offset = offset;
         orgsAndMols.add(org);
         this.world.org(offset, org);
+
+        return org;
     }
 
     /**
+     * Removes organism from the world totally. Places "packet" organism
+     * instead original if exists on the same position.
+     * @param {Organism} org Organism to remove
      * @override
      */
     removeOrg(org) {
-        this._removeFromOrgMolArr(org.item);
-        this.super(org);
+        const offset = org.offset;
+        const packet = org.packet;
+
+        if (org.isOrg) {
+            this._removeFromOrgMolArr(org.item);
+            this.super(org);
+        }
+        org.energy = 0;
+        org.isOrg  = false;
+        this.world.empty(offset);
+        packet && this.createOrg(offset, packet);
+    }
+
+    createOrgs() {
+        const world = this.world;
+        const cfg   = Config;
+        //
+        // Molecules and organisms array should be created only once
+        //
+        if (!this.orgsAndMols) {
+            this.orgsAndMols = new FastArray(cfg.molAmount + cfg.orgLucaAmount + 1);
+            this.orgs        = new FastArray(Math.round(cfg.molAmount * cfg.molCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
+            //
+            // Creates molecules and LUCA as last organism
+            //
+            let molecules = cfg.molAmount;
+            while (molecules-- > 0) {
+                const offset = rand(MAX_OFFS);
+                if (world.getOrgIdx(offset) > -1) {molecules++; continue}
+                const org = this.createOrg(offset, this._createMolCode());
+                this._db && this._db.put(org);
+            }
+        }
+
+        const code  = Config.codeLuca;
+        let orgs    = Config.orgLucaAmount;
+        while (orgs-- > 0) {
+            const offset = rand(MAX_OFFS);
+            if (world.getOrgIdx(offset) > -1) {orgs++; continue}
+            const luca = this.createOrg(offset, null, code.slice(), true);
+            this._db && this._db.put(luca);
+        }
     }
 
     _removeFromOrgMolArr(item) {
@@ -231,6 +299,76 @@ class BioVM extends VM {
             movedOrg.item = item;
             this.world.setItem(movedOrg.offset, item);
         }
+    }
+
+    /**
+     * Generates random code and code based on organism parts
+     * @returns {Array}
+     * @private
+     */
+    _createMolCode() {
+        const size = Config.molCodeSize;
+        if (Math.random() > .5) {
+            const code = new Uint8Array(size);
+            for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
+            return code;
+        }
+        const code  = Config.codeLuca;
+        const len   = code.length;
+        const start = Math.floor(Math.random() * (len - size));
+        return code.slice(start, start + size);
+    }
+
+    /**
+     * Is called on pressing one of arrow buttons. Scrolls world inside canvas
+     * to appropriate direction till the it's edge and stops at the end or
+     * beginning.
+     * @param {MouseEvent} e
+     */
+    _onScroll(e) {
+        const world  = this.world;
+        const width  = Config.WORLD_CANVAS_WIDTH;
+        const row    = Config.WORLD_WIDTH  - width;
+        const col    = Config.WORLD_HEIGHT - Config.WORLD_CANVAS_HEIGHT;
+
+        switch (e.which) {
+            // TODO: not done
+            case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._scrollHorizontally(true)}  break; // left
+            case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._scrollHorizontally(false)} break; // right
+            case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._scrollVertically(true)}    break; // up
+            case 40: if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col; this._scrollVertically(false)}   break; // down
+            default: return;
+        }
+
+        let   offs     = world.viewOffs = world.viewY * Config.WORLD_WIDTH + world.viewX;
+        const canvas   = world.canvas;
+        const orgs     = this.orgsAndMols.ref();
+        const molColor = Config.molColor;
+        //
+        // Copy world's part into the canvas accodring to new scroll offsets
+        //
+        for (let y = 0, height = Config.WORLD_CANVAS_HEIGHT; y < height; y++) {
+            const yOffs = y * width;
+            for (let x = 0; x < width; x++) {
+                const org = world.getOrgIdx(offs++);
+                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgs[org].color || molColor);
+            }
+            offs += row;
+        }
+        world.viewX1    = world.viewX + width - 1;
+        world.viewOffs1 = world.viewOffs + (Config.WORLD_CANVAS_HEIGHT - 1) * Config.WORLD_WIDTH + row + Config.WORLD_CANVAS_WIDTH - 1;
+
+        return true;
+    }
+
+    // TODO: not done
+    _scrollHorizontally(right) {
+        
+    }
+
+    // TODO: not done
+    _scrollVertically(down) {
+
     }
 }
 

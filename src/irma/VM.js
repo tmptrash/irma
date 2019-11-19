@@ -1,37 +1,21 @@
 /**
- * This is Virtual Machine (VM) class. It runs "line" scripts, switches between them
- * works with registers and understands all available commands.
+ * Virtual Machine (VM) class. Runs "line" scripts, switches between them,
+ * works with registers and understands all available commands. Simulates
+ * multithreading using coroutines technique. This class understands only
+ * basic commands. To extend line language use class extension.
  *
  * @author flatline
  */
-const Config     = require('./../Config');
-const FastArray  = require('../common/FastArray');
-const Helper     = require('./../common/Helper');
-const Db         = require('./../common/Db');
-const Organism   = require('./Organism');
-const Mutations  = require('./Mutations');
-const World      = require('./World');
-const PLUGINS    = Helper.requirePlugins(Config.PLUGINS);
-/**
- * {Number} This offset will be added to commands value. This is how we
- * add an ability to use numbers in a code, just putting them as command
- */
+const Config            = require('./../Config');
+const Helper            = require('./../common/Helper');
+const Organism          = require('./Organism');
+const Mutations         = require('./Mutations');
+
 const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
-/**
- * {Number} Maximum random generated value
- */
 const CODE_MAX_RAND     = CODE_CMD_OFFS + Config.CODE_COMMANDS;
 const CODE_STACK_SIZE   = Config.CODE_STACK_SIZE;
 const RET_OK            = Config.CODE_RET_OK;
 const RET_ERR           = Config.CODE_RET_ERR;
-/**
- * {Number} World size. Pay attention, that width and height is -1
- */
-const WIDTH             = Config.WORLD_WIDTH - 1;
-const HEIGHT            = Config.WORLD_HEIGHT - 1;
-const WIDTH1            = WIDTH + 1;
-const HEIGHT1           = HEIGHT + 1;
-const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
 const MAX               = Number.MAX_VALUE;
 const MIN               = -MAX;
 
@@ -39,8 +23,14 @@ const rand              = Helper.rand;
 
 class VM {
     /**
+     * Is called before every organism iteration
+     * @param {Organism} org
+     * @interface
+     */
+    beforeIteration() {}
+    /**
      * Should be overridden in child class to support other commands. For
-     * example biloagical stuff
+     * example biological stuff
      * @param {Organism} org Current organism
      * @param {Number} cmd Command to run
      * @interface
@@ -48,36 +38,18 @@ class VM {
     runCmd() {}
 
     constructor() {
-        this.world            = new World({scroll: this._onScroll.bind(this)});
-        this.orgs             = null;
-        this.population       = 0;
-        this.api              = {createOrg: this.createOrg.bind(this)};
+        this.orgs       = null;
+        this.population = 0;
+        this.api        = {createOrg: this.createOrg.bind(this)};
 
-        this._ts              = Date.now();
-        this._i               = 0;
-        this._freq            = {};
-        this._iteration       = 0;
-        for (let i = 0; i < Config.worldFrequency; i++) {this._freq[i] = 0}
-        //
-        // Plugins should be created at the end after all needed properties exist
-        //
-        if (Config.DB_ON) {
-            this._db          = new Db();
-            this._db.ready.then(() => {
-                this._createOrgs();
-                this.plugins = Helper.loadPlugins(PLUGINS, [this]);
-            });
-        } else {
-            this._createOrgs();
-            this.plugins = Helper.loadPlugins(PLUGINS, [this]);
-        }
+        this._ts        = Date.now();
+        this._i         = 0;
+        this._iteration = 0;
     }
 
     destroy() {
-        this.world.destroy();
         Helper.destroyPlugins(this.plugins);
         this._db && this._db.destroy();
-        this.world        = null;
         this.plugins      = null;
         this._db          = null;
     }
@@ -114,10 +86,7 @@ class VM {
                 let   ax   = org.ax;
                 let   bx   = org.bx;
                 let   line = org.line;
-                //
-                // Resets value of 'say' command
-                //
-                if (org.freq) {org.freq = this._freq[org.freq] = 0}
+                this.beforeIteration();
                 //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
@@ -393,12 +362,12 @@ class VM {
                             org.code = code = code.splice(offs, 0, moveCode);
                             //
                             // Important: moving new commands insie the script may break it, because it's
-                            // offsets, stack and context may be invalid. Generally, we have to preprocess
+                            // offsets, stack and context may be invalid. Generally, we have to compile
                             // it after move. But this process resets stack and current running script line
                             // to zero line and script start running from the beginning. To fix this we 
                             // just assume that moving command doesn't belong to main (replicator) script
-                            // part and skip preprocessing. So, next line should not be uncommented
-                            // org.preprocess();
+                            // part and skip compile. So, next line should not be uncommented
+                            // org.compile();
                             // line = 0;
                             //
                             org.ret = RET_OK;
@@ -417,6 +386,26 @@ class VM {
                         case CODE_CMD_OFFS + 37:  // len
                             line++;
                             ax = code.length;
+                            continue;
+
+                        case CODE_CMD_OFFS + 38:  // left
+                            line++;
+                            if (--org.pos < 0) {org.pos = org.mem.length - 1}
+                            continue;
+
+                        case CODE_CMD_OFFS + 39:  // right
+                            line++;
+                            if (++org.pos === org.mem.length) {org.pos = 0}
+                            continue;
+
+                        case CODE_CMD_OFFS + 40:  // save
+                            line++;
+                            org.mem[org.pos] = ax;
+                            continue;
+
+                        case CODE_CMD_OFFS + 41:  // load
+                            line++;
+                            ax = org.mem[org.pos];
                             continue;
                     }
                     //
@@ -449,11 +438,12 @@ class VM {
                 //
                 // Organism age related updates
                 //
+                // TODO: this code should be outside this class, because it's related world
                 const age = org.age;
                 if (age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 if (org.energy < 0 || age > Config.orgMaxAge) {
                     this.removeOrg(org);
-                    this.createOrg(org.offset, null, null, org.code);
+                    this.createOrg(org.offset, null, org.code);
                 }
                 //
                 // Age and energy should be changed every iteration
@@ -479,24 +469,21 @@ class VM {
             this._ts = ts;
             this._i  = 0;
 
-            if (orgs.items < 1) {this._createOrgs()}
+            if (orgs.items < 1) {this.createOrgs()}
         }
     }
 
     /**
-     * Creates one organism with default parameters and empty code
-     * @param {Number} offset Absolute org offset
-     * @param {Organism=} parent Create from parent
-     * @param {Array=} code New org code
-     * @param {Boolean} isOrg Current molecule is an organism
-     * @returns {Object} Item in FastArray class
+     * Creates one organism with default parameters and specified code
+     * @param {Number} index Index in population list
+     * @param {Uint8Array} code Code to set
+     * @param {Boolean} simple simple organism or not
+     * @return {Organism} Created organism
+     * @override
      */
-    createOrg(offset, freeIndex = null, parent = null, code = null, isOrg = false) {
-        const orgs        = this.orgs;
-        const org         = new Organism(Helper.id(), offset, orgs.freeIndex, freeIndex, parent, code, isOrg);
-
-        isOrg && orgs.add(org);
-
+    createOrg(index, code = null, simple = false) {
+        const org = new Organism(index, code, simple);
+        !simple && this.orgs.add(org);
         return org;
     }
 
@@ -504,111 +491,17 @@ class VM {
      * Removes organism from the world totally. Places "packet" organism
      * instead original if exists on the same position.
      * @param {Organism} org Organism to remove
+     * @override
      */
     removeOrg(org) {
-        const offset = org.offset;
-        const packet = org.packet;
-
-        org.energy = 0;
-        org.isOrg && this._removeFromOrgArr(org.orgItem);
-        org.isOrg  = false;
-        this.world.empty(offset);
-        packet && this.createOrg(offset, null, packet);
+        this._removeFromOrgArr(org.index);
     }
 
     _removeFromOrgArr(item) {
         const orgs = this.orgs;
         orgs.del(item);
-        item < orgs.items && (orgs.get(item).orgItem = item);
-    }
-
-    /**
-     * Creates organisms population according to Config.molAmount amount.
-     * Organisms will be placed randomly in a world
-     */
-    _createOrgs() {
-        const cfg   = Config;
-        const world = this.world;
-        //
-        // Molecules and organisms array should be created only once
-        //
-        if (!this.orgsAndMols) {
-            this.orgsAndMols = new FastArray(cfg.molAmount + cfg.orgLucaAmount + 1);
-            this.orgs        = new FastArray(Math.round(cfg.molAmount * cfg.molCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
-            //
-            // Creates molecules and LUCA as last organism
-            //
-            let molecules = cfg.molAmount;
-            while (molecules-- > 0) {
-                const offset = rand(MAX_OFFS);
-                if (world.getOrgIdx(offset) > -1) {molecules++; continue}
-                const org = this.createOrg(offset);
-                this._db && this._db.put(org);
-            }
-        }
-        //
-        // Adds LUCA organisms to the world
-        //
-        let orgs = Config.orgLucaAmount;
-        while (orgs-- > 0) {
-            const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            const luca = this.createOrg(offset, null, null, Config.codeLuca.slice(), true);
-            this._db && this._db.put(luca);
-        }
-        this.population++;
-    }
-
-    /**
-     * Is called on pressing one of arrow buttons. Scrolls world inside canvas
-     * to appropriate direction till the it's edge and stops at the end or
-     * beginning.
-     * @param {MouseEvent} e
-     */
-    _onScroll(e) {
-        const world  = this.world;
-        const width  = Config.WORLD_CANVAS_WIDTH;
-        const row    = Config.WORLD_WIDTH  - width;
-        const col    = Config.WORLD_HEIGHT - Config.WORLD_CANVAS_HEIGHT;
-
-        switch (e.which) {
-            // TODO: not done
-            case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._scrollHorizontally(true)}  break; // left
-            case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._scrollHorizontally(false)} break; // right
-            case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._scrollVertically(true)}    break; // up
-            case 40: if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col; this._scrollVertically(false)}   break; // down
-            default: return;
-        }
-
-        let   offs     = world.viewOffs = world.viewY * Config.WORLD_WIDTH + world.viewX;
-        const canvas   = world.canvas;
-        const orgs     = this.orgsAndMols.ref();
-        const molColor = Config.molColor;
-        //
-        // Copy world's part into the canvas accodring to new scroll offsets
-        //
-        for (let y = 0, height = Config.WORLD_CANVAS_HEIGHT; y < height; y++) {
-            const yOffs = y * width;
-            for (let x = 0; x < width; x++) {
-                const org = world.getOrgIdx(offs++);
-                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgs[org].color || molColor);
-            }
-            offs += row;
-        }
-        world.viewX1    = world.viewX + width - 1;
-        world.viewOffs1 = world.viewOffs + (Config.WORLD_CANVAS_HEIGHT - 1) * Config.WORLD_WIDTH + row + Config.WORLD_CANVAS_WIDTH - 1;
-
-        return true;
-    }
-
-    // TODO: not done
-    _scrollHorizontally(right) {
-        
-    }
-
-    // TODO: not done
-    _scrollVertically(down) {
-
+        item < orgs.items && (orgs.get(item).index = item);
     }
 }
+
 module.exports = VM;

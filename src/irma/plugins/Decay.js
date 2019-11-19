@@ -58,7 +58,7 @@ class Decay {
         
         const newCode = org.code.subarray(0, molSize);
         org.code = org.code.splice(0, molSize);
-        this._api.createOrg(offset, null, null, newCode);
+        this._api.createOrg(offset, null, newCode);
     }
 
     /**

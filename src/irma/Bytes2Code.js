@@ -21,7 +21,7 @@ class Bytes2Code {
      */
     static toCode(bytes, pad = CODE_PAD_SIZE, firstLineEmpty = true) {
         //
-        // Create fake organism to preprocess his code to know where
+        // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
         //
         const org = new Organism(-1, -1, -1, -1, null, bytes, true);
@@ -98,19 +98,23 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 35]: ['age',    'ax=org.age'],
     [CODE_CMD_OFFS + 36]: ['line',   'ax=org.line'],
     [CODE_CMD_OFFS + 37]: ['len',    'ax=org.code.length'],
+    [CODE_CMD_OFFS + 38]: ['left',   'org.pos--'],
+    [CODE_CMD_OFFS + 39]: ['right',  'org.pos++'],
+    [CODE_CMD_OFFS + 40]: ['save',   'org.mem[org.pos] = ax'],
+    [CODE_CMD_OFFS + 41]: ['load',   'ax = org.mem[org.pos]'],
 
-    [CODE_CMD_OFFS + 38]: ['join',   'ret=join(ax:dir,bx:offs)'],
-    [CODE_CMD_OFFS + 39]: ['split',  'ret=split(ax:from,bx:to,ret:dir)'],
-    [CODE_CMD_OFFS + 40]: ['step',   'step(ax:dir)'],
-    [CODE_CMD_OFFS + 41]: ['see',    'ax=see(ax:offs)'],
-    [CODE_CMD_OFFS + 42]: ['say',    'ax=say(ax:val,bx:freq)'],
-    [CODE_CMD_OFFS + 43]: ['listen', 'ax:val,ret:dir=listen(bx:freq)'],
-    [CODE_CMD_OFFS + 44]: ['nread',  'ax=nread(ax:dir,bx:offs)'],
-    [CODE_CMD_OFFS + 45]: ['nsplit', 'nsplit(ax:dir,bx:offs,ret:offs):ret'],
-    [CODE_CMD_OFFS + 46]: ['get',    'get(ax:dir)'],
-    [CODE_CMD_OFFS + 47]: ['put',    'put(ax:dir)'],
-    [CODE_CMD_OFFS + 48]: ['offs',   'ax=org.offset'],
-    [CODE_CMD_OFFS + 49]: ['color',  'org.color=ax % 0xffffff']
+    [CODE_CMD_OFFS + 42]: ['join',   'ret=join(ax:dir,bx:offs)'],
+    [CODE_CMD_OFFS + 43]: ['split',  'ret=split(ax:from,bx:to,ret:dir)'],
+    [CODE_CMD_OFFS + 44]: ['step',   'step(ax:dir)'],
+    [CODE_CMD_OFFS + 45]: ['see',    'ax=see(ax:offs)'],
+    [CODE_CMD_OFFS + 46]: ['say',    'ax=say(ax:val,bx:freq)'],
+    [CODE_CMD_OFFS + 47]: ['listen', 'ax:val,ret:dir=listen(bx:freq)'],
+    [CODE_CMD_OFFS + 48]: ['nread',  'ax=nread(ax:dir,bx:offs)'],
+    [CODE_CMD_OFFS + 49]: ['nsplit', 'nsplit(ax:dir,bx:offs,ret:offs):ret'],
+    [CODE_CMD_OFFS + 50]: ['get',    'get(ax:dir)'],
+    [CODE_CMD_OFFS + 51]: ['put',    'put(ax:dir)'],
+    [CODE_CMD_OFFS + 52]: ['offs',   'ax=org.offset'],
+    [CODE_CMD_OFFS + 53]: ['color',  'org.color=ax % 0xffffff']
 };
 
 module.exports = Bytes2Code;

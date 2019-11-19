@@ -53,20 +53,18 @@ class Mutations {
         const end      = start + rand(codeLen - start);
 
         destOrg.code = destCode.splice(start, end - start + 1, srcCode.slice(start, end + 1));
-        destOrg.mutations += (end - start);
-        destOrg.preprocess();
+        destOrg.compile();
     }
 
-    static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.mutations++; org.preprocess()}
-    static _onDel    (code, org) {org.code = code.splice(rand(code.length), 1); org.mutations++; org.preprocess()}
-    static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1; org.mutations++}
-    static _onPercent(code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT; org.mutations++}
-    static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1; org.mutations++}
+    static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.compile()}
+    static _onDel    (code, org) {org.code = code.splice(rand(code.length), 1); org.compile()}
+    static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
+    static _onPercent(code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT}
+    static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
         org.code = code.splice(rand(code.length), 0, [Mutations.randCmd()]);
-        org.mutations++;
-        org.preprocess();
+        org.compile();
     }
     /**
      * Takes few lines from itself and inserts them before or after copied
@@ -86,18 +84,17 @@ class Mutations {
         // Organism size should be less them codeMaxSize
         //
         if (codeLen + end - start >= Config.orgMaxCodeSize) {return 0}
-        org.mutations += (end - start);
         //
         // We may insert copied piece before "start" (0) or after "end" (1)
         //
         if (rand(2) === 0) {
             org.code = code.splice(rand(start), 0, code.slice(start, end));
-            org.preprocess();
+            org.compile();
             return end - start;
         }
 
         org.code = code.splice(end + rand(codeLen - end + 1), 0, code.slice(start, end));
-        org.preprocess();
+        org.compile();
 
         return end - start;
     }
@@ -105,8 +102,7 @@ class Mutations {
         const start = rand(code.length);
         const end   = rand(code.length - start);
         org.code    = code.splice(start, end);
-        org.mutations += (end - start);
-        org.preprocess();
+        org.compile();
     }
 }
 /**

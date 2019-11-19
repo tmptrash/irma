@@ -44,9 +44,9 @@ describe('src/irma/VM', () => {
     const XO        = Config.CODE_CMD_OFFS+31;
     const NT        = Config.CODE_CMD_OFFS+32;
     const FI        = Config.CODE_CMD_OFFS+33;
-    
-    const JO        = Config.CODE_CMD_OFFS+38;
-    const SP        = Config.CODE_CMD_OFFS+39;
+
+    const JO        = Config.CODE_CMD_OFFS+42;
+    const SP        = Config.CODE_CMD_OFFS+43;
 
     let   vm        = null;
 
@@ -105,7 +105,7 @@ describe('src/irma/VM', () => {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
-        org.preprocess();
+        org.compile();
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
         expect(org.ret).toBe(0);
@@ -514,8 +514,8 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org2, 1);
                 org1.code = Uint8Array.from([1,AR,2,JO]);
                 org2.code = Uint8Array.from([2]);
-                org1.preprocess();
-                org2.preprocess();
+                org1.compile();
+                org2.compile();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
@@ -530,7 +530,7 @@ describe('src/irma/VM', () => {
 
                 vm1.world.moveOrg(org1, 0);
                 org1.code = Uint8Array.from([1,AR,2,JO]);
-                org1.preprocess();
+                org1.compile();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
@@ -545,7 +545,7 @@ describe('src/irma/VM', () => {
 
                 vm1.world.moveOrg(org1, WIDTH - 1);
                 org1.code = [1,AR,2,JO];
-                org1.preprocess();
+                org1.compile();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
@@ -563,7 +563,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(mol1, 1);
                 org1.code = Uint8Array.from([1,AR,2,JO]);
                 mol1.code = Uint8Array.from([5]);
-                org1.preprocess();
+                org1.compile();
                 Config.codeLinesPerIteration = org1.code.length;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
@@ -582,7 +582,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org, 0);
                 org.code = Uint8Array.from([2,AR,1,TG,0,SP]);
                 org.energy = org.code.length * Config.energyMultiplier;
-                org.preprocess();
+                org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(1);
@@ -607,7 +607,7 @@ describe('src/irma/VM', () => {
                 org2.code = Uint8Array.from([2]);
                 org1.energy = org1.code.length * Config.energyMultiplier;
                 org2.energy = org2.code.length * Config.energyMultiplier;
-                org1.preprocess();
+                org1.compile();
                 Config.codeLinesPerIteration = org1.code.length;
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(2);
@@ -629,7 +629,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org, 0);
                 org.code = Uint8Array.from([2,2,AR,1,TG,0,SP]);
                 org.energy = org.code.length * Config.energyMultiplier;
-                org.preprocess();
+                org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(1);
@@ -657,7 +657,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org, 0);
                 org.code = Uint8Array.from([0,AR,1,TG,0,SP]);
                 org.energy = org.code.length * Config.energyMultiplier;
-                org.preprocess();
+                org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(0)).not.toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(1);
@@ -677,7 +677,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org, 0);
                 org.code = Uint8Array.from([2,AR,1,TG,1,NT,SP]);
                 org.energy = org.code.length * Config.energyMultiplier;
-                org.preprocess();
+                org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(1);
@@ -697,7 +697,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org, 0);
                 org.code = Uint8Array.from([2,AR,1,TG,100,NT,SP]);
                 org.energy = org.code.length * Config.energyMultiplier;
-                org.preprocess();
+                org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(1);
@@ -717,7 +717,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org, 0);
                 org.code = Uint8Array.from([2,AR,1,NT,TG,1,SP]);
                 org.energy = org.code.length * Config.energyMultiplier;
-                org.preprocess();
+                org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(1);
@@ -737,7 +737,7 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org, 10);
                 org.code = Uint8Array.from([1,AR,Config.CODE_ORG_ID,PU,1,TG,0,SP,PO]);
                 org.energy = org.code.length * Config.energyMultiplier;
-                org.preprocess();
+                org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsAndMols.items).toBe(1);

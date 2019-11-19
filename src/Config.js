@@ -37,7 +37,7 @@ module.exports = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 50,
+    CODE_COMMANDS              : 54,
     /**
      * {Number} Functions call stack size
      * @constant
@@ -122,12 +122,12 @@ module.exports = {
         CODE_OFFS + 4,  //   push
         CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 39, //   split
+        CODE_OFFS + 43, //   split
         CODE_OFFS + 3,  //   pop
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
         1,              //   1
-        CODE_OFFS + 41, //   see
+        CODE_OFFS + 45, //   see
         CODE_OFFS + 15, //   ifp
         2,              //     2
         CODE_OFFS + 26, //   end
@@ -135,16 +135,16 @@ module.exports = {
         0,              //     0
         CODE_OFFS + 32, //     not
         CODE_OFFS + 14, //     rand
-        CODE_OFFS + 40, //     step
-        CODE_OFFS + 40, //     step
-        CODE_OFFS + 40, //     step
+        CODE_OFFS + 44, //     step
+        CODE_OFFS + 44, //     step
+        CODE_OFFS + 44, //     step
         CODE_OFFS + 26, //   end
         CODE_OFFS,      //   toggle
         CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
         CODE_OFFS + 4,  //   push
         CODE_OFFS + 3,  //   pop
-        CODE_OFFS + 38, //   join
+        CODE_OFFS + 42, //   join
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
         100,            //   100
@@ -169,7 +169,7 @@ module.exports = {
         CODE_OFFS + 28, //   axret
         CODE_OFFS + 37, //   len
         CODE_OFFS,      //   toggle
-        CODE_OFFS + 39, //   split
+        CODE_OFFS + 43, //   split
         CODE_OFFS + 26, // end
         CODE_OFFS + 24, // func
         0,              //   0
@@ -196,7 +196,7 @@ module.exports = {
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
         CODE_OFFS + 13, // lshift
-        CODE_OFFS + 49, // color
+        CODE_OFFS + 53, // color
         50,             // 50
         CODE_OFFS + 22, // loop
         1,              //   1
@@ -259,7 +259,7 @@ module.exports = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : new Uint32Array([10,1,1,1,1,1,1,1]),
+    orgProbs                   : new Uint8Array([10,1,1,1,1,1,1,1]),
     /**
      * Molecules related configs
      */
