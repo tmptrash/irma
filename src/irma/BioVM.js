@@ -57,6 +57,11 @@ class BioVM extends VM {
         this.db       = null;
     }
 
+    /**
+     * Returns "line" language version
+     */
+    get version() {return '2.0'}
+
     get ready() {
         if (this.db) {
             return this.db.ready;
@@ -94,7 +99,7 @@ class BioVM extends VM {
      */
     runCmd(org, cmd) {
         switch (cmd) {
-            case CODE_CMD_OFFS + 42: {// join
+            case CODE_CMD_OFFS + 41: {// join
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -117,7 +122,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 43: {// split
+            case CODE_CMD_OFFS + 42: {// split
                 ++org.line;
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
@@ -158,7 +163,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 44: {// step
+            case CODE_CMD_OFFS + 43: {// step
                 ++org.line;
                 org.energy -= Math.floor(org.code.length * Config.energyStepCoef);
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
@@ -170,7 +175,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 45:  // see
+            case CODE_CMD_OFFS + 44:  // see
                 ++org.line;
                 const ax     = org.ax;
                 const offset = org.offset + ax;
@@ -179,7 +184,7 @@ class BioVM extends VM {
                 org.ax = (dot < 0 ? 0 : this.orgsMols.ref()[dot].color || Config.molColor);
                 return;
 
-            case CODE_CMD_OFFS + 46: {// say
+            case CODE_CMD_OFFS + 45: {// say
                 ++org.line;
                 const freq = Math.abs(org.bx) % Config.worldFrequency;
                 this.freq[freq] = org.ax;
@@ -187,12 +192,12 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 47:  // listen
+            case CODE_CMD_OFFS + 46:  // listen
                 ++org.line;
                 org.ax = this.freq[Math.abs(org.bx) % Config.worldFrequency];
                 return;
 
-            case CODE_CMD_OFFS + 48: {// nread
+            case CODE_CMD_OFFS + 47: {// nread
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -203,7 +208,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 49: {// nsplit
+            case CODE_CMD_OFFS + 48: {// nsplit
                 ++org.line;
                 if (org.ret !== 1) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
@@ -229,7 +234,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 50: {// get
+            case CODE_CMD_OFFS + 49: {// get
                 ++org.line;
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
                 const dot = this.world.getOrgIdx(org.offset + DIR[Math.abs(org.ax) % 8]);
@@ -238,7 +243,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 51: {// put
+            case CODE_CMD_OFFS + 50: {// put
                 ++org.line;
                 if (!org.packet) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
@@ -251,12 +256,12 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 52:  // offs
+            case CODE_CMD_OFFS + 51:  // offs
                 ++org.line;
                 org.ax = org.offset;
                 return;
 
-            case CODE_CMD_OFFS + 53:  // color
+            case CODE_CMD_OFFS + 52:  // color
                 ++org.line;
                 const newAx = Math.abs(org.ax);
                 org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;

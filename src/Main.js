@@ -9,7 +9,6 @@ const Irma       = require('./irma/Irma');
 //
 // Creates global objects to have an access to app from browser's console
 //
-debugger;
 window.irma  = {
     code: Bytes2Code.toCode, // Converter of bytecode to human readable code
     app : new Irma(),        // Instance of Irma. You may use it to access VM, organisms list and so on...

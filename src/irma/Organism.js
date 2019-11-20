@@ -69,19 +69,19 @@ class Organism {
                     stack[++sCount] = i;
                     break;
 
-                case CMD_OFFS + 22: // loop
-                case CMD_OFFS + 15: // ifp
-                case CMD_OFFS + 16: // ifn
-                case CMD_OFFS + 17: // ifz
-                case CMD_OFFS + 18: // ifg
-                case CMD_OFFS + 19: // ifl
-                case CMD_OFFS + 20: // ife
-                case CMD_OFFS + 21: // ifne
+                case CMD_OFFS + 20: // loop
+                case CMD_OFFS + 13: // ifp
+                case CMD_OFFS + 14: // ifn
+                case CMD_OFFS + 15: // ifz
+                case CMD_OFFS + 16: // ifg
+                case CMD_OFFS + 17: // ifl
+                case CMD_OFFS + 18: // ife
+                case CMD_OFFS + 19: // ifne
                     stack[++sCount] = i;
                     offs[i] = i + 1;
                     break;
 
-                case CMD_OFFS + 26: // end
+                case CMD_OFFS + 24: // end
                     if (sCount < 0) {break}
                     offs[i] = stack[sCount];
                     offs[stack[sCount--]] = i + 1;
