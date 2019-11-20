@@ -477,7 +477,7 @@ class VM {
      * @param {Boolean} simple simple organism or not
      * @return {Organism} Created organism
      */
-    createOrg(index, code = null, simple = false) {
+    addOrg(index, code = null, simple = false) {
         const org = new Organism(index, code, simple);
         !simple && this.orgs.add(org);
         return org;
@@ -487,15 +487,15 @@ class VM {
      * Removes organism from the world totally
      * @param {Organism} org Organism to remove
      */
-    removeOrg(org) {
-        this._removeFromOrgArr(org.index);
+    delOrg(org) {
+        this._delFromOrgArr(org.index);
     }
 
     /**
      * Removes organism from population list
      * @param {Number} index Organism index in a population list
      */
-    _removeFromOrgArr(index) {
+    _delFromOrgArr(index) {
         const orgs = this.orgs;
         orgs.del(index);
         index < orgs.items && (orgs.get(index).index = index);

@@ -33,25 +33,30 @@ class BioVM extends VM {
     constructor() {
         super(...arguments);
 
-        this.orgsAndMols   = null;
-        this.world         = new World({scroll: this._onScroll.bind(this)});
-        this.freq          = new Int32Array(Config.worldFrequency);
-        this.ts            = Date.now();
-        this.i             = 0;
-
-        this.createOrgs();
+        this.orgs       = new FastArray(this._getOrgsAmount());
+        this.orgsMols   = new FastArray(this._getOrgsMolsAmount());
+        this.world      = new World({scroll: this._onScroll.bind(this)});
+        this.freq       = new Int32Array(Config.worldFrequency);
+        this.ts         = Date.now();
+        this.i          = 0;
+        //
+        // Amount of molecules + organisms should not be greater then amount of dots in a world
+        //
+        if (this._getOrgsAmount() + this._getOrgsMolsAmount() > WIDTH * HEIGHT - 1) {throw 'Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgLucaAmount" configs'}
+        this.addOrgs();
+        this.addMols();
     }
 
     destroy() {
         super.destory();
 
-        this.orgsAndMols.destroy();
+        this.orgsMols.destroy();
         this.world.destroy();
         this.db && this.db.destroy();
 
-        this.orgsAndMols = null;
-        this.world       = null;
-        this.db         = null;
+        this.orgsMols = null;
+        this.world    = null;
+        this.db       = null;
     }
 
     get ready() {
@@ -76,8 +81,8 @@ class BioVM extends VM {
      */
     afterIteration(org) {
         if (org.energy < 0 || org.age > Config.orgMaxAge) {
-            this.removeOrg(org);
-            this.createOrg(org.offset, null, org.code);
+            this.delOrg(org);
+            this.addOrg(org.offset, org.code);
         }
         org.energy--;
         this.i += Config.codeLinesPerIteration;
@@ -110,14 +115,14 @@ class BioVM extends VM {
                 // org.compile();
                 //
                 org.energy += (nearOrg.code.length * Config.energyMultiplier);
-                this.removeOrg(nearOrg);
+                this.delOrg(nearOrg);
                 org.ret = RET_OK;
                 return;
             }
 
             case CODE_CMD_OFFS + 43: {// split
                 ++line;
-                if (this.orgsAndMols.full) {org.ret = RET_ERR; return}
+                if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[abs(org.ret) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
                 const dot     = this.world.getOrgIdx(offset);
@@ -131,14 +136,14 @@ class BioVM extends VM {
                 // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
                 // TODO: should be esupported by organism from parent to child
                 //
-                const clone   = this.createOrg(offset, org, newCode, org.cur() === IS_ORG_ID);
+                const clone   = this.addOrg(offset, newCode, org.cur() === IS_ORG_ID);
                 this.db && this.db.put(clone, org);
                 const energy = clone.code.length * Config.energyMultiplier;
                 clone.energy = energy;
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.isOrg) {
                     Mutations.mutate(clone);
                 }
-                if (org.code.length < 1) {this.removeOrg(org); break}
+                if (org.code.length < 1) {this.delOrg(org); break}
                 org.energy  -= energy;
                 //
                 // Important: after split, sequence of commands have been changed and it may break
@@ -201,7 +206,7 @@ class BioVM extends VM {
             case CODE_CMD_OFFS + 49: {// nsplit
                 ++line;
                 if (org.ret !== 1) {org.ret = RET_ERR; return}
-                if (this.orgsAndMols.full) {org.ret = RET_ERR; return}
+                if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[abs(ax) % 8];
                 const dOffset = org.offset + DIR[abs(org.ret) % 8];
                 if (offset === dOffset) {org.ret = RET_ERR; return}
@@ -213,13 +218,13 @@ class BioVM extends VM {
                 const newCode = nearOrg.code.subarray(0, bx);
                 nearOrg.code  = nearOrg.code.splice(0, bx);
                 if (newCode.length < 1) {org.ret = RET_ERR; return}
-                const cutOrg  = this.createOrg(dOffset, null, newCode);
+                const cutOrg  = this.addOrg(dOffset, newCode);
                 this.db && this.db.put(cutOrg, nearOrg);
-                if (nearOrg.code.length < 1) {this.removeOrg(nearOrg)}
+                if (nearOrg.code.length < 1) {this.delOrg(nearOrg)}
                 const energy = newCode.length * Config.energyMultiplier;
                 nearOrg.energy -= energy;
                 cutOrg.energy   = energy;
-                if (org.code.length < 1) {this.removeOrg(org); break}
+                if (org.code.length < 1) {this.delOrg(org); break}
                 org.ret = RET_OK;
                 return;
             }
@@ -229,18 +234,18 @@ class BioVM extends VM {
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
                 const dot = this.world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                this.removeOrg(org.packet = this.orgsAndMolsRef[dot]);
+                this.delOrg(org.packet = this.orgsAndMolsRef[dot]);
                 return;
             }
 
             case CODE_CMD_OFFS + 51: {// put
                 ++line;
                 if (!org.packet) {org.ret = RET_ERR; return}
-                if (this.orgsAndMols.full) {org.ret = RET_ERR; return}
+                if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
-                this.createOrg(offset, org.packet.isOrg ? org.packet : null, org.packet.code);
+                this.addOrg(offset, org.packet.code, !!org.packet.energy);
                 this.db && this.db.put(org.packet);
                 org.packet = null;
                 return;
@@ -275,7 +280,7 @@ class BioVM extends VM {
             this.ts = ts;
             this.i  = 0;
 
-            if (orgs.items < 1) {this.createOrgs()}
+            if (orgs.items < 1) {this.addOrgs()}
         }
     }
 
@@ -287,9 +292,9 @@ class BioVM extends VM {
      * @param {Boolean} isOrg Organism or molecule
      * @override
      */
-    createOrg (offset, code, isOrg = false) {
-        const orgsAndMols = this.orgsAndMols;
-        const org = super.createOrg(isOrg ? this.orgs.freeIndex : orgsAndMols.freeIndex, code, !isOrg);
+    addOrg (offset, code, isOrg = false) {
+        const orgsAndMols = this.orgsMols;
+        const org = super.addOrg(isOrg ? this.orgs.freeIndex : orgsAndMols.freeIndex, code, !isOrg);
         //
         // Extends organism properties
         //
@@ -297,7 +302,7 @@ class BioVM extends VM {
         if (isOrg) {
             org.color  = Config.ORG_MIN_COLOR;
             org.packet = null;
-            org.energy = this.code.length * Config.energyMultiplier
+            org.energy = code.length * Config.energyMultiplier;
         }
 
         orgsAndMols.add(org);
@@ -312,53 +317,57 @@ class BioVM extends VM {
      * @param {Organism} org Organism to remove
      * @override
      */
-    removeOrg(org) {
+    delOrg(org) {
         const offset = org.offset;
         const packet = org.packet;
 
         if (org.isOrg) {
-            this._removeFromOrgMolArr(org.molIndex);
-            super.removeOrg(org);
+            this._delFromOrgsMols(org.molIndex);
+            super.delOrg(org);
         }
         org.energy = 0;
         org.isOrg  = false;
         this.world.empty(offset);
-        packet && this.createOrg(offset, packet);
+        packet && this.addOrg(offset, packet.code, !!packet.energy);
     }
 
-    createOrgs() {
+    /**
+     * Creates organisms with amount specified in config
+     */
+    addOrgs() {
         const world = this.world;
-        const cfg   = Config;
-        //
-        // Molecules and organisms array should be created only once
-        //
-        if (!this.orgsAndMols) {
-            this.orgsAndMols = new FastArray(cfg.molAmount + cfg.orgLucaAmount + 1);
-            this.orgs        = new FastArray(Math.round(cfg.molAmount * cfg.molCodeSize / (cfg.codeLuca.length || 1)) + cfg.orgLucaAmount + 1);
-            //
-            // Creates molecules and LUCA as last organism
-            //
-            let molecules = cfg.molAmount;
-            while (molecules-- > 0) {
-                const offset = rand(MAX_OFFS);
-                if (world.getOrgIdx(offset) > -1) {molecules++; continue}
-                const org = this.createOrg(offset, this._createMolCode());
-                this.db && this.db.put(org);
-            }
-        }
-
         const code  = Config.codeLuca;
         let orgs    = Config.orgLucaAmount;
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            const luca = this.createOrg(offset, null, code.slice(), true);
+            const luca = this.addOrg(offset, code.slice(), true);
             this.db && this.db.put(luca);
         }
     }
 
-    _removeFromOrgMolArr(index) {
-        const movedOrg = this.orgsAndMols.del(index);
+    /**
+     * Creates molecules with amount specified in config. Molecules should 
+     * be created only once. They are always in a world (not disappear).
+     */
+    addMols() {
+        const world   = this.world;
+        const cfg     = Config;
+        let molecules = cfg.molAmount;
+        while (molecules-- > 0) {
+            const offset = rand(MAX_OFFS);
+            if (world.getOrgIdx(offset) > -1) {molecules++; continue}
+            const org = this.addOrg(offset, this._getMolCode());
+            this.db && this.db.put(org);
+        }
+    }
+
+    /**
+     * Removes organism or molecule from organisms and molecules array
+     * @param {Number} index Organism or molecule index
+     */
+    _delFromOrgsMols(index) {
+        const movedOrg = this.orgsMols.del(index);
         if (movedOrg) {
             movedOrg.molIndex = index;
             this.world.setItem(movedOrg.offset, index);
@@ -370,7 +379,7 @@ class BioVM extends VM {
      * @returns {Array}
      * @private
      */
-    _createMolCode() {
+    _getMolCode() {
         const size = Config.molCodeSize;
         if (Math.random() > .5) {
             const code = new Uint8Array(size);
@@ -384,9 +393,20 @@ class BioVM extends VM {
     }
 
     /**
+     * Returns maximum amount of molecules and organisms according to config
+     * @return {Number} max amount
+     */
+    _getOrgsMolsAmount() {return Config.molAmount + Config.orgLucaAmount + 1}
+
+    /**
+     * Returns maximum amount of organisms only according to config and amount of molecules
+     * @return {Number} max amount
+     */
+    _getOrgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.codeLuca.length || 1)) + Config.orgLucaAmount + 1}
+
+    /**
      * Is called on pressing one of arrow buttons. Scrolls world inside canvas
-     * to appropriate direction till the it's edge and stops at the end or
-     * beginning.
+     * to appropriate direction till the it's edge and stops at the end or beginning.
      * @param {MouseEvent} e
      */
     // TODO: this method should be in World class
@@ -398,16 +418,16 @@ class BioVM extends VM {
 
         switch (e.which) {
             // TODO: not done
-            case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._scrollHorizontally(true)}  break; // left
-            case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._scrollHorizontally(false)} break; // right
-            case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._scrollVertically(true)}    break; // up
-            case 40: if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col; this._scrollVertically(false)}   break; // down
+            case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._onHScroll(true)}  break; // left
+            case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._onHScroll(false)} break; // right
+            case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._onVScroll(true)}  break; // up
+            case 40: if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col; this._onVScroll(false)} break; // down
             default: return;
         }
 
         let   offs     = world.viewOffs = world.viewY * Config.WORLD_WIDTH + world.viewX;
         const canvas   = world.canvas;
-        const orgs     = this.orgsAndMols.ref();
+        const orgs     = this.orgsMols.ref();
         const molColor = Config.molColor;
         //
         // Copy world's part into the canvas accodring to new scroll offsets
@@ -427,12 +447,12 @@ class BioVM extends VM {
     }
 
     // TODO: not done
-    _scrollHorizontally(right) {
+    _onHScroll(right) {
         
     }
 
     // TODO: not done
-    _scrollVertically(down) {
+    _onVScroll(down) {
 
     }
 }
