@@ -66,7 +66,7 @@ describe('src/irma/VM', () => {
             PLUGINS                    : [],
             // variables
             codeLinesPerIteration      : 1,
-            codeRepeatesPerRun            : 1,
+            codeRepeatsPerRun          : 1,
             codeMutateEveryClone       : 1000,
             codeRegs                   : 6,
             codeMutateMutations        : false,
@@ -127,7 +127,7 @@ describe('src/irma/VM', () => {
             expect(vm.orgs.items).toBe(Config.orgLucaAmount);
         });
         it('Checks amount of created organisms and molecules', () => {
-            expect(vm.orgsAndMols.items).toBeLessThanOrEqual(Config.molAmount + Config.orgLucaAmount);
+            expect(vm.orgsMols.items).toBeLessThanOrEqual(Config.molAmount + Config.orgLucaAmount);
         });
     });
 
@@ -557,7 +557,7 @@ describe('src/irma/VM', () => {
                 Config.orgLucaAmount = 1;
                 const vm1  = new VM();
                 const org1 = vm1.orgs.get(0);
-                const mol1 = vm1.orgsAndMols.get(0);
+                const mol1 = vm1.orgsMols.get(0);
 
                 vm1.world.moveOrg(org1, 0);
                 vm1.world.moveOrg(mol1, 1);
@@ -568,7 +568,7 @@ describe('src/irma/VM', () => {
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
                 expect(org1.code).toEqual(Uint8Array.from([1,AR,2,JO,5]));
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 vm1.destroy();
             });
         })
@@ -585,11 +585,11 @@ describe('src/irma/VM', () => {
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.orgsMols.items).toBe(2); 
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([AR,1,TG,0,SP]));
                 vm1.destroy();
@@ -610,18 +610,18 @@ describe('src/irma/VM', () => {
                 org1.compile();
                 Config.codeLinesPerIteration = org1.code.length;
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(2);
+                expect(vm1.orgsMols.items).toBe(2);
                 expect(vm1.orgs.items).toBe(2);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(2);
-                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.orgsMols.items).toBe(2); 
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(org1.offset).toBe(0);
                 expect(org2.offset).toBe(1);
                 expect(org1.code).toEqual(Uint8Array.from([2,AR,1,TG,0,SP]));
                 vm1.destroy();
             });
-            it('Checks organism splitting fail, because orgsAndMols is full',  () => {
+            it('Checks organism splitting fail, because orgsMols is full',  () => {
                 Config.molAmount = 0;
                 const vm1  = new VM();
                 const org = vm1.orgs.get(0);
@@ -632,18 +632,18 @@ describe('src/irma/VM', () => {
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.orgsMols.items).toBe(2); 
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,0,SP]));
                 // split to the bottom
                 org.code[0] = 4;
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsAndMols.items).toBe(2); 
+                expect(vm1.orgsMols.items).toBe(2); 
                 expect(vm1.world.getOrgIdx(10)).toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([4,AR,1,TG,0,SP]));
 
@@ -660,11 +660,11 @@ describe('src/irma/VM', () => {
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(0)).not.toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.orgsMols.items).toBe(1); 
                 expect(vm1.world.getOrgIdx(0)).not.toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([0,AR,1,TG,0,SP]));
                 vm1.destroy();
@@ -680,11 +680,11 @@ describe('src/irma/VM', () => {
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.orgsMols.items).toBe(1); 
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,1,NT,SP]));
                 vm1.destroy();
@@ -700,11 +700,11 @@ describe('src/irma/VM', () => {
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.orgsMols.items).toBe(1); 
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,100,NT,SP]));
                 vm1.destroy();
@@ -720,11 +720,11 @@ describe('src/irma/VM', () => {
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsAndMols.items).toBe(1); 
+                expect(vm1.orgsMols.items).toBe(1); 
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([2,AR,1,NT,TG,1,SP]));
                 vm1.destroy();
@@ -740,12 +740,12 @@ describe('src/irma/VM', () => {
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(vm1.orgsAndMols.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
                 expect(vm1.orgs.items).toBe(2);
-                expect(vm1.orgsAndMols.items).toBe(2); 
-                expect(vm1.orgs.get(1).isOrg).toBe(true); 
+                expect(vm1.orgsMols.items).toBe(2); 
+                expect(vm1.orgs.get(1).energy).toBe(true); 
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([AR,Config.CODE_ORG_ID,PU,1,TG,0,SP,PO]));
                 expect(vm1.orgs.get(1).code).toEqual(Uint8Array.from([1]));

@@ -7,7 +7,9 @@
  * @author flatline
  */
 const Config            = require('./../Config');
+const FastArray         = require('./../common/FastArray');
 const Helper            = require('./../common/Helper');
+const Plugins           = require('../common/Plugins');
 const Organism          = require('./Organism');
 const Mutations         = require('./Mutations');
 const PLUGINS           = Helper.requirePlugins(Config.PLUGINS);
@@ -35,6 +37,12 @@ class VM {
     afterIteration() {}
 
     /**
+     * Is called after every repeat
+     * @interface
+     */
+    afterRepeat() {}
+
+    /**
      * Is called at the end of run() method to do post processing
      * @interface
      */
@@ -51,28 +59,21 @@ class VM {
 
     /**
      * Creates and initializes VM instance and it's plugins
+     * @param {Number} amount Amount of organisms
      */
-    constructor() {
-        this.orgs       = null;
+    constructor(amount) {
+        this.orgs       = new FastArray(amount);
         this.population = 0;
         this.iteration  = 0;
-        this.plugins    = Helper.loadPlugins(PLUGINS, [this]);
+        this.plugins    = new Plugins(PLUGINS, this);
     }
 
     /**
-     * Destroys all internal instances and data. Should be called from outside
-     */
-    destroy() {
-        Helper.destroyPlugins(this.plugins);
-        this.plugins = null;
-    }
-
-    /**
-     * Runs code of all organisms Config.codeRepeatesPerRun time and return. Big
-     * Config.codeRepeatesPerRun value may slow down user and browser interaction
+     * Runs code of all organisms Config.codeRepeatsPerRun time and return. Big
+     * Config.codeRepeatsPerRun value may slow down user and browser interaction
      */
     run() {
-        const repeates         = Config.codeRepeatesPerRun;
+        const repeats          = Config.codeRepeatsPerRun;
         const lines            = Config.codeLinesPerIteration;
         const mutationPeriod   = Config.orgMutationPeriod;
         const orgs             = this.orgs;
@@ -80,7 +81,7 @@ class VM {
         //
         // Loop X times through population
         //
-        for (let r = 0; r < repeates; r++) {
+        for (let r = 0; r < repeats; r++) {
             //
             // Loop through population
             //
@@ -459,12 +460,7 @@ class VM {
                 //
                 org.age++;
             }
-            this.afterRepeate();
-            //
-            // Plugins should be run after all organism iterations
-            //
-            // TODO: we should not call plugins. They should do it by themself using override
-            for (let p = 0, pLen = this.plugins.length; p < pLen; p++) {this.plugins[p].run(this.iteration)}
+            this.afterRepeat();
             this.iteration++;
         }
         this.afterRun();

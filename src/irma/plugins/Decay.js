@@ -7,6 +7,7 @@
  * @plugin
  * @author flatline
  */
+const Helper            = require('../../common/Helper');
 const Config            = require('../../Config');
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
@@ -27,27 +28,29 @@ class Decay {
      */
     constructor(vm) {
         this._vm    = vm;
-        this._world = vm.world;
         this._index = -1;
+
+        this._onAfterRepeatCb = this._onAfterRepeat.bind(this);
+        Helper.override(vm, 'afterRepeat', this._onAfterRepeatCb);
     }
 
     destroy() {
+        Helper.unoverride(this._vm, 'afterRepeat', this._onAfterRepeatCb);
         this._vm    = null;
-        this._world = null;
         this._index = 0;
     }
 
-    run(iteration) {
-        if (iteration % Config.molDecayPeriod !== 0) {return}
+    _onAfterRepeat() {
+        if (this._vm.iteration % Config.molDecayPeriod !== 0) {return}
 
-        const orgsAndMols = this._vm.orgsAndMols;
-        if (orgsAndMols.full) {return}
-        if (++this._index >= orgsAndMols.items) {this._index = 0}
-        const org = orgsAndMols.get(this._index);
+        const orgsMols = this._vm.orgsMols;
+        if (orgsMols.full) {return}
+        if (++this._index >= orgsMols.items) {this._index = 0}
+        const org = orgsMols.get(this._index);
         const molSize = Config.molCodeSize;
-        if (org.isOrg || org.code.length <= molSize) {return} // Skip organisms
+        if (org.energy || org.code.length <= molSize) {return} // Skip organisms
         const offset = this._getNearPos(org);
-        let dot = this._world.getOrgIdx(offset);
+        let dot = this._vm.world.getOrgIdx(offset);
         if (dot > -1) {return} // organism or molecule on the way
         //
         // This line moves index back to current item to decay it till the end.
@@ -69,9 +72,9 @@ class Decay {
         const startOffs = org.offset;
         const mol = org.code[0];
         let offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
-        if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
+        if (offset < 0 || offset > MAX_OFFS || this._vm.world.getOrgIdx(offset) > -1) {
             offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
-            if (offset < 0 || offset > MAX_OFFS || this._world.getOrgIdx(offset) > -1) {
+            if (offset < 0 || offset > MAX_OFFS || this._vm.world.getOrgIdx(offset) > -1) {
                 offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
             }
         }

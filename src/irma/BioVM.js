@@ -31,7 +31,7 @@ const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
 
 class BioVM extends VM {
     constructor() {
-        super(...arguments);
+        super(0);
 
         this.orgs       = new FastArray(this._getOrgsAmount());
         this.orgsMols   = new FastArray(this._getOrgsMolsAmount());
@@ -102,7 +102,7 @@ class BioVM extends VM {
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                const nearOrg = this.orgsAndMolsRef[dot];
+                const nearOrg = this.orgsMols.ref()[dot];
                 if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; return}
                 org.code = org.code.push(nearOrg.code);
                 //
@@ -140,7 +140,7 @@ class BioVM extends VM {
                 this.db && this.db.put(clone, org);
                 const energy = clone.code.length * Config.energyMultiplier;
                 clone.energy = energy;
-                if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.isOrg) {
+                if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
                     Mutations.mutate(clone);
                 }
                 if (org.code.length < 1) {this.delOrg(org); break}
@@ -153,7 +153,7 @@ class BioVM extends VM {
                 // we split commands from tail, which don't affect main (replicator) part. Next line
                 // should be commented
                 // org.compile();
-                // line = 0;
+                // line = 0; 
                 //
                 org.ret = RET_OK;
                 return;
@@ -176,7 +176,7 @@ class BioVM extends VM {
                 const offset = org.offset + ax;
                 if (offset < 0 || offset > MAX_OFFS) {ax = 0; return}
                 const dot = this.world.getOrgIdx(offset);
-                ax = (dot < 0 ? 0 : this.orgsAndMolsRef[dot].color || Config.molColor);
+                ax = (dot < 0 ? 0 : this.orgsMols.ref()[dot].color || Config.molColor);
                 return;
 
             case CODE_CMD_OFFS + 46: {// say
@@ -197,7 +197,7 @@ class BioVM extends VM {
                 const offset = org.offset + DIR[abs(ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                const nearOrg = this.orgsAndMolsRef[dot];
+                const nearOrg = this.orgsMols.ref()[dot];
                 ax = nearOrg.code[bx] || 0;
                 org.ret = RET_OK;
                 return;
@@ -214,7 +214,7 @@ class BioVM extends VM {
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const dDot    = this.world.getOrgIdx(dOffset);
                 if (dDot > -1) {org.ret = RET_ERR; return}
-                const nearOrg = this.orgsAndMolsRef[dot];
+                const nearOrg = this.orgsMols.ref()[dot];
                 const newCode = nearOrg.code.subarray(0, bx);
                 nearOrg.code  = nearOrg.code.splice(0, bx);
                 if (newCode.length < 1) {org.ret = RET_ERR; return}
@@ -234,7 +234,7 @@ class BioVM extends VM {
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
                 const dot = this.world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                this.delOrg(org.packet = this.orgsAndMolsRef[dot]);
+                this.delOrg(org.packet = this.orgsMols.ref()[dot]);
                 return;
             }
 
@@ -293,19 +293,21 @@ class BioVM extends VM {
      * @override
      */
     addOrg (offset, code, isOrg = false) {
-        const orgsAndMols = this.orgsMols;
-        const org = super.addOrg(isOrg ? this.orgs.freeIndex : orgsAndMols.freeIndex, code, !isOrg);
+        const orgsMols = this.orgsMols;
+        const org = super.addOrg(isOrg ? this.orgs.freeIndex : null, code, !isOrg);
         //
         // Extends organism properties
         //
-        org.offset = offset;
+        org.offset   = offset;
+        org.molIndex = orgsMols.freeIndex;
         if (isOrg) {
             org.color  = Config.ORG_MIN_COLOR;
             org.packet = null;
             org.energy = code.length * Config.energyMultiplier;
+            org.compile();
         }
 
-        orgsAndMols.add(org);
+        orgsMols.add(org);
         this.world.org(offset, org);
 
         return org;
@@ -319,16 +321,25 @@ class BioVM extends VM {
      */
     delOrg(org) {
         const offset = org.offset;
-        const packet = org.packet;
 
-        if (org.isOrg) {
+        if (org.hasOwnProperty('energy')) {
             this._delFromOrgsMols(org.molIndex);
             super.delOrg(org);
         }
         org.energy = 0;
-        org.isOrg  = false;
+        org.energy  = false;
         this.world.empty(offset);
-        packet && this.addOrg(offset, packet.code, !!packet.energy);
+        //
+        // Extracts all packet organisms recursively
+        //
+        let packet  = org.packet;
+        const world = this.world;
+        while (packet) {
+            const offset = rand(MAX_OFFS);
+            if (world.getOrgIdx(offset) > -1) {continue}
+            this.addOrg(offset, packet.code, !!packet.energy);
+            packet = packet.packet;
+        }
     }
 
     /**

@@ -32,6 +32,18 @@ class Helper {
         }
         obj[fnName] = fn;
     }
+
+    /**
+     * Opposite to override. Removes overridden method.
+     * @param {Object} obj Destination object, we want to override
+     * @param {String} fnName Function name
+     * @param {Function} fn Destination function
+     */
+    static unoverride(obj, fnName, fn) {
+        obj[fnName] = fn.fn;
+        delete fn.fn;
+    }
+
     /**
      * Imports plugin module
      * @param {Array} names plugin file names without extension
@@ -40,8 +52,10 @@ class Helper {
     static requirePlugins(names) {
         const plugins = [];
         names.forEach(name => plugins.push(require(`./../irma/plugins/${name}.js`)));
+
         return plugins;
     }
+
     /**
      * Creates instances of plugin classes and returns instances array
      * @param {Array} plugins Array of functions(classes) of plugins 
@@ -53,6 +67,7 @@ class Helper {
         plugins.forEach((Plugin, i) => instances[i] = new Plugin(...args));
         return instances;
     }
+
     /**
      * Destroys plugins. Calls destroy() method of each one
      * @param {Array} plugins Array of plugin instances
@@ -60,6 +75,7 @@ class Helper {
     static destroyPlugins(plugins) {
         plugins.forEach(plugin => plugin.destroy());
     }
+
     /**
      * Generates random Int number in range 0:n-1
      * @param {Number} n Right number value in a range
@@ -187,11 +203,13 @@ class Helper {
         return i;
     }
 }
+
 /**
  * {Number} Global unique identifier counter
  * @private
  */
 Helper._id = 0;
+
 /**
  * Analog of Array.prototype.splice(), but for Uint8Array
  * @param {Number} start index for deleting and inserting elements
@@ -211,6 +229,7 @@ Uint8Array.prototype.splice = function splice(start, deleted, numbers) {
 
     return newArr;
 }
+
 /**
  * Array.prototype.push analog
  * @param {Uint8Array} pushedArr

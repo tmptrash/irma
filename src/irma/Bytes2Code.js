@@ -24,11 +24,12 @@ class Bytes2Code {
         // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
         //
-        const org = new Organism(-1, -1, -1, -1, null, bytes, true);
-
+        const org  = new Organism(-1, bytes);
         const offs = org.offs;
         let code   = firstLineEmpty ? '\n' : '';
         let span   = '';
+
+        org.compile();
         for (let b = 0; b < bytes.length; b++) {
             const line = Bytes2Code.MAP[bytes[b]];
             if (bytes[b] === CODE_CMD_OFFS + 24 || // func
@@ -74,7 +75,7 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 11]: ['dec',    'ax--'],
     [CODE_CMD_OFFS + 12]: ['rshift', 'ax>>=1'],
     [CODE_CMD_OFFS + 13]: ['lshift', 'ax<<=1'],
-    [CODE_CMD_OFFS + 14]: ['rand',   `ax=rand(${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`],
+    [CODE_CMD_OFFS + 14]: ['rand',   `ax=rand(ax|${-CODE_CMD_OFFS}...${CODE_CMD_OFFS})`],
     [CODE_CMD_OFFS + 15]: ['ifp',    'if ax>0'],
     [CODE_CMD_OFFS + 16]: ['ifn',    'if ax<0'],
     [CODE_CMD_OFFS + 17]: ['ifz',    'if ax==0'],
