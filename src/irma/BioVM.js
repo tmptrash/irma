@@ -37,8 +37,6 @@ class BioVM extends VM {
         this.orgsMols   = new FastArray(this._getOrgsMolsAmount());
         this.world      = new World({scroll: this._onScroll.bind(this)});
         this.freq       = new Int32Array(Config.worldFrequency);
-        this.ts         = Date.now();
-        this.i          = 0;
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
@@ -85,7 +83,6 @@ class BioVM extends VM {
             this.addOrg(org.offset, org.code);
         }
         org.energy--;
-        this.i += Config.codeLinesPerIteration;
     }
 
     /**
@@ -98,8 +95,8 @@ class BioVM extends VM {
     runCmd(org, cmd) {
         switch (cmd) {
             case CODE_CMD_OFFS + 42: {// join
-                ++line;
-                const offset = org.offset + DIR[abs(ax) % 8];
+                ++org.line;
+                const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
@@ -121,13 +118,15 @@ class BioVM extends VM {
             }
 
             case CODE_CMD_OFFS + 43: {// split
-                ++line;
+                ++org.line;
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
-                const offset  = org.offset + DIR[abs(org.ret) % 8];
+                const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
                 const dot     = this.world.getOrgIdx(offset);
                 if (dot > -1) {org.ret = RET_ERR; return} // organism on the way
                 const code = org.code;
+                const ax   = org.ax;
+                const bx   = org.bx;
                 if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; return}
                 const newCode = code.subarray(ax, bx);
                 org.code = code.splice(ax, bx - ax);
@@ -160,9 +159,9 @@ class BioVM extends VM {
             }
 
             case CODE_CMD_OFFS + 44: {// step
-                ++line;
+                ++org.line;
                 org.energy -= Math.floor(org.code.length * Config.energyStepCoef);
-                let offset = org.offset + DIR[abs(ax) % 8];
+                let offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 if (offset < -1) {offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
                 if (this.world.getOrgIdx(offset) > -1) {org.ret = RET_ERR; return}
@@ -172,51 +171,52 @@ class BioVM extends VM {
             }
 
             case CODE_CMD_OFFS + 45:  // see
-                ++line;
+                ++org.line;
+                const ax     = org.ax;
                 const offset = org.offset + ax;
                 if (offset < 0 || offset > MAX_OFFS) {ax = 0; return}
                 const dot = this.world.getOrgIdx(offset);
-                ax = (dot < 0 ? 0 : this.orgsMols.ref()[dot].color || Config.molColor);
+                org.ax = (dot < 0 ? 0 : this.orgsMols.ref()[dot].color || Config.molColor);
                 return;
 
             case CODE_CMD_OFFS + 46: {// say
-                ++line;
-                const freq = abs(bx) % Config.worldFrequency;
-                this.freq[freq] = ax;
+                ++org.line;
+                const freq = Math.abs(org.bx) % Config.worldFrequency;
+                this.freq[freq] = org.ax;
                 org.freq = freq;
                 return;
             }
 
             case CODE_CMD_OFFS + 47:  // listen
-                ++line;
-                ax = this.freq[abs(bx) % Config.worldFrequency];
+                ++org.line;
+                org.ax = this.freq[Math.abs(org.bx) % Config.worldFrequency];
                 return;
 
             case CODE_CMD_OFFS + 48: {// nread
-                ++line;
-                const offset = org.offset + DIR[abs(ax) % 8];
+                ++org.line;
+                const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
-                ax = nearOrg.code[bx] || 0;
+                org.ax = nearOrg.code[org.bx] || 0;
                 org.ret = RET_OK;
                 return;
             }
 
             case CODE_CMD_OFFS + 49: {// nsplit
-                ++line;
+                ++org.line;
                 if (org.ret !== 1) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
-                const offset  = org.offset + DIR[abs(ax) % 8];
-                const dOffset = org.offset + DIR[abs(org.ret) % 8];
+                const offset  = org.offset + DIR[Math.abs(org.ax) % 8];
+                const dOffset = org.offset + DIR[Math.abs(org.ret) % 8];
                 if (offset === dOffset) {org.ret = RET_ERR; return}
                 const dot     = this.world.getOrgIdx(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const dDot    = this.world.getOrgIdx(dOffset);
                 if (dDot > -1) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
-                const newCode = nearOrg.code.subarray(0, bx);
-                nearOrg.code  = nearOrg.code.splice(0, bx);
+                const newCode = nearOrg.code.subarray(0, org.bx);
+                nearOrg.code  = nearOrg.code.splice(0, org.bx);
                 if (newCode.length < 1) {org.ret = RET_ERR; return}
                 const cutOrg  = this.addOrg(dOffset, newCode);
                 this.db && this.db.put(cutOrg, nearOrg);
@@ -230,19 +230,19 @@ class BioVM extends VM {
             }
 
             case CODE_CMD_OFFS + 50: {// get
-                ++line;
+                ++org.line;
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
-                const dot = this.world.getOrgIdx(org.offset + DIR[abs(ax) % 8]);
+                const dot = this.world.getOrgIdx(org.offset + DIR[Math.abs(org.ax) % 8]);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 this.delOrg(org.packet = this.orgsMols.ref()[dot]);
                 return;
             }
 
             case CODE_CMD_OFFS + 51: {// put
-                ++line;
+                ++org.line;
                 if (!org.packet) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
-                const offset = org.offset + DIR[abs(ax) % 8];
+                const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
                 this.addOrg(offset, org.packet.code, !!org.packet.energy);
@@ -252,13 +252,13 @@ class BioVM extends VM {
             }
 
             case CODE_CMD_OFFS + 52:  // offs
-                ++line;
-                ax = org.offset;
+                ++org.line;
+                org.ax = org.offset;
                 return;
 
             case CODE_CMD_OFFS + 53:  // color
-                line++;
-                const newAx = abs(ax);
+                ++org.line;
+                const newAx = Math.abs(org.ax);
                 org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;
                 return;
         }
@@ -268,20 +268,8 @@ class BioVM extends VM {
      * Is called at the end of run() method to do post processing
      * @override
      */
-    // TODO: move it to plugin
     afterRun() {
-        //
-        // Updates status line at the top of screen
-        //
-        const ts = Date.now();
-        if (ts - this.ts > 1000) {
-            const orgAmount = this.orgs.items;
-            this.world.title(`inps:${Math.round(((this.i / orgAmount) / (((ts - this.ts) || 1)) * 1000))} orgs:${orgAmount} gen:${this.population}`);
-            this.ts = ts;
-            this.i  = 0;
-
-            if (orgs.items < 1) {this.addOrgs()}
-        }
+        if (this.orgs.items < 1) {this.addOrgs()}
     }
 
     /**

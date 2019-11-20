@@ -444,7 +444,13 @@ class VM {
                         //
                         // Current command is not from standart list. Call child class to handle it
                         //
-                        this.runCmd(cmd);
+                        org.line = line;
+                        org.ax   = ax;
+                        org.bx   = bx;
+                        this.runCmd(org, cmd);
+                        line     = org.line;
+                        ax       = org.ax;
+                        bx       = org.bx;
                     }
                 }
                 org.line = line;
@@ -456,7 +462,7 @@ class VM {
                 if (org.age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(org)}
                 this.afterIteration(org);
                 //
-                // Age and energy should be changed every iteration
+                // Age should be changed every iteration
                 //
                 org.age++;
             }

@@ -265,7 +265,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 20000,
+    molAmount                  : 60000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
@@ -277,5 +277,5 @@ module.exports = {
      * Plugins. Extends irma core by additional functionality
      * @constant
      */
-    PLUGINS                    : ['Decay']
+    PLUGINS                    : ['Decay', 'Status']
 };
