@@ -66,7 +66,7 @@ describe('src/irma/VM', () => {
             PLUGINS                    : [],
             // variables
             codeLinesPerIteration      : 1,
-            codeTimesPerRun            : 1,
+            codeRepeatesPerRun            : 1,
             codeMutateEveryClone       : 1000,
             codeRegs                   : 6,
             codeMutateMutations        : false,

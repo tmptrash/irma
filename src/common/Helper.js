@@ -5,6 +5,34 @@
  */
 class Helper {
     /**
+     * Overrides specified function in two ways: softly - by
+     * calling new function and after that original; hardly - by
+     * erasing old function by new one. It's still possible to
+     * unoverride erasing by copy old function from fn.fn property.
+     * @param {Object} obj Destination object, we want to override
+     * @param {String} fnName Function name
+     * @param {Function} fn Destination function
+     * @param {Boolean} hard true - erase old function, false - call
+     * old function and new after that.
+     */
+    static override(obj, fnName, fn, hard = false) {
+        //
+        // We need oldFn exactly in `override()`, because `fn(..args)` call removes
+        // reference to fn.fn and this code crashes on line `fn.fn.apply(obj, args)`
+        //
+        const oldFn = fn.fn = obj[fnName];
+        if (typeof oldFn === 'undefined') {throw `Helper.override: Parent object doesn't contain method '${fnName}'`}
+        if (!hard) {
+            obj[fnName] = (...args) => {
+                const ret = fn(...args);
+                oldFn.apply(obj, args);
+                return ret;
+            };
+            return;
+        }
+        obj[fnName] = fn;
+    }
+    /**
      * Imports plugin module
      * @param {Array} names plugin file names without extension
      * @return {Object} Object of imported module

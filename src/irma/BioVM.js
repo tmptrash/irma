@@ -1,6 +1,7 @@
 /**
- * Extension of VM class. Adds biologically related commands into "line" language like
- * "join", "split", "see", "step" and so on. 
+ * Extension of VM class. Adds biologically and physics related commands and into "line"
+ * language like "join", "split", "see", "step" and so on. Creates organism population,
+ * creates world with canvas and html elements.
  * 
  * @author flatline
  */
@@ -23,7 +24,7 @@ const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
 const HEIGHT1           = HEIGHT + 1;
 const LINE_OFFS         = HEIGHT * WIDTH1;
-const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;
+const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent using offset >= MAX_OFFS ... instead offset > MAX_OFFS
 
 
 const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
@@ -262,6 +263,7 @@ class BioVM extends VM {
      * Is called at the end of run() method to do post processing
      * @override
      */
+    // TODO: move it to plugin
     afterRun() {
         //
         // Updates status line at the top of screen
@@ -278,6 +280,11 @@ class BioVM extends VM {
     }
 
     /**
+     * Creates one organism or molecule depending on isOrg parameter. In case
+     * of organism extends it with additional properties like offset, color,...
+     * @param {Number} offset Offset in a world
+     * @param {Uint8Array} code Code to set
+     * @param {Boolean} isOrg Organism or molecule
      * @override
      */
     createOrg (offset, code, isOrg = false) {

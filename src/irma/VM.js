@@ -68,11 +68,11 @@ class VM {
     }
 
     /**
-     * Runs code of all organisms Config.codeTimesPerRun time and return. Big
-     * Config.codeTimesPerRun value may slow down user and browser interaction
+     * Runs code of all organisms Config.codeRepeatesPerRun time and return. Big
+     * Config.codeRepeatesPerRun value may slow down user and browser interaction
      */
     run() {
-        const times            = Config.codeTimesPerRun;
+        const repeates         = Config.codeRepeatesPerRun;
         const lines            = Config.codeLinesPerIteration;
         const mutationPeriod   = Config.orgMutationPeriod;
         const orgs             = this.orgs;
@@ -80,7 +80,7 @@ class VM {
         //
         // Loop X times through population
         //
-        for (let time = 0; time < times; time++) {
+        for (let r = 0; r < repeates; r++) {
             //
             // Loop through population
             //
@@ -459,9 +459,11 @@ class VM {
                 //
                 org.age++;
             }
+            this.afterRepeate();
             //
             // Plugins should be run after all organism iterations
             //
+            // TODO: we should not call plugins. They should do it by themself using override
             for (let p = 0, pLen = this.plugins.length; p < pLen; p++) {this.plugins[p].run(this.iteration)}
             this.iteration++;
         }
