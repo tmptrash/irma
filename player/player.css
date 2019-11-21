@@ -1,0 +1,14 @@
+#player {
+	border: 1px solid black;
+	display: inline-block;
+}
+
+.buttons {
+	font-size: 24px;
+    padding: 5px 10px;
+    border: 1px solid;
+    border-radius: 50px;
+    margin: 25px;
+    background-color: lightblue;
+    cursor: pointer;
+}
