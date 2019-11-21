@@ -324,33 +324,40 @@ class VM {
 
                         case CODE_CMD_OFFS + 31:  // find
                             ++line;
+                            //
+                            // Find only one command
+                            //
                             if (bx < 0) {
-                                let   f0    = org.find0;
-                                let   f1    = org.find1;
+                                const f0 = Math.abs(org.find0);
+                                const f1 = Math.abs(org.find1);
                                 if (f1 < f0) {org.ret = RET_ERR; continue}
-                                
-                                const index = code.findIndex((c, i) => {
-                                    if (i < f0 || i > f1) {return -1}
-                                    return ax === c;
-                                });
-                                if (index === -1) {
-                                    org.ret = RET_ERR;
-                                } else {
-                                    org.find0 = org.find1 = ax = index;
-                                    org.ret = RET_OK;
+
+                                for (let i = Math.max(0, f0), len = Math.min(code.length - 1, f1); i < len; i++) {
+                                    if (ax === code[i]) {
+                                        org.find0 = org.find1 = i;
+                                        org.ret   = RET_OK;
+                                        continue;
+                                    }
                                 }
+                                org.ret = RET_ERR;
+                                continue;
+                             //
+                             // Find several commands
+                             //
                             } else {
-                                if (bx > ax || ax > code.length || bx > code.length) {org.ret = RET_ERR; continue}
-                                const len2 = bx - ax;
-                                const len1 = code.length - (len2 + 1);
-                                let   ret  = RET_ERR;
+                                const f0  = Math.abs(org.find0);
+                                const f1  = Math.abs(org.find1);
+                                if (f1 < f0 || bx > ax || ax > code.length || bx > code.length) {org.ret = RET_ERR; continue}
+
+                                const len = bx - ax;
+                                let   ret = RET_ERR;
                                 let   j;
-                                loop: for (let i = org.ret < 0 ? 0 : org.ret; i < len1; i++) {
+                                loop: for (let i = Math.max(0, f0), len1 = Math.min(code.length - 1, f1); i < len1; i++) {
                                     for (j = ax; j <= bx; j++) {
                                         if (code[i + j - ax] !== code[j]) {continue loop}
                                     }
                                     org.find0 = ax = i;
-                                    org.find1 = i + len2;
+                                    org.find1 = i + len;
                                     ret = RET_OK;
                                     break;
                                 }
