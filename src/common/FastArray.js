@@ -22,29 +22,29 @@ class FastArray {
         /**
          * {Array} Container for custom objects
          */
-        this._arr    = new Array(size).fill(null);
+        this._arr   = new Array(size).fill(null);
         /**
          * {Number} Allocated size of array. This is maximum amount
          * of items, which may be stored in FastArray
          */
-        this._size   = size;
+        this._size  = size;
         /**
          * {Number} Amount of not empty items in array
          */
-        this._amount = 0;
+        this._items = 0;
     }
 
     destroy() {
         delete this._arr;
         delete this._size;
-        delete this._amount; 
+        delete this._items; 
     }
 
     /**
      * Amount of not empty items in array
      * @return {Number}
      */
-    get items() {return this._amount}
+    get items() {return this._items}
 
     /**
      * Returns allocated size (amount of cells)
@@ -56,20 +56,20 @@ class FastArray {
      * Checks if array is full of items and you can't call add() on it
      * @return {Boolean}
      */
-    get full() {return this._amount >= this._size}
+    get full() {return this._items >= this._size}
 
     /**
      * Returns next free index in FastArrays or undefined if there is no free index
      * @returns {Number}
      */
-    get freeIndex() {return this._amount}
+    get freeIndex() {return this._items}
 
     /**
      * Adds one item into array at the end. To keep adding fast it doesn't check
      * if it's full or not
      * @param {*} value Any value to add
      */
-    add(value) {this._arr[this._amount++] = value}
+    add(value) {this._arr[this._items++] = value}
 
     /**
      * Returns value by index
@@ -92,8 +92,8 @@ class FastArray {
      */
     del(i) {
         if (this._arr[i] === null) {return}
-        this._arr[i] = this._arr[--this._amount];
-        this._arr[this._amount] = null;
+        this._arr[i] = this._arr[--this._items];
+        this._arr[this._items] = null;
         return this._arr[i];
     }
 }

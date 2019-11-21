@@ -16,7 +16,7 @@ const CODE_OFFS   = 256 - 64;
 const CODE_ORG_ID = 17;
 
 // TODO: rename all molecules related names to prefix "mol".
-// TODO: do we really can change all non constants in real time? codeRegs, codeLuca, worldZoomSpeed,...
+// TODO: do we really can change all non constants in real time? codeLuca, worldZoomSpeed,...
 // TODO: add comments for every config parameter
 module.exports = {
     /**
@@ -49,7 +49,6 @@ module.exports = {
     codeLinesPerIteration      : 1,
     codeRepeatsPerRun          : 20,
     codeMutateEveryClone       : 7,
-    codeRegs                   : 6,
     codeMutateMutations        : false,
     codeLuca                   : Uint8Array.from([
         CODE_OFFS + 24, // func

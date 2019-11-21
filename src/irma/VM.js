@@ -69,6 +69,15 @@ class VM {
     }
 
     /**
+     * Destroys VM instance and all inner stuff. 
+     * this.plugins will be destroyed automatically
+     */
+    destroy() {
+        this.orgs.destroy();
+        this.orgs = null;
+    }
+
+    /**
      * Runs code of all organisms Config.codeRepeatsPerRun time and return. Big
      * Config.codeRepeatsPerRun value may slow down user and browser interaction
      */

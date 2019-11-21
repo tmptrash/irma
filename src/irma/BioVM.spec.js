@@ -130,7 +130,7 @@ describe('src/irma/VM', () => {
         });
     });
 
-    xdescribe('Scripts run', () => {
+    describe('Scripts run', () => {
         describe('Constants tests', () => {
             it('constant0',  () => run([0]));
             it('constant01', () => run([1], 1));
