@@ -1,51 +1,46 @@
+/* eslint-disable global-require */
 describe('src/irma/VM', () => {
-    let   Config    = require('./../Config');
-    let   oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
+    const Config    = require('./../Config');
+    const oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
     const WIDTH     = 10;
     const HEIGHT    = 10;
     //
     // This call should be before require('./VM') to setup our 
     // configuration instead of default
-    //
+    // eslint-disable-next-line no-use-before-define
     _setConfig();
     const VM        = require('./VM');
 
     const TG        = Config.CODE_CMD_OFFS;
-    const SH        = Config.CODE_CMD_OFFS+1;
-    const EQ        = Config.CODE_CMD_OFFS+2;
-    const NO        = Config.CODE_CMD_OFFS+3;
-    const AD        = Config.CODE_CMD_OFFS+4;
-    const SU        = Config.CODE_CMD_OFFS+5;
-    const MU        = Config.CODE_CMD_OFFS+6;
-    const DI        = Config.CODE_CMD_OFFS+7;
-    const IN        = Config.CODE_CMD_OFFS+8;
-    const DE        = Config.CODE_CMD_OFFS+9;
-    const RS        = Config.CODE_CMD_OFFS+10;
-    const LS        = Config.CODE_CMD_OFFS+11;
-    const RA        = Config.CODE_CMD_OFFS+12;
-    const FP        = Config.CODE_CMD_OFFS+13;
-    const FN        = Config.CODE_CMD_OFFS+14;
-    const FZ        = Config.CODE_CMD_OFFS+15;
-    const FG        = Config.CODE_CMD_OFFS+16;
-    const FL        = Config.CODE_CMD_OFFS+17;
-    const FE        = Config.CODE_CMD_OFFS+18;
-    const FNE       = Config.CODE_CMD_OFFS+19;
-    const LP        = Config.CODE_CMD_OFFS+20;
-    const CA        = Config.CODE_CMD_OFFS+21;
-    const FU        = Config.CODE_CMD_OFFS+22;
-    const RE        = Config.CODE_CMD_OFFS+23;
-    const EN        = Config.CODE_CMD_OFFS+24;
-    const RX        = Config.CODE_CMD_OFFS+25;
-    const AR        = Config.CODE_CMD_OFFS+26;
-    const AN        = Config.CODE_CMD_OFFS+27;
-    const OR        = Config.CODE_CMD_OFFS+28;
-    const XO        = Config.CODE_CMD_OFFS+29;
-    const NT        = Config.CODE_CMD_OFFS+30;
-    const FI        = Config.CODE_CMD_OFFS+31;
-
-    const JO        = Config.CODE_CMD_OFFS+41;
-    const SP        = Config.CODE_CMD_OFFS+42;
-
+    const EQ        = Config.CODE_CMD_OFFS+1;
+    const NO        = Config.CODE_CMD_OFFS+2;
+    const AD        = Config.CODE_CMD_OFFS+3;
+    const SU        = Config.CODE_CMD_OFFS+4;
+    const MU        = Config.CODE_CMD_OFFS+5;
+    const DI        = Config.CODE_CMD_OFFS+6;
+    const IN        = Config.CODE_CMD_OFFS+7;
+    const DE        = Config.CODE_CMD_OFFS+8;
+    const RS        = Config.CODE_CMD_OFFS+9;
+    const LS        = Config.CODE_CMD_OFFS+10;
+    const RA        = Config.CODE_CMD_OFFS+11;
+    const FP        = Config.CODE_CMD_OFFS+12;
+    const FN        = Config.CODE_CMD_OFFS+13;
+    const FZ        = Config.CODE_CMD_OFFS+14;
+    const FG        = Config.CODE_CMD_OFFS+15;
+    const FL        = Config.CODE_CMD_OFFS+16;
+    const FE        = Config.CODE_CMD_OFFS+17;
+    const FNE       = Config.CODE_CMD_OFFS+18;
+    const LP        = Config.CODE_CMD_OFFS+19;
+    const CA        = Config.CODE_CMD_OFFS+20;
+    const FU        = Config.CODE_CMD_OFFS+21;
+    const RE        = Config.CODE_CMD_OFFS+22;
+    const EN        = Config.CODE_CMD_OFFS+23;
+    const RX        = Config.CODE_CMD_OFFS+24;
+    const AR        = Config.CODE_CMD_OFFS+25;
+    const AN        = Config.CODE_CMD_OFFS+26;
+    const OR        = Config.CODE_CMD_OFFS+27;
+    const XO        = Config.CODE_CMD_OFFS+28;
+    const NT        = Config.CODE_CMD_OFFS+29;
     let   vm        = null;
 
     /**
@@ -77,7 +72,6 @@ describe('src/irma/VM', () => {
             orgProbs                   : new Uint32Array([10,1,3,1,5,1,1]),
             molDecayPeriod             : 1000,
             molDecayDistance           : 60,
-            molAmount                  : 60000,
             molCodeSize                : 8,
             molColor                   : 0xff0000,
             energyStepCoef             : 0.01,
@@ -98,11 +92,13 @@ describe('src/irma/VM', () => {
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
         org.compile();
+
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
         expect(org.ret).toBe(0);
         expect(org.line).toBe(0);
         vm.run();
+
         expect(org.ax).toBe(ax);
         expect(org.bx).toBe(bx);
         expect(org.ret).toBe(ret);
@@ -125,6 +121,7 @@ describe('src/irma/VM', () => {
     describe('VM creation', () => {
         it('Checks VM creation', () => {
             const vm1 = new VM(1);
+            
             expect(vm1.orgs.size).toBe(1);
             expect(vm1.population).toBe(0);
             expect(vm1.iteration).toBe(0);
@@ -134,347 +131,353 @@ describe('src/irma/VM', () => {
     describe('Scripts run', () => {
         describe('Constants tests', () => {
             it('constant0',  () => run([0]));
-            // it('constant01', () => run([1], 1));
-            // it('constant02', () => run([3], 3));
-            // it('constant1',  () => run([0], 0));
-            // it('constant2',  () => run([1], 1));
-            // it('constant3',  () => run([2], 2));
-            // it('constant4',  () => run([1, 2], 2));
-            // it('constant5',  () => run([1, NT], -2));
-            // it('constant6',  () => run([1, 2, 1], 1));
-            // it('constant7',  () => run([0, 1], 1));
-            // it('constant8',  () => run([1, 1], 1));
-            // it('constant9',  () => run([1, 0, 2], 2));
-            // it('constant10', () => run([1, 3, 2], 2));
-            // it('constant11', () => run([IN,10], 10));
-            // it('constant12', () => run([IN,10,IN], 11));
-            // it('constant13', () => run([1,TG,2,Config.CODE_CMD_OFFS], 1, 2));
-            // it('constant14', () => run([1,TG,2], 2, 1));
+            it('constant1',  () => run([1], 1));
+            it('constant2',  () => run([3], 3));
+            it('constant3',  () => run([0], 0));
+            it('constant4',  () => run([1], 1));
+            it('constant5',  () => run([2], 2));
+            it('constant6',  () => run([1, 2], 2));
+            it('constant7',  () => run([1, NT], -2));
+            it('constant8',  () => run([1, 2, 1], 1));
+            it('constant9',  () => run([0, 1], 1));
+            it('constant10', () => run([1, 1], 1));
+            it('constant11', () => run([1, 0, 2], 2));
+            it('constant12', () => run([1, 3, 2], 2));
+            it('constant13', () => run([IN,10], 10));
+            it('constant14', () => run([IN,10,IN], 11));
         });
 
-        // describe('toggle tests', () => {
-        //     it('toggle0', () => run([TG]));
-        //     it('toggle1', () => run([TG,TG]));
-        //     it('toggle2', () => run([1,TG], 0, 1));
-        //     it('toggle2', () => run([TG,1], 1));
-        //     it('toggle3', () => run([1,TG,2,TG], 1, 2));
-        //     it('toggle4', () => run([1,TG,2,TG,TG], 2, 1));
-        //     it('toggle5', () => run([TG,TG,1,TG,2], 2, 1));
-        //     it('toggle6', () => run([1,TG,TG], 1));
-        //     it('toggle7', () => run([1,TG,TG,TG], 0, 1));
-        // });
+        describe('toggle tests', () => {
+            it('toggle0',  () => run([TG]));
+            it('toggle1',  () => run([TG,TG]));
+            it('toggle2',  () => run([1,TG], 0, 1));
+            it('toggle3',  () => run([TG,1], 1));
+            it('toggle4',  () => run([1,TG,2,TG], 1, 2));
+            it('toggle5',  () => run([1,TG,2,TG,TG], 2, 1));
+            it('toggle6',  () => run([TG,TG,1,TG,2], 2, 1));
+            it('toggle7',  () => run([1,TG,TG], 1));
+            it('toggle8',  () => run([1,TG,TG,TG], 0, 1));
+            it('toggle9',  () => run([1,NT,TG,0,NT,TG], -2, -1));
+            it('toggle10', () => run([1,NT,TG,1,TG], -2, 1));
+            it('toggle11', () => run([1,TG,2,Config.CODE_CMD_OFFS], 1, 2));
+            it('toggle12', () => run([1,TG,2], 2, 1));
+            it('toggle13', () => run([1,TG,TG,TG,TG,TG], 0, 1));
+            it('toggle14', () => run([1,TG,TG,2,TG,TG,TG], 0, 2));
+        });
 
-        // describe('eq tests', () => {
-        //     it('eq0', () => run([EQ]));
-        //     it('eq1', () => run([EQ,EQ]));
-        //     it('eq2', () => run([1,EQ]));
-        //     it('eq3', () => run([1,TG,EQ], 1, 1));
-        // });
+        describe('eq tests', () => {
+            it('eq0', () => run([EQ]));
+            it('eq1', () => run([EQ,EQ]));
+            it('eq2', () => run([1,EQ]));
+            it('eq3', () => run([1,TG,EQ], 1, 1));
+        });
 
-        // describe('nop tests', () => {
-        //     it('nop0', () => run([NO]));
-        //     it('nop1', () => run([NO,NO,NO]));
-        //     it('nop2', () => run([1,NO], 1));
-        //     it('nop3', () => run([NO,1,NO], 1));
-        // });
+        describe('nop tests', () => {
+            it('nop0', () => run([NO]));
+            it('nop1', () => run([NO,NO,NO]));
+            it('nop2', () => run([1,NO], 1));
+            it('nop3', () => run([NO,1,NO], 1));
+        });
 
-        // describe('add tests', () => {
-        //     it('add0', () => run([AD]));
-        //     it('add1', () => run([1,TG,2,AD], 3, 1));
-        //     it('add2', () => run([1,TG,0,AD], 1, 1));
-        //     it('add3', () => run([1,TG,AD,AD], 2, 1));
-        //     it('add4', () => run([1,TG,2,AD], 3, 1));
-        // });
+        describe('add tests', () => {
+            it('add0', () => run([AD]));
+            it('add1', () => run([1,TG,2,AD], 3, 1));
+            it('add2', () => run([1,TG,0,AD], 1, 1));
+            it('add3', () => run([1,TG,AD,AD], 2, 1));
+            it('add4', () => run([1,TG,2,AD], 3, 1));
+        });
 
-        // describe('sub tests', () => {
-        //     it('sub0', () => run([SU]));
-        //     it('sub1', () => run([1,TG,2,SU], 1, 1));
-        //     it('sub2', () => run([1,TG,SU], -1, 1));
-        //     it('sub3', () => run([NT,TG,1,NT,SU], -1, -1));
-        //     it('sub4', () => run([3,TG,1,SU], -2, 3));
-        // });
+        describe('sub tests', () => {
+            it('sub0', () => run([SU]));
+            it('sub1', () => run([1,TG,2,SU], 1, 1));
+            it('sub2', () => run([1,TG,SU], -1, 1));
+            it('sub3', () => run([NT,TG,1,NT,SU], -1, -1));
+            it('sub4', () => run([3,TG,1,SU], -2, 3));
+        });
 
-        // describe('mul tests', () => {
-        //     it('mul0', () => run([MU]));
-        //     it('mul1', () => run([2,TG,3,MU], 6, 2));
-        //     it('mul2', () => run([1,TG,MU], 0, 1));
-        //     it('mul3', () => run([NT,TG,MU], 0, -1));
-        //     it('mul4', () => run([2,NT,TG,1,NT,MU], 6, -3));
-        //     it('mul5', () => run([1,TG,2,MU], 2, 1));
-        // });
+        describe('mul tests', () => {
+            it('mul0', () => run([MU]));
+            it('mul1', () => run([2,TG,3,MU], 6, 2));
+            it('mul2', () => run([1,TG,MU], 0, 1));
+            it('mul3', () => run([NT,TG,MU], 0, -1));
+            it('mul4', () => run([2,NT,TG,1,NT,MU], 6, -3));
+            it('mul5', () => run([1,TG,2,MU], 2, 1));
+        });
 
-        // describe('div tests', () => {
-        //     it('div0', () => run([DI], -Number.MAX_VALUE));
-        //     it('div1', () => run([3,TG,2,DI], 1, 3));
-        //     it('div2', () => run([1,TG,DI], 0, 1));
-        //     it('div3', () => run([NT,TG,DI], 0, -1));
-        //     it('div4', () => run([2,NT,TG,1,NT,DI], 1, -3));
-        //     it('div5', () => run([1,TG,2,DI], 2, 1));
-        //     it('div6', () => run([2,TG,NT,DI], 0, 2));
-        //     it('div7', () => run([2,DI], -Number.MAX_VALUE));
-        //     it('div8', () => run([5,TG,10,DI], 2, 5));
-        // });
+        describe('div tests', () => {
+            it('div0', () => run([DI], -Number.MAX_VALUE));
+            it('div1', () => run([3,TG,2,DI], 1, 3));
+            it('div2', () => run([1,TG,DI], 0, 1));
+            it('div3', () => run([NT,TG,DI], 0, -1));
+            it('div4', () => run([2,NT,TG,1,NT,DI], 1, -3));
+            it('div5', () => run([1,TG,2,DI], 2, 1));
+            it('div6', () => run([2,TG,NT,DI], 0, 2));
+            it('div7', () => run([2,DI], -Number.MAX_VALUE));
+            it('div8', () => run([5,TG,10,DI], 2, 5));
+        });
 
-        // describe('inc tests', () => {
-        //     it('inc0', () => run([IN], 1));
-        //     it('inc1', () => run([2,IN], 3));
-        //     it('inc2', () => run([2,IN,IN,IN], 5));
-        //     it('inc3', () => run([2,IN,IN,2,IN], 3));
-        //     it('inc4', () => run([1,NT,IN], -1));
-        //     it('inc5', () => run([1,IN], 2));
-        //     it('inc6', () => run([NT,IN]));
-        // });
+        describe('inc tests', () => {
+            it('inc0', () => run([IN], 1));
+            it('inc1', () => run([2,IN], 3));
+            it('inc2', () => run([2,IN,IN,IN], 5));
+            it('inc3', () => run([2,IN,IN,2,IN], 3));
+            it('inc4', () => run([1,NT,IN], -1));
+            it('inc5', () => run([1,IN], 2));
+            it('inc6', () => run([NT,IN]));
+        });
 
-        // describe('dec tests', () => {
-        //     it('dec0', () => run([DE], -1));
-        //     it('dec1', () => run([2,DE], 1));
-        //     it('dec2', () => run([2,DE,DE,DE], -1));
-        //     it('dec3', () => run([2,DE,DE,2,DE], 1));
-        //     it('dec4', () => run([1,NT,DE], -3));
-        //     it('dec5', () => run([1,DE]));
-        // });
+        describe('dec tests', () => {
+            it('dec0', () => run([DE], -1));
+            it('dec1', () => run([2,DE], 1));
+            it('dec2', () => run([2,DE,DE,DE], -1));
+            it('dec3', () => run([2,DE,DE,2,DE], 1));
+            it('dec4', () => run([1,NT,DE], -3));
+            it('dec5', () => run([1,DE]));
+        });
 
-        // describe('rshift tests', () => {
-        //     it('rshift0', () => run([RS]));
-        //     it('rshift1', () => run([1,RS]));
-        //     it('rshift2', () => run([2,RS], 1));
-        //     it('rshift3', () => run([8,RS], 4));
-        //     it('rshift4', () => run([8,RS,RS], 2));
-        //     it('rshift5', () => run([3,RS], 1));
-        //     it('rshift6', () => run([2,NT,RS], -2));
-        //     it('rshift7', () => run([4,RS], 2));
-        // });
+        describe('rshift tests', () => {
+            it('rshift0', () => run([RS]));
+            it('rshift1', () => run([1,RS]));
+            it('rshift2', () => run([2,RS], 1));
+            it('rshift3', () => run([8,RS], 4));
+            it('rshift4', () => run([8,RS,RS], 2));
+            it('rshift5', () => run([3,RS], 1));
+            it('rshift6', () => run([2,NT,RS], -2));
+            it('rshift7', () => run([4,RS], 2));
+        });
 
-        // describe('lshift tests', () => {
-        //     it('lshift0', () => run([LS]));
-        //     it('lshift1', () => run([1,LS], 2));
-        //     it('lshift2', () => run([2,LS], 4));
-        //     it('lshift3', () => run([8,LS], 16));
-        //     it('lshift4', () => run([8,LS,LS], 32));
-        //     it('lshift5', () => run([3,LS], 6));
-        //     it('lshift6', () => run([2,NT,LS], -6));
-        //     it('lshift7', () => run([3,NT,LS], -8));
-        // });
+        describe('lshift tests', () => {
+            it('lshift0', () => run([LS]));
+            it('lshift1', () => run([1,LS], 2));
+            it('lshift2', () => run([2,LS], 4));
+            it('lshift3', () => run([8,LS], 16));
+            it('lshift4', () => run([8,LS,LS], 32));
+            it('lshift5', () => run([3,LS], 6));
+            it('lshift6', () => run([2,NT,LS], -6));
+            it('lshift7', () => run([3,NT,LS], -8));
+        });
 
-        // describe('rand tests', () => {
-        //     it('rand0', () => {
-        //         const code = [RA];
-        //         Config.codeLinesPerIteration = code.length;
-        //         const org  = vm.orgs.get(0);
-        //         org.code  = code;
-        //         expect(org.ax).toBe(0);
-        //         expect(org.bx).toBe(0);
-        //         expect(org.ret).toBe(0);
-        //         expect(org.line).toBe(0);
-        //         vm.run();
-        //         expect(org.bx).toBe(0);
-        //         expect(org.ret).toBe(0);
-        //         expect(org.code).toEqual(code);
-        //         expect(org.line).toEqual(code.length);
-        //     })
-        // });
+        describe('rand tests', () => {
+            it('rand0', () => {
+                const code = [RA];
+                Config.codeLinesPerIteration = code.length;
+                const org  = vm.orgs.get(0);
+                org.code  = code;
 
-        // describe('ifp tests (ax > 0)', () => {
-        //     it('ifp0',   () => run([1,FP,2,EN], 2, 0, 0, false));
-        //     it('ifp1',   () => run([FP,2,EN], 0, 0, 0, false));
-        //     it('ifp2',   () => run([FP,2,3,EN], 0, 0, 0, false));
-        //     it('ifp3',   () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
-        //     it('ifp4',   () => run([1,FP,2,FP,4,EN,EN], 4, 0, 0, false, 5));
-        //     it('ifp5',   () => run([1,FP,0,FP,4,EN,EN], 0, 0, 0, false, 4));
-        //     it('ifp6',   () => run([FP,1,FP,2,EN,3], 3, 0, 0, false, 6));
-        //     it('ifp7',   () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
-        //     it('ifp8',   () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
-        //     it('ifp9',   () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
-        //     it('ifp10',  () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
-        //     it('ifp11',  () => run([FP,FP,2], 2, 0, 0, false, 3));
-        //     it('ifp12',  () => run([FP,2], 2, 0, 0, false, 2));
-        // });
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.line).toBe(0);
+                vm.run();
 
-        // describe('ifn tests (ax < 0)', () => {
-        //     it('ifn0',   () => run([1,FN,2,EN], 1, 0, 0, false, 2));
-        //     it('ifn1',   () => run([FN,2,EN], 0, 0, 0, false, 2));
-        //     it('ifn2',   () => run([FN,2,3,EN], 0, 0, 0, false, 2));
-        //     it('ifn3',   () => run([FN,1,FN,2,EN,3,EN], 0, 0, 0, false, 2));
-        //     it('ifn4',   () => run([NT,FN,1,NT,FN,4,EN,EN], 4, 0, 0, false, 6));
-        //     it('ifn5',   () => run([NT,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
-        //     it('ifn6',   () => run([FN,1,FN,2,EN,3], 3, 0, 0, false, 4));
-        //     it('ifn7',   () => run([FN,2,EN,3,EN], 3, 0, 0, false, 3));
-        //     it('ifn8',   () => run([NT,FN,1,EN,3,EN], 3, 0, 0, false, 5));
-        //     it('ifn9',   () => run([FN,1,FN,2,EN], 1, 0, 0, false, 4));
-        //     it('ifn10',  () => run([FN,FN,2,EN], 0, 0, 0, false, 3));
-        //     it('ifn11',  () => run([FN,FN,2], 2, 0, 0, false, 3));
-        //     it('ifn12',  () => run([FN,2], 2, 0, 0, false, 2));
-        // });
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            })
+        });
 
-        // describe('ifz tests (ax === 0)', () => {
-        //     it('ifz0',   () => run([1,FZ,2,EN], 1, 0, 0, false, 3));
-        //     it('ifz1',   () => run([FZ,2,EN], 2, 0, 0, false, 2));
-        //     it('ifz2',   () => run([FZ,2,3,EN], 3, 0, 0, false, 3));
-        //     it('ifz3',   () => run([FZ,1,FZ,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifz4',   () => run([NT,FZ,1,NT,FZ,4,EN,EN], -1, 0, 0, false, 3));
-        //     it('ifz5',   () => run([FZ,0,FZ,4,EN,EN], 4, 0, 0, false, 5));
-        //     it('ifz6',   () => run([FZ,1,FZ,2,EN,3], 3, 0, 0, false, 4));
-        //     it('ifz7',   () => run([FZ,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifz8',   () => run([FZ,1,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifz9',   () => run([FZ,NT,FZ,2,EN], -1, 0, 0, false, 4));
-        //     it('ifz10',  () => run([FZ,FZ,2,EN], 2, 0, 0, false, 3));
-        //     it('ifz11',  () => run([FZ,FZ,2], 2, 0, 0, false, 3));
-        //     it('ifz12',  () => run([FZ,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifp tests (ax > 0)', () => {
+            it('ifp0',   () => run([1,FP,2,EN], 2, 0, 0, false));
+            it('ifp1',   () => run([FP,2,EN], 0, 0, 0, false));
+            it('ifp2',   () => run([FP,2,3,EN], 0, 0, 0, false));
+            it('ifp3',   () => run([FP,1,FP,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifp4',   () => run([1,FP,2,FP,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifp5',   () => run([1,FP,0,FP,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifp6',   () => run([FP,1,FP,2,EN,3], 3, 0, 0, false, 6));
+            it('ifp7',   () => run([FP,2,EN,3,EN], 3, 0, 0, false, 2));
+            it('ifp8',   () => run([FP,1,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifp9',   () => run([FP,1,FP,2,EN], 2, 0, 0, false, 4));
+            it('ifp10',  () => run([FP,FP,2,EN], 0, 0, 0, false, 3));
+            it('ifp11',  () => run([FP,FP,2], 2, 0, 0, false, 3));
+            it('ifp12',  () => run([FP,2], 2, 0, 0, false, 2));
+        });
 
-        // describe('ifg tests (ax > bx)', () => {
-        //     it('ifg0',   () => run([FG,2,EN], 0, 0, 0, false, 2));
-        //     it('ifg1',   () => run([1,FG,2,EN], 2, 0, 0, false, 3));
-        //     it('ifg2',   () => run([FG,2,3,EN], 0, 0, 0, false, 2));
-        //     it('ifg3',   () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, 0, false, 8));
-        //     it('ifg4',   () => run([NT,FG,1,NT,FG,4,EN,EN], -1, 0, 0, false, 3));
-        //     it('ifg5',   () => run([1,FG,0,FG,4,EN,EN], 0, 0, 0, false, 5));
-        //     it('ifg6',   () => run([FG,1,FG,2,EN,3], 3, 0, 0, false, 6));
-        //     it('ifg7',   () => run([FG,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifg8',   () => run([FG,1,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifg9',   () => run([FG,NT,FG,2,EN], -1, 0, 0, false, 4));
-        //     it('ifg10',  () => run([FG,FG,2,EN], 0, 0, 0, false, 3));
-        //     it('ifg11',  () => run([FG,FG,2], 2, 0, 0, false, 3));
-        //     it('ifg12',  () => run([FG,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifn tests (ax < 0)', () => {
+            it('ifn0',   () => run([1,FN,2,EN], 1, 0, 0, false, 2));
+            it('ifn1',   () => run([FN,2,EN], 0, 0, 0, false, 2));
+            it('ifn2',   () => run([FN,2,3,EN], 0, 0, 0, false, 2));
+            it('ifn3',   () => run([FN,1,FN,2,EN,3,EN], 0, 0, 0, false, 2));
+            it('ifn4',   () => run([NT,FN,1,NT,FN,4,EN,EN], 4, 0, 0, false, 6));
+            it('ifn5',   () => run([NT,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
+            it('ifn6',   () => run([FN,1,FN,2,EN,3], 3, 0, 0, false, 4));
+            it('ifn7',   () => run([FN,2,EN,3,EN], 3, 0, 0, false, 3));
+            it('ifn8',   () => run([NT,FN,1,EN,3,EN], 3, 0, 0, false, 5));
+            it('ifn9',   () => run([FN,1,FN,2,EN], 1, 0, 0, false, 4));
+            it('ifn10',  () => run([FN,FN,2,EN], 0, 0, 0, false, 3));
+            it('ifn11',  () => run([FN,FN,2], 2, 0, 0, false, 3));
+            it('ifn12',  () => run([FN,2], 2, 0, 0, false, 2));
+        });
 
-        // describe('ifl tests (ax < bx)', () => {
-        //     it('ifl0',   () => run([FL,2,EN], 0, 0, 0, false, 2));
-        //     it('ifl1',   () => run([1,FL,2,EN], 1, 0, 0, false, 3));
-        //     it('ifl2',   () => run([FL,2,3,EN], 0, 0, 0, false, 2));
-        //     it('ifl3',   () => run([NT,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
-        //     it('ifl4',   () => run([NT,FL,1,NT,FL,4,EN,EN], 4, 0, 0, false, 8));
-        //     it('ifl5',   () => run([1,FL,0,FL,4,EN,EN], 1, 0, 0, false, 3));
-        //     it('ifl6',   () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 5));
-        //     it('ifl7',   () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifl8',   () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifl9',   () => run([FL,NT,FL,2,EN], 2, 0, 0, false, 4));
-        //     it('ifl10',  () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
-        //     it('ifl11',  () => run([FL,FL,2], 2, 0, 0, false, 3));
-        //     it('ifl12',  () => run([FL,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifz tests (ax === 0)', () => {
+            it('ifz0',   () => run([1,FZ,2,EN], 1, 0, 0, false, 3));
+            it('ifz1',   () => run([FZ,2,EN], 2, 0, 0, false, 2));
+            it('ifz2',   () => run([FZ,2,3,EN], 3, 0, 0, false, 3));
+            it('ifz3',   () => run([FZ,1,FZ,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifz4',   () => run([NT,FZ,1,NT,FZ,4,EN,EN], -1, 0, 0, false, 3));
+            it('ifz5',   () => run([FZ,0,FZ,4,EN,EN], 4, 0, 0, false, 5));
+            it('ifz6',   () => run([FZ,1,FZ,2,EN,3], 3, 0, 0, false, 4));
+            it('ifz7',   () => run([FZ,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifz8',   () => run([FZ,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifz9',   () => run([FZ,NT,FZ,2,EN], -1, 0, 0, false, 4));
+            it('ifz10',  () => run([FZ,FZ,2,EN], 2, 0, 0, false, 3));
+            it('ifz11',  () => run([FZ,FZ,2], 2, 0, 0, false, 3));
+            it('ifz12',  () => run([FZ,2], 2, 0, 0, false, 2));
+        });
 
-        // describe('ife tests (ax === bx)', () => {
-        //     it('ife0',   () => run([FE,2,EN], 2, 0, 0, false, 2));
-        //     it('ife1',   () => run([1,FE,2,EN], 1, 0, 0, false, 4));
-        //     it('ife2',   () => run([FE,2,3,EN], 3, 0, 0, false, 4));
-        //     it('ife3',   () => run([NT,FE,2,FE,3,EN,4,EN], -1, 0, 0, false, 3));
-        //     it('ife4',   () => run([NT,FE,1,NT,FE,4,EN,EN], -1, 0, 0, false, 3));
-        //     it('ife5',   () => run([FE,0,FE,4,EN,EN], 4, 0, 0, false, 6));
-        //     it('ife6',   () => run([FE,1,FE,2,EN,3], 3, 0, 0, false, 5));
-        //     it('ife7',   () => run([FE,2,EN,3,EN], 3, 0, 0, false, 5));
-        //     it('ife8',   () => run([1,FE,1,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ife9',   () => run([FE,NT,FE,2,EN], -1, 0, 0, false, 4));
-        //     it('ife10',  () => run([FE,FE,2,EN], 2, 0, 0, false, 4));
-        //     it('ife11',  () => run([FE,FE,2], 2, 0, 0, false, 3));
-        //     it('ife12',  () => run([FE,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifg tests (ax > bx)', () => {
+            it('ifg0',   () => run([FG,2,EN], 0, 0, 0, false, 2));
+            it('ifg1',   () => run([1,FG,2,EN], 2, 0, 0, false, 3));
+            it('ifg2',   () => run([FG,2,3,EN], 0, 0, 0, false, 2));
+            it('ifg3',   () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, 0, false, 8));
+            it('ifg4',   () => run([NT,FG,1,NT,FG,4,EN,EN], -1, 0, 0, false, 3));
+            it('ifg5',   () => run([1,FG,0,FG,4,EN,EN], 0, 0, 0, false, 5));
+            it('ifg6',   () => run([FG,1,FG,2,EN,3], 3, 0, 0, false, 6));
+            it('ifg7',   () => run([FG,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifg8',   () => run([FG,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifg9',   () => run([FG,NT,FG,2,EN], -1, 0, 0, false, 4));
+            it('ifg10',  () => run([FG,FG,2,EN], 0, 0, 0, false, 3));
+            it('ifg11',  () => run([FG,FG,2], 2, 0, 0, false, 3));
+            it('ifg12',  () => run([FG,2], 2, 0, 0, false, 2));
+        });
 
-        // describe('ifne tests (ax !== bx)', () => {
-        //     it('ifne0',  () => run([FNE,2,EN], 0, 0, 0, false, 2));
-        //     it('ifne1',  () => run([1,FNE,2,EN], 2, 0, 0, false, 4));
-        //     it('ifne2',  () => run([FNE,2,3,EN], 0, 0, 0, false, 4));
-        //     it('ifne3',  () => run([NT,FNE,2,FNE,3,EN,4,EN], 4, 0, 0, false, 8));
-        //     it('ifne4',  () => run([NT,FNE,1,NT,FNE,4,EN,EN], 4, 0, 0, false, 6));
-        //     it('ifne5',  () => run([FNE,0,FNE,4,EN,EN], 0, 0, 0, false, 2));
-        //     it('ifne6',  () => run([FNE,1,FNE,2,EN,3], 3, 0, 0, false, 6));
-        //     it('ifne7',  () => run([FNE,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifne8',  () => run([1,FNE,1,EN,3,EN], 3, 0, 0, false, 5));
-        //     it('ifne9',  () => run([FNE,NT,FNE,2,EN], 2, 0, 0, false, 5));
-        //     it('ifne10', () => run([FNE,FNE,2,EN], 0, 0, 0, false, 4));
-        //     it('ifne11', () => run([FNE,FNE,2], 2, 0, 0, false, 3));
-        //     it('ifne12', () => run([FNE,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifl tests (ax < bx)', () => {
+            it('ifl0',   () => run([FL,2,EN], 0, 0, 0, false, 2));
+            it('ifl1',   () => run([1,FL,2,EN], 1, 0, 0, false, 3));
+            it('ifl2',   () => run([FL,2,3,EN], 0, 0, 0, false, 2));
+            it('ifl3',   () => run([NT,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
+            it('ifl4',   () => run([NT,FL,1,NT,FL,4,EN,EN], 4, 0, 0, false, 8));
+            it('ifl5',   () => run([1,FL,0,FL,4,EN,EN], 1, 0, 0, false, 3));
+            it('ifl6',   () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 5));
+            it('ifl7',   () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifl8',   () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifl9',   () => run([FL,NT,FL,2,EN], 2, 0, 0, false, 4));
+            it('ifl10',  () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
+            it('ifl11',  () => run([FL,FL,2], 2, 0, 0, false, 3));
+            it('ifl12',  () => run([FL,2], 2, 0, 0, false, 2));
+        });
 
-        // describe('loop tests', () => {
-        //     it('loop0',  () => run([LP], 0, 0, 0, false, 1));
-        //     it('loop1',  () => run([LP,EN], 0, 0, 0, false, 2));
-        //     it('loop2',  () => run([LP,1,EN], 0, 0, 0, false, 2));
-        //     it('loop3',  () => run([1,LP,2,EN], 2, 0, 0, false, 4));
-        //     it('loop4',  () => run([1,LP,2,EN,3], 3, 0, 0, false, 6));
-        //     it('loop5',  () => run([1,LP,IN,EN], 2, 0, 0, false, 4));
-        //     it('loop6',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
-        //     it('loop7',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
-        //     it('loop8',  () => run([1,LP,IN,EN], 2, 0, 0, false, 5));
-        //     it('loop9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, 0, false, 10));
-        //     it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
-        // });
+        describe('ife tests (ax === bx)', () => {
+            it('ife0',   () => run([FE,2,EN], 2, 0, 0, false, 2));
+            it('ife1',   () => run([1,FE,2,EN], 1, 0, 0, false, 4));
+            it('ife2',   () => run([FE,2,3,EN], 3, 0, 0, false, 4));
+            it('ife3',   () => run([NT,FE,2,FE,3,EN,4,EN], -1, 0, 0, false, 3));
+            it('ife4',   () => run([NT,FE,1,NT,FE,4,EN,EN], -1, 0, 0, false, 3));
+            it('ife5',   () => run([FE,0,FE,4,EN,EN], 4, 0, 0, false, 6));
+            it('ife6',   () => run([FE,1,FE,2,EN,3], 3, 0, 0, false, 5));
+            it('ife7',   () => run([FE,2,EN,3,EN], 3, 0, 0, false, 5));
+            it('ife8',   () => run([1,FE,1,EN,3,EN], 3, 0, 0, false, 4));
+            it('ife9',   () => run([FE,NT,FE,2,EN], -1, 0, 0, false, 4));
+            it('ife10',  () => run([FE,FE,2,EN], 2, 0, 0, false, 4));
+            it('ife11',  () => run([FE,FE,2], 2, 0, 0, false, 3));
+            it('ife12',  () => run([FE,2], 2, 0, 0, false, 2));
+        });
 
-        // describe('call/func tests', () => {
-        //     it('call0',  () => run([CA], 0, 0, 0, false, 1));
-        //     it('call1',  () => run([CA,IN,FU,IN,EN], 1, 0, 0, false, 4));
-        //     it('call2',  () => run([1,CA,IN,FU,IN,FU,EN,EN], 2, 0, 0, false, 6));
-        //     it('call3',  () => run([FU,IN,EN,CA], 0, 0, 0, false, 4));
-        //     it('call4',  () => run([FU,IN,EN,CA,CA], 0, 0, 0, false, 8));
-        //     it('call5',  () => run([FU,IN,CA], 1, 0, 0, false, 4));
-        //     it('call6',  () => run([FU,FU,IN,EN,CA], 0, 0, 0, false, 5));
-        //     it('call7',  () => run([FU,IN,EN,2,CA], 3, 0, 0, false, 4));
-        //     it('call8',  () => run([FU,IN,EN,1,NT,CA], -1, 0, 0, false, 5));
-        //     it('call9',  () => run([FU,IN,CA,EN,CA], 2, 0, 0, false, 5));
-        //     it('call10', () => run([CA,CA,FU,IN,EN], 0, 0, 0, false, 7));
-        //     it('call11', () => run([CA,CA,FU,IN,EN], 1, 0, 0, false, 5));
-        //     it('call11', () => run([CA,IN,IN,EN], 2, 0, 0, false, 4));
-        //     it('call12', () => run([CA,IN,FU,IN,FU], 2, 0, 0, false, 5));
-        // });
+        describe('ifne tests (ax !== bx)', () => {
+            it('ifne0',  () => run([FNE,2,EN], 0, 0, 0, false, 2));
+            it('ifne1',  () => run([1,FNE,2,EN], 2, 0, 0, false, 4));
+            it('ifne2',  () => run([FNE,2,3,EN], 0, 0, 0, false, 4));
+            it('ifne3',  () => run([NT,FNE,2,FNE,3,EN,4,EN], 4, 0, 0, false, 8));
+            it('ifne4',  () => run([NT,FNE,1,NT,FNE,4,EN,EN], 4, 0, 0, false, 6));
+            it('ifne5',  () => run([FNE,0,FNE,4,EN,EN], 0, 0, 0, false, 2));
+            it('ifne6',  () => run([FNE,1,FNE,2,EN,3], 3, 0, 0, false, 6));
+            it('ifne7',  () => run([FNE,2,EN,3,EN], 3, 0, 0, false, 4));
+            it('ifne8',  () => run([1,FNE,1,EN,3,EN], 3, 0, 0, false, 5));
+            it('ifne9',  () => run([FNE,NT,FNE,2,EN], 2, 0, 0, false, 5));
+            it('ifne10', () => run([FNE,FNE,2,EN], 0, 0, 0, false, 4));
+            it('ifne11', () => run([FNE,FNE,2], 2, 0, 0, false, 3));
+            it('ifne12', () => run([FNE,2], 2, 0, 0, false, 2));
+        });
 
-        // describe('ret tests', () => {
-        //     it('ret0',   () => run([RE], 0, 0, 0, false, 1));
-        //     it('ret1',   () => run([FU,RE,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('ret2',   () => run([FU,RE,RE,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('ret3',   () => run([FU,IN,RE,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('ret4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 0, 0, false, 7));
-        //     it('ret5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, 0, false, 5));
-        //     it('ret6',   () => run([FU,FG,RE,EN,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('ret7',   () => run([FU,FG,FL,RE,EN,EN,EN,CA,IN], 1, 0, 0, false, 6));
-        //     it('ret8',   () => run([FU,FG,FL,IN,RE,EN,EN,EN,CA], 0, 0, 0, false, 6));
-        //     it('ret9',   () => run([NO,NO,RE,IN,IN], 0, 0, 0, false, 5));
-        //     it('ret10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, 0, false, 5));
-        //     it('ret11',  () => run([RE], 0, 0, 0, false, 10));
-        // });
+        describe('loop tests', () => {
+            it('loop0',  () => run([LP], 0, 0, 0, false, 1));
+            it('loop1',  () => run([LP,EN], 0, 0, 0, false, 2));
+            it('loop2',  () => run([LP,1,EN], 0, 0, 0, false, 2));
+            it('loop3',  () => run([1,LP,2,EN], 2, 0, 0, false, 4));
+            it('loop4',  () => run([1,LP,2,EN,3], 3, 0, 0, false, 6));
+            it('loop5',  () => run([1,LP,IN,EN], 2, 0, 0, false, 4));
+            it('loop6',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
+            it('loop7',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
+            it('loop8',  () => run([1,LP,IN,EN], 2, 0, 0, false, 5));
+            it('loop9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, 0, false, 10));
+            it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
+        });
 
-        // describe('retax tests', () => {
-        //     it('retax0', () => run([RX]));
-        //     it('retax1', () => run([2,AR,1,RX], 2, 0, 2));
-        // });
+        describe('call/func tests', () => {
+            it('call0',  () => run([CA], 0, 0, 0, false, 1));
+            it('call1',  () => run([CA,IN,FU,IN,EN], 1, 0, 0, false, 4));
+            it('call2',  () => run([1,CA,IN,FU,IN,FU,EN,EN], 2, 0, 0, false, 6));
+            it('call3',  () => run([FU,IN,EN,CA], 0, 0, 0, false, 4));
+            it('call4',  () => run([FU,IN,EN,CA,CA], 0, 0, 0, false, 8));
+            it('call5',  () => run([FU,IN,CA], 1, 0, 0, false, 4));
+            it('call6',  () => run([FU,FU,IN,EN,CA], 0, 0, 0, false, 5));
+            it('call7',  () => run([FU,IN,EN,2,CA], 3, 0, 0, false, 4));
+            it('call8',  () => run([FU,IN,EN,1,NT,CA], -1, 0, 0, false, 5));
+            it('call9',  () => run([FU,IN,CA,EN,CA], 2, 0, 0, false, 5));
+            it('call10', () => run([CA,CA,FU,IN,EN], 0, 0, 0, false, 7));
+            it('call11', () => run([CA,CA,FU,IN,EN], 1, 0, 0, false, 5));
+            it('call12', () => run([CA,IN,IN,EN], 2, 0, 0, false, 4));
+            it('call13', () => run([CA,IN,FU,IN,FU], 2, 0, 0, false, 5));
+        });
 
-        // describe('axret tests', () => {
-        //     it('axret0', () => run([AR]));
-        //     it('axret1', () => run([1,AR], 1, 0, 1));
-        //     it('axret2', () => run([1,AR,2,AR], 2, 0, 2));
-        // });
+        describe('ret tests', () => {
+            it('ret0',   () => run([RE], 0, 0, 0, false, 1));
+            it('ret1',   () => run([FU,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret2',   () => run([FU,RE,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret3',   () => run([FU,IN,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 0, 0, false, 7));
+            it('ret5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, 0, false, 5));
+            it('ret6',   () => run([FU,FG,RE,EN,EN,CA,IN], 1, 0, 0, false, 5));
+            it('ret7',   () => run([FU,FG,FL,RE,EN,EN,EN,CA,IN], 1, 0, 0, false, 6));
+            it('ret8',   () => run([FU,FG,FL,IN,RE,EN,EN,EN,CA], 0, 0, 0, false, 6));
+            it('ret9',   () => run([NO,NO,RE,IN,IN], 0, 0, 0, false, 5));
+            it('ret10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, 0, false, 5));
+            it('ret11',  () => run([RE], 0, 0, 0, false, 10));
+        });
 
-        // describe('and tests', () => {
-        //     it('and0',   () => run([AN]));
-        //     it('and1',   () => run([1,TG, 1, AN], 1, 1));
-        //     it('and2',   () => run([1,AN]));
-        //     it('and3',   () => run([1,TG,AN], 0, 1));
-        //     it('and4',   () => run([3,TG,2,AN], 2, 3));
-        //     it('and4',   () => run([2,NT,TG,1,NT,AN], -4, -3));
-        //     it('and5',   () => run([3,AR,0,AN], 0, 0, 3));
-        // });
+        describe('retax tests', () => {
+            it('retax0', () => run([RX]));
+            it('retax1', () => run([2,AR,1,RX], 2, 0, 2));
+        });
 
-        // describe('or tests', () => {
-        //     it('or0',    () => run([OR]));
-        //     it('or1',    () => run([1,OR], 1));
-        //     it('or2',    () => run([1,TG,2,OR], 3, 1));
-        //     it('or3',    () => run([1,TG,OR],1, 1));
-        //     it('or4',    () => run([3,TG,2,OR], 3, 3));
-        //     it('or4',    () => run([2,NT,TG,1,NT,OR], -1, -3));
-        // });
+        describe('axret tests', () => {
+            it('axret0', () => run([AR]));
+            it('axret1', () => run([1,AR], 1, 0, 1));
+            it('axret2', () => run([1,AR,2,AR], 2, 0, 2));
+        });
 
-        // describe('xor tests', () => {
-        //     it('xor0',   () => run([XO]));
-        //     it('xor1',   () => run([1,TG,1,XO], 0, 1));
-        //     it('xor2',   () => run([1,XO], 1));
-        //     it('xor3',   () => run([1,TG,2,XO], 3, 1));
-        //     it('xor4',   () => run([1,NT,XO], -2));
-        //     it('xor5',   () => run([2,TG,1,XO,XO], 1, 2));
-        // });
+        describe('and tests', () => {
+            it('and0',   () => run([AN]));
+            it('and1',   () => run([1,TG, 1, AN], 1, 1));
+            it('and2',   () => run([1,AN]));
+            it('and3',   () => run([1,TG,AN], 0, 1));
+            it('and4',   () => run([3,TG,2,AN], 2, 3));
+            it('and5',   () => run([2,NT,TG,1,NT,AN], -4, -3));
+            it('and6',   () => run([3,AR,0,AN], 0, 0, 3));
+        });
 
-        // describe('not tests', () => {
-        //     it('not0',   () => run([NT], -1));
-        //     it('not1',   () => run([1,TG,1,NT], -2, 1));
-        //     it('not2',   () => run([1,NT], -2));
-        // });
+        describe('or tests', () => {
+            it('or0',    () => run([OR]));
+            it('or1',    () => run([1,OR], 1));
+            it('or2',    () => run([1,TG,2,OR], 3, 1));
+            it('or3',    () => run([1,TG,OR],1, 1));
+            it('or4',    () => run([3,TG,2,OR], 3, 3));
+            it('or5',    () => run([2,NT,TG,1,NT,OR], -1, -3));
+        });
+
+        describe('xor tests', () => {
+            it('xor0',   () => run([XO]));
+            it('xor1',   () => run([1,TG,1,XO], 0, 1));
+            it('xor2',   () => run([1,XO], 1));
+            it('xor3',   () => run([1,TG,2,XO], 3, 1));
+            it('xor4',   () => run([1,NT,XO], -2));
+            it('xor5',   () => run([2,TG,1,XO,XO], 1, 2));
+        });
+
+        describe('not tests', () => {
+            it('not0',   () => run([NT], -1));
+            it('not1',   () => run([1,TG,1,NT], -2, 1));
+            it('not2',   () => run([1,NT], -2));
+        });
     });
 });

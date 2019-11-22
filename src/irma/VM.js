@@ -117,116 +117,107 @@ class VM {
                     switch (cmd) {
                         case CODE_CMD_OFFS: {    // toggle
                             ++line;
-                            const tmp = ax;
-                            ax = bx;
-                            bx = tmp;
+                            ax ^= bx;
+                            bx ^= ax;
+                            ax ^= bx;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 1:  // shift
-                            ++line;
-                            org.ax = ax;
-                            org.bx = bx;
-                            org.shift();
-                            ax = org.ax;
-                            bx = org.bx;
-                            continue;
-
-                        case CODE_CMD_OFFS + 2:  // eq
+                        case CODE_CMD_OFFS + 1:  // eq
                             ++line;
                             ax = bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 3:  // nop
+                        case CODE_CMD_OFFS + 2:  // nop
                             ++line;
                             continue;
 
-                        case CODE_CMD_OFFS + 4:  // add
+                        case CODE_CMD_OFFS + 3:  // add
                             ++line;
                             ax += bx; 
                             if (Number.isFinite(ax)) {continue}
                             ax = Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 5:  // sub
+                        case CODE_CMD_OFFS + 4:  // sub
                             ++line;
                             ax -= bx;
                             if (Number.isFinite(ax)) {continue}
                             ax = -Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 6:  // mul
+                        case CODE_CMD_OFFS + 5:  // mul
                             ++line;
                             ax *= bx;
                             if (Number.isFinite(ax)) {continue}
                             ax = Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 7:  // div
+                        case CODE_CMD_OFFS + 6:  // div
                             ++line;
                             ax = Math.round(ax / bx);
                             if (Number.isFinite(ax)) {continue}
                             ax = -Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 8: // inc
+                        case CODE_CMD_OFFS + 7: // inc
                             ++line;
                             ax++;
                             if (Number.isFinite(ax)) {continue}
                             ax = Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 9:  // dec
+                        case CODE_CMD_OFFS + 8:  // dec
                             ++line;
                             ax--;
                             if (Number.isFinite(ax)) {continue}
                             ax = -Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 10:  // rshift
+                        case CODE_CMD_OFFS + 9:  // rshift
                             ++line;
                             ax >>= 1;
                             continue;
 
-                        case CODE_CMD_OFFS + 11:  // lshift
+                        case CODE_CMD_OFFS + 10:  // lshift
                             ++line;
                             ax <<= 1;
                             continue;
 
-                        case CODE_CMD_OFFS + 12:  // rand
+                        case CODE_CMD_OFFS + 11:  // rand
                             ++line;
                             ax = ax < 0 ? rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND : rand(ax);
                             continue;
 
-                        case CODE_CMD_OFFS + 13:  // ifp
+                        case CODE_CMD_OFFS + 12:  // ifp
                             line = ax > 0 ? line + 1 : org.offs[line];
                             continue;
 
-                        case CODE_CMD_OFFS + 14:  // ifn
+                        case CODE_CMD_OFFS + 13:  // ifn
                             line = ax < 0 ? line + 1 : org.offs[line];
                             continue;
 
-                        case CODE_CMD_OFFS + 15:  // ifz
+                        case CODE_CMD_OFFS + 14:  // ifz
                             line = ax === 0 ? line + 1 : org.offs[line];
                             continue;
 
-                        case CODE_CMD_OFFS + 16:  // ifg
+                        case CODE_CMD_OFFS + 15:  // ifg
                             line = ax > bx ? line + 1 : org.offs[line];
                             continue;
 
-                        case CODE_CMD_OFFS + 17:  // ifl
+                        case CODE_CMD_OFFS + 16:  // ifl
                             line = ax < bx ? line + 1 : org.offs[line];
                             continue;
 
-                        case CODE_CMD_OFFS + 18:  // ife
+                        case CODE_CMD_OFFS + 17:  // ife
                             line = ax === bx ? line + 1 : org.offs[line];
                             continue;
 
-                        case CODE_CMD_OFFS + 19:  // ifne
+                        case CODE_CMD_OFFS + 18:  // ifne
                             line = ax !== bx ? line + 1 : org.offs[line];
                             continue;
 
-                        case CODE_CMD_OFFS + 20: {// loop
+                        case CODE_CMD_OFFS + 19: {// loop
                             const loops = org.loops;
                             //
                             // previous line was "end", so this is next iteration cicle
@@ -244,7 +235,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 21: {// call
+                        case CODE_CMD_OFFS + 20: {// call
                             if (org.fCount === 0) {++line; continue}
                             let index = org.stackIndex;
                             if (index >= CODE_STACK_SIZE * 3) {index = -1}
@@ -260,7 +251,7 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 22:   // func
+                        case CODE_CMD_OFFS + 21:   // func
                             line = org.offs[line];
                             if (line === 0 && org.stackIndex >= 0) {
                                 const stack = org.stack;
@@ -271,7 +262,7 @@ class VM {
                             }
                             continue;
 
-                        case CODE_CMD_OFFS + 23: {// ret
+                        case CODE_CMD_OFFS + 22: {// ret
                             const stack = org.stack;
                             let index = org.stackIndex;
                             if (index < 0) {line = 0; continue}
@@ -282,13 +273,13 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 24:  // end
+                        case CODE_CMD_OFFS + 23:  // end
                             switch (code[org.offs[line]]) {
-                                case CODE_CMD_OFFS + 22: // loop
+                                case CODE_CMD_OFFS + 19: // loop
                                     line = org.offs[line];
                                     org.isLoop = true;
                                     break;
-                                case CODE_CMD_OFFS + 24: {// func
+                                case CODE_CMD_OFFS + 21: {// func
                                     const stack = org.stack;
                                     let index = org.stackIndex;
                                     if (index < 0) {break}
@@ -304,37 +295,37 @@ class VM {
                             }
                             continue;
 
-                        case CODE_CMD_OFFS + 25:  // retax
+                        case CODE_CMD_OFFS + 24:  // retax
                             ++line;
                             ax = org.ret;
                             continue;
 
-                        case CODE_CMD_OFFS + 26:  // axret
+                        case CODE_CMD_OFFS + 25:  // axret
                             ++line;
                             org.ret = ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 27:  // and
+                        case CODE_CMD_OFFS + 26:  // and
                             ++line;
                             ax &= bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 28:  // or
+                        case CODE_CMD_OFFS + 27:  // or
                             ++line;
                             ax |= bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 29:  // xor
+                        case CODE_CMD_OFFS + 28:  // xor
                             ++line;
                             ax ^= bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 30:  // not
+                        case CODE_CMD_OFFS + 29:  // not
                             ++line;
                             ax = ~ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 31:  // find
+                        case CODE_CMD_OFFS + 30:  // find
                             ++line;
                             //
                             // Find only one command
@@ -377,7 +368,7 @@ class VM {
                             }
                             continue;
 
-                        case CODE_CMD_OFFS + 32: {// move
+                        case CODE_CMD_OFFS + 31: {// move
                             ++line;
                             const find0    = org.find0;
                             const find1    = org.find1;
@@ -404,41 +395,41 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 33:  // age
+                        case CODE_CMD_OFFS + 32:  // age
                             ++line;
                             ax = org.age;
                             continue;
 
-                        case CODE_CMD_OFFS + 34:  // line
+                        case CODE_CMD_OFFS + 33:  // line
                             ax = line++;
                             continue;
 
-                        case CODE_CMD_OFFS + 35:  // len
+                        case CODE_CMD_OFFS + 34:  // len
                             line++;
                             ax = code.length;
                             continue;
 
-                        case CODE_CMD_OFFS + 36:  // left
+                        case CODE_CMD_OFFS + 35:  // left
                             line++;
                             if (--org.pos < 0) {org.pos = org.mem.length - 1}
                             continue;
 
-                        case CODE_CMD_OFFS + 37:  // right
+                        case CODE_CMD_OFFS + 36:  // right
                             line++;
                             if (++org.pos === org.mem.length) {org.pos = 0}
                             continue;
 
-                        case CODE_CMD_OFFS + 38:  // save
+                        case CODE_CMD_OFFS + 37:  // save
                             line++;
                             org.mem[org.pos] = ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 39:  // load
+                        case CODE_CMD_OFFS + 38:  // load
                             line++;
                             ax = org.mem[org.pos];
                             continue;
 
-                        case CODE_CMD_OFFS + 40:  // limit
+                        case CODE_CMD_OFFS + 39:  // limit
                             line++;
                             org.find0 = ax;
                             org.find1 = bx;

@@ -29,6 +29,7 @@
         "no-bitwise": "off",
         "no-nested-ternary": "off",
         "no-labels": "off",
-        "no-restricted-syntax": "off"
+        "no-restricted-syntax": "off",
+        "jasmine/new-line-between-declarations": "off"
     }
 }

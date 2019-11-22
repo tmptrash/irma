@@ -96,7 +96,7 @@ class BioVM extends VM {
     runCmd(org, cmd) {
         // eslint-disable-next-line default-case
         switch (cmd) {
-            case CODE_CMD_OFFS + 41: {// join
+            case CODE_CMD_OFFS + 40: {// join
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -119,7 +119,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 42: {// split
+            case CODE_CMD_OFFS + 41: {// split
                 ++org.line;
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
@@ -160,7 +160,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 43: {// step
+            case CODE_CMD_OFFS + 42: {// step
                 ++org.line;
                 org.energy -= Math.floor(org.code.length * Config.energyStepCoef);
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
@@ -172,7 +172,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 44: { // see
+            case CODE_CMD_OFFS + 43: { // see
                 ++org.line;
                 const offset = org.offset + org.ax;
                 if (offset < 0 || offset > MAX_OFFS) {org.ax = 0; return}
@@ -181,7 +181,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 45: {// say
+            case CODE_CMD_OFFS + 44: {// say
                 ++org.line;
                 const freq = Math.abs(org.bx) % Config.worldFrequency;
                 this.freq[freq] = org.ax;
@@ -189,12 +189,12 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 46:  // listen
+            case CODE_CMD_OFFS + 45:  // listen
                 ++org.line;
                 org.ax = this.freq[Math.abs(org.bx) % Config.worldFrequency];
                 return;
 
-            case CODE_CMD_OFFS + 47: {// nread
+            case CODE_CMD_OFFS + 46: {// nread
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -205,7 +205,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 48: {// nsplit
+            case CODE_CMD_OFFS + 47: {// nsplit
                 ++org.line;
                 if (org.ret !== 1) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
@@ -231,7 +231,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 49: {// get
+            case CODE_CMD_OFFS + 48: {// get
                 ++org.line;
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
                 const dot = this.world.getOrgIdx(org.offset + DIR[Math.abs(org.ax) % 8]);
@@ -240,7 +240,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 50: {// put
+            case CODE_CMD_OFFS + 49: {// put
                 ++org.line;
                 if (!org.packet) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
@@ -253,12 +253,12 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 51:  // offs
+            case CODE_CMD_OFFS + 50:  // offs
                 ++org.line;
                 org.ax = org.offset;
                 return;
 
-            case CODE_CMD_OFFS + 52: {// color
+            case CODE_CMD_OFFS + 51: {// color
                 ++org.line;
                 const newAx = Math.abs(org.ax);
                 org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;

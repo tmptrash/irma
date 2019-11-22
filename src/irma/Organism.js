@@ -63,25 +63,26 @@ class Organism {
         let   fCount   = 0;
 
         for (let i = 0, len = code.length; i < len; i++) {
+            // eslint-disable-next-line default-case
             switch(code[i]) {
-                case CMD_OFFS + 24: // func
+                case CMD_OFFS + 21: // func
                     funcs[fCount++] = offs[i] = i + 1;
                     stack[++sCount] = i;
                     break;
 
-                case CMD_OFFS + 20: // loop
-                case CMD_OFFS + 13: // ifp
-                case CMD_OFFS + 14: // ifn
-                case CMD_OFFS + 15: // ifz
-                case CMD_OFFS + 16: // ifg
-                case CMD_OFFS + 17: // ifl
-                case CMD_OFFS + 18: // ife
-                case CMD_OFFS + 19: // ifne
+                case CMD_OFFS + 19: // loop
+                case CMD_OFFS + 12: // ifp
+                case CMD_OFFS + 13: // ifn
+                case CMD_OFFS + 14: // ifz
+                case CMD_OFFS + 15: // ifg
+                case CMD_OFFS + 16: // ifl
+                case CMD_OFFS + 17: // ife
+                case CMD_OFFS + 18: // ifne
                     stack[++sCount] = i;
                     offs[i] = i + 1;
                     break;
 
-                case CMD_OFFS + 24: // end
+                case CMD_OFFS + 23: // end
                     if (sCount < 0) {break}
                     offs[i] = stack[sCount];
                     offs[stack[sCount--]] = i + 1;

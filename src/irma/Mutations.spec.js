@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 describe('src/irma/Mutations', () => {
     const Mutations = require('./Mutations');
     const Config    = require('./../Config');

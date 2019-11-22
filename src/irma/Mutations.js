@@ -44,9 +44,10 @@ class Mutations {
     }
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
+    
     // TODO: do we need this?
     static crossover(destOrg, srcOrg) {
-        let   destCode = destOrg.code;
+        const destCode = destOrg.code;
         const srcCode  = srcOrg.code;
         const codeLen  = destCode.length < srcCode.length ? destCode.length : srcCode.length;
         const start    = rand(codeLen);
@@ -57,15 +58,21 @@ class Mutations {
     }
 
     static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.compile()}
+
     static _onDel    (code, org) {org.code = code.splice(rand(code.length), 1); org.compile()}
+
     static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
+
     static _onPercent(code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT}
+
     static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
+    
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
         org.code = code.splice(rand(code.length), 0, [Mutations.randCmd()]);
         org.compile();
     }
+
     /**
      * Takes few lines from itself and inserts them before or after copied
      * part. All positions are random.
@@ -98,6 +105,7 @@ class Mutations {
 
         return end - start;
     }
+
     static _onCut    (code, org)  {
         const start = rand(code.length);
         const end   = rand(code.length - start);
@@ -105,6 +113,7 @@ class Mutations {
         org.compile();
     }
 }
+
 /**
  * Static mutation methods binding. Is used for running specified mutation type
  * @private
