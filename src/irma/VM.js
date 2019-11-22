@@ -335,14 +335,14 @@ class VM {
                                 const f1 = Math.abs(org.find1);
                                 if (f1 < f0) {org.ret = RET_ERR; continue}
 
+                                org.ret = RET_ERR;
                                 for (let i = Math.max(0, f0), len = Math.min(code.length - 1, f1); i < len; i++) {
                                     if (ax === code[i]) {
-                                        org.find0 = org.find1 = i;
+                                        org.find0 = org.find1 = ax = i;
                                         org.ret   = RET_OK;
-                                        continue;
+                                        break;
                                     }
                                 }
-                                org.ret = RET_ERR;
                                 continue;
                              //
                              // Find several commands
