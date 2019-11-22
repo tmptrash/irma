@@ -141,7 +141,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 4:  // add
                             ++line;
-                            ax += bx;
+                            ax += bx; 
                             if (Number.isFinite(ax)) {continue}
                             ax = Number.MAX_VALUE;
                             continue;

@@ -25,8 +25,6 @@ const WIDTH1            = WIDTH + 1;
 const HEIGHT1           = HEIGHT + 1;
 const LINE_OFFS         = HEIGHT * WIDTH1;
 const MAX_OFFS          = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent using offset >= MAX_OFFS ... instead offset > MAX_OFFS
-
-
 const ORG_MIN_COLOR     = Config.ORG_MIN_COLOR;
 
 class BioVM extends VM {
@@ -63,9 +61,7 @@ class BioVM extends VM {
     get version() {return '2.0'}
 
     get ready() {
-        if (this.db) {
-            return this.db.ready;
-        }
+        if (this.db) {return this.db.ready}
         return new Promise(resolve => resolve());
     }
 
