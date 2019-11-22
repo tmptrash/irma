@@ -12,6 +12,7 @@ const Helper            = require('./../common/Helper');
 const Plugins           = require('../common/Plugins');
 const Organism          = require('./Organism');
 const Mutations         = require('./Mutations');
+
 const PLUGINS           = Helper.requirePlugins(Config.PLUGINS);
 const rand              = Helper.rand;
 
@@ -112,6 +113,7 @@ class VM {
                 for (let l = 0; l < lines; l++) {
                     const cmd = code[line];
 
+                    // eslint-disable-next-line default-case
                     switch (cmd) {
                         case CODE_CMD_OFFS: {    // toggle
                             ++line;
@@ -286,7 +288,7 @@ class VM {
                                     line = org.offs[line];
                                     org.isLoop = true;
                                     break;
-                                case CODE_CMD_OFFS + 24: // func
+                                case CODE_CMD_OFFS + 24: {// func
                                     const stack = org.stack;
                                     let index = org.stackIndex;
                                     if (index < 0) {break}
@@ -295,6 +297,7 @@ class VM {
                                     line = stack[index--];
                                     org.stackIndex = index;
                                     break;
+                                }
                                 default:
                                     ++line;
                                     break;

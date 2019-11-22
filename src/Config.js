@@ -45,7 +45,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     CODE_RET_OK                : 1,
     CODE_RET_ERR               : 0,
-    CODE_ORG_ID                : CODE_ORG_ID,
+    CODE_ORG_ID,
     codeLinesPerIteration      : 1,
     codeRepeatsPerRun          : 20,
     codeMutateEveryClone       : 7,

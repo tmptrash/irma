@@ -14,6 +14,5 @@ window.irma  = {
     app : new Irma(),        // Instance of Irma. You may use it to access VM, organisms list and so on...
     cfg : Config             // Global configuration. You may change it during app work
 };
-window.irma.app.ready
-    .then(() => irma.app.run())
-    .catch(e => console.error(e))
+// TODO: do we need this?
+window.irma.app.ready.then(() => window.irma.app.run())

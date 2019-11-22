@@ -88,7 +88,7 @@ class FastArray {
      * Removes value by index. To keep this class fast we dont check if
      * index is correct and amount of items > 0
      * @param {Number} i Value index
-     * @return {*} Moved value
+     * @return {*} Moved value or undefined
      */
     del(i) {
         if (this._arr[i] === null) {return}

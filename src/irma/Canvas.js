@@ -262,7 +262,8 @@ class Canvas {
             this._onVisualize();
             event.preventDefault();
             return false;
-        } else if (event.ctrlKey && (event.key === 'F' || event.key === 'f')) {
+        }
+        if (event.ctrlKey && (event.key === 'F' || event.key === 'f')) {
             this._onFullscreen();
             event.preventDefault();
             return false;

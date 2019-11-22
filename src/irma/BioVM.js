@@ -11,8 +11,8 @@ const VM                = require('./VM');
 const Mutations         = require('./Mutations');
 const World             = require('./World');
 const FastArray         = require('./../common/FastArray');
-const rand              = Helper.rand;
 
+const rand              = Helper.rand;
 const RET_OK            = Config.CODE_RET_OK;
 const RET_ERR           = Config.CODE_RET_ERR;
 const ORG_CODE_MAX_SIZE = Config.orgMaxCodeSize;
@@ -38,7 +38,7 @@ class BioVM extends VM {
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
-        if (this._getOrgsAmount() + this._getOrgsMolsAmount() > WIDTH * HEIGHT - 1) {throw 'Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgLucaAmount" configs'}
+        if (this._getOrgsAmount() + this._getOrgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgLucaAmount" configs')}
         this.addOrgs();
         this.addMols();
     }
@@ -94,6 +94,7 @@ class BioVM extends VM {
      * @override
      */
     runCmd(org, cmd) {
+        // eslint-disable-next-line default-case
         switch (cmd) {
             case CODE_CMD_OFFS + 41: {// join
                 ++org.line;
@@ -171,14 +172,14 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 44:  // see
+            case CODE_CMD_OFFS + 44: { // see
                 ++org.line;
-                const ax     = org.ax;
-                const offset = org.offset + ax;
-                if (offset < 0 || offset > MAX_OFFS) {ax = 0; return}
+                const offset = org.offset + org.ax;
+                if (offset < 0 || offset > MAX_OFFS) {org.ax = 0; return}
                 const dot = this.world.getOrgIdx(offset);
                 org.ax = (dot < 0 ? 0 : this.orgsMols.ref()[dot].color || Config.molColor);
                 return;
+            }
 
             case CODE_CMD_OFFS + 45: {// say
                 ++org.line;
@@ -257,11 +258,13 @@ class BioVM extends VM {
                 org.ax = org.offset;
                 return;
 
-            case CODE_CMD_OFFS + 52:  // color
+            case CODE_CMD_OFFS + 52: {// color
                 ++org.line;
                 const newAx = Math.abs(org.ax);
                 org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;
+                // eslint-disable-next-line no-useless-return
                 return;
+            }
         }
     }
 
@@ -309,15 +312,13 @@ class BioVM extends VM {
      * @override
      */
     delOrg(org) {
-        const offset = org.offset;
-
         if (org.hasOwnProperty('energy')) {
             this._delFromOrgsMols(org.molIndex);
             super.delOrg(org);
         }
         org.energy = 0;
         org.energy  = false;
-        this.world.empty(offset);
+        this.world.empty(org.offset);
         //
         // Extracts all packet organisms recursively
         //
@@ -418,8 +419,8 @@ class BioVM extends VM {
 
         switch (e.which) {
             // TODO: not done
-            case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._onHScroll(true)}  break; // left
-            case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._onHScroll(false)} break; // right
+            case 37: if ((world.viewX -= Config.worldScrollValue) < 0)    {world.viewX = 0;   this._onHScroll()}  break; // left
+            case 39: if ((world.viewX += Config.worldScrollValue) >= row) {world.viewX = row; this._onHScroll()} break; // right
             case 38: if ((world.viewY -= Config.worldScrollValue) < 0)    {world.viewY = 0;   this._onVScroll(true)}  break; // up
             case 40: if ((world.viewY += Config.worldScrollValue) >= col) {world.viewY = col; this._onVScroll(false)} break; // down
             default: return;
@@ -447,12 +448,12 @@ class BioVM extends VM {
     }
 
     // TODO: not done
-    _onHScroll(right) {
+    _onHScroll() {
         
     }
 
     // TODO: not done
-    _onVScroll(down) {
+    _onVScroll() {
 
     }
 }

@@ -21,7 +21,7 @@ class Helper {
         // reference to fn.fn and this code crashes on line `fn.fn.apply(obj, args)`
         //
         const oldFn = fn.fn = obj[fnName];
-        if (typeof oldFn === 'undefined') {throw `Helper.override: Parent object doesn't contain method '${fnName}'`}
+        if (typeof oldFn === 'undefined') {throw Error(`Helper.override: Parent object doesn't contain method '${fnName}'`)}
         if (!hard) {
             obj[fnName] = (...args) => {
                 const ret = fn(...args);
@@ -51,6 +51,7 @@ class Helper {
      */
     static requirePlugins(names) {
         const plugins = [];
+        // eslint-disable-next-line global-require
         names.forEach(name => plugins.push(require(`./../irma/plugins/${name}.js`)));
 
         return plugins;
@@ -95,7 +96,8 @@ class Helper {
         el = typeof el === 'string' ? document.createElement(el) : el;
         const elStyle = el.style;
 
-        for (let style in styles) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const style in styles) {
             if (styles.hasOwnProperty(style)) {
                 elStyle[style] = styles[style]
             }
@@ -120,7 +122,7 @@ class Helper {
      * @returns {Number}
      */
     static distance(arr1, arr2) {
-        const d = []; //2d matrix
+        const d = []; // 2d matrix
 
         // Step 1
         const n = arr1.length;
@@ -129,7 +131,7 @@ class Helper {
         if (n === 0) {return m}
         if (m === 0) {return n}
 
-        //Create an array of arrays in javascript (a descending loop is quicker)
+        // Create an array of arrays in javascript (a descending loop is quicker)
         for (let i = n; i >= 0; i--) {d[i] = []}
 
         // Step 2
@@ -138,18 +140,18 @@ class Helper {
 
         // Step 3
         for (let i = 1; i <= n; i++) {
-            const s_i = arr1[i - 1];
+            const sI = arr1[i - 1];
 
             // Step 4
             for (let j = 1; j <= m; j++) {
 
-                //Check the jagged ld total so far
+                // Check the jagged ld total so far
                 if (i === j && d[i][j] > 4) {return n}
 
-                const t_j = arr2[j - 1];
-                const cost = (s_i === t_j) ? 0 : 1; // Step 5
+                const tJ = arr2[j - 1];
+                const cost = (sI === tJ) ? 0 : 1; // Step 5
 
-                //Calculate the minimum
+                // Calculate the minimum
                 let mi = d[i - 1][j] + 1;
                 const b = d[i][j - 1] + 1;
                 const c = d[i - 1][j - 1] + cost;
@@ -159,8 +161,8 @@ class Helper {
 
                 d[i][j] = mi; // Step 6
 
-                //Damerau transposition
-                if (i > 1 && j > 1 && s_i === arr2[j - 2] && arr1[i - 2] === t_j) {
+                // Damerau transposition
+                if (i > 1 && j > 1 && sI === arr2[j - 2] && arr1[i - 2] === tJ) {
                     d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
                 }
             }
@@ -180,11 +182,11 @@ class Helper {
      * @return {Number} -1 Means that index is invalid
      */
     static probIndex(probs) {
-        let len = probs.length;
+        const len = probs.length;
         if (len < 1) {return -1}
-        let sum = probs.reduce((a, b) => a + b, 0);
+        let sum   = probs.reduce((a, b) => a + b, 0);
         if (sum < 1) {return -1}
-        let num = Helper.rand(sum) + 1;
+        const num = Helper.rand(sum) + 1;
         let i;
         //
         // This is small optimization trick. if random number in
@@ -208,6 +210,7 @@ class Helper {
  * {Number} Global unique identifier counter
  * @private
  */
+Helper._id = 0;
 Helper._id = 0;
 
 /**

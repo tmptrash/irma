@@ -1,11 +1,34 @@
 {
     "extends": [
-      "airbnb-base",
-      "prettier"
+        "airbnb-base",
+        "prettier",
+        "plugin:jasmine/recommended"
     ],
-  
-    "plugins": ["prettier"],
-  
+    "plugins": ["prettier", "jasmine"],
+    "env": {
+        "browser": true,
+        "node": true,
+        "jasmine": true
+    },
     "rules": {
+        "prefer-destructuring": ["error", {"VariableDeclarator": {"object": false}}],
+        "class-methods-use-this": "off",
+        "no-unused-expressions": "off",
+        "no-underscore-dangle": "off",
+        "no-plusplus": "off",
+        "no-multi-assign": "off",
+        "consistent-return": "off",
+        "import/no-dynamic-require": "off",
+        "no-return-assign": "off",
+        "no-prototype-builtins": "off",
+        "no-cond-assign": "off",
+        "no-extend-native": "off",
+        "func-names": "off",
+        "no-param-reassign": "off",
+        "no-continue": "off",
+        "no-bitwise": "off",
+        "no-nested-ternary": "off",
+        "no-labels": "off",
+        "no-restricted-syntax": "off"
     }
-  }
+}

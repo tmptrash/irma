@@ -1,12 +1,11 @@
+/* eslint-disable global-require */
 describe("src/share/Helper", () => {
     const Helper = require('./Helper');
 
     beforeEach(function() {
-        let newElement = {style: {}}
+        const newElement = {style: {}}
         global.document = {
-            createElement: function() {
-                return newElement;
-            }
+            createElement: () => newElement
         }
     });
 
@@ -16,7 +15,7 @@ describe("src/share/Helper", () => {
 
     describe('Checks randomizer', () => {
         it("Checking rand(2)", () => {
-            let val = Helper.rand(2);
+            const val = Helper.rand(2);
             expect(val === 0 || val === 1).toBe(true);
         });
 
