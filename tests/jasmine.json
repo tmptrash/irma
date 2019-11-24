@@ -1,7 +1,8 @@
 {
   "spec_dir": "./src",
   "spec_files": [
-	  "irma/VM.spec.js"
+    "irma/VM.spec.js",
+    "irma/BioVM.spec.js"
   ],
   "stopSpecOnExpectationFailure": false,
   "random": false

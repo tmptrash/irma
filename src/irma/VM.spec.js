@@ -80,6 +80,7 @@ describe('src/irma/VM', () => {
             energyMultiplier           : 10000
         });
     }
+    
     /**
      * Runs one script from single organism and checks registers on finish
      * @param {Uint8Array} code Code to run

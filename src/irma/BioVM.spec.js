@@ -1,47 +1,48 @@
+/* eslint-disable global-require */
 describe('src/irma/VM', () => {
-    let   Config    = require('./../Config');
-    let   oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
+    const Config    = require('./../Config');
+    const oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
     const WIDTH     = 10;
     const HEIGHT    = 10;
     //
     // This call should be before require('./VM') to setup our 
     // configuration instead of default
-    //
+    // eslint-disable-next-line no-use-before-define
     _setConfig();
-    const VM        = require('./VM');
+    const BioVM     = require('./BioVM');
 
     const TG        = Config.CODE_CMD_OFFS;
-    const SH        = Config.CODE_CMD_OFFS+1;
-    const EQ        = Config.CODE_CMD_OFFS+2;
-    const NO        = Config.CODE_CMD_OFFS+3;
-    const AD        = Config.CODE_CMD_OFFS+4;
-    const SU        = Config.CODE_CMD_OFFS+5;
-    const MU        = Config.CODE_CMD_OFFS+6;
-    const DI        = Config.CODE_CMD_OFFS+7;
-    const IN        = Config.CODE_CMD_OFFS+8;
-    const DE        = Config.CODE_CMD_OFFS+9;
-    const RS        = Config.CODE_CMD_OFFS+10;
-    const LS        = Config.CODE_CMD_OFFS+11;
-    const RA        = Config.CODE_CMD_OFFS+12;
-    const FP        = Config.CODE_CMD_OFFS+13;
-    const FN        = Config.CODE_CMD_OFFS+14;
-    const FZ        = Config.CODE_CMD_OFFS+15;
-    const FG        = Config.CODE_CMD_OFFS+16;
-    const FL        = Config.CODE_CMD_OFFS+17;
-    const FE        = Config.CODE_CMD_OFFS+18;
-    const FNE       = Config.CODE_CMD_OFFS+19;
-    const LP        = Config.CODE_CMD_OFFS+20;
-    const CA        = Config.CODE_CMD_OFFS+21;
-    const FU        = Config.CODE_CMD_OFFS+22;
-    const RE        = Config.CODE_CMD_OFFS+23;
-    const EN        = Config.CODE_CMD_OFFS+24;
-    const RX        = Config.CODE_CMD_OFFS+25;
-    const AR        = Config.CODE_CMD_OFFS+26;
-    const AN        = Config.CODE_CMD_OFFS+27;
-    const OR        = Config.CODE_CMD_OFFS+28;
-    const XO        = Config.CODE_CMD_OFFS+29;
-    const NT        = Config.CODE_CMD_OFFS+30;
-    const FI        = Config.CODE_CMD_OFFS+31;
+    const EQ        = Config.CODE_CMD_OFFS+1;
+    const NO        = Config.CODE_CMD_OFFS+2;
+    const AD        = Config.CODE_CMD_OFFS+3;
+    const SU        = Config.CODE_CMD_OFFS+4;
+    const MU        = Config.CODE_CMD_OFFS+5;
+    const DI        = Config.CODE_CMD_OFFS+6;
+    const IN        = Config.CODE_CMD_OFFS+7;
+    const DE        = Config.CODE_CMD_OFFS+8;
+    const RS        = Config.CODE_CMD_OFFS+9;
+    const LS        = Config.CODE_CMD_OFFS+10;
+    const RA        = Config.CODE_CMD_OFFS+11;
+    const FP        = Config.CODE_CMD_OFFS+12;
+    const FN        = Config.CODE_CMD_OFFS+13;
+    const FZ        = Config.CODE_CMD_OFFS+14;
+    const FG        = Config.CODE_CMD_OFFS+15;
+    const FL        = Config.CODE_CMD_OFFS+16;
+    const FE        = Config.CODE_CMD_OFFS+17;
+    const FNE       = Config.CODE_CMD_OFFS+18;
+    const LP        = Config.CODE_CMD_OFFS+19;
+    const CA        = Config.CODE_CMD_OFFS+20;
+    const FU        = Config.CODE_CMD_OFFS+21;
+    const RE        = Config.CODE_CMD_OFFS+22;
+    const EN        = Config.CODE_CMD_OFFS+23;
+    const RX        = Config.CODE_CMD_OFFS+24;
+    const AR        = Config.CODE_CMD_OFFS+25;
+    const AN        = Config.CODE_CMD_OFFS+26;
+    const OR        = Config.CODE_CMD_OFFS+27;
+    const XO        = Config.CODE_CMD_OFFS+28;
+    const NT        = Config.CODE_CMD_OFFS+29;
+    const FI        = Config.CODE_CMD_OFFS+30;
+    const LI        = Config.CODE_CMD_OFFS+39;
 
     const JO        = Config.CODE_CMD_OFFS+41;
     const SP        = Config.CODE_CMD_OFFS+42;
@@ -77,13 +78,13 @@ describe('src/irma/VM', () => {
             orgProbs                   : new Uint32Array([10,1,3,1,5,1,1]),
             molDecayPeriod             : 1000,
             molDecayDistance           : 60,
-            molAmount                  : 60000,
             molCodeSize                : 8,
             molColor                   : 0xff0000,
             energyStepCoef             : 0.01,
             energyMultiplier           : 10000
         });
     }
+
     /**
      * Runs one script from single organism and checks registers on finish
      * @param {Uint8Array} code Code to run
@@ -98,11 +99,13 @@ describe('src/irma/VM', () => {
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
         org.compile();
+
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
         expect(org.ret).toBe(0);
         expect(org.line).toBe(0);
         vm.run();
+
         expect(org.ax).toBe(ax);
         expect(org.bx).toBe(bx);
         expect(org.ret).toBe(ret);
@@ -112,7 +115,7 @@ describe('src/irma/VM', () => {
 
     beforeEach(() => {
         _setConfig();
-        vm = new VM();
+        vm = new BioVM();
     });
 
     afterEach(() => {
@@ -121,12 +124,11 @@ describe('src/irma/VM', () => {
         vm = null;
     });
 
-    xdescribe('VM creation', () => {
-        it('Checks VM creation', () => {
-            const vm1 = new VM(1);
-            expect(vm1.orgs.size).toBe(1);
-            expect(vm1.population).toBe(0);
-            expect(vm1.iteration).toBe(0);
+    describe('BioVM creation', () => {
+        it('Checks BioVM creation', () => {
+            const vm1 = new BioVM();
+
+            expect(vm1.orgs.size).toBe(2);
         });
     });
 
