@@ -269,5 +269,20 @@ module.exports = {
      * Plugins. Extends irma core by additional functionality
      * @constant
      */
-    PLUGINS                    : ['Decay']
+    PLUGINS                    : ['Decay'],
+    
+    radioStations              : [
+        {
+            title: "HitFM",
+            source: "http://online2.hitfm.ua/HitFM_Best"
+        },
+        {
+            title: "Vocal Trance",
+            source: "http://176.9.36.203:8000/vocaltrance_320"
+        },
+        {
+            title: "LuxFM",
+            source: "http://icecastlv.luxnet.ua/lux"
+        }
+    ],
 };
