@@ -5,7 +5,8 @@
  * @author flatline
  */
 const Config              = require('./../Config');
-const Canvas              = require('./Canvas');
+const Canvas = require('./Canvas');
+const Player = require('./Player');
 
 const WORLD_WIDTH         = Config.WORLD_WIDTH;
 const WORLD_HEIGHT        = Config.WORLD_HEIGHT;
@@ -26,7 +27,8 @@ class World {
         this.viewOffs  = 0;                        // offset of canvas top left corner
         this.viewOffs1 = (WORLD_CANVAS_HEIGHT - 1) * WORLD_WIDTH + WORLD_CANVAS_WIDTH - 1; // offset of canvas right-bottom corner
         this._data     = new Uint32Array(WORLD_HEIGHT * WORLD_WIDTH);
-        this._canvas   = new Canvas(options);
+        this._canvas = new Canvas(options);
+        this._player = new Player();
     }
 
     destroy() {
