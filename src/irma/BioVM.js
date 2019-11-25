@@ -38,7 +38,7 @@ class BioVM extends VM {
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
-        if (this._getOrgsAmount() + this._getOrgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgLucaAmount" configs')}
+        if (this._getOrgsAmount() + this._getOrgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgAmount" configs')}
         this.addOrgs();
         this.addMols();
     }
@@ -337,8 +337,8 @@ class BioVM extends VM {
      */
     addOrgs() {
         const world = this.world;
-        const code  = Config.codeLuca;
-        let orgs    = Config.orgLucaAmount;
+        const code  = Config.CODE_LUCA;
+        let orgs    = Config.orgAmount;
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
@@ -387,7 +387,7 @@ class BioVM extends VM {
             for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
             return code;
         }
-        const code  = Config.codeLuca;
+        const code  = Config.CODE_LUCA;
         const len   = code.length;
         const start = Math.floor(Math.random() * (len - size));
         return code.slice(start, start + size);
@@ -397,13 +397,13 @@ class BioVM extends VM {
      * Returns maximum amount of molecules and organisms according to config
      * @return {Number} max amount
      */
-    _getOrgsMolsAmount() {return Config.molAmount + Config.orgLucaAmount + 1}
+    _getOrgsMolsAmount() {return Config.molAmount + Config.orgAmount + 1}
 
     /**
      * Returns maximum amount of organisms only according to config and amount of molecules
      * @return {Number} max amount
      */
-    _getOrgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.codeLuca.length || 1)) + Config.orgLucaAmount + 1}
+    _getOrgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.CODE_LUCA.length || 1)) + Config.orgAmount + 1}
 
     /**
      * Is called on pressing one of arrow buttons. Scrolls world inside canvas

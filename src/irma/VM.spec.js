@@ -56,16 +56,16 @@ describe('src/irma/VM', () => {
             WORLD_WIDTH                : WIDTH,
             WORLD_HEIGHT               : HEIGHT,
             PLUGINS                    : [],
+            CODE_LUCA                  : [],
             // variables
             codeLinesPerIteration      : 1,
             codeRepeatsPerRun          : 1,
             codeMutateEveryClone       : 1000,
             codeMutateMutations        : false,
-            codeLuca                   : [],
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
             molAmount                  : 1,
-            orgLucaAmount              : 1,
+            orgAmount                  : 1,
             orgMaxAge                  : 2000000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
@@ -80,7 +80,7 @@ describe('src/irma/VM', () => {
             energyMultiplier           : 10000
         });
     }
-    
+
     /**
      * Runs one script from single organism and checks registers on finish
      * @param {Uint8Array} code Code to run

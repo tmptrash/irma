@@ -65,11 +65,11 @@ describe('src/irma/VM', () => {
             codeRepeatsPerRun          : 1,
             codeMutateEveryClone       : 1000,
             codeMutateMutations        : false,
-            codeLuca                   : [],
+            CODE_LUCA                   : [],
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
             molAmount                  : 1,
-            orgLucaAmount              : 1,
+            orgAmount                  : 1,
             orgMaxAge                  : 2000000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
@@ -128,7 +128,8 @@ describe('src/irma/VM', () => {
         it('Checks BioVM creation', () => {
             const vm1 = new BioVM();
 
-            expect(vm1.orgs.size).toBe(2);
+            expect(vm1.orgs.size).toBe(Config.orgAmount);
+            expect(vm1.orgsMols.size).toBe(Config.orgAmount + Config.molAmount + 1);
         });
     });
 
@@ -136,7 +137,7 @@ describe('src/irma/VM', () => {
         describe('join tests', () => {
             it('Checks joining right organism',  () => {
                 Config.molAmount = 0;
-                Config.orgLucaAmount = 2;
+                Config.orgAmount = 2;
                 const vm1  = new VM();
                 const org1 = vm1.orgs.get(0);
                 const org2 = vm1.orgs.get(1);
@@ -155,7 +156,7 @@ describe('src/irma/VM', () => {
             });
             it('Checks joining empty cell',  () => {
                 Config.molAmount = 0;
-                Config.orgLucaAmount = 1;
+                Config.orgAmount = 1;
                 const vm1  = new VM();
                 const org1 = vm1.orgs.get(0);
 
@@ -170,7 +171,7 @@ describe('src/irma/VM', () => {
             });
             it('Checks joining if organism is at the edge of the world',  () => {
                 Config.molAmount = 0;
-                Config.orgLucaAmount = 1;
+                Config.orgAmount = 1;
                 const vm1  = new VM();
                 const org1 = vm1.orgs.get(0);
 
@@ -185,7 +186,7 @@ describe('src/irma/VM', () => {
             });
             it('Checks joining right molecule',  () => {
                 Config.molAmount = 1;
-                Config.orgLucaAmount = 1;
+                Config.orgAmount = 1;
                 const vm1  = new VM();
                 const org1 = vm1.orgs.get(0);
                 const mol1 = vm1.orgsMols.get(0);
@@ -227,7 +228,7 @@ describe('src/irma/VM', () => {
             });
             it('Checks organism splitting fail, because position is not free',  () => {
                 Config.molAmount = 0;
-                Config.orgLucaAmount = 2;
+                Config.orgAmount = 2;
                 const vm1  = new VM();
                 const org1 = vm1.orgs.get(0);
                 const org2 = vm1.orgs.get(1);
