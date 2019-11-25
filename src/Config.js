@@ -37,7 +37,7 @@ module.exports = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 54,
+    CODE_COMMANDS              : 53,
     /**
      * {Number} Functions call stack size
      * @constant
@@ -247,7 +247,7 @@ module.exports = {
      * don't see him in a world
      */
     ORG_MIN_COLOR              : 0x96,
-    orgAmount                  : 1,
+    orgAmount                  : 10,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,
@@ -265,7 +265,7 @@ module.exports = {
      * molecule should have last atom mask turned on
      */
     MOL_LAST_ATOM_MASK         : 0b10000000,
-    MOL_LAST_ATOM_SET_MASK     : 0b01111111,
+    MOL_LAST_ATOM_RESET_MASK   : 0b01111111,
     /**
      * Molecules related configs
      */

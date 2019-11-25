@@ -17,10 +17,7 @@ const PLUGINS           = Helper.requirePlugins(Config.PLUGINS);
 const rand              = Helper.rand;
 
 const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
-const CODE_MAX_RAND     = CODE_CMD_OFFS + Config.CODE_COMMANDS;
 const CODE_STACK_SIZE   = Config.CODE_STACK_SIZE;
-const RET_OK            = Config.CODE_RET_OK;
-const RET_ERR           = Config.CODE_RET_ERR;
 
 class VM {
     /**
@@ -98,7 +95,7 @@ class VM {
             let o = orgs.items;
             while (--o > -1) {
                 const org  = orgsRef[o];
-                let   code = org.code;
+                const code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
                 let   line = org.line;
@@ -186,7 +183,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 11:  // rand
                             ++line;
-                            ax = ax < 0 ? rand(CODE_MAX_RAND * 2) - CODE_MAX_RAND : rand(ax);
+                            ax = ax < 0 ? rand(256) : rand(ax);
                             continue;
 
                         case CODE_CMD_OFFS + 12:  // ifp
@@ -325,114 +322,38 @@ class VM {
                             ax = ~ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 30:  // find
-                            ++line;
-                            //
-                            // Find only one command
-                            //
-                            if (bx < 0) {
-                                const f0 = Math.abs(org.find0);
-                                const f1 = Math.abs(org.find1);
-                                if (f1 < f0) {org.ret = RET_ERR; continue}
-
-                                org.ret = RET_ERR;
-                                for (let i = Math.max(0, f0), len = Math.min(code.length - 1, f1); i < len; i++) {
-                                    if (ax === code[i]) {
-                                        org.find0 = org.find1 = ax = i;
-                                        org.ret   = RET_OK;
-                                        break;
-                                    }
-                                }
-                                continue;
-                             //
-                             // Find several commands
-                             //
-                            } else {
-                                const f0  = Math.abs(org.find0);
-                                const f1  = Math.abs(org.find1);
-                                if (f1 < f0 || bx > ax || ax > code.length || bx > code.length) {org.ret = RET_ERR; continue}
-
-                                const len = bx - ax;
-                                let   ret = RET_ERR;
-                                let   j;
-                                loop: for (let i = Math.max(0, f0), len1 = Math.min(code.length - 1, f1); i < len1; i++) {
-                                    for (j = ax; j <= bx; j++) {
-                                        if (code[i + j - ax] !== code[j]) {continue loop}
-                                    }
-                                    org.find0 = ax = i;
-                                    org.find1 = i + len;
-                                    ret = RET_OK;
-                                    break;
-                                }
-                                org.ret = ret;
-                            }
-                            continue;
-
-                        case CODE_CMD_OFFS + 31: {// move
-                            ++line;
-                            const find0    = org.find0;
-                            const find1    = org.find1;
-                            if (find1 < find0) {org.ret = RET_ERR; continue}
-                            const moveCode = code.slice(find0, find1 + 1);
-                            if (moveCode.length < 1) {org.ret = RET_ERR; continue}
-                            const newAx    = ax < 0 ? 0 : (ax > code.length ? code.length : ax);
-                            const len      = find1 - find0 + 1;
-                            const offs     = newAx > find1 ? newAx - len : (newAx < find0 ? newAx : find0);
-                            if (find0 === offs) {org.ret = RET_OK; continue}
-                            code = code.splice(find0, len);
-                            org.code = code = code.splice(offs, 0, moveCode);
-                            //
-                            // Important: moving new commands insie the script may break it, because it's
-                            // offsets, stack and context may be invalid. Generally, we have to compile
-                            // it after move. But this process resets stack and current running script line
-                            // to zero line and script start running from the beginning. To fix this we 
-                            // just assume that moving command doesn't belong to main (replicator) script
-                            // part and skip compile. So, next line should not be uncommented
-                            // org.compile();
-                            // line = 0;
-                            //
-                            org.ret = RET_OK;
-                            continue;
-                        }
-
-                        case CODE_CMD_OFFS + 32:  // age
+                        case CODE_CMD_OFFS + 30:  // age
                             ++line;
                             ax = org.age;
                             continue;
 
-                        case CODE_CMD_OFFS + 33:  // line
+                        case CODE_CMD_OFFS + 31:  // line
                             ax = line++;
                             continue;
 
-                        case CODE_CMD_OFFS + 34:  // len
+                        case CODE_CMD_OFFS + 32:  // len
                             line++;
                             ax = code.length;
                             continue;
 
-                        case CODE_CMD_OFFS + 35:  // left
+                        case CODE_CMD_OFFS + 33:  // left
                             line++;
-                            if (--org.pos < 0) {org.pos = org.mem.length - 1}
+                            if (--org.memPos < 0) {org.memPos = org.mem.length - 1}
                             continue;
 
-                        case CODE_CMD_OFFS + 36:  // right
+                        case CODE_CMD_OFFS + 34:  // right
                             line++;
-                            if (++org.pos === org.mem.length) {org.pos = 0}
+                            if (++org.memPos === org.mem.length) {org.memPos = 0}
                             continue;
 
-                        case CODE_CMD_OFFS + 37:  // save
+                        case CODE_CMD_OFFS + 35:  // save
                             line++;
-                            org.mem[org.pos] = ax;
+                            org.mem[org.memPos] = ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 38:  // load
+                        case CODE_CMD_OFFS + 36:  // load
                             line++;
-                            ax = org.mem[org.pos];
-                            continue;
-
-                        case CODE_CMD_OFFS + 39:  // limit
-                            line++;
-                            org.find0 = ax;
-                            org.find1 = bx;
+                            ax = org.mem[org.memPos];
                             continue;
                     }
                     //

@@ -25,7 +25,7 @@ class Organism {
         this.code       = code;                                        // Organism's code on "line" language
         if (simple) {return this}
         this.mem        = new Int32Array(Config.orgMaxMemSize);        // Organism's memory
-        this.pos        = 0;                                           // Memory cell position
+        this.memPos     = 0;                                           // Memory cell position
         this.age        = 1;                                           // Organism's age. Increases every iteration
         this.probs      = Config.orgProbs.slice();                     // Probabilities for different types of mutations
         this.period     = Config.orgMutationPeriod;                    // Amount of iterations between mutations
@@ -36,8 +36,6 @@ class Organism {
         this.ax         = 0;                                           // Register ax
         this.bx         = 0;                                           // Register bx
         this.ret        = 0;                                           // Register ret
-        this.find0      = 0;                                           // Offsets0 in code for move command (was set by find command)
-        this.find1      = 0;                                           // Offsets1 in code for move command (was set by find command)
         this.isLoop     = false;                                       // Uses with loop command (see loop+end commands)
         this.fCount     = 0;                                           // Amount of functions in a code
         this.stackIndex = -1;                                          // Current index in stack (used for function calls)
