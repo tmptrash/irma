@@ -260,6 +260,13 @@ module.exports = {
      */
     orgProbs                   : new Uint8Array([10,1,1,1,1,1,1,1]),
     /**
+     * {Number} Mask, which is used for marking last atom in a molecule.
+     * It means that after this atom (command) new molecule is follow. Every
+     * molecule should have last atom mask turned on
+     */
+    MOL_LAST_ATOM_MASK         : 0b10000000,
+    MOL_LAST_ATOM_SET_MASK     : 0b01111111,
+    /**
      * Molecules related configs
      */
     molDecayPeriod             : 1,
