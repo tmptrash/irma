@@ -46,163 +46,89 @@ module.exports = {
     CODE_RET_OK                : 1,
     CODE_RET_ERR               : 0,
     CODE_ORG_ID,
-    CODE_LUCA                   : Uint8Array.from([
-        CODE_OFFS + 24, // func
-        3,              //   3
-        CODE_OFFS + 23, //   call
-        CODE_OFFS + 27, //   retax
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 37, //   len
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 4,  //   push
-        CODE_OFFS + 1,  //   shift
-        CODE_OFFS + 3,  //   pop
-        CODE_OFFS,      //   toggle
-        0,              //   0
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 10, //   inc
-        CODE_OFFS + 22, //   loop
-        CODE_OFFS + 28, //     axret
-        CODE_OFFS + 4,  //     push
-        CODE_OFFS + 2,  //     eq
-        CODE_OFFS + 4,  //     push
-        CODE_OFFS + 33, //     find
-        CODE_OFFS + 4,  //     push
-        CODE_OFFS + 27, //     retax
-        CODE_OFFS + 17, //     ifz
-        CODE_OFFS + 3,  //       pop
-        CODE_OFFS + 3,  //       pop
-        CODE_OFFS + 3,  //       pop
-        CODE_OFFS + 1,  //       shift
-        CODE_OFFS + 1,  //       shift
-        CODE_OFFS + 25, //       ret
-        CODE_OFFS + 26, //     end
-        CODE_OFFS + 1,  //     shift
-        CODE_OFFS + 1,  //     shift
+    CODE_LUCA                  : Uint8Array.from([
+        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 21, // func
+        CODE_OFFS + 53, //     mols
+        CODE_OFFS + 8,  //     dec
+        CODE_OFFS + 25, //     axret
+        1,              //     1
         CODE_OFFS,      //     toggle
-        CODE_OFFS + 28, //     axret
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 1,  //     shift
-        CODE_OFFS + 3,  //     pop
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 27, //     retax
-        CODE_OFFS + 11, //     dec
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 28, //     axret
-        CODE_OFFS + 3,  //     pop
-        CODE_OFFS + 4,  //     push
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 7,  //     sub
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 27, //     retax
-        CODE_OFFS + 18, //     ifg
-        CODE_OFFS + 3,  //       pop
-        CODE_OFFS + 3,  //       pop
-        CODE_OFFS + 1,  //       shift
-        CODE_OFFS + 1,  //       shift
-        CODE_OFFS + 25, //       ret
-        CODE_OFFS + 26, //     end
-        CODE_OFFS + 37, //     len
-        CODE_OFFS + 34, //     move
-        CODE_OFFS + 3,  //     pop
-        CODE_OFFS + 10, //     inc
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 3,  //     pop
-        CODE_OFFS + 26, //   end
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 37, //   len
-        CODE_OFFS + 7,  //   sub
-        CODE_OFFS,      //   toggle
-        CODE_ORG_ID,    //   17
-        CODE_OFFS + 4,  //   push
-        CODE_OFFS + 37, //   len
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 43, //   split
-        CODE_OFFS + 3,  //   pop
-        CODE_OFFS + 26, // end
-        CODE_OFFS + 24, // func
-        1,              //   1
-        CODE_OFFS + 45, //   see
-        CODE_OFFS + 15, //   ifp
-        2,              //     2
-        CODE_OFFS + 26, //   end
-        CODE_OFFS + 17, //   ifz
         0,              //     0
-        CODE_OFFS + 32, //     not
-        CODE_OFFS + 14, //     rand
-        CODE_OFFS + 44, //     step
-        CODE_OFFS + 44, //     step
-        CODE_OFFS + 44, //     step
-        CODE_OFFS + 26, //   end
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 37, //   len
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 4,  //   push
-        CODE_OFFS + 3,  //   pop
-        CODE_OFFS + 42, //   join
-        CODE_OFFS + 26, // end
-        CODE_OFFS + 24, // func
-        100,            //   100
-        CODE_OFFS,      //   toggle
-        5,              //   5
-        CODE_OFFS + 8,  //   mul
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 37, //   len
-        CODE_OFFS + 19, //   ifl
-        CODE_OFFS + 25, //     ret
-        CODE_OFFS + 26, //   end
-        3,              //   3
-        CODE_OFFS + 23, //   call
-        CODE_OFFS + 27, //   retax
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 37, //   len
-        CODE_OFFS + 7,  //   sub
-        CODE_OFFS + 14, //   rand
-        CODE_OFFS + 6,  //   add
-        CODE_OFFS,      //   toggle
-        0,              //   0
-        CODE_OFFS + 28, //   axret
-        CODE_OFFS + 37, //   len
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 43, //   split
-        CODE_OFFS + 26, // end
-        CODE_OFFS + 24, // func
-        0,              //   0
-        CODE_OFFS + 28, //   axret
-        191,            //   191
-        CODE_OFFS,      //   toggle
-        6,              //   6
-        CODE_OFFS + 6,  //   add
-        CODE_OFFS,      //   toggle
-        0,              //   0
-        CODE_OFFS + 32, //   not
-        CODE_OFFS,      //   toggle
-        CODE_OFFS + 33, //   find
-        CODE_OFFS + 28, //   axret
-        CODE_OFFS + 26, // end
-        128,            // 128
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 11, // dec
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 13, // lshift
-        CODE_OFFS + 53, // color
-        50,             // 50
-        CODE_OFFS + 22, // loop
-        1,              //   1
-        CODE_OFFS + 23, //   call
-        CODE_OFFS + 26, // end
-        0,              // 0
-        CODE_OFFS + 23, // call
-        2,              // 2
-        CODE_OFFS + 23, // call
-        CODE_OFFS + 25, // ret
-        CODE_OFFS + 5   // nop
+        CODE_OFFS + 51, //     find
+        CODE_OFFS + 25, //     axret
+        CODE_OFFS + 23, // end
+        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 21, // func
+        0,              //     0
+        CODE_OFFS + 35, //     save
+        0,              //     0
+        CODE_OFFS + 20, //     call
+        CODE_OFFS + 24, //     retax
+        CODE_OFFS + 34, //     right
+        CODE_OFFS + 35, //     save
+        CODE_OFFS + 53, //     mols
+        CODE_OFFS + 34, //     right
+        CODE_OFFS + 35, //     save
+        CODE_OFFS + 24, //     retax
+        CODE_OFFS + 7,  //     inc
+        CODE_OFFS + 19, //     loop
+        CODE_OFFS + 36, //         load
+        CODE_OFFS + 25, //         axret
+        CODE_OFFS + 33, //         left
+        CODE_OFFS + 36, //         load
+        CODE_OFFS,      //         toggle
+        CODE_OFFS + 33, //         left
+        CODE_OFFS + 36, //         load
+        CODE_OFFS + 51, //         find
+        CODE_OFFS,      //         toggle
+        CODE_OFFS + 24, //         retax
+        CODE_OFFS + 14, //         ifz
+        CODE_OFFS + 22, //             ret
+        CODE_OFFS + 23, //         end
+        CODE_OFFS + 53, //         mols
+        CODE_OFFS,      //         toggle
+        CODE_OFFS + 52, //         move
+        CODE_OFFS + 36, //         load
+        CODE_OFFS + 7,  //         inc
+        CODE_OFFS + 35, //         save
+        CODE_OFFS + 34, //         right
+        CODE_OFFS + 36, //         load
+        CODE_OFFS + 8,  //         dec
+        CODE_OFFS + 35, //         save
+        CODE_OFFS + 34, //         right
+        CODE_OFFS + 23, //     end
+        CODE_OFFS + 36, //     load
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 53, //     mols
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 38, //     split
+        CODE_OFFS + 23, // end
+        CODE_OFFS + 11, // rand
+        CODE_OFFS + 39, // step
+        CODE_OFFS + 37, // join
+        CODE_OFFS + 2,  // nop
+        1,              // 1
+        CODE_OFFS + 20, // call
+        CODE_OFFS + 2,  // nop
+        100,            // 100
+        CODE_OFFS,      // toggle
+        10,             // 10
+        CODE_OFFS + 5,  // mul
+        CODE_OFFS,      // toggle
+        CODE_OFFS + 32, // len
+        CODE_OFFS + 15, // ifg
+        0,              //     0
+        CODE_OFFS + 20, //     call
+        CODE_OFFS + 24, //     retax
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 53, //     mols
+        CODE_OFFS,      //     toggle
+        CODE_OFFS + 38, //     split
+        CODE_OFFS + 23, // end
+        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2   // nop
     ]),
     codeLinesPerIteration      : 1,
     codeRepeatsPerRun          : 20,

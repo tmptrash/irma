@@ -12,7 +12,6 @@
 #
 nop
 nop
-sep
 #
 # Helper func0 to find nop molecule-separator between main code
 # and food section. Returns separator molecule index in ret
@@ -30,15 +29,15 @@ end
 nop
 #
 # This func1 try to make a clone of main code till nop molecule by:
-# 1. set find limit by [food0=line, food1=len] and save m1=food1
-# 2. set i counter to m2
-# 3. find nop offset and save it to m0
-# 4. set find limit [food0=nop, food1=len-i]
-# 5. find current (i) command in a food section
-# 6. move one command from food section to the end
-# 7. inc i
-# 8. dec food section length
-# 9. set pointer to m0 fot next iteration
+# 1. set i=0 and store it in m0
+# 2. find nop molecule index and save it to m1
+# 3. set m2=food1. Is a last molecule index
+# 4. set find limit [food0=nopMol1, food1=nopMol2] molecule which we are looking for and find it
+# 5. 5. move found molecule from food section to the end
+# 6. inc i
+# 7. 7. dec food section length
+# 8. set pointer to m0 fot next iteration
+# 9. This peace split clone from the tail
 #
 func             # func1
   #
@@ -156,4 +155,3 @@ end
 #
 nop
 nop
-sep

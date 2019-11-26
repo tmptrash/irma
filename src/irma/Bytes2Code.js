@@ -71,7 +71,7 @@ class Bytes2Code {
             'dir       - one of 8 directions (up, right-up, right,...)',
             'val       - value or number',
             'freq      - frequency (related to say/listen commands',
-            'cmd():ret - ret contains success of command'
+            'cmd():ret - ret contains success of command',
             ''
         ].join('\n');
     }

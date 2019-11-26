@@ -1,6 +1,5 @@
 nop
 nop
-sep
 func             # func0
   mols           # ax=mols
   dec            # ax=mols-1
@@ -81,4 +80,3 @@ ifg
 end
 nop
 nop
-sep
