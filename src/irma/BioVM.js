@@ -33,14 +33,14 @@ class BioVM extends VM {
     constructor() {
         super(0);
 
-        this.orgs       = new FastArray(this._getOrgsAmount());
-        this.orgsMols   = new FastArray(this._getOrgsMolsAmount());
+        this.orgs       = new FastArray(this._orgsAmount());
+        this.orgsMols   = new FastArray(this._orgsMolsAmount());
         this.world      = new World({scroll: this._onScroll.bind(this)});
         this.freq       = new Int32Array(Config.worldFrequency);
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
-        if (this._getOrgsAmount() + this._getOrgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgAmount" configs')}
+        if (this._orgsAmount() + this._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgAmount" configs')}
         this.addOrgs();
         this.addMols();
     }
@@ -353,6 +353,12 @@ class BioVM extends VM {
                 // line = 0;
                 //
                 org.ret = RET_OK;
+                return;
+            }
+
+            case CODE_CMD_OFFS + 53: {// mols
+                ++org.line;
+                org.ax = this._molsAmount();
                 // eslint-disable-next-line no-useless-return
                 return;
             }
@@ -384,7 +390,7 @@ class BioVM extends VM {
         org.offset   = offset;
         org.molIndex = orgsMols.freeIndex;
         if (isOrg) {
-            org.color  = Config.ORG_MIN_COLOR;
+            org.color  = Config.orgColor;
             org.packet = null;
             org.energy = code.length * Config.energyMultiplier;
             org.compile();
@@ -449,7 +455,7 @@ class BioVM extends VM {
         while (molecules-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {molecules++; continue}
-            const org = this.addOrg(offset, this._getMolCode());
+            const org = this.addOrg(offset, this._molCode());
             this.db && this.db.put(org);
         }
     }
@@ -471,7 +477,7 @@ class BioVM extends VM {
      * @returns {Array}
      * @private
      */
-    _getMolCode() {
+    _molCode() {
         const size = Config.molCodeSize;
         if (Math.random() > .5) {
             const code = new Uint8Array(size);
@@ -518,13 +524,13 @@ class BioVM extends VM {
      * Returns maximum amount of molecules and organisms according to config
      * @return {Number} max amount
      */
-    _getOrgsMolsAmount() {return Config.molAmount + Config.orgAmount + 1}
+    _orgsMolsAmount() {return Config.molAmount + Config.orgAmount + 1}
 
     /**
      * Returns maximum amount of organisms only according to config and amount of molecules
      * @return {Number} max amount
      */
-    _getOrgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.CODE_LUCA.length || 1)) + Config.orgAmount + 1}
+    _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.CODE_LUCA.length || 1)) + Config.orgAmount + 1}
 
     /**
      * Converts molecule index to absolute index in a code array.
@@ -552,6 +558,20 @@ class BioVM extends VM {
         return index;
     }
 
+    /**
+     * Returns molecules amount for specified organism
+     * @param {Organism} org Organism
+     * @return {Number} Molecules amount
+     */
+    _molsAmount(org) {
+        const code = org.code;
+        let   mols = 0;
+        
+        for (let i = 0, len; i < len; i++) {(code[i] & MOL_LAST_ATOM_MASK) && ++mols}
+
+        return mols;
+    }
+    
     /**
      * Returns free dot offset near specified offset
      * @param {Number} offset Absolute dot offset

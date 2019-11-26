@@ -37,7 +37,7 @@ module.exports = {
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 53,
+    CODE_COMMANDS              : 54,
     /**
      * {Number} Functions call stack size
      * @constant
@@ -247,6 +247,7 @@ module.exports = {
      * don't see him in a world
      */
     ORG_MIN_COLOR              : 0x96,
+    orgColor                   : 0xFF0000,
     orgAmount                  : 10,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
