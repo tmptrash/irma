@@ -50,6 +50,8 @@ func             # func1
     save
     right        # m2
   end
+  17             # ax=17
+  axret          # ret=17
   load           # ax=food1
   toggle         # ax=?       bx=food1
   mols           # ax=mols    bx=food1
@@ -63,11 +65,11 @@ nop
 1
 call
 nop
-100              # ax=100     bx=0
-toggle           # ax=0       bx=100
-10               # ax=5       bx=100
-mul              # ax=1000    bx=100
-toggle           # ax=100     bx=1000
+50               # ax=50      bx=0
+toggle           # ax=0       bx=50
+20               # ax=20      bx=50
+mul              # ax=1000    bx=50
+toggle           # ax=50      bx=1000
 len              # ax=len     bx=1000
 ifg
   0

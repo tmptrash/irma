@@ -5,29 +5,29 @@
  * 
  * @author flatline
  */
-const Helper                   = require('./../common/Helper');
-const Config                   = require('./../Config');
-const VM                       = require('./VM');
-const Mutations                = require('./Mutations');
-const World                    = require('./World');
-const FastArray                = require('./../common/FastArray');
+const Helper                = require('./../common/Helper');
+const Config                = require('./../Config');
+const VM                    = require('./VM');
+const Mutations             = require('./Mutations');
+const World                 = require('./World');
+const FastArray             = require('./../common/FastArray');
 
-const rand                     = Helper.rand;
-const RET_OK                   = Config.CODE_RET_OK;
-const RET_ERR                  = Config.CODE_RET_ERR;
-const ORG_CODE_MAX_SIZE        = Config.orgMaxCodeSize;
-const CODE_CMD_OFFS            = Config.CODE_CMD_OFFS;
-const IS_ORG_ID                = Config.CODE_ORG_ID;
-const DIR                      = Config.DIR;
-const WIDTH                    = Config.WORLD_WIDTH - 1;
-const HEIGHT                   = Config.WORLD_HEIGHT - 1;
-const WIDTH1                   = WIDTH + 1;
-const HEIGHT1                  = HEIGHT + 1;
-const LINE_OFFS                = HEIGHT * WIDTH1;
-const MAX_OFFS                 = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent using offset >= MAX_OFFS ... instead offset > MAX_OFFS
-const ORG_MIN_COLOR            = Config.ORG_MIN_COLOR;
-const MOL_LAST_ATOM_MASK       = Config.MOL_LAST_ATOM_MASK;
-const MOL_LAST_ATOM_RESET_MASK = Config.MOL_LAST_ATOM_RESET_MASK;
+const rand                  = Helper.rand;
+const RET_OK                = Config.CODE_RET_OK;
+const RET_ERR               = Config.CODE_RET_ERR;
+const ORG_CODE_MAX_SIZE     = Config.orgMaxCodeSize;
+const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
+const IS_ORG_ID             = Config.CODE_ORG_ID;
+const DIR                   = Config.DIR;
+const WIDTH                 = Config.WORLD_WIDTH - 1;
+const HEIGHT                = Config.WORLD_HEIGHT - 1;
+const WIDTH1                = WIDTH + 1;
+const HEIGHT1               = HEIGHT + 1;
+const LINE_OFFS             = HEIGHT * WIDTH1;
+const MAX_OFFS              = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent using offset >= MAX_OFFS ... instead offset > MAX_OFFS
+const ORG_MIN_COLOR         = Config.ORG_MIN_COLOR;
+const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
+const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 
 class BioVM extends VM {
     constructor() {
@@ -134,12 +134,12 @@ class BioVM extends VM {
                 if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; return}
                 const newCode = code.subarray(ax, bx);
                 org.code = code.splice(ax, bx - ax);
-                if (newCode.length < 1 || org.cur() === IS_ORG_ID && this.orgs.full) {org.ret = RET_ERR; return}
+                if (newCode.length < 1 || org.ret === IS_ORG_ID && this.orgs.full) {org.ret = RET_ERR; return}
                 //
                 // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
                 // TODO: should be esupported by organism from parent to child
                 //
-                const clone   = this.addOrg(offset, newCode, org.cur() === IS_ORG_ID);
+                const clone   = this.addOrg(offset, newCode, org.ret === IS_ORG_ID);
                 this.db && this.db.put(clone, org);
                 const energy = clone.code.length * Config.energyMultiplier;
                 clone.energy = energy;
@@ -284,7 +284,7 @@ class BioVM extends VM {
                 code = code.splice(m2Offs, m2EndOffs - m2Offs);
                 code = code.splice(m1EndOffs, 0, cutCode);
                 org.energy -= Config.energyMultiplier;
-                code[m1EndOffs] &= MOL_LAST_ATOM_RESET_MASK;
+                code[m1EndOffs] &= CODE_8_BIT_RESET_MASK;
                 org.code = code;
                 org.ret = RET_OK;
 
@@ -295,7 +295,7 @@ class BioVM extends VM {
                 ++org.line;
                 const ax = org.ax;
                 if (ax < 0 || ax >= org.code.length) {org.ret = RET_ERR; return}
-                org.code[ax] |= MOL_LAST_ATOM_MASK;
+                org.code[ax] |= CODE_8_BIT_MASK;
                 org.energy += Config.energyMultiplier;
                 org.ret = RET_OK;
                 return;
@@ -358,7 +358,7 @@ class BioVM extends VM {
 
             case CODE_CMD_OFFS + 53: {// mols
                 ++org.line;
-                org.ax = this._molsAmount();
+                org.ax = this._molsAmount(org);
                 // eslint-disable-next-line no-useless-return
                 return;
             }
@@ -439,7 +439,8 @@ class BioVM extends VM {
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            const luca = this.addOrg(offset, this._code2Mol(code.slice()), true);
+            const luca = this.addOrg(offset, code.slice(), true);
+            luca.code = this._code2Mol(luca.code);
             this.db && this.db.put(luca);
         }
     }
@@ -485,7 +486,7 @@ class BioVM extends VM {
             //
             // Sets last atom bit on
             //
-            code[size - 1] |= Config.MOL_LAST_ATOM_MASK;
+            code[size - 1] |= Config.CODE_8_BIT_MASK;
             return code;
         }
         let   code  = Config.CODE_LUCA;
@@ -495,27 +496,27 @@ class BioVM extends VM {
         //
         // Sets last atom bit on
         //
-        code[size - 1] |= Config.MOL_LAST_ATOM_MASK;
+        code[size - 1] |= Config.CODE_8_BIT_MASK;
 
         return code;
     }
 
     /**
-     * Splits raw code into molecules by adding first bit flag to random places
+     * Splits raw code into molecules by adding first bit flag to every Config.molCodeSize offset
      * @param {Uint8Array} code Code we need to split
      * @return {Uint8Array} The same array, but with meta info inside (molecule separator)
      */
     _code2Mol(code) {
         const size = Config.molCodeSize;
         const len  = code.length;
-        let   i    = rand(size);
+        let   i    = size - 1;
         
         while (i < len) {
-            code[i] |= MOL_LAST_ATOM_MASK;
-            i += rand(size);
+            code[i] |= CODE_8_BIT_MASK;
+            i += size;
 
         }
-        code[len - 1] |= MOL_LAST_ATOM_MASK;
+        code[len - 1] |= CODE_8_BIT_MASK;
 
         return code;
     }
@@ -540,7 +541,7 @@ class BioVM extends VM {
      */
     _mol2Idx(code, molIndex) {
         for (let i = 0, len = code.length; i < len; i++) {
-            if ((code[i] & MOL_LAST_ATOM_MASK) && --molIndex < 1) {
+            if ((code[i] & CODE_8_BIT_MASK) && --molIndex < 1) {
                 return i;
             }
         }
@@ -554,7 +555,7 @@ class BioVM extends VM {
      */
     _molLastIdx(code, index) {
         // eslint-disable-next-line no-empty
-        while (code[index++] & MOL_LAST_ATOM_MASK === 0) {}
+        while (code[index++] & CODE_8_BIT_MASK === 0) {}
         return index;
     }
 
@@ -567,7 +568,7 @@ class BioVM extends VM {
         const code = org.code;
         let   mols = 0;
         
-        for (let i = 0, len; i < len; i++) {(code[i] & MOL_LAST_ATOM_MASK) && ++mols}
+        for (let i = 0, len; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
 
         return mols;
     }

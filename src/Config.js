@@ -12,7 +12,7 @@
  */
 const WIDTH       = 1920 / 4;
 const HEIGHT      = 1080 / 4;
-const CODE_OFFS   = 256 - 64;
+const CODE_OFFS   = 128 - 64;
 const CODE_ORG_ID = 17;
 
 // TODO: rename all molecules related names to prefix "mol".
@@ -22,7 +22,7 @@ module.exports = {
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
      * nearest point depending on one of 8 directions. We use these values in any
-     * command related to sight, move, eating and so on. Starts from: uo, up-right,
+     * command related to sight, move, eating and so on. Starts from: up, up-right,
      * right, right-down,...
      */
     DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
@@ -46,6 +46,16 @@ module.exports = {
     CODE_RET_OK                : 1,
     CODE_RET_ERR               : 0,
     CODE_ORG_ID,
+    /**
+     * {Number} Mask, which is used for marking last atom in a molecule.
+     * It means that after this atom (command) new molecule is follow. Every
+     * molecule should have last atom mask turned on
+     */
+    CODE_8_BIT_MASK            : 0b10000000,
+    CODE_8_BIT_RESET_MASK      : 0b01111111,
+    /**
+     * {Uint8Array} Code of first organism - LUCA (Last Universal Common Ancestor)
+     */
     CODE_LUCA                  : Uint8Array.from([
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
@@ -99,6 +109,8 @@ module.exports = {
         CODE_OFFS + 35, //         save
         CODE_OFFS + 34, //         right
         CODE_OFFS + 23, //     end
+        17,             //     17
+        CODE_OFFS + 25, //     axret
         CODE_OFFS + 36, //     load
         CODE_OFFS,      //     toggle
         CODE_OFFS + 53, //     mols
@@ -112,9 +124,9 @@ module.exports = {
         1,              // 1
         CODE_OFFS + 20, // call
         CODE_OFFS + 2,  // nop
-        100,            // 100
+        50,             // 50
         CODE_OFFS,      // toggle
-        10,             // 10
+        20,             // 20
         CODE_OFFS + 5,  // mul
         CODE_OFFS,      // toggle
         CODE_OFFS + 32, // len
@@ -174,7 +186,7 @@ module.exports = {
      */
     ORG_MIN_COLOR              : 0x96,
     orgColor                   : 0xFF0000,
-    orgAmount                  : 10,
+    orgAmount                  : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,
@@ -187,19 +199,12 @@ module.exports = {
      */
     orgProbs                   : new Uint8Array([10,1,1,1,1,1,1,1]),
     /**
-     * {Number} Mask, which is used for marking last atom in a molecule.
-     * It means that after this atom (command) new molecule is follow. Every
-     * molecule should have last atom mask turned on
-     */
-    MOL_LAST_ATOM_MASK         : 0b10000000,
-    MOL_LAST_ATOM_RESET_MASK   : 0b01111111,
-    /**
      * Molecules related configs
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
     molAmount                  : 60000,
-    molCodeSize                : 8,
+    molCodeSize                : 2,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration

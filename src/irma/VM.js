@@ -6,18 +6,19 @@
  *
  * @author flatline
  */
-const Config            = require('./../Config');
-const FastArray         = require('./../common/FastArray');
-const Helper            = require('./../common/Helper');
-const Plugins           = require('../common/Plugins');
-const Organism          = require('./Organism');
-const Mutations         = require('./Mutations');
+const Config                = require('./../Config');
+const FastArray             = require('./../common/FastArray');
+const Helper                = require('./../common/Helper');
+const Plugins               = require('../common/Plugins');
+const Organism              = require('./Organism');
+const Mutations             = require('./Mutations');
 
-const PLUGINS           = Helper.requirePlugins(Config.PLUGINS);
-const rand              = Helper.rand;
+const PLUGINS               = Helper.requirePlugins(Config.PLUGINS);
+const rand                  = Helper.rand;
 
-const CODE_CMD_OFFS     = Config.CODE_CMD_OFFS;
-const CODE_STACK_SIZE   = Config.CODE_STACK_SIZE;
+const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
+const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
+const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 
 class VM {
     /**
@@ -108,7 +109,7 @@ class VM {
                 // support pseudo multi threading
                 //
                 for (let l = 0; l < lines; l++) {
-                    const cmd = code[line];
+                    const cmd = code[line] & CODE_8_BIT_RESET_MASK;
 
                     // eslint-disable-next-line default-case
                     switch (cmd) {
