@@ -3,13 +3,14 @@
  *
  * @author flatline
  */
-const Config   = require('./../Config');
-const Organism = require('./Organism');
+const Config                = require('./../Config');
+const Organism              = require('./Organism');
 /**
  * {Number} Offset of the first command. Before it, just numbers
  */
-const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
-const CODE_PAD_SIZE = 30;
+const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
+const CODE_PAD_SIZE         = 30;
+const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 
 class Bytes2Code {
     /**
@@ -26,28 +27,29 @@ class Bytes2Code {
         //
         const org  = new Organism(-1, bytes);
         const offs = org.offs;
-        let code   = `${firstLineEmpty ? '\n' : ''}${info ? this._info() : ''}`;
+        let code   = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
         let span   = '';
 
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
-            const line = Bytes2Code.MAP[bytes[b]];
-            if (bytes[b] === CODE_CMD_OFFS + 22 || // func
-                bytes[b] === CODE_CMD_OFFS + 20 || // loop
-                bytes[b] === CODE_CMD_OFFS + 13 || // ifp
-                bytes[b] === CODE_CMD_OFFS + 14 || // ifn
-                bytes[b] === CODE_CMD_OFFS + 15 || // ifz
-                bytes[b] === CODE_CMD_OFFS + 16 || // ifg
-                bytes[b] === CODE_CMD_OFFS + 17 || // ifl
-                bytes[b] === CODE_CMD_OFFS + 18 || // ife
-                bytes[b] === CODE_CMD_OFFS + 19) { // ifne
+            const cmd  = bytes[b] & CODE_8_BIT_RESET_MASK;
+            const line = Bytes2Code.MAP[cmd];
+            if (cmd === CODE_CMD_OFFS + 21 || // func
+                cmd === CODE_CMD_OFFS + 19 || // loop
+                cmd === CODE_CMD_OFFS + 12 || // ifp
+                cmd === CODE_CMD_OFFS + 13 || // ifn
+                cmd === CODE_CMD_OFFS + 14 || // ifz
+                cmd === CODE_CMD_OFFS + 15 || // ifg
+                cmd === CODE_CMD_OFFS + 16 || // ifl
+                cmd === CODE_CMD_OFFS + 17 || // ife
+                cmd === CODE_CMD_OFFS + 18) { // ifne
                 code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
                 if (offs[b] > b + 1) {span += '  '}
                 continue;
-            } else if (bytes[b] === CODE_CMD_OFFS + 24) { // end
+            } else if (cmd === CODE_CMD_OFFS + 23) { // end
                 span = span.substr(0, span.length - 2);
             } else if (line === undefined) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${span}${bytes[b]}`;
+                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${span}${cmd}`;
                 continue;
             }
             code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
@@ -62,16 +64,18 @@ class Bytes2Code {
      */
     static _info() {
         return [
-            'ax, bx    - data registers',
-            'ret       - commands return value register',
-            'offs      - absolute offset of command in a code',
-            'idx       - index of molecule in a code',
-            'fromIdx   - index of "from" molecule',
-            'toIdx     - index of "to" molecule',
-            'dir       - one of 8 directions (up, right-up, right,...)',
-            'val       - value or number',
-            'freq      - frequency (related to say/listen commands',
-            'cmd():ret - ret contains success of command',
+            'Abbreviations description:',
+            '  ax, bx    - data registers',
+            '  ret       - commands return value register',
+            '  offs      - absolute offset of command in a code',
+            '  idx       - index of molecule in a code',
+            '  fromIdx   - index of "from" molecule',
+            '  toIdx     - index of "to" molecule',
+            '  dir       - one of 8 directions (up, right-up, right,...)',
+            '  val       - value or number',
+            '  freq      - frequency (related to say/listen commands',
+            '  cmd():ret - ret contains success of command',
+            '',
             ''
         ].join('\n');
     }
@@ -136,7 +140,8 @@ Bytes2Code.MAP = {
     [CODE_CMD_OFFS + 49]: ['anab',   'anab(ax:fromIdx, bx:toIdx):ret'],
     [CODE_CMD_OFFS + 50]: ['catab',  'catab(ax:offs):ret'],
     [CODE_CMD_OFFS + 51]: ['find',   'ax=find(ax:findIdx,bx:fromIdx,ret:toIdx):ret'],
-    [CODE_CMD_OFFS + 52]: ['move',   'move(ax:fromIdx,bx:toIdx):ret']
+    [CODE_CMD_OFFS + 52]: ['move',   'move(ax:fromIdx,bx:toIdx):ret'],
+    [CODE_CMD_OFFS + 53]: ['mols',   'ax=mols()']
 };
 
 module.exports = Bytes2Code;

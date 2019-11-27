@@ -142,7 +142,7 @@ module.exports = {
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2   // nop
     ]),
-    codeLinesPerIteration      : 1,
+    codeLinesPerIteration      : 10,
     codeRepeatsPerRun          : 20,
     codeMutateEveryClone       : 7,
     codeMutateMutations        : false,

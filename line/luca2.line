@@ -86,8 +86,8 @@ func             # func1
     #
     # 5. move found molecule from food section to the end
     #
-	mols         # ax=mols    bx=molOffs
-	toggle       # ax=molOffs bx=mols    ret=0|1
+    mols         # ax=mols    bx=molOffs
+    toggle       # ax=molOffs bx=mols    ret=0|1
     move
     #
     # 6. inc i

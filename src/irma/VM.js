@@ -184,7 +184,7 @@ class VM {
 
                         case CODE_CMD_OFFS + 11:  // rand
                             ++line;
-                            ax = ax < 0 ? rand(256) : rand(ax);
+                            ax = ax < 1 ? rand(256) : rand(ax);
                             continue;
 
                         case CODE_CMD_OFFS + 12:  // ifp
@@ -360,7 +360,7 @@ class VM {
                     //
                     // This is a constant
                     //
-                    if (cmd < CODE_CMD_OFFS && cmd > -CODE_CMD_OFFS) {ax = cmd; ++line; continue}
+                    if (cmd < CODE_CMD_OFFS) {ax = cmd; ++line; continue}
                     //
                     // We are on the last code line. Have to jump to the first
                     //

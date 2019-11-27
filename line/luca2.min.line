@@ -38,8 +38,8 @@ func             # func1
     ifz
       ret
     end
-	mols         # ax=mols    bx=molOffs
-	toggle       # ax=molOffs bx=mols    ret=0|1
+    mols         # ax=mols    bx=molOffs
+    toggle       # ax=molOffs bx=mols    ret=0|1
     move
     load         # ax=i
     inc          # ax=i+1

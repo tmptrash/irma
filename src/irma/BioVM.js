@@ -384,16 +384,16 @@ class BioVM extends VM {
      */
     addOrg (offset, code, isOrg = false) {
         const orgsMols = this.orgsMols;
-        const org = super.addOrg(isOrg ? this.orgs.freeIndex : null, code, !isOrg);
+        const org = super.addOrg(isOrg ? this.orgs.freeIndex : orgsMols.freeIndex, code, !isOrg);
         //
         // Extends organism properties
         //
-        org.offset   = offset;
-        org.molIndex = orgsMols.freeIndex;
+        org.offset = offset;
         if (isOrg) {
-            org.color  = Config.orgColor;
-            org.packet = null;
-            org.energy = code.length * Config.energyMultiplier;
+            org.molIndex = orgsMols.freeIndex;
+            org.color    = Config.orgColor;
+            org.packet   = null;
+            org.energy   = code.length * Config.energyMultiplier;
             org.compile();
         }
 

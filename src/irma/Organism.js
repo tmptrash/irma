@@ -10,7 +10,9 @@
  *
  * @author flatline
  */
-const Config = require('./../Config');
+const Config                = require('./../Config');
+
+const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 
 class Organism {
     /**
@@ -62,7 +64,7 @@ class Organism {
 
         for (let i = 0, len = code.length; i < len; i++) {
             // eslint-disable-next-line default-case
-            switch(code[i]) {
+            switch(code[i] & CODE_8_BIT_RESET_MASK) {
                 case CMD_OFFS + 21: // func
                     funcs[fCount++] = offs[i] = i + 1;
                     stack[++sCount] = i;
