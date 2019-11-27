@@ -139,6 +139,7 @@ module.exports = {
         CODE_OFFS + 38, //     split
         CODE_OFFS + 23, // end
         CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
         CODE_OFFS + 2   // nop
     ]),
     codeLinesPerIteration      : 10,
