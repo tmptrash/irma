@@ -179,7 +179,8 @@ class BioVM extends VM {
                 const offset = org.offset + org.ax;
                 if (offset < 0 || offset > MAX_OFFS) {org.ax = 0; return}
                 const dot = this.world.getOrgIdx(offset);
-                org.ax = (dot < 0 ? 0 : this.orgsMols.ref()[dot].color || Config.molColor);
+                const mol = this.orgsMols.ref()[dot];
+                org.ax = (dot < 0 ? 0 : mol.color || this._molColor(mol));
                 return;
             }
 
@@ -397,7 +398,7 @@ class BioVM extends VM {
         }
 
         orgsMols.add(org);
-        this.world.org(offset, org);
+        this.world.org(offset, org, isOrg ? org.color : this._molColor(org));
 
         return org;
     }
@@ -471,6 +472,27 @@ class BioVM extends VM {
             movedOrg.molIndex = index;
             this.world.setItem(movedOrg.offset, index);
         }
+    }
+
+    /**
+     * Returns color of molecule by it's atoms
+     * @param {Organism} mol Molecule
+     * @return {Number} color Color in 0xRRGGBB format
+     */
+    _molColor(mol) {
+        const code  = mol.code;
+        const len   = code.length;
+        const bits  = len > 3 ? Math.floor(21 / len) || Config.molColor : 8;
+        const left  = 8 - bits;
+        let   cBits = 0;
+        let   color = 0;
+
+        for (let i = 0; i < len; i++) {
+            color |= ((((code[i] & CODE_8_BIT_RESET_MASK) << left) >>> left) << cBits);
+            cBits += bits;
+        }
+
+        return color;
     }
 
     /**
@@ -613,8 +635,7 @@ class BioVM extends VM {
 
         let   offs     = world.viewOffs = world.viewY * Config.WORLD_WIDTH + world.viewX;
         const canvas   = world.canvas;
-        const orgs     = this.orgsMols.ref();
-        const molColor = Config.molColor;
+        const orgMol   = this.orgsMols.ref();
         //
         // Copy world's part into the canvas accodring to new scroll offsets
         //
@@ -622,7 +643,7 @@ class BioVM extends VM {
             const yOffs = y * width;
             for (let x = 0; x < width; x++) {
                 const org = world.getOrgIdx(offs++);
-                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgs[org].color || molColor);
+                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgMol[org].color || this._molColor(orgMol[org]));
             }
             offs += row;
         }

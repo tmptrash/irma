@@ -101,14 +101,15 @@ class World {
      * then draws it there also. This method is optimized for speed.
      * @param {Number} offset New organism offset
      * @param {Organism} org Organism instance
+     * @param {Number} color Available if it's a molecule
      */
-    org(offset, org) {
+    org(offset, org, color = 0xffffff) {
         this._data[offset] = org.index + 1;
 
         if (offset < this.viewOffs || offset > this.viewOffs1) {return}
         const x = offset % WORLD_WIDTH;
         if (x < this.viewX || x > this.viewX1) {return}
-        this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color || Config.molColor);
+        this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color || color);
     }
 
     /**

@@ -75,7 +75,6 @@ describe('src/irma/VM', () => {
             molDecayPeriod             : 1000,
             molDecayDistance           : 60,
             molCodeSize                : 8,
-            molColor                   : 0xff0000,
             energyStepCoef             : 0.01,
             energyMultiplier           : 10000
         });
