@@ -81,6 +81,7 @@ class VM {
      * Config.codeRepeatsPerRun value may slow down user and browser interaction
      */
     run() {
+        debugger;
         const repeats          = Config.codeRepeatsPerRun;
         const lines            = Config.codeLinesPerIteration;
         const mutationPeriod   = Config.orgMutationPeriod;

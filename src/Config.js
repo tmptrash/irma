@@ -73,7 +73,6 @@ module.exports = {
         CODE_OFFS + 21, // func
         0,              //     0
         CODE_OFFS + 35, //     save
-        0,              //     0
         CODE_OFFS + 20, //     call
         CODE_OFFS + 24, //     retax
         CODE_OFFS + 34, //     right
@@ -191,7 +190,7 @@ module.exports = {
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,
     orgMaxCodeSize             : 1024,
-    orgMaxMemSize              : 128,
+    orgMaxMemSize              : 64,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

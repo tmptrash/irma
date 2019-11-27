@@ -48,7 +48,6 @@ func             # func1
   #
   # 2. find nop molecule index and save it to m1
   #
-  0
   call
   retax          # ax=food0
   right          # m1
@@ -155,5 +154,6 @@ end
 # Final molecule-separator, which separates main code from
 # food molecules. After this molecule follows food section
 #
+nop
 nop
 nop

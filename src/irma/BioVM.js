@@ -129,8 +129,8 @@ class BioVM extends VM {
                 const dot     = this.world.getOrgIdx(offset);
                 if (dot > -1) {org.ret = RET_ERR; return} // organism on the way
                 const code = org.code;
-                const ax   = this._mol2Idx(code, org.ax);
-                const bx   = this._mol2Idx(code, org.bx);
+                const ax   = this._mol2Offs(code, org.ax);
+                const bx   = this._mol2Offs(code, org.bx);
                 if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; return}
                 const newCode = code.subarray(ax, bx);
                 org.code = code.splice(ax, bx - ax);
@@ -164,7 +164,7 @@ class BioVM extends VM {
 
             case CODE_CMD_OFFS + 39: {// step
                 ++org.line;
-                org.energy -= Math.floor(org.code.length * Config.energyStepCoef);
+                org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 if (offset < -1) {offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
@@ -218,8 +218,8 @@ class BioVM extends VM {
                 const dDot    = this.world.getOrgIdx(dOffset);
                 if (dDot > -1) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
-                const from    = this._mol2Idx(org.ax);
-                const to      = this._mol2Idx(org.bx);
+                const from    = this._mol2Offs(org.ax);
+                const to      = this._mol2Offs(org.bx);
                 if (from > to || from < 0 || to < 0) {org.ret = RET_ERR; return}
                 const newCode = nearOrg.code.subarray(from, to);
                 nearOrg.code  = nearOrg.code.splice(from, to);
@@ -271,11 +271,11 @@ class BioVM extends VM {
 
             case CODE_CMD_OFFS + 49: {// anab
                 ++org.line;
-                const m1Offs = this._mol2Idx(org.ax);
-                const m2Offs = this._mol2Idx(org.bx);
+                const m1Offs = this._mol2Offs(org.ax);
+                const m2Offs = this._mol2Offs(org.bx);
                 if (m1Offs > m2Offs || m1Offs < 0 || m2Offs < 0) {org.ret = RET_ERR; return}
-                const m1EndOffs = this._molLastIdx(m1Offs);
-                const m2EndOffs = this._molLastIdx(m2Offs);
+                const m1EndOffs = this._molLastOffs(m1Offs);
+                const m2EndOffs = this._molLastOffs(m2Offs);
                 let code = org.code;
                 const cutCode = code.subarray(m2Offs, m2EndOffs);
                 //
@@ -303,26 +303,60 @@ class BioVM extends VM {
             }
 
             case CODE_CMD_OFFS + 51: {// find
+                // ++org.line;
+                // const code = org.code;
+                // let   ax   = org.ax;
+                // let   bx   = org.bx;
+                // if (ax > bx || ax < 0 || bx < 0 || ax >= code.length || bx >= code.length) {org.ret = RET_ERR; return}
+                // const ret  = org.ret;
+                // if (bx > ret) {org.ret = RET_ERR; return}
+                // const from = this._mol2Idx(code, bx);
+                // const to   = this._molLastIdx(code, this._mol2Idx(code, ret));
+
+                // ax = this._mol2Idx(code, ax);
+                // bx = this._molLastIdx(code, ax);
+                // let   j;
+                // loop: for (let i = Math.max(0, from), len1 = Math.min(code.length - 1, to); i < len1; i++) {
+                //     for (j = ax; j <= bx; j++) {
+                //         if (code[i + j - ax] !== code[j]) {continue loop}
+                //     }
+                //     org.ax = i;
+                //     org.ret = RET_OK;
+                //     return;
+                // }
+                // org.ret = RET_ERR;
+
+
                 ++org.line;
                 const code = org.code;
-                let   ax   = org.ax;
-                let   bx   = org.bx;
-                if (ax > bx || ax < 0 || bx < 0 || ax >= code.length || bx >= code.length) {org.ret = RET_ERR; return}
-                const ret  = org.ret;
-                if (bx > ret) {org.ret = RET_ERR; return}
-                const from = this._mol2Idx(code, bx);
-                const to   = this._molLastIdx(code, this._mol2Idx(code, ret));
+                const ax   = this._mol2Offs(code, org.ax);
+                if (ax < 0) {org.ret = RET_ERR; return}
+                const atom = code[ax];
+                let   mol  = org.bx;
+                const bx   = this._mol2Offs(code, org.bx);
+                if (bx < 0 || bx < ax) {org.ret = RET_ERR; return}
+                const ret  = this._mol2Offs(code, org.ret);
+                if (ret < 0 || ret < bx) {org.ret = RET_ERR; return}
 
-                ax = this._mol2Idx(code, ax);
-                bx = this._molLastIdx(code, ax);
-                let   j;
-                loop: for (let i = Math.max(0, from), len1 = Math.min(code.length - 1, to); i < len1; i++) {
-                    for (j = ax; j <= bx; j++) {
-                        if (code[i + j - ax] !== code[j]) {continue loop}
+                loop: for (let i = bx; i <= ret; i++, mol++) {
+                    //
+                    // If first command of source molecule and first command of current molecule
+                    // doesn't equal, then skip all commands till the last in current molecule
+                    //
+                    if (atom === code[i]) {
+                        if (code[i] & CODE_8_BIT_MASK) {org.ax = mol; org.ret = RET_OK; return}
+                        for (let j = i + 1, k = 1;; j++,k++) {
+                            if (code[j] !== code[k]) {continue loop}
+                            if (code[j] & CODE_8_BIT_MASK) {break}
+                        }
+                        org.ax  = mol;
+                        org.ret = RET_OK;
+                        return; 
+                    // eslint-disable-next-line no-else-return
+                    } else {
+                        // eslint-disable-next-line no-empty
+                        while((code[++i] & CODE_8_BIT_MASK) === 0) {}
                     }
-                    org.ax = i;
-                    org.ret = RET_OK;
-                    return;
                 }
                 org.ret = RET_ERR;
                 return;
@@ -331,12 +365,12 @@ class BioVM extends VM {
             case CODE_CMD_OFFS + 52: {// move
                 ++org.line;
                 let    code     = org.code;
-                const find0    = this._mol2Idx(code, org.ax);
-                const find1    = this._molLastIdx(code, find0);
+                const find0    = this._mol2Offs(code, org.ax);
+                const find1    = this._molLastOffs(code, find0);
                 if (find1 < find0) {org.ret = RET_ERR; return}
                 const moveCode = code.slice(find0, find1 + 1);
                 if (moveCode.length < 1) {org.ret = RET_ERR; return}
-                const bx       = this._mol2Idx(code, org.bx);
+                const bx       = this._mol2Offs(code, org.bx);
                 const newBx    = bx < 0 ? 0 : bx;
                 const len      = find1 - find0 + 1;
                 const offs     = newBx > find1 ? newBx - len : (newBx < find0 ? newBx : find0);
@@ -561,10 +595,11 @@ class BioVM extends VM {
      * @param {Number} molIndex Index of molecule
      * @return {Number|-1} index of first atom or -1 if no last atom found
      */
-    _mol2Idx(code, molIndex) {
+    _mol2Offs(code, molIndex) {
+        if (molIndex === 0) {return 0}
         for (let i = 0, len = code.length; i < len; i++) {
             if ((code[i] & CODE_8_BIT_MASK) && --molIndex < 1) {
-                return i;
+                return i + 1;
             }
         }
         return -1;
@@ -575,9 +610,9 @@ class BioVM extends VM {
      * @param {Uint8Array} code Code we a looking in
      * @param {Number} index Index of first atom in molecule
      */
-    _molLastIdx(code, index) {
+    _molLastOffs(code, index) {
         // eslint-disable-next-line no-empty
-        while (code[index++] & CODE_8_BIT_MASK === 0) {}
+        while ((code[index] & CODE_8_BIT_MASK) === 0) {index++}
         return index;
     }
 
@@ -590,7 +625,7 @@ class BioVM extends VM {
         const code = org.code;
         let   mols = 0;
         
-        for (let i = 0, len; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
+        for (let i = 0, len = code.length; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
 
         return mols;
     }

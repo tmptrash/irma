@@ -14,11 +14,10 @@ nop
 func             # func1
   0              # ax=0
   save           # m0=0
-  0
   call
   retax          # ax=food0
   right          # m1
-  save           # m1=food0+1
+  save           # m1=food0
   mols           # ax=food1
   right          # m2
   save           # m2=food1
@@ -80,5 +79,6 @@ ifg
   toggle         # ax=food0   ax=mols
   split
 end
+nop
 nop
 nop
