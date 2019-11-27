@@ -17,22 +17,22 @@ func             # func1
   call
   retax          # ax=food0
   right          # m1
-  save           # m1=food0
+  inc            # ax=food0+1
+  save           # m1=food0+1
   mols           # ax=food1
   right          # m2
   save           # m2=food1
-  retax          # ax=food0
-  inc            # ax=food0+1
+  retax          # ax=food0+1
   loop
     load         # ax=food1
     axret        # ret=food1
     left         # m1
     load         # ax=food0
-    toggle       # ax=?       bx=food0
+    toggle       # ax=?       bx=food0+1
     left         # m0
-    load         # ax=i       bx=food0   ret=food1
-    find         # ax=molOffs bx=food0   ret=0|1
-    toggle       # ax=food0   bx=molOffs ret=0|1
+    load         # ax=i       bx=food0+1 ret=food1
+    find         # ax=molOffs bx=food0+1 ret=0|1
+    toggle       # ax=food0+1 bx=molOffs ret=0|1
     retax        # ax=0|1     bx=molOffs
     ifz
       ret
@@ -79,6 +79,6 @@ ifg
   toggle         # ax=food0   ax=mols
   split
 end
-nop
+ret
 nop
 nop

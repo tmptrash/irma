@@ -51,6 +51,7 @@ func             # func1
   call
   retax          # ax=food0
   right          # m1
+  inc            # ax=food0+1
   save           # m1=food0+1
   #
   # 3. set m2=food1. Is a last molecule index
@@ -62,8 +63,7 @@ func             # func1
   # loop through main code between nop molecule-separators 
   # and copy one molecule per loop iteration
   #
-  retax          # ax=food0
-  inc            # ax=food0+1
+  retax          # ax=food0+1
   loop
     #
     # 4. set find limit [food0=nopMol1, food1=nopMol2] molecule
@@ -72,12 +72,12 @@ func             # func1
     load         # ax=food1
     axret        # ret=food1
     left         # m1
-    load         # ax=food0
-    toggle       # ax=?       bx=food0
+    load         # ax=food0+1
+    toggle       # ax=?       bx=food0+1
     left         # m0
-    load         # ax=i       bx=food0   ret=food1
-    find         # ax=molOffs bx=food0   ret=0|1
-    toggle       # ax=food0   bx=molOffs ret=0|1
+    load         # ax=i       bx=food0+1 ret=food1
+    find         # ax=molOffs bx=food0+1 ret=0|1
+    toggle       # ax=food0+1 bx=molOffs ret=0|1
     retax        # ax=0|1     bx=molOffs
     ifz
       ret
@@ -154,6 +154,6 @@ end
 # Final molecule-separator, which separates main code from
 # food molecules. After this molecule follows food section
 #
-nop
+ret
 nop
 nop

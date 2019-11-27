@@ -81,7 +81,6 @@ class VM {
      * Config.codeRepeatsPerRun value may slow down user and browser interaction
      */
     run() {
-        debugger;
         const repeats          = Config.codeRepeatsPerRun;
         const lines            = Config.codeLinesPerIteration;
         const mutationPeriod   = Config.orgMutationPeriod;
@@ -378,7 +377,7 @@ class VM {
                     } else {
                         //
                         // Current command is not from standart list. Call child class to handle it
-                        //
+                        // TODO: this code doesn't look optimized to me
                         org.line = line;
                         org.ax   = ax;
                         org.bx   = bx;

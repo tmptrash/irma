@@ -303,30 +303,6 @@ class BioVM extends VM {
             }
 
             case CODE_CMD_OFFS + 51: {// find
-                // ++org.line;
-                // const code = org.code;
-                // let   ax   = org.ax;
-                // let   bx   = org.bx;
-                // if (ax > bx || ax < 0 || bx < 0 || ax >= code.length || bx >= code.length) {org.ret = RET_ERR; return}
-                // const ret  = org.ret;
-                // if (bx > ret) {org.ret = RET_ERR; return}
-                // const from = this._mol2Idx(code, bx);
-                // const to   = this._molLastIdx(code, this._mol2Idx(code, ret));
-
-                // ax = this._mol2Idx(code, ax);
-                // bx = this._molLastIdx(code, ax);
-                // let   j;
-                // loop: for (let i = Math.max(0, from), len1 = Math.min(code.length - 1, to); i < len1; i++) {
-                //     for (j = ax; j <= bx; j++) {
-                //         if (code[i + j - ax] !== code[j]) {continue loop}
-                //     }
-                //     org.ax = i;
-                //     org.ret = RET_OK;
-                //     return;
-                // }
-                // org.ret = RET_ERR;
-
-
                 ++org.line;
                 const code = org.code;
                 const ax   = this._mol2Offs(code, org.ax);
@@ -337,6 +313,7 @@ class BioVM extends VM {
                 if (bx < 0 || bx < ax) {org.ret = RET_ERR; return}
                 const ret  = this._mol2Offs(code, org.ret);
                 if (ret < 0 || ret < bx) {org.ret = RET_ERR; return}
+                const len  = code.length;
 
                 loop: for (let i = bx; i <= ret; i++, mol++) {
                     //
@@ -354,8 +331,9 @@ class BioVM extends VM {
                         return; 
                     // eslint-disable-next-line no-else-return
                     } else {
+                        if (code[i] & CODE_8_BIT_MASK) {continue}
                         // eslint-disable-next-line no-empty
-                        while((code[++i] & CODE_8_BIT_MASK) === 0) {}
+                        while((code[++i] & CODE_8_BIT_MASK) === 0 && i < len) {}
                     }
                 }
                 org.ret = RET_ERR;

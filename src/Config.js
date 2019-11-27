@@ -76,12 +76,12 @@ module.exports = {
         CODE_OFFS + 20, //     call
         CODE_OFFS + 24, //     retax
         CODE_OFFS + 34, //     right
+        CODE_OFFS + 7,  //     inc
         CODE_OFFS + 35, //     save
         CODE_OFFS + 53, //     mols
         CODE_OFFS + 34, //     right
         CODE_OFFS + 35, //     save
         CODE_OFFS + 24, //     retax
-        CODE_OFFS + 7,  //     inc
         CODE_OFFS + 19, //     loop
         CODE_OFFS + 36, //         load
         CODE_OFFS + 25, //         axret
@@ -138,7 +138,7 @@ module.exports = {
         CODE_OFFS,      //     toggle
         CODE_OFFS + 38, //     split
         CODE_OFFS + 23, // end
-        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 22, // ret
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2   // nop
     ]),
@@ -190,7 +190,7 @@ module.exports = {
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,
-    orgMaxCodeSize             : 1024,
+    orgMaxCodeSize             : 2048,
     orgMaxMemSize              : 64,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
