@@ -8,9 +8,68 @@ const Organism              = require('./Organism');
 /**
  * {Number} Offset of the first command. Before it, just numbers
  */
-const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const CODE_PAD_SIZE         = 30;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+//
+// Basic commands
+//
+const TOGGLE                = Config.CODE_CMDS.TOGGLE;
+const EQ                    = Config.CODE_CMDS.EQ;
+const NOP                   = Config.CODE_CMDS.NOP;
+const ADD                   = Config.CODE_CMDS.ADD;
+const SUB                   = Config.CODE_CMDS.SUB;
+const MUL                   = Config.CODE_CMDS.MUL;
+const DIV                   = Config.CODE_CMDS.DIV;
+const INC                   = Config.CODE_CMDS.INC;
+const DEC                   = Config.CODE_CMDS.DEC;
+const RSHIFT                = Config.CODE_CMDS.RSHIFT;
+const LSHIFT                = Config.CODE_CMDS.LSHIFT;
+const RAND                  = Config.CODE_CMDS.RAND;
+const IFP                   = Config.CODE_CMDS.IFP;
+const IFN                   = Config.CODE_CMDS.IFN;
+const IFZ                   = Config.CODE_CMDS.IFZ;
+const IFG                   = Config.CODE_CMDS.IFG;
+const IFL                   = Config.CODE_CMDS.IFL;
+const IFE                   = Config.CODE_CMDS.IFE;
+const IFNE                  = Config.CODE_CMDS.IFNE;
+const LOOP                  = Config.CODE_CMDS.LOOP;
+const CALL                  = Config.CODE_CMDS.CALL;
+const FUNC                  = Config.CODE_CMDS.FUNC;
+const RET                   = Config.CODE_CMDS.RET;
+const END                   = Config.CODE_CMDS.END;
+const RETAX                 = Config.CODE_CMDS.RETAX;
+const AXRET                 = Config.CODE_CMDS.AXRET;
+const AND                   = Config.CODE_CMDS.AND;
+const OR                    = Config.CODE_CMDS.OR;
+const XOR                   = Config.CODE_CMDS.XOR;
+const NOT                   = Config.CODE_CMDS.NOT;
+const AGE                   = Config.CODE_CMDS.AGE;
+const LINE                  = Config.CODE_CMDS.LINE;
+const LEN                   = Config.CODE_CMDS.LEN;
+const LEFT                  = Config.CODE_CMDS.LEFT;
+const RIGHT                 = Config.CODE_CMDS.RIGHT;
+const SAVE                  = Config.CODE_CMDS.SAVE;
+const LOAD                  = Config.CODE_CMDS.LOAD;
+//
+// Biological commands
+//
+const JOIN                  = Config.CODE_CMDS.JOIN;
+const SPLIT                 = Config.CODE_CMDS.SPLIT;
+const STEP                  = Config.CODE_CMDS.STEP;
+const SEE                   = Config.CODE_CMDS.SEE;
+const SAY                   = Config.CODE_CMDS.SAY;
+const LISTEN                = Config.CODE_CMDS.LISTEN;
+const NREAD                 = Config.CODE_CMDS.NREAD;
+const NSPLIT                = Config.CODE_CMDS.NSPLIT;
+const GET                   = Config.CODE_CMDS.GET;
+const PUT                   = Config.CODE_CMDS.PUT;
+const OFFS                  = Config.CODE_CMDS.OFFS;
+const COLOR                 = Config.CODE_CMDS.COLOR;
+const ANAB                  = Config.CODE_CMDS.ANAB;
+const CATAB                 = Config.CODE_CMDS.CATAB;
+const FIND                  = Config.CODE_CMDS.FIND;
+const MOVE                  = Config.CODE_CMDS.MOVE;
+const MOLS                  = Config.CODE_CMDS.MOLS;
 
 class Bytes2Code {
     /**
@@ -34,19 +93,19 @@ class Bytes2Code {
         for (let b = 0; b < bytes.length; b++) {
             const cmd  = bytes[b] & CODE_8_BIT_RESET_MASK;
             const line = Bytes2Code.MAP[cmd];
-            if (cmd === CODE_CMD_OFFS + 21 || // func
-                cmd === CODE_CMD_OFFS + 19 || // loop
-                cmd === CODE_CMD_OFFS + 12 || // ifp
-                cmd === CODE_CMD_OFFS + 13 || // ifn
-                cmd === CODE_CMD_OFFS + 14 || // ifz
-                cmd === CODE_CMD_OFFS + 15 || // ifg
-                cmd === CODE_CMD_OFFS + 16 || // ifl
-                cmd === CODE_CMD_OFFS + 17 || // ife
-                cmd === CODE_CMD_OFFS + 18) { // ifne
+            if (cmd === FUNC ||
+                cmd === LOOP ||
+                cmd === IFP  ||
+                cmd === IFN  ||
+                cmd === IFZ  ||
+                cmd === IFG  ||
+                cmd === IFL  ||
+                cmd === IFE  ||
+                cmd === IFNE) {
                 code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
-                if (offs[b] > b + 1) {span += '  '}
+                if ((offs[b] || 0) > b + 1) {span += '  '}
                 continue;
-            } else if (cmd === CODE_CMD_OFFS + 23) { // end
+            } else if (cmd === END) {
                 span = span.substr(0, span.length - 2);
             } else if (line === undefined) {
                 code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${span}${cmd}`;
@@ -85,63 +144,63 @@ Bytes2Code.MAP = {
     //
     // "line" language core operators
     //
-    [CODE_CMD_OFFS     ]: ['toggle', 'swap ax,bx'],
-    [CODE_CMD_OFFS + 1 ]: ['eq',     'ax=bx'],
-    [CODE_CMD_OFFS + 2 ]: ['nop',    'no operation'],
-    [CODE_CMD_OFFS + 3 ]: ['add',    'ax+=bx'],
-    [CODE_CMD_OFFS + 4 ]: ['sub',    'ax-=bx'],
-    [CODE_CMD_OFFS + 5 ]: ['mul',    'ax*=bx'],
-    [CODE_CMD_OFFS + 6 ]: ['div',    'ax/=bx'],
-    [CODE_CMD_OFFS + 7 ]: ['inc',    'ax++'],
-    [CODE_CMD_OFFS + 8 ]: ['dec',    'ax--'],
-    [CODE_CMD_OFFS + 9 ]: ['rshift', 'ax>>=1'],
-    [CODE_CMD_OFFS + 10]: ['lshift', 'ax<<=1'],
-    [CODE_CMD_OFFS + 11]: ['rand',   'ax=rand(ax|0..255'],
-    [CODE_CMD_OFFS + 12]: ['ifp',    'if ax>0'],
-    [CODE_CMD_OFFS + 13]: ['ifn',    'if ax<0'],
-    [CODE_CMD_OFFS + 14]: ['ifz',    'if ax==0'],
-    [CODE_CMD_OFFS + 15]: ['ifg',    'if ax>bx'],
-    [CODE_CMD_OFFS + 16]: ['ifl',    'if ax<bx'],
-    [CODE_CMD_OFFS + 17]: ['ife',    'if ax==bx'],
-    [CODE_CMD_OFFS + 18]: ['ifne',   'if ax!=bx'],
-    [CODE_CMD_OFFS + 19]: ['loop',   'ax times'],
-    [CODE_CMD_OFFS + 20]: ['call',   'calls ax % funcAmount'],
-    [CODE_CMD_OFFS + 21]: ['func',   'function'],
-    [CODE_CMD_OFFS + 22]: ['ret',    'return'],
-    [CODE_CMD_OFFS + 23]: ['end',    'end func/if/loop'],
-    [CODE_CMD_OFFS + 24]: ['retax',  'ax=ret'],
-    [CODE_CMD_OFFS + 25]: ['axret',  'ret=ax'],
-    [CODE_CMD_OFFS + 26]: ['and',    'ax&=bx'],
-    [CODE_CMD_OFFS + 27]: ['or',     'ax|=bx'],
-    [CODE_CMD_OFFS + 28]: ['xor',    'ax^=bx'],
-    [CODE_CMD_OFFS + 29]: ['not',    'ax=~ax'],
-    [CODE_CMD_OFFS + 30]: ['age',    'ax=org.age'],
-    [CODE_CMD_OFFS + 31]: ['line',   'ax=org.line'],
-    [CODE_CMD_OFFS + 32]: ['len',    'ax=org.code.length'],
-    [CODE_CMD_OFFS + 33]: ['left',   'org.memPos--'],
-    [CODE_CMD_OFFS + 34]: ['right',  'org.memPos++'],
-    [CODE_CMD_OFFS + 35]: ['save',   'org.mem[org.memPos] = ax'],
-    [CODE_CMD_OFFS + 36]: ['load',   'ax = org.mem[org.memPos]'],
+    [TOGGLE]: ['toggle', 'swap ax,bx'],
+    [EQ    ]: ['eq',     'ax=bx'],
+    [NOP   ]: ['nop',    'no operation'],
+    [ADD   ]: ['add',    'ax+=bx'],
+    [SUB   ]: ['sub',    'ax-=bx'],
+    [MUL   ]: ['mul',    'ax*=bx'],
+    [DIV   ]: ['div',    'ax/=bx'],
+    [INC   ]: ['inc',    'ax++'],
+    [DEC   ]: ['dec',    'ax--'],
+    [RSHIFT]: ['rshift', 'ax>>=1'],
+    [LSHIFT]: ['lshift', 'ax<<=1'],
+    [RAND  ]: ['rand',   'ax=rand(ax|0..255)'],
+    [IFP   ]: ['ifp',    'if ax>0'],
+    [IFN   ]: ['ifn',    'if ax<0'],
+    [IFZ   ]: ['ifz',    'if ax==0'],
+    [IFG   ]: ['ifg',    'if ax>bx'],
+    [IFL   ]: ['ifl',    'if ax<bx'],
+    [IFE   ]: ['ife',    'if ax==bx'],
+    [IFNE  ]: ['ifne',   'if ax!=bx'],
+    [LOOP  ]: ['loop',   'ax times'],
+    [CALL  ]: ['call',   'calls ax % funcAmount'],
+    [FUNC  ]: ['func',   'function'],
+    [RET   ]: ['ret',    'return'],
+    [END   ]: ['end',    'end func/if/loop'],
+    [RETAX ]: ['retax',  'ax=ret'],
+    [AXRET ]: ['axret',  'ret=ax'],
+    [AND   ]: ['and',    'ax&=bx'],
+    [OR    ]: ['or',     'ax|=bx'],
+    [XOR   ]: ['xor',    'ax^=bx'],
+    [NOT   ]: ['not',    'ax=~ax'],
+    [AGE   ]: ['age',    'ax=org.age'],
+    [LINE  ]: ['line',   'ax=org.line'],
+    [LEN   ]: ['len',    'ax=org.code.length'],
+    [LEFT  ]: ['left',   'org.memPos--'],
+    [RIGHT ]: ['right',  'org.memPos++'],
+    [SAVE  ]: ['save',   'org.mem[org.memPos] = ax'],
+    [LOAD  ]: ['load',   'ax = org.mem[org.memPos]'],
     //
     // Biological stuff
     //
-    [CODE_CMD_OFFS + 37]: ['join',   'join(ax=dir):ret'],
-    [CODE_CMD_OFFS + 38]: ['split',  'plit(ax=fromIdx,bx=toIdx,ret=dir):ret'],
-    [CODE_CMD_OFFS + 39]: ['step',   'step(ax=dir):ret'],
-    [CODE_CMD_OFFS + 40]: ['see',    'ax=see(offs+ax)'],
-    [CODE_CMD_OFFS + 41]: ['say',    'ax=say(ax=val,bx=freq)'],
-    [CODE_CMD_OFFS + 42]: ['listen', 'ax=listen(bx=freq)'],
-    [CODE_CMD_OFFS + 43]: ['nread',  'ax=nread(ax=dir,bx=offs):ret'],
-    [CODE_CMD_OFFS + 44]: ['nsplit', 'nsplit(ax:dir,bx:offs,ret:offs):ret'],
-    [CODE_CMD_OFFS + 45]: ['get',    'get(ax:dir)'],
-    [CODE_CMD_OFFS + 46]: ['put',    'put(ax:dir)'],
-    [CODE_CMD_OFFS + 47]: ['offs',   'ax=org.offset'],
-    [CODE_CMD_OFFS + 48]: ['color',  'org.color=ax % 0xffffff'],
-    [CODE_CMD_OFFS + 49]: ['anab',   'anab(ax:fromIdx, bx:toIdx):ret'],
-    [CODE_CMD_OFFS + 50]: ['catab',  'catab(ax:offs):ret'],
-    [CODE_CMD_OFFS + 51]: ['find',   'ax=find(ax:findIdx,bx:fromIdx,ret:toIdx):ret'],
-    [CODE_CMD_OFFS + 52]: ['move',   'move(ax:fromIdx,bx:toIdx):ret'],
-    [CODE_CMD_OFFS + 53]: ['mols',   'ax=mols()']
+    [JOIN  ]: ['join',   'join(ax=dir):ret'],
+    [SPLIT ]: ['split',  'plit(ax=fromIdx,bx=toIdx,ret=dir):ret'],
+    [STEP  ]: ['step',   'step(ax=dir):ret'],
+    [SEE   ]: ['see',    'ax=see(offs+ax)'],
+    [SAY   ]: ['say',    'ax=say(ax=val,bx=freq)'],
+    [LISTEN]: ['listen', 'ax=listen(bx=freq)'],
+    [NREAD ]: ['nread',  'ax=nread(ax=dir,bx=offs):ret'],
+    [NSPLIT]: ['nsplit', 'nsplit(ax:dir,bx:offs,ret:offs):ret'],
+    [GET   ]: ['get',    'get(ax:dir)'],
+    [PUT   ]: ['put',    'put(ax:dir)'],
+    [OFFS  ]: ['offs',   'ax=org.offset'],
+    [COLOR ]: ['color',  'org.color=ax % 0xffffff'],
+    [ANAB  ]: ['anab',   'anab(ax:fromIdx, bx:toIdx):ret'],
+    [CATAB ]: ['catab',  'catab(ax:offs):ret'],
+    [FIND  ]: ['find',   'ax=find(ax:findIdx,bx:fromIdx,ret:toIdx):ret'],
+    [MOVE  ]: ['move',   'move(ax:fromIdx,bx:toIdx):ret'],
+    [MOLS  ]: ['mols',   'ax=mols()']
 };
 
 module.exports = Bytes2Code;

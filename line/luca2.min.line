@@ -10,7 +10,6 @@ func             # func0
   find           # ax=foodMol bx=?       ret=1
   axret          # ax=foodMol bx=?       ret=foodMol
 end
-nop
 func             # func1
   0              # ax=0
   save           # m0=0
@@ -22,7 +21,8 @@ func             # func1
   mols           # ax=food1
   right          # m2
   save           # m2=food1
-  retax          # ax=food0+1
+  retax          # ax=food0
+  inc            # ax=food0+1
   loop
     load         # ax=food1
     axret        # ret=food1
@@ -60,10 +60,23 @@ end
 rand
 step
 join
-nop
+retax            # ax=0|1
+ifp
+  3
+  rand
+  ifz
+    mols         # ax=mols
+    dec          # ax=mols-1
+    catab
+	toggle       # ax=?       bx=mols-1
+	eq           # ax=mols-1  bx=mols-1
+	inc          # ax=mols    bx=mols-1
+	toggle       # ax=mols-1  bx=mols
+	split
+  end
+end
 1
 call
-nop
 50               # ax=50      bx=0
 toggle           # ax=0       bx=50
 20               # ax=20      bx=50
@@ -80,5 +93,6 @@ ifg
   split
 end
 ret
+nop
 nop
 nop

@@ -10,7 +10,7 @@ describe('src/irma/VM', () => {
     // eslint-disable-next-line no-use-before-define
     _setConfig();
     const BioVM     = require('./BioVM');
-
+    // TODO: rewtire this with the same approach like BioVM.js uses
     const TG        = Config.CODE_CMD_OFFS;
     const EQ        = Config.CODE_CMD_OFFS+1;
     const NO        = Config.CODE_CMD_OFFS+2;

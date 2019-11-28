@@ -24,6 +24,7 @@ module.exports = {
      * nearest point depending on one of 8 directions. We use these values in any
      * command related to sight, move, eating and so on. Starts from: up, up-right,
      * right, right-down,...
+     * @constant
      */
     DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
     /**
@@ -32,6 +33,72 @@ module.exports = {
      * @constant
      */
     CODE_CMD_OFFS              : CODE_OFFS,
+    /**
+     * {Object} Map of commands
+     * @constant
+     */
+    CODE_CMDS                  : {
+        //
+        // basic commands
+        //
+        TOGGLE  : CODE_OFFS,
+        EQ      : CODE_OFFS + 1,
+        NOP     : CODE_OFFS + 2,
+        ADD     : CODE_OFFS + 3,
+        SUB     : CODE_OFFS + 4,
+        MUL     : CODE_OFFS + 5,
+        DIV     : CODE_OFFS + 6,
+        INC     : CODE_OFFS + 7,
+        DEC     : CODE_OFFS + 8,
+        RSHIFT  : CODE_OFFS + 9,
+        LSHIFT  : CODE_OFFS + 10,
+        RAND    : CODE_OFFS + 11,
+        IFP     : CODE_OFFS + 12,
+        IFN     : CODE_OFFS + 13,
+        IFZ     : CODE_OFFS + 14,
+        IFG     : CODE_OFFS + 15,
+        IFL     : CODE_OFFS + 16,
+        IFE     : CODE_OFFS + 17,
+        IFNE    : CODE_OFFS + 18,
+        LOOP    : CODE_OFFS + 19,
+        CALL    : CODE_OFFS + 20,
+        FUNC    : CODE_OFFS + 21,
+        RET     : CODE_OFFS + 22,
+        END     : CODE_OFFS + 23,
+        RETAX   : CODE_OFFS + 24,
+        AXRET   : CODE_OFFS + 25,
+        AND     : CODE_OFFS + 26,
+        OR      : CODE_OFFS + 27,
+        XOR     : CODE_OFFS + 28,
+        NOT     : CODE_OFFS + 29,
+        AGE     : CODE_OFFS + 30,
+        LINE    : CODE_OFFS + 31,
+        LEN     : CODE_OFFS + 32,
+        LEFT    : CODE_OFFS + 33,
+        RIGHT   : CODE_OFFS + 34,
+        SAVE    : CODE_OFFS + 35,
+        LOAD    : CODE_OFFS + 36,
+        //
+        // Biological stuff
+        //
+        JOIN    : CODE_OFFS + 37,
+        SPLIT   : CODE_OFFS + 38,
+        STEP    : CODE_OFFS + 39,
+        SEE     : CODE_OFFS + 40,
+        SAY     : CODE_OFFS + 41,
+        LISTEN  : CODE_OFFS + 42,
+        NREAD   : CODE_OFFS + 43,
+        NSPLIT  : CODE_OFFS + 44,
+        GET     : CODE_OFFS + 45,
+        PUT     : CODE_OFFS + 46,
+        OFFS    : CODE_OFFS + 47,
+        COLOR   : CODE_OFFS + 48,
+        ANAB    : CODE_OFFS + 49,
+        CATAB   : CODE_OFFS + 50,
+        FIND    : CODE_OFFS + 51,
+        MOVE    : CODE_OFFS + 52,
+        MOLS    : CODE_OFFS + 53
+    },
     /**
      * {Number} Amount of supported commands in a code. This value must be
      * synchronized with real commands amount. See VM.js for details.
@@ -50,11 +117,13 @@ module.exports = {
      * {Number} Mask, which is used for marking last atom in a molecule.
      * It means that after this atom (command) new molecule is follow. Every
      * molecule should have last atom mask turned on
+     * @constant
      */
     CODE_8_BIT_MASK            : 0b10000000,
     CODE_8_BIT_RESET_MASK      : 0b01111111,
     /**
      * {Uint8Array} Code of first organism - LUCA (Last Universal Common Ancestor)
+     * @constant
      */
     CODE_LUCA                  : Uint8Array.from([
         CODE_OFFS + 2,  // nop
@@ -69,7 +138,6 @@ module.exports = {
         CODE_OFFS + 51, //     find
         CODE_OFFS + 25, //     axret
         CODE_OFFS + 23, // end
-        CODE_OFFS + 2,  // nop
         CODE_OFFS + 21, // func
         0,              //     0
         CODE_OFFS + 35, //     save
@@ -82,6 +150,7 @@ module.exports = {
         CODE_OFFS + 34, //     right
         CODE_OFFS + 35, //     save
         CODE_OFFS + 24, //     retax
+        CODE_OFFS + 7,  //     inc
         CODE_OFFS + 19, //     loop
         CODE_OFFS + 36, //         load
         CODE_OFFS + 25, //         axret
@@ -119,10 +188,23 @@ module.exports = {
         CODE_OFFS + 11, // rand
         CODE_OFFS + 39, // step
         CODE_OFFS + 37, // join
-        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 24, // retax
+        CODE_OFFS + 12, // ifp
+        3,              //     3
+        CODE_OFFS + 11, //     rand
+        CODE_OFFS + 14, //     ifz
+        CODE_OFFS + 53, //         mols
+        CODE_OFFS + 8,  //         dec
+        CODE_OFFS + 50, //         catab
+        CODE_OFFS,      //         toggle
+        CODE_OFFS + 1,  //         eq
+        CODE_OFFS + 7,  //         inc
+        CODE_OFFS,      //         toggle
+        CODE_OFFS + 38, //         split
+        CODE_OFFS + 23, //     end
+        CODE_OFFS + 23, // end
         1,              // 1
         CODE_OFFS + 20, // call
-        CODE_OFFS + 2,  // nop
         50,             // 50
         CODE_OFFS,      // toggle
         20,             // 20
@@ -139,6 +221,7 @@ module.exports = {
         CODE_OFFS + 38, //     split
         CODE_OFFS + 23, // end
         CODE_OFFS + 22, // ret
+        CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2   // nop
     ]),
@@ -183,6 +266,7 @@ module.exports = {
     /**
      * {Number} This color is a simple fix of black organism. In this case we
      * don't see him in a world
+     * @constant
      */
     ORG_MIN_COLOR              : 0x96,
     orgColor                   : 0xFF0000,

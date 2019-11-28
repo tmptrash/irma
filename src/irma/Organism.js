@@ -13,6 +13,19 @@
 const Config                = require('./../Config');
 
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+//
+// Basic commands
+//
+const IFP                   = Config.CODE_CMDS.IFP;
+const IFN                   = Config.CODE_CMDS.IFN;
+const IFZ                   = Config.CODE_CMDS.IFZ;
+const IFG                   = Config.CODE_CMDS.IFG;
+const IFL                   = Config.CODE_CMDS.IFL;
+const IFE                   = Config.CODE_CMDS.IFE;
+const IFNE                  = Config.CODE_CMDS.IFNE;
+const LOOP                  = Config.CODE_CMDS.LOOP;
+const FUNC                  = Config.CODE_CMDS.FUNC;
+const END                   = Config.CODE_CMDS.END;
 
 class Organism {
     /**
@@ -42,11 +55,10 @@ class Organism {
         this.fCount     = 0;                                           // Amount of functions in a code
         this.stackIndex = -1;                                          // Current index in stack (used for function calls)
 
-        const codeSize = Config.orgMaxCodeSize;
-        this.loops      = new Int16Array(codeSize).fill(-1);           // Offsets of end operator for loop operator
+        this.loops      = {};                                          // Offsets of end operator for loop operator
         this.stack      = new Int32Array(Config.CODE_STACK_SIZE * 3);  // 2 registers + back line
-        this.offs       = new Uint16Array(codeSize);                   // General offsets array (ifxx, loop, func, end operators)
-        this.funcs      = new Array(codeSize);                         // Array for function offsets
+        this.offs       = {};                                          // General offsets array (ifxx, loop, func, end operators)
+        this.funcs      = {};                                          // Array for function offsets
     }
 
     /**
@@ -54,7 +66,6 @@ class Organism {
      * in org.funcs map. After this call operator start to work.
      */
     compile() {
-        const CMD_OFFS = Config.CODE_CMD_OFFS;
         const code     = this.code;
         const offs     = this.offs;
         const funcs    = this.funcs;
@@ -65,24 +76,24 @@ class Organism {
         for (let i = 0, len = code.length; i < len; i++) {
             // eslint-disable-next-line default-case
             switch(code[i] & CODE_8_BIT_RESET_MASK) {
-                case CMD_OFFS + 21: // func
+                case FUNC:
                     funcs[fCount++] = offs[i] = i + 1;
                     stack[++sCount] = i;
                     break;
 
-                case CMD_OFFS + 19: // loop
-                case CMD_OFFS + 12: // ifp
-                case CMD_OFFS + 13: // ifn
-                case CMD_OFFS + 14: // ifz
-                case CMD_OFFS + 15: // ifg
-                case CMD_OFFS + 16: // ifl
-                case CMD_OFFS + 17: // ife
-                case CMD_OFFS + 18: // ifne
+                case LOOP:
+                case IFP:
+                case IFN:
+                case IFZ:
+                case IFG:
+                case IFL:
+                case IFE:
+                case IFNE:
                     stack[++sCount] = i;
                     offs[i] = i + 1;
                     break;
 
-                case CMD_OFFS + 23: // end
+                case END:
                     if (sCount < 0) {break}
                     offs[i] = stack[sCount];
                     offs[stack[sCount--]] = i + 1;

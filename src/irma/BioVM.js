@@ -16,7 +16,6 @@ const rand                  = Helper.rand;
 const RET_OK                = Config.CODE_RET_OK;
 const RET_ERR               = Config.CODE_RET_ERR;
 const ORG_CODE_MAX_SIZE     = Config.orgMaxCodeSize;
-const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const IS_ORG_ID             = Config.CODE_ORG_ID;
 const DIR                   = Config.DIR;
 const WIDTH                 = Config.WORLD_WIDTH - 1;
@@ -28,6 +27,26 @@ const MAX_OFFS              = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent
 const ORG_MIN_COLOR         = Config.ORG_MIN_COLOR;
 const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+//
+// Biological commands
+//
+const JOIN   = Config.CODE_CMDS.JOIN;
+const SPLIT  = Config.CODE_CMDS.SPLIT;
+const STEP   = Config.CODE_CMDS.STEP;
+const SEE    = Config.CODE_CMDS.SEE;
+const SAY    = Config.CODE_CMDS.SAY;
+const LISTEN = Config.CODE_CMDS.LISTEN;
+const NREAD  = Config.CODE_CMDS.NREAD;
+const NSPLIT = Config.CODE_CMDS.NSPLIT;
+const GET    = Config.CODE_CMDS.GET;
+const PUT    = Config.CODE_CMDS.PUT;
+const OFFS   = Config.CODE_CMDS.OFFS;
+const COLOR  = Config.CODE_CMDS.COLOR;
+const ANAB   = Config.CODE_CMDS.ANAB;
+const CATAB  = Config.CODE_CMDS.CATAB;
+const FIND   = Config.CODE_CMDS.FIND;
+const MOVE   = Config.CODE_CMDS.MOVE;
+const MOLS   = Config.CODE_CMDS.MOLS;
 
 class BioVM extends VM {
     constructor() {
@@ -98,7 +117,7 @@ class BioVM extends VM {
     runCmd(org, cmd) {
         // eslint-disable-next-line default-case
         switch (cmd) {
-            case CODE_CMD_OFFS + 37: {// join
+            case JOIN: {
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.getOrgIdx(offset);
@@ -106,6 +125,7 @@ class BioVM extends VM {
                 const nearOrg = this.orgsMols.ref()[dot];
                 if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; return}
                 org.code = org.code.push(nearOrg.code);
+                nearOrg.energy && (org.energy += nearOrg.energy);
                 //
                 // Important: joining new commands into the script may break it, because it's
                 // offsets, stack and context may be invalid. Generally, we have to compile
@@ -115,13 +135,12 @@ class BioVM extends VM {
                 // line should not be uncommented:
                 // org.compile();
                 //
-                org.energy += (nearOrg.code.length * Config.energyMultiplier);
                 this.delOrg(nearOrg);
                 org.ret = RET_OK;
                 return;
             }
 
-            case CODE_CMD_OFFS + 38: {// split
+            case SPLIT: {
                 ++org.line;
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
@@ -141,13 +160,10 @@ class BioVM extends VM {
                 //
                 const clone   = this.addOrg(offset, newCode, org.ret === IS_ORG_ID);
                 this.db && this.db.put(clone, org);
-                const energy = clone.code.length * Config.energyMultiplier;
-                clone.energy = energy;
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
                     Mutations.mutate(clone);
                 }
                 if (org.code.length < 1) {this.delOrg(org); break}
-                org.energy  -= energy;
                 //
                 // Important: after split, sequence of commands have been changed and it may break
                 // entire script. Generally, we have to compile new script to fix all offsets
@@ -162,7 +178,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 39: {// step
+            case STEP: {
                 ++org.line;
                 org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
@@ -174,7 +190,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 40: { // see
+            case SEE: {
                 ++org.line;
                 const offset = org.offset + org.ax;
                 if (offset < 0 || offset > MAX_OFFS) {org.ax = 0; return}
@@ -184,7 +200,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 41: {// say
+            case SAY: {
                 ++org.line;
                 const freq = Math.abs(org.bx) % Config.worldFrequency;
                 this.freq[freq] = org.ax;
@@ -192,23 +208,23 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 42:  // listen
+            case LISTEN:
                 ++org.line;
                 org.ax = this.freq[Math.abs(org.bx) % Config.worldFrequency];
                 return;
 
-            case CODE_CMD_OFFS + 43: {// nread
+            case NREAD: {
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot = this.world.getOrgIdx(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
-                org.ax = nearOrg.code[org.bx] || 0;
+                org.ax  = (nearOrg.code[org.bx] & CODE_8_BIT_RESET_MASK) || 0;
                 org.ret = RET_OK;
                 return;
             }
 
-            case CODE_CMD_OFFS + 44: {// nsplit
+            case NSPLIT: {
                 ++org.line;
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
@@ -227,15 +243,12 @@ class BioVM extends VM {
                 const cutOrg  = this.addOrg(dOffset, newCode);
                 this.db && this.db.put(cutOrg, nearOrg);
                 if (nearOrg.code.length < 1) {this.delOrg(nearOrg)}
-                const energy = newCode.length * Config.energyMultiplier;
-                nearOrg.energy -= energy;
-                cutOrg.energy   = energy;
                 if (org.code.length < 1) {this.delOrg(org); break}
                 org.ret = RET_OK;
                 return;
             }
 
-            case CODE_CMD_OFFS + 45: {// get
+            case GET: {
                 ++org.line;
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
                 const dot = this.world.getOrgIdx(org.offset + DIR[Math.abs(org.ax) % 8]);
@@ -244,7 +257,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 46: {// put
+            case PUT: {
                 ++org.line;
                 if (!org.packet) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
@@ -257,26 +270,26 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 47:  // offs
+            case OFFS:
                 ++org.line;
                 org.ax = org.offset;
                 return;
 
-            case CODE_CMD_OFFS + 48: {// color
+            case COLOR: {
                 ++org.line;
                 const newAx = Math.abs(org.ax);
                 org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;
                 return;
             }
 
-            case CODE_CMD_OFFS + 49: {// anab
+            case ANAB: {
                 ++org.line;
-                const m1Offs = this._mol2Offs(org.ax);
-                const m2Offs = this._mol2Offs(org.bx);
+                let   code   = org.code;
+                const m1Offs = this._mol2Offs(code, org.ax);
+                const m2Offs = this._mol2Offs(code, org.bx);
                 if (m1Offs > m2Offs || m1Offs < 0 || m2Offs < 0) {org.ret = RET_ERR; return}
-                const m1EndOffs = this._molLastOffs(m1Offs);
-                const m2EndOffs = this._molLastOffs(m2Offs);
-                let code = org.code;
+                const m1EndOffs = this._molLastOffs(code, m1Offs);
+                const m2EndOffs = this._molLastOffs(code, m2Offs);
                 const cutCode = code.subarray(m2Offs, m2EndOffs);
                 //
                 // Important! We assume that this code change does not affect main
@@ -284,32 +297,35 @@ class BioVM extends VM {
                 //
                 code = code.splice(m2Offs, m2EndOffs - m2Offs);
                 code = code.splice(m1EndOffs, 0, cutCode);
-                org.energy -= Config.energyMultiplier;
+                org.energy -= ((m2EndOffs - m2Offs + m1EndOffs - m1Offs) * Config.energyMultiplier);
                 code[m1EndOffs] &= CODE_8_BIT_RESET_MASK;
                 org.code = code;
-                org.ret = RET_OK;
-
+                org.ret  = RET_OK;
                 return;
             }
 
-            case CODE_CMD_OFFS + 50: {// catab
+            case CATAB: {
                 ++org.line;
-                const ax = org.ax;
-                if (ax < 0 || ax >= org.code.length) {org.ret = RET_ERR; return}
-                org.code[ax] |= CODE_8_BIT_MASK;
-                org.energy += Config.energyMultiplier;
+                if (org.ax < 0) {org.ret = RET_ERR; return}
+                const code    = org.code;
+                const ax      = this._mol2Offs(code, org.ax);
+                const axEnd   = this._molLastOffs(code, ax);
+                if (ax === axEnd) {org.ret = RET_ERR; return}
+                const molSize = axEnd - ax + 1;
+                code[ax + Math.floor(molSize / 2) - 1] |= CODE_8_BIT_MASK;
+                org.energy += (molSize * Config.energyMultiplier);
                 org.ret = RET_OK;
                 return;
             }
 
-            case CODE_CMD_OFFS + 51: {// find
+            case FIND: {
                 ++org.line;
                 const code = org.code;
                 const ax   = this._mol2Offs(code, org.ax);
                 if (ax < 0) {org.ret = RET_ERR; return}
                 const atom = code[ax];
                 let   mol  = org.bx;
-                const bx   = this._mol2Offs(code, org.bx);
+                const bx   = this._mol2Offs(code, mol);
                 if (bx < 0 || bx < ax) {org.ret = RET_ERR; return}
                 const ret  = this._mol2Offs(code, org.ret);
                 if (ret < 0 || ret < bx) {org.ret = RET_ERR; return}
@@ -340,7 +356,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 52: {// move
+            case MOVE: {
                 ++org.line;
                 let    code     = org.code;
                 const find0    = this._mol2Offs(code, org.ax);
@@ -369,7 +385,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CODE_CMD_OFFS + 53: {// mols
+            case MOLS: {
                 ++org.line;
                 org.ax = this._molsAmount(org);
                 // eslint-disable-next-line no-useless-return
@@ -427,7 +443,6 @@ class BioVM extends VM {
             super.delOrg(org);
         }
         org.energy = 0;
-        org.energy  = false;
         this.world.empty(org.offset);
         //
         // Extracts all packet organisms recursively
@@ -453,7 +468,7 @@ class BioVM extends VM {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
             const luca = this.addOrg(offset, code.slice(), true);
-            luca.code = this._code2Mol(luca.code);
+            luca.code = this._split2Mols(luca.code);
             this.db && this.db.put(luca);
         }
     }
@@ -540,17 +555,13 @@ class BioVM extends VM {
      * @param {Uint8Array} code Code we need to split
      * @return {Uint8Array} The same array, but with meta info inside (molecule separator)
      */
-    _code2Mol(code) {
+    _split2Mols(code) {
         const size = Config.molCodeSize;
         const len  = code.length;
-        let   i    = size - 1;
+        let   i    = -1;
         
-        while (i < len) {
-            code[i] |= CODE_8_BIT_MASK;
-            i += size;
-
-        }
-        code[len - 1] |= CODE_8_BIT_MASK;
+        while ((i += size) < len) {code[i] |= CODE_8_BIT_MASK}
+        code[len - 1] |= CODE_8_BIT_MASK; // last atom must be marked
 
         return code;
     }

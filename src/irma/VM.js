@@ -19,6 +19,46 @@ const rand                  = Helper.rand;
 const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+//
+// Basic commands
+//
+const TOGGLE = Config.CODE_CMDS.TOGGLE;
+const EQ     = Config.CODE_CMDS.EQ;
+const NOP    = Config.CODE_CMDS.NOP;
+const ADD    = Config.CODE_CMDS.ADD;
+const SUB    = Config.CODE_CMDS.SUB;
+const MUL    = Config.CODE_CMDS.MUL;
+const DIV    = Config.CODE_CMDS.DIV;
+const INC    = Config.CODE_CMDS.INC;
+const DEC    = Config.CODE_CMDS.DEC;
+const RSHIFT = Config.CODE_CMDS.RSHIFT;
+const LSHIFT = Config.CODE_CMDS.LSHIFT;
+const RAND   = Config.CODE_CMDS.RAND;
+const IFP    = Config.CODE_CMDS.IFP;
+const IFN    = Config.CODE_CMDS.IFN;
+const IFZ    = Config.CODE_CMDS.IFZ;
+const IFG    = Config.CODE_CMDS.IFG;
+const IFL    = Config.CODE_CMDS.IFL;
+const IFE    = Config.CODE_CMDS.IFE;
+const IFNE   = Config.CODE_CMDS.IFNE;
+const LOOP   = Config.CODE_CMDS.LOOP;
+const CALL   = Config.CODE_CMDS.CALL;
+const FUNC   = Config.CODE_CMDS.FUNC;
+const RET    = Config.CODE_CMDS.RET;
+const END    = Config.CODE_CMDS.END;
+const RETAX  = Config.CODE_CMDS.RETAX;
+const AXRET  = Config.CODE_CMDS.AXRET;
+const AND    = Config.CODE_CMDS.AND;
+const OR     = Config.CODE_CMDS.OR;
+const XOR    = Config.CODE_CMDS.XOR;
+const NOT    = Config.CODE_CMDS.NOT;
+const AGE    = Config.CODE_CMDS.AGE;
+const LINE   = Config.CODE_CMDS.LINE;
+const LEN    = Config.CODE_CMDS.LEN;
+const LEFT   = Config.CODE_CMDS.LEFT;
+const RIGHT  = Config.CODE_CMDS.RIGHT;
+const SAVE   = Config.CODE_CMDS.SAVE;
+const LOAD   = Config.CODE_CMDS.LOAD;
 
 class VM {
     /**
@@ -113,7 +153,7 @@ class VM {
 
                     // eslint-disable-next-line default-case
                     switch (cmd) {
-                        case CODE_CMD_OFFS: {    // toggle
+                        case TOGGLE: {
                             ++line;
                             ax ^= bx;
                             bx ^= ax;
@@ -121,126 +161,126 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 1:  // eq
+                        case EQ:
                             ++line;
                             ax = bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 2:  // nop
+                        case NOP:
                             ++line;
                             continue;
 
-                        case CODE_CMD_OFFS + 3:  // add
+                        case ADD:
                             ++line;
                             ax += bx; 
                             if (Number.isFinite(ax)) {continue}
                             ax = Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 4:  // sub
+                        case SUB:
                             ++line;
                             ax -= bx;
                             if (Number.isFinite(ax)) {continue}
                             ax = -Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 5:  // mul
+                        case MUL:
                             ++line;
                             ax *= bx;
                             if (Number.isFinite(ax)) {continue}
                             ax = Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 6:  // div
+                        case DIV:
                             ++line;
                             ax = Math.round(ax / bx);
                             if (Number.isFinite(ax)) {continue}
                             ax = -Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 7: // inc
+                        case INC:
                             ++line;
                             ax++;
                             if (Number.isFinite(ax)) {continue}
                             ax = Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 8:  // dec
+                        case DEC:
                             ++line;
                             ax--;
                             if (Number.isFinite(ax)) {continue}
                             ax = -Number.MAX_VALUE;
                             continue;
 
-                        case CODE_CMD_OFFS + 9:  // rshift
+                        case RSHIFT:
                             ++line;
                             ax >>= 1;
                             continue;
 
-                        case CODE_CMD_OFFS + 10:  // lshift
+                        case LSHIFT:
                             ++line;
                             ax <<= 1;
                             continue;
 
-                        case CODE_CMD_OFFS + 11:  // rand
+                        case RAND:
                             ++line;
                             ax = ax < 1 ? rand(256) : rand(ax);
                             continue;
 
-                        case CODE_CMD_OFFS + 12:  // ifp
-                            line = ax > 0 ? line + 1 : org.offs[line];
+                        case IFP:
+                            line = ax > 0 ? line + 1 : (org.offs[line] || 0);
                             continue;
 
-                        case CODE_CMD_OFFS + 13:  // ifn
-                            line = ax < 0 ? line + 1 : org.offs[line];
+                        case IFN:
+                            line = ax < 0 ? line + 1 : (org.offs[line] || 0);
                             continue;
 
-                        case CODE_CMD_OFFS + 14:  // ifz
-                            line = ax === 0 ? line + 1 : org.offs[line];
+                        case IFZ:
+                            line = ax === 0 ? line + 1 : (org.offs[line] || 0);
                             continue;
 
-                        case CODE_CMD_OFFS + 15:  // ifg
-                            line = ax > bx ? line + 1 : org.offs[line];
+                        case IFG:
+                            line = ax > bx ? line + 1 : (org.offs[line] || 0);
                             continue;
 
-                        case CODE_CMD_OFFS + 16:  // ifl
-                            line = ax < bx ? line + 1 : org.offs[line];
+                        case IFL:
+                            line = ax < bx ? line + 1 : (org.offs[line] || 0);
                             continue;
 
-                        case CODE_CMD_OFFS + 17:  // ife
-                            line = ax === bx ? line + 1 : org.offs[line];
+                        case IFE:
+                            line = ax === bx ? line + 1 : (org.offs[line] || 0);
                             continue;
 
-                        case CODE_CMD_OFFS + 18:  // ifne
-                            line = ax !== bx ? line + 1 : org.offs[line];
+                        case IFNE:
+                            line = ax !== bx ? line + 1 : (org.offs[line] || 0);
                             continue;
 
-                        case CODE_CMD_OFFS + 19: {// loop
+                        case LOOP: {
                             const loops = org.loops;
                             //
                             // previous line was "end", so this is next iteration cicle
                             //
-                            if (!org.isLoop) {loops[line] = -1}
+                            if (!org.isLoop) {delete loops[line]}
                             org.isLoop = false;
-                            if (loops[line] < 0 && org.offs[line] > line + 1) {
+                            if (loops[line] === undefined && (org.offs[line] || 0) > line + 1) {
                                 loops[line] = ax;
                             }
                             if (--loops[line] < 0) {
-                                line = org.offs[line];
+                                line = (org.offs[line] || 0);
                                 continue;
                             }
                             ++line;
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 20: {// call
+                        case CALL: {
                             if (org.fCount === 0) {++line; continue}
                             let index = org.stackIndex;
                             if (index >= CODE_STACK_SIZE * 3) {index = -1}
                             const func     = Math.abs(ax) % org.fCount;
                             const stack    = org.stack;
-                            const newLine  = org.funcs[func];
-                            if (org.offs[newLine - 1] === newLine) {++line; continue}
+                            const newLine  = org.funcs[func] || 0;
+                            if ((org.offs[newLine - 1] || 0) === newLine) {++line; continue}
                             stack[++index] = line + 1;
                             stack[++index] = ax;
                             stack[++index] = bx;
@@ -249,8 +289,8 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 21:   // func
-                            line = org.offs[line];
+                        case FUNC:
+                            line = (org.offs[line] || 0);
                             if (line === 0 && org.stackIndex >= 0) {
                                 const stack = org.stack;
                                 bx   = stack[2];
@@ -260,7 +300,7 @@ class VM {
                             }
                             continue;
 
-                        case CODE_CMD_OFFS + 22: {// ret
+                        case RET: {
                             const stack = org.stack;
                             let index = org.stackIndex;
                             if (index < 0) {line = 0; continue}
@@ -271,13 +311,13 @@ class VM {
                             continue;
                         }
 
-                        case CODE_CMD_OFFS + 23:  // end
-                            switch (code[org.offs[line]]) {
-                                case CODE_CMD_OFFS + 19: // loop
-                                    line = org.offs[line];
+                        case END:
+                            switch (code[org.offs[line] || 0] & CODE_8_BIT_RESET_MASK) {
+                                case LOOP:
+                                    line = org.offs[line] || 0;
                                     org.isLoop = true;
                                     break;
-                                case CODE_CMD_OFFS + 21: {// func
+                                case FUNC: {
                                     const stack = org.stack;
                                     let index = org.stackIndex;
                                     if (index < 0) {break}
@@ -293,66 +333,66 @@ class VM {
                             }
                             continue;
 
-                        case CODE_CMD_OFFS + 24:  // retax
+                        case RETAX:
                             ++line;
                             ax = org.ret;
                             continue;
 
-                        case CODE_CMD_OFFS + 25:  // axret
+                        case AXRET:
                             ++line;
                             org.ret = ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 26:  // and
+                        case AND:
                             ++line;
                             ax &= bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 27:  // or
+                        case OR:
                             ++line;
                             ax |= bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 28:  // xor
+                        case XOR:
                             ++line;
                             ax ^= bx;
                             continue;
 
-                        case CODE_CMD_OFFS + 29:  // not
+                        case NOT:
                             ++line;
                             ax = ~ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 30:  // age
+                        case AGE:
                             ++line;
                             ax = org.age;
                             continue;
 
-                        case CODE_CMD_OFFS + 31:  // line
+                        case LINE:
                             ax = line++;
                             continue;
 
-                        case CODE_CMD_OFFS + 32:  // len
+                        case LEN:
                             line++;
                             ax = code.length;
                             continue;
 
-                        case CODE_CMD_OFFS + 33:  // left
+                        case LEFT:
                             line++;
                             if (--org.memPos < 0) {org.memPos = org.mem.length - 1}
                             continue;
 
-                        case CODE_CMD_OFFS + 34:  // right
+                        case RIGHT:
                             line++;
                             if (++org.memPos === org.mem.length) {org.memPos = 0}
                             continue;
 
-                        case CODE_CMD_OFFS + 35:  // save
+                        case SAVE:
                             line++;
                             org.mem[org.memPos] = ax;
                             continue;
 
-                        case CODE_CMD_OFFS + 36:  // load
+                        case LOAD:
                             line++;
                             ax = org.mem[org.memPos];
                             continue;
