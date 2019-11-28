@@ -19,7 +19,7 @@ class Canvas {
         this._data          = this._imgData.data;
         this._animate       = this._onAnimate.bind(this);
         this._visualize     = true;
-        this._panZoom       = null; 
+        this._panZoom       = null;
         this._zoomObserver  = null;
         this._fullEl        = this._createFullScreenBtn();
         this._visualizeEl   = this._createVisualizeBtn();
