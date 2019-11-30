@@ -10,7 +10,7 @@ describe('src/irma/VM', () => {
     // eslint-disable-next-line no-use-before-define
     _setConfig();
     const VM        = require('./VM');
-    // TODO: rewtire this with the same approach like VM.js uses
+    
     const TG        = Config.CODE_CMD_OFFS;
     const EQ        = Config.CODE_CMD_OFFS+1;
     const NO        = Config.CODE_CMD_OFFS+2;
@@ -561,6 +561,35 @@ describe('src/irma/VM', () => {
                 expect(org.ret).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
+                vm1.destroy();
+            });
+        });
+
+        describe('save and load tests', () => {
+            it('save0',    () => run([SA]));
+            it('save1',    () => run([LO,SA]));
+            it('save2',    () => run([1,SA,SA], 1));
+            it('load0',    () => run([LO]));
+            it('load1',    () => run([1,LO]));
+            it('save and load', () => {
+                const code = [1,SA,LO,RI,SA,RI,2,SA];
+                Config.orgMaxMemSize = 2;
+                Config.codeLinesPerIteration = code.length;
+                const vm1 = new VM(1);
+                const org = vm1.addOrg(0, code);
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.line).toBe(0);
+                vm1.run();
+
+                expect(org.ax).toBe(2);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+                expect(org.mem).toEqual(Int32Array.from([2,1]));
                 vm1.destroy();
             });
         });
