@@ -42,6 +42,12 @@ describe('src/irma/VM', () => {
     const XO        = Config.CODE_CMD_OFFS+28;
     const NT        = Config.CODE_CMD_OFFS+29;
     const AG        = Config.CODE_CMD_OFFS+30;
+    const LI        = Config.CODE_CMD_OFFS+31;
+    const LE        = Config.CODE_CMD_OFFS+32;
+    const LF        = Config.CODE_CMD_OFFS+33;
+    const RI        = Config.CODE_CMD_OFFS+34;
+    const SA        = Config.CODE_CMD_OFFS+35;
+    const LO        = Config.CODE_CMD_OFFS+36;
 
     let   vm        = null;
 
@@ -70,7 +76,7 @@ describe('src/irma/VM', () => {
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
             orgMaxCodeSize             : 50,
-            orgMaxMemSize              : 128,
+            orgMaxMemSize              : 16,
             orgProbs                   : new Uint32Array([10,1,3,1,5,1,1]),
             molDecayPeriod             : 1000,
             molDecayDistance           : 60,
@@ -496,9 +502,9 @@ describe('src/irma/VM', () => {
                 expect(org.age).toBe(2);
             });
             it('age2',   () => {
-                const code = [AG,AG];
+                const code = [1,AG,AG];
                 Config.codeLinesPerIteration = 1;
-                Config.codeRepeatsPerRun = 2;
+                Config.codeRepeatsPerRun = 3;
                 const org = vm.orgs.get(0);
                 org.code  = code;
 
@@ -508,12 +514,54 @@ describe('src/irma/VM', () => {
                 expect(org.line).toBe(0);
                 vm.run();
 
-                expect(org.age).toBe(3);
-                expect(org.ax).toBe(2);
+                expect(org.age).toBe(4);
+                expect(org.ax).toBe(3);
                 expect(org.bx).toBe(0);
                 expect(org.ret).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
+            });
+        });
+
+        describe('line tests', () => {
+            it('line0',   () => run([LI]));
+            it('line1',   () => run([LI,LI], 1));
+            it('line2',   () => run([1,LI,LI,2], 2));
+            it('line3',   () => run([2,2,LP,LI,EN], 3, 0, 0, false, 9));
+        });
+
+        describe('len tests', () => {
+            it('len0',    () => run([LE], 1));
+            it('len1',    () => run([1,LE], 2));
+            it('len2',    () => run([LE,1,LE], 3));
+        });
+
+        describe('left and right tests', () => {
+            it('left0',    () => run([LF]));
+            it('left1',    () => run([1,SA,LF,LO]));
+            it('left2',    () => run([1,SA,LF,2,SA,RI,LO], 1));
+            it('left3',    () => run([RI,1,SA,LF,2,SA,RI], 2));
+            it('left4',    () => run([RI,1,SA,LF,2,SA,RI,LO], 1));
+            it('left5',    () => run([LF,RI,1,SA,LF,2,SA,RI,LO], 1));
+            it('left loop test', () => {
+                const code = [1,SA,RI,RI];
+                Config.orgMaxMemSize = 2;
+                Config.codeLinesPerIteration = code.length;
+                const vm1 = new VM(1);
+                const org = vm1.addOrg(0, code);
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.line).toBe(0);
+                vm1.run();
+
+                expect(org.ax).toBe(1);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+                vm1.destroy();
             });
         });
     });
