@@ -398,10 +398,6 @@ class VM {
                             continue;
                     }
                     //
-                    // This is a constant
-                    //
-                    if (cmd < CODE_CMD_OFFS) {ax = cmd; ++line; continue}
-                    //
                     // We are on the last code line. Have to jump to the first
                     //
                     if (line >= code.length) {
@@ -415,6 +411,13 @@ class VM {
                             line = 0;
                         }
                     } else {
+                        //
+                        // This is a constant. This check must be after line >= code.length, because
+                        // if we step outside of the script cmd will be less then CODE_CMD_OFFS. This
+                        // script will not work in this case: [1,ifl,2,end]. Because ifl steps out of
+                        // script and cmd will be 0 (but should be undefined)
+                        //
+                        if (cmd < CODE_CMD_OFFS) {ax = cmd; ++line; continue}
                         //
                         // Current command is not from standart list. Call child class to handle it
                         // TODO: this code doesn't look optimized to me

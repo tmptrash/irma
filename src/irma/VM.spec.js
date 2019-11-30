@@ -481,12 +481,5 @@ describe('src/irma/VM', () => {
             it('not1',   () => run([1,TG,1,NT], -2, 1));
             it('not2',   () => run([1,NT], -2));
         });
-
-        describe('find tests', () => {
-            it('find0',  () => run([FI]));
-            it('find one toggle command between offsets 7 and 11',  () => run([11,TG,7,LI, 191,TG,1,AD,TG,0,NT,TG, FI], 8, -1, 1));
-            it('find one toggle command between offsets 0 and 3',   () => run([3,TG,0,LI,  191,TG,1,AD,TG,0,NT,TG, FI], 1, -1, 1));
-            it('can not find one eq command',                       () => run([30,TG,0,LI, 191,TG,2,AD,TG,0,NT,TG, FI], 193, -1, 0));
-        });
     });
 });
