@@ -41,8 +41,8 @@ describe('src/irma/VM', () => {
     const OR        = Config.CODE_CMD_OFFS+27;
     const XO        = Config.CODE_CMD_OFFS+28;
     const NT        = Config.CODE_CMD_OFFS+29;
-    const FI        = Config.CODE_CMD_OFFS+30;
-    const LI        = Config.CODE_CMD_OFFS+39;
+    const AG        = Config.CODE_CMD_OFFS+30;
+
     let   vm        = null;
 
     /**
@@ -480,6 +480,21 @@ describe('src/irma/VM', () => {
             it('not0',   () => run([NT], -1));
             it('not1',   () => run([1,TG,1,NT], -2, 1));
             it('not2',   () => run([1,NT], -2));
+        });
+
+        describe('age tests', () => {
+            it('age0',   () => {
+                const org = vm.orgs.get(0);
+                run([AG], 1);
+
+                expect(org.age).toBe(2);
+            });
+            it('age1',   () => {
+                const org = vm.orgs.get(0);
+                run([AG,AG], 1);
+
+                expect(org.age).toBe(2);
+            });
         });
     });
 });
