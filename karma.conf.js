@@ -24,13 +24,19 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            //'src/**/*.spec.js',
-            'src/irma/VM.spec.js'
+            'src/**/*.spec.js'
         ],
 
 
+        // TODO: this list should be empty
         // list of files / patterns to exclude
-        exclude: [],
+        exclude: [
+            'src/common/Helper.spec.js',
+
+            'src/irma/BioVM.spec.js',
+            'src/irma/Bytes2Code.spec.js',
+            'src/irma/Mutations.spec.js'
+        ],
 
         //
         // preprocess matching files before serving them to the browser
@@ -39,7 +45,7 @@ module.exports = function (config) {
         // list of files here, don't forget to change them also in jasmine.json
         //
         preprocessors: {
-            'src/irma/VM.spec.js': ['webpack']
+            'src/**/*.spec.js': ['webpack'] 
         },
 
         webpack: webpackConfig,

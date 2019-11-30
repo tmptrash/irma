@@ -132,7 +132,7 @@ describe('src/irma/VM', () => {
         });
     });
 
-    xdescribe('Scripts run', () => {
+    describe('Scripts run', () => {
         describe('join tests', () => {
             it('Checks joining right organism',  () => {
                 Config.molAmount = 0;
