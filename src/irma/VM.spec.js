@@ -495,6 +495,26 @@ describe('src/irma/VM', () => {
 
                 expect(org.age).toBe(2);
             });
+            it('age2',   () => {
+                const code = [AG,AG];
+                Config.codeLinesPerIteration = 1;
+                Config.codeRepeatsPerRun = 2;
+                const org = vm.orgs.get(0);
+                org.code  = code;
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.line).toBe(0);
+                vm.run();
+
+                expect(org.age).toBe(3);
+                expect(org.ax).toBe(2);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            });
         });
     });
 });
