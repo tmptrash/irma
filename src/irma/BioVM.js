@@ -1,7 +1,7 @@
 /**
- * Extension of VM class. Adds biologically and physics related commands and into "line"
- * language like "join", "split", "see", "step" and so on. Creates organism population,
- * creates world with canvas and html elements.
+ * Extension of VM class. Adds biological and physical related commands into the "line"
+ * language like "join", "split", "see", "step" and so on. Creates organisms, molecules,
+ * world with canvas and html elements.
  * 
  * @author flatline
  */
@@ -49,42 +49,46 @@ const MOVE   = Config.CODE_CMDS.MOVE;
 const MOLS   = Config.CODE_CMDS.MOLS;
 
 class BioVM extends VM {
-    constructor() {
-        super(0);
+    /**
+     * Returns maximum amount of organisms only according to config and amount of molecules
+     * @return {Number} max amount
+     */
+    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.CODE_LUCA.length || 1)) + Config.orgAmount + 1}
 
-        this.orgs       = new FastArray(this._orgsAmount());
-        this.orgsMols   = new FastArray(this._orgsMolsAmount());
+    /**
+     * Returns maximum amount of molecules and organisms according to config
+     * @return {Number} max amount
+     */
+    static _orgsMolsAmount() {return Config.molAmount + Config.orgAmount + 1}
+
+    constructor() {
+        super(BioVM._orgsAmount());
+
+        this.orgsMols   = new FastArray(BioVM._orgsMolsAmount());
         this.world      = new World({scroll: this._onScroll.bind(this)});
         this.freq       = new Int32Array(Config.worldFrequency);
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
-        if (this._orgsAmount() + this._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgAmount" configs')}
+        if (BioVM._orgsAmount() + BioVM._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgAmount" configs')}
         this.addOrgs();
         this.addMols();
     }
 
     destroy() {
-        super.destory();
+        super.destroy();
 
         this.orgsMols.destroy();
         this.world.destroy();
-        this.db && this.db.destroy();
 
         this.orgsMols = null;
         this.world    = null;
-        this.db       = null;
     }
 
     /**
      * Returns "line" language version
      */
     get version() {return '2.0'}
-
-    get ready() {
-        if (this.db) {return this.db.ready}
-        return new Promise(resolve => resolve());
-    }
 
     /**
      * @override
@@ -159,7 +163,7 @@ class BioVM extends VM {
                 // TODO: should be esupported by organism from parent to child
                 //
                 const clone   = this.addOrg(offset, newCode, org.ret === IS_ORG_ID);
-                this.db && this.db.put(clone, org);
+                // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
                     Mutations.mutate(clone);
                 }
@@ -240,8 +244,9 @@ class BioVM extends VM {
                 const newCode = nearOrg.code.subarray(from, to);
                 nearOrg.code  = nearOrg.code.splice(from, to);
                 if (newCode.length < 1) {org.ret = RET_ERR; return}
-                const cutOrg  = this.addOrg(dOffset, newCode);
-                this.db && this.db.put(cutOrg, nearOrg);
+                this.addOrg(dOffset, newCode);
+                // const cutOrg  = this.addOrg(dOffset, newCode);
+                // this.db && this.db.put(cutOrg, nearOrg);
                 if (nearOrg.code.length < 1) {this.delOrg(nearOrg)}
                 if (org.code.length < 1) {this.delOrg(org); break}
                 org.ret = RET_OK;
@@ -265,7 +270,7 @@ class BioVM extends VM {
                 const dot    = this.world.getOrgIdx(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
                 this.addOrg(offset, org.packet.code, !!org.packet.energy);
-                this.db && this.db.put(org.packet);
+                // this.db && this.db.put(org.packet);
                 org.packet = null;
                 return;
             }
@@ -469,7 +474,7 @@ class BioVM extends VM {
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
             const luca = this.addOrg(offset, code.slice(), true);
             luca.code = this._split2Mols(luca.code);
-            this.db && this.db.put(luca);
+            // this.db && this.db.put(luca);
         }
     }
 
@@ -484,8 +489,9 @@ class BioVM extends VM {
         while (molecules-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {molecules++; continue}
-            const org = this.addOrg(offset, this._molCode());
-            this.db && this.db.put(org);
+            this.addOrg(offset, this._molCode());
+            // const org = this.addOrg(offset, this._molCode());
+            // this.db && this.db.put(org);
         }
     }
 
@@ -565,18 +571,6 @@ class BioVM extends VM {
 
         return code;
     }
-
-    /**
-     * Returns maximum amount of molecules and organisms according to config
-     * @return {Number} max amount
-     */
-    _orgsMolsAmount() {return Config.molAmount + Config.orgAmount + 1}
-
-    /**
-     * Returns maximum amount of organisms only according to config and amount of molecules
-     * @return {Number} max amount
-     */
-    _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.CODE_LUCA.length || 1)) + Config.orgAmount + 1}
 
     /**
      * Converts molecule index to absolute index in a code array.
