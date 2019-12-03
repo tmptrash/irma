@@ -119,59 +119,80 @@ describe('src/irma/VM', () => {
                 vm1.world.moveOrg(org1, 1);
                 org1.compile();
                 org2.compile();
+
+                expect(vm1.orgs.items).toBe(2);
+                expect(vm1.orgsMols.items).toBe(2);
                 vm1.run();
 
                 expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(org2.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK,2,JO|CODE_8_BIT_MASK]));
                 vm1.destroy();
             });
-            xit('Checks joining empty cell',  () => {
-                Config.molAmount = 0;
-                Config.orgAmount = 1;
-                const vm1  = new VM();
+            it('Checks joining empty cell',  () => {
+                Config.molAmount   = 0;
+                Config.orgAmount   = 1;
+                Config.CODE_LUCA   = Uint8Array.from([2,JO]);
+                Config.molCodeSize = 2;
+                Config.codeLinesPerIteration = 2;
+                const vm1  = new BioVM();
                 const org1 = vm1.orgs.get(0);
 
                 vm1.world.moveOrg(org1, 0);
-                org1.code = Uint8Array.from([1,AR,2,JO]);
                 org1.compile();
-                Config.codeLinesPerIteration = org1.code.length;
-                vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([1,AR,2,JO]));
+                expect(vm1.orgsMols.items).toBe(1);
+                vm1.run();
+
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
+                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK]));
                 vm1.destroy();
             });
-            xit('Checks joining if organism is at the edge of the world',  () => {
-                Config.molAmount = 0;
-                Config.orgAmount = 1;
-                const vm1  = new VM();
+            it('Checks joining if organism is at the edge of the world',  () => {
+                Config.molAmount   = 0;
+                Config.orgAmount   = 1;
+                Config.CODE_LUCA   = Uint8Array.from([2,JO]);
+                Config.molCodeSize = 2;
+                Config.codeLinesPerIteration = 2;
+                const vm1  = new BioVM();
                 const org1 = vm1.orgs.get(0);
 
                 vm1.world.moveOrg(org1, WIDTH - 1);
-                org1.code = [1,AR,2,JO];
                 org1.compile();
-                Config.codeLinesPerIteration = org1.code.length;
-                vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual([1,AR,2,JO]);
+                expect(vm1.orgsMols.items).toBe(1);
+                vm1.run();
+
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
+                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK]));
                 vm1.destroy();
             });
-            xit('Checks joining right molecule',  () => {
-                Config.molAmount = 1;
-                Config.orgAmount = 1;
-                const vm1  = new VM();
+            it('Checks joining right molecule',  () => {
+                Config.molAmount   = 1;
+                Config.orgAmount   = 1;
+                Config.CODE_LUCA   = Uint8Array.from([2,JO]);
+                Config.molCodeSize = 2;
+                Config.codeLinesPerIteration = 2;
+                const vm1  = new BioVM();
                 const org1 = vm1.orgs.get(0);
                 const mol1 = vm1.orgsMols.get(0);
+                const mol1Copy = mol1.code.slice();
 
                 vm1.world.moveOrg(org1, 0);
                 vm1.world.moveOrg(mol1, 1);
-                org1.code = Uint8Array.from([1,AR,2,JO]);
-                mol1.code = Uint8Array.from([5]);
                 org1.compile();
-                Config.codeLinesPerIteration = org1.code.length;
-                vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([1,AR,2,JO,5]));
+                expect(vm1.orgsMols.items).toBe(2);
+                vm1.run();
+
+                expect(vm1.orgs.items).toBe(1);
                 expect(vm1.orgsMols.items).toBe(1);
+                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK].concat(mol1Copy)));
                 vm1.destroy();
             });
         })
