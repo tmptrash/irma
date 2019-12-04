@@ -50,8 +50,10 @@ describe('src/irma/VM', () => {
     const RI        = Config.CODE_CMD_OFFS+34;
     const SA        = Config.CODE_CMD_OFFS+35;
     const LO        = Config.CODE_CMD_OFFS+36;
+
     const JO        = Config.CODE_CMD_OFFS+37;
     const SP        = Config.CODE_CMD_OFFS+38;
+    const ST        = Config.CODE_CMD_OFFS+39;
 
     let   vm        = null;
 
@@ -272,6 +274,109 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(2);
                 expect(vm.world.getOrgIdx(3)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG|MASK,0,SP|MASK]));
+            });
+        });
+
+        describe('step tests', () => {
+            it('Checks step up', () => {
+                run([[0,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(0)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,ST|MASK]));
+            });
+            it('Checks step up-right', () => {
+                run([[1,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,ST|MASK]));
+            });
+            it('Checks step right', () => {
+                run([[2,ST]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|MASK]));
+            });
+            it('Checks step right-down', () => {
+                run([[3,ST]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(WIDTH+1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([3,ST|MASK]));
+            });
+            it('Checks step down', () => {
+                run([[4,ST]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(WIDTH)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,ST|MASK]));
+            });
+            it('Checks step down-left', () => {
+                run([[5,ST]], {molAmount: 0, orgAmount: 1}, [1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(WIDTH)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([5,ST|MASK]));
+            });
+            it('Checks step left', () => {
+                run([[6,ST]], {molAmount: 0, orgAmount: 1}, [1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(0)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,ST|MASK]));
+            });
+            it('Checks step left-up', () => {
+                run([[7,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH+1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(0)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([7,ST|MASK]));
+            });
+            it('Checks step outside up (cyclical world)', () => {
+                run([[0,ST]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(0)).toBe(-1);
+                expect(vm.world.getOrgIdx(WIDTH * HEIGHT - WIDTH)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,ST|MASK]));
+            });
+            it('Checks step outside down (cyclical world)', () => {
+                run([[4,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH * HEIGHT - WIDTH]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(0)).not.toBe(-1);
+                expect(vm.world.getOrgIdx(WIDTH * HEIGHT - WIDTH)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,ST|MASK]));
+            });
+            it('Checks step outside left (cyclical world)', () => {
+                run([[6,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(WIDTH)).toBe(-1);
+                expect(vm.world.getOrgIdx(WIDTH-1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,ST|MASK]));
+            });
+            it('Checks step outside right (cyclical world)', () => {
+                run([[2,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.getOrgIdx(WIDTH)).not.toBe(-1);
+                expect(vm.world.getOrgIdx(WIDTH-1)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|MASK]));
             });
         });
 
