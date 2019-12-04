@@ -443,9 +443,11 @@ class BioVM extends VM {
      * @override
      */
     delOrg(org) {
-        if (org.hasOwnProperty('energy')) {
-            this._delFromOrgsMols(org.molIndex);
+        if (org.hasOwnProperty('energy')) { // This is an organism
+            this._delFromOrgsMolsArr(org.molIndex);
             super.delOrg(org);
+        } else {
+            this._delFromOrgsMolsArr(org.index);
         }
         org.energy = 0;
         this.world.empty(org.offset);
@@ -499,7 +501,7 @@ class BioVM extends VM {
      * Removes organism or molecule from organisms and molecules array
      * @param {Number} index Organism or molecule index
      */
-    _delFromOrgsMols(index) {
+    _delFromOrgsMolsArr(index) {
         const movedOrg = this.orgsMols.del(index);
         if (movedOrg) {
             movedOrg.molIndex = index;

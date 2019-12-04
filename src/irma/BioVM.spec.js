@@ -179,7 +179,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = 2;
                 const vm1  = new BioVM();
                 const org1 = vm1.orgs.get(0);
-                const mol1 = vm1.orgsMols.get(0);
+                const mol1 = vm1.orgsMols.get(1);
                 const mol1Copy = mol1.code.slice();
 
                 vm1.world.moveOrg(org1, 0);
@@ -192,7 +192,7 @@ describe('src/irma/VM', () => {
 
                 expect(vm1.orgs.items).toBe(1);
                 expect(vm1.orgsMols.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK].concat(mol1Copy)));
+                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK]).push(mol1Copy));
                 vm1.destroy();
             });
         })
