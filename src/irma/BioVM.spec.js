@@ -56,6 +56,9 @@ describe('src/irma/VM', () => {
     const ST        = Config.CODE_CMD_OFFS+39;
     const SE        = Config.CODE_CMD_OFFS+40;
 
+    const OF        = Config.CODE_CMD_OFFS+47;
+    const CO        = Config.CODE_CMD_OFFS+48;
+
     let   vm        = null;
 
     /**
@@ -95,12 +98,9 @@ describe('src/irma/VM', () => {
 
     /**
      * Runs one script from single organism and checks registers on finish
-     * @param {Uint8Array} code Code to run
-     * @param {Number} ax ax register should be equal this value after run
-     * @param {Number} bx bx register should be equal this value after run
-     * @param {Number} ret ret register should be equal this value after run
-     * @param {Boolean} checkLen If true, then org.code.length === lines
-     * @param {Number} lines Amount of lines run after calling vm.run()
+     * @param {Array} code Array of codes of organisms and molecules
+     * @param {Object} cfg Test configuration
+     * @param {Array} move Array of offsets of organisms and molecules
      */
     function run(code, cfg, move) {
         Config.codeLinesPerIteration = code[0].length;
@@ -117,6 +117,36 @@ describe('src/irma/VM', () => {
         expect(vm.orgsMols.items).toBe(Config.molAmount + Config.orgAmount);
         vm.run();
     }
+
+    /**
+     * Runs one script from single organism and checks registers on finish
+     * @param {Uint8Array} code Code to run
+     * @param {Number} ax ax register should be equal this value after run
+     * @param {Number} bx bx register should be equal this value after run
+     * @param {Number} ret ret register should be equal this value after run
+     * @param {Boolean} checkLen If true, then org.code.length === lines
+     * @param {Number} lines Amount of lines run after calling vm.run()
+     */
+    function run2(code, ax = 0, bx = 0, ret = 0, checkLen = true, lines = null) {
+        Config.molAmount = 0;
+        Config.orgAmount = 1;
+        Config.codeLinesPerIteration = lines === null ? code.length : lines;
+        const org = vm.orgs.get(0);
+        org.code  = Uint8Array.from(code).slice(); // code copy
+        org.compile();
+
+        expect(org.ax).toBe(0);
+        expect(org.bx).toBe(0);
+        expect(org.ret).toBe(0);
+        expect(org.line).toBe(0);
+        vm.run();
+
+        expect(org.ax).toBe(ax);
+        expect(org.bx).toBe(bx);
+        expect(org.ret).toBe(ret);
+        expect(org.code).toEqual(Uint8Array.from(code));
+        checkLen && expect(org.line).toEqual(org.code.length);
+    }    
 
     beforeEach(() => {
         _setConfig();
@@ -410,6 +440,45 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(2);
                 expect(vm.orgs.get(0).ax).toEqual(3);
             })
+        });
+
+        describe('offs tests', () => {
+            it('Simple offset test', () => {
+                run([[1,OF]], {molAmount: 0, orgAmount: 1}, [1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(1);
+            });
+            it('Simple offset test2', () => {
+                run([[1,OF]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(0);
+            });
+            it('Simple offset test3', () => {
+                run([[1,OF]], {molAmount: 0, orgAmount: 1}, [WIDTH*HEIGHT-1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(WIDTH*HEIGHT-1);
+            });
+        });
+
+        describe('color tests', () => {
+            it('organism color', () => {
+                expect(vm.orgs.get(0).color).toEqual(Config.orgColor);
+                run2([2,CO], 2);
+
+                expect(vm.orgs.get(0).color).toEqual(Config.ORG_MIN_COLOR);
+            });
+            it('organism negative color', () => {
+                expect(vm.orgs.get(0).color).toEqual(Config.orgColor);
+                run2([2,NT,CO], -3);
+
+                expect(vm.orgs.get(0).color).toEqual(Config.ORG_MIN_COLOR);
+            });
         });
 
         xdescribe('find tests', () => {
