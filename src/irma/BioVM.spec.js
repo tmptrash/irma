@@ -54,6 +54,7 @@ describe('src/irma/VM', () => {
     const JO        = Config.CODE_CMD_OFFS+37;
     const SP        = Config.CODE_CMD_OFFS+38;
     const ST        = Config.CODE_CMD_OFFS+39;
+    const SE        = Config.CODE_CMD_OFFS+40;
 
     let   vm        = null;
 
@@ -112,7 +113,7 @@ describe('src/irma/VM', () => {
             vm.orgsMols.get(i).hasOwnProperty('energy') && vm.orgsMols.get(i).compile();
         }
 
-        expect(vm.orgs.items).toBe(move.length);
+        expect(vm.orgs.items).toBe(Config.orgAmount);
         expect(vm.orgsMols.items).toBe(Config.molAmount + Config.orgAmount);
         vm.run();
     }
@@ -378,6 +379,37 @@ describe('src/irma/VM', () => {
                 expect(vm.world.getOrgIdx(WIDTH-1)).toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|MASK]));
             });
+        });
+
+        describe('see tests', () => {
+            it('see right on other organism', () => {
+                run([[1,SE],[2]], {molAmount: 1, orgAmount: 1}, [0,1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.orgs.get(0).ax).toEqual(2);
+            })
+            it('see right on empty cell', () => {
+                run([[1,SE]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(0);
+            })
+            it('see left out of the world', () => {
+                run([[0,NT,SE]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(0);
+            })
+            it('see up on molecule', () => {
+                run([[WIDTH-1,NT,SE],[3]], {molAmount: 1, orgAmount: 1}, [WIDTH,0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.orgs.get(0).ax).toEqual(3);
+            })
         });
 
         xdescribe('find tests', () => {
