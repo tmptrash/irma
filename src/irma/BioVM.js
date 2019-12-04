@@ -474,8 +474,8 @@ class BioVM extends VM {
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            const luca = this.addOrg(offset, code.slice(), true);
-            luca.code = this._split2Mols(luca.code);
+            this.addOrg(offset, this._split2Mols(code.slice()), true);
+            // const luca = this.addOrg(offset, code.slice(), true);
             // this.db && this.db.put(luca);
         }
     }

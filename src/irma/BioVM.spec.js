@@ -11,8 +11,45 @@ describe('src/irma/VM', () => {
     _setConfig();
     const BioVM     = require('./BioVM');
 
-    const CODE_8_BIT_MASK = Config.CODE_8_BIT_MASK;
+    const MASK      = Config.CODE_8_BIT_MASK;
     
+    const TG        = Config.CODE_CMD_OFFS;
+    const EQ        = Config.CODE_CMD_OFFS+1;
+    const NO        = Config.CODE_CMD_OFFS+2;
+    const AD        = Config.CODE_CMD_OFFS+3;
+    const SU        = Config.CODE_CMD_OFFS+4;
+    const MU        = Config.CODE_CMD_OFFS+5;
+    const DI        = Config.CODE_CMD_OFFS+6;
+    const IN        = Config.CODE_CMD_OFFS+7;
+    const DE        = Config.CODE_CMD_OFFS+8;
+    const RS        = Config.CODE_CMD_OFFS+9;
+    const LS        = Config.CODE_CMD_OFFS+10;
+    const RA        = Config.CODE_CMD_OFFS+11;
+    const FP        = Config.CODE_CMD_OFFS+12;
+    const FN        = Config.CODE_CMD_OFFS+13;
+    const FZ        = Config.CODE_CMD_OFFS+14;
+    const FG        = Config.CODE_CMD_OFFS+15;
+    const FL        = Config.CODE_CMD_OFFS+16;
+    const FE        = Config.CODE_CMD_OFFS+17;
+    const FNE       = Config.CODE_CMD_OFFS+18;
+    const LP        = Config.CODE_CMD_OFFS+19;
+    const CA        = Config.CODE_CMD_OFFS+20;
+    const FU        = Config.CODE_CMD_OFFS+21;
+    const RE        = Config.CODE_CMD_OFFS+22;
+    const EN        = Config.CODE_CMD_OFFS+23;
+    const RX        = Config.CODE_CMD_OFFS+24;
+    const AR        = Config.CODE_CMD_OFFS+25;
+    const AN        = Config.CODE_CMD_OFFS+26;
+    const OR        = Config.CODE_CMD_OFFS+27;
+    const XO        = Config.CODE_CMD_OFFS+28;
+    const NT        = Config.CODE_CMD_OFFS+29;
+    const AG        = Config.CODE_CMD_OFFS+30;
+    const LI        = Config.CODE_CMD_OFFS+31;
+    const LE        = Config.CODE_CMD_OFFS+32;
+    const LF        = Config.CODE_CMD_OFFS+33;
+    const RI        = Config.CODE_CMD_OFFS+34;
+    const SA        = Config.CODE_CMD_OFFS+35;
+    const LO        = Config.CODE_CMD_OFFS+36;
     const JO        = Config.CODE_CMD_OFFS+37;
     const SP        = Config.CODE_CMD_OFFS+38;
 
@@ -47,7 +84,7 @@ describe('src/irma/VM', () => {
             orgProbs                   : new Uint32Array([10,1,3,1,5,1,1]),
             molDecayPeriod             : 1000,
             molDecayDistance           : 60,
-            molCodeSize                : 8,
+            molCodeSize                : 2,
             energyStepCoef             : 0.01,
             energyMultiplier           : 10000
         });
@@ -126,7 +163,7 @@ describe('src/irma/VM', () => {
 
                 expect(vm1.orgs.items).toBe(1);
                 expect(vm1.orgsMols.items).toBe(1);
-                expect(org2.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK,2,JO|CODE_8_BIT_MASK]));
+                expect(org2.code).toEqual(Uint8Array.from([2,JO|MASK,2,JO|MASK]));
                 vm1.destroy();
             });
             it('Checks joining empty cell',  () => {
@@ -147,7 +184,7 @@ describe('src/irma/VM', () => {
 
                 expect(vm1.orgs.items).toBe(1);
                 expect(vm1.orgsMols.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK]));
+                expect(org1.code).toEqual(Uint8Array.from([2,JO|MASK]));
                 vm1.destroy();
             });
             it('Checks joining if organism is at the edge of the world',  () => {
@@ -168,7 +205,7 @@ describe('src/irma/VM', () => {
 
                 expect(vm1.orgs.items).toBe(1);
                 expect(vm1.orgsMols.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK]));
+                expect(org1.code).toEqual(Uint8Array.from([2,JO|MASK]));
                 vm1.destroy();
             });
             it('Checks joining right molecule',  () => {
@@ -192,60 +229,63 @@ describe('src/irma/VM', () => {
 
                 expect(vm1.orgs.items).toBe(1);
                 expect(vm1.orgsMols.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([2,JO|CODE_8_BIT_MASK]).push(mol1Copy));
+                expect(org1.code).toEqual(Uint8Array.from([2,JO|MASK]).push(mol1Copy));
                 vm1.destroy();
             });
         })
 
-        xdescribe('split tests', () => {
+        describe('split tests', () => {
             it('Checks basic organism splitting',  () => {
                 Config.molAmount = 0;
-                const vm1  = new VM();
+                Config.orgAmount = 1;
+                Config.CODE_LUCA = Uint8Array.from([2,AR,1,TG,0,SP]);
+                const vm1 = new BioVM();
                 const org = vm1.orgs.get(0);
                 
                 vm1.world.moveOrg(org, 0);
-                org.code = Uint8Array.from([2,AR,1,TG,0,SP]);
-                org.energy = org.code.length * Config.energyMultiplier;
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
+
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(2); 
+                expect(vm1.orgsMols.items).toBe(2);
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([AR,1,TG,0,SP]));
+                expect(org.code).toEqual(Uint8Array.from([1,TG|MASK,0,SP|MASK]));
                 vm1.destroy();
             });
             it('Checks organism splitting fail, because position is not free',  () => {
                 Config.molAmount = 0;
                 Config.orgAmount = 2;
-                const vm1  = new VM();
-                const org1 = vm1.orgs.get(0);
-                const org2 = vm1.orgs.get(1);
+                Config.CODE_LUCA = Uint8Array.from([2,AR,1,TG,0,SP]);
+                const vm1  = new BioVM();
+                const org1 = vm1.orgs.get(1);
+                const org2 = vm1.orgs.get(0);
+                org2.code  = Uint8Array.from([2|MASK]);
                 
                 vm1.world.moveOrg(org1, 0);
                 vm1.world.moveOrg(org2, 1);
-                org1.code = Uint8Array.from([2,AR,1,TG,0,SP]);
-                org2.code = Uint8Array.from([2]);
-                org1.energy = org1.code.length * Config.energyMultiplier;
-                org2.energy = org2.code.length * Config.energyMultiplier;
                 org1.compile();
+                org2.compile();
                 Config.codeLinesPerIteration = org1.code.length;
+
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(vm1.orgsMols.items).toBe(2);
                 expect(vm1.orgs.items).toBe(2);
                 vm1.run();
+
                 expect(vm1.orgs.items).toBe(2);
                 expect(vm1.orgsMols.items).toBe(2); 
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
                 expect(org1.offset).toBe(0);
                 expect(org2.offset).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([2,AR,1,TG,0,SP]));
+                expect(org1.code).toEqual(Uint8Array.from([2,AR|MASK,1,TG|MASK,0,SP|MASK]));
                 vm1.destroy();
             });
-            it('Checks organism splitting fail, because orgsMols is full',  () => {
+            xit('Checks organism splitting fail, because orgsMols is full',  () => {
                 Config.molAmount = 0;
                 const vm1  = new VM();
                 const org = vm1.orgs.get(0);
@@ -273,7 +313,7 @@ describe('src/irma/VM', () => {
 
                 vm1.destroy();
             });
-            it('Checks basic organism splitting fail, because out of the world',  () => {
+            xit('Checks basic organism splitting fail, because out of the world',  () => {
                 Config.molAmount = 0;
                 const vm1  = new VM();
                 const org = vm1.orgs.get(0);
@@ -293,7 +333,7 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(Uint8Array.from([0,AR,1,TG,0,SP]));
                 vm1.destroy();
             });
-            it('Checks basic organism splitting fail, because ax < 0',  () => {
+            xit('Checks basic organism splitting fail, because ax < 0',  () => {
                 Config.molAmount = 0;
                 const vm1  = new VM();
                 const org = vm1.orgs.get(0);
@@ -313,7 +353,7 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,1,NT,SP]));
                 vm1.destroy();
             });
-            it('Checks basic organism splitting fail, because ax > org.code.length',  () => {
+            xit('Checks basic organism splitting fail, because ax > org.code.length',  () => {
                 Config.molAmount = 0;
                 const vm1        = new VM();
                 const org        = vm1.orgs.get(0);
@@ -333,7 +373,7 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,100,NT,SP]));
                 vm1.destroy();
             });
-            it('Checks basic organism splitting fail, because bx < 0',  () => {
+            xit('Checks basic organism splitting fail, because bx < 0',  () => {
                 Config.molAmount = 0;
                 const vm1  = new VM();
                 const org = vm1.orgs.get(0);
@@ -353,7 +393,7 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(Uint8Array.from([2,AR,1,NT,TG,1,SP]));
                 vm1.destroy();
             });
-            it('Checks basic organism cloning',  () => {
+            xit('Checks basic organism cloning',  () => {
                 Config.molAmount = 0;
                 const vm1        = new VM();
                 const org        = vm1.orgs.get(0);
