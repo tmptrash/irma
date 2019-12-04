@@ -315,106 +315,114 @@ describe('src/irma/VM', () => {
 
                 vm1.destroy();
             });
-            xit('Checks basic organism splitting fail, because out of the world',  () => {
+            it('Checks basic organism splitting fail, because out of the world',  () => {
                 Config.molAmount = 0;
-                const vm1  = new VM();
+                Config.orgAmount = 1;
+                Config.CODE_LUCA = Uint8Array.from([0,AR,1,TG,0,SP]);
+                const vm1 = new BioVM();
                 const org = vm1.orgs.get(0);
                 
                 vm1.world.moveOrg(org, 0);
-                org.code = Uint8Array.from([0,AR,1,TG,0,SP]);
-                org.energy = org.code.length * Config.energyMultiplier;
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
-                expect(vm1.world.getOrgIdx(0)).not.toBe(-1);
+
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(1); 
-                expect(vm1.world.getOrgIdx(0)).not.toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([0,AR,1,TG,0,SP]));
+                expect(vm1.orgsMols.items).toBe(1);
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([0,AR|MASK,1,TG|MASK,0,SP|MASK]));
                 vm1.destroy();
             });
-            xit('Checks basic organism splitting fail, because ax < 0',  () => {
+            it('Checks basic organism splitting fail, because ax < 0',  () => {
                 Config.molAmount = 0;
-                const vm1  = new VM();
+                Config.orgAmount = 1;
+                Config.CODE_LUCA = Uint8Array.from([2,AR,1,TG,0,NT,SP]);
+                const vm1 = new BioVM();
                 const org = vm1.orgs.get(0);
                 
                 vm1.world.moveOrg(org, 0);
-                org.code = Uint8Array.from([2,AR,1,TG,1,NT,SP]);
-                org.energy = org.code.length * Config.energyMultiplier;
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
+
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(1); 
-                expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,1,NT,SP]));
-                vm1.destroy();
-            });
-            xit('Checks basic organism splitting fail, because ax > org.code.length',  () => {
-                Config.molAmount = 0;
-                const vm1        = new VM();
-                const org        = vm1.orgs.get(0);
-                
-                vm1.world.moveOrg(org, 0);
-                org.code = Uint8Array.from([2,AR,1,TG,100,NT,SP]);
-                org.energy = org.code.length * Config.energyMultiplier;
-                org.compile();
-                Config.codeLinesPerIteration = org.code.length;
-                expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsMols.items).toBe(1);
-                expect(vm1.orgs.items).toBe(1);
-                vm1.run();
-                expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(1); 
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,100,NT,SP]));
+                expect(org.code).toEqual(Uint8Array.from([2,AR|MASK,1,TG|MASK,0,NT|MASK,SP|MASK]));
                 vm1.destroy();
             });
-            xit('Checks basic organism splitting fail, because bx < 0',  () => {
+            it('Checks basic organism splitting fail, because ax > mols',  () => {
                 Config.molAmount = 0;
-                const vm1  = new VM();
+                Config.orgAmount = 1;
+                Config.CODE_LUCA = Uint8Array.from([2,AR,20,TG,0,SP]);
+                const vm1 = new BioVM();
                 const org = vm1.orgs.get(0);
                 
                 vm1.world.moveOrg(org, 0);
-                org.code = Uint8Array.from([2,AR,1,NT,TG,1,SP]);
-                org.energy = org.code.length * Config.energyMultiplier;
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
+
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(1); 
+                expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([2,AR,1,NT,TG,1,SP]));
+                expect(org.code).toEqual(Uint8Array.from([2,AR|MASK,20,TG|MASK,0,SP|MASK]));
                 vm1.destroy();
             });
-            xit('Checks basic organism cloning',  () => {
+            it('Checks basic organism splitting fail, because bx < ax',  () => {
                 Config.molAmount = 0;
-                const vm1        = new VM();
-                const org        = vm1.orgs.get(0);
+                Config.orgAmount = 1;
+                Config.CODE_LUCA = Uint8Array.from([2,AR,0,TG,1,SP]);
+                const vm1 = new BioVM();
+                const org = vm1.orgs.get(0);
                 
-                vm1.world.moveOrg(org, 10);
-                org.code = Uint8Array.from([1,AR,Config.CODE_ORG_ID,PU,1,TG,0,SP,PO]);
-                org.energy = org.code.length * Config.energyMultiplier;
+                vm1.world.moveOrg(org, 0);
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
+
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
                 vm1.run();
+
+                expect(vm1.orgs.items).toBe(1);
+                expect(vm1.orgsMols.items).toBe(1);
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([2,AR|MASK,0,TG|MASK,1,SP|MASK]));
+                vm1.destroy();
+            });
+            it('Checks basic organism cloning',  () => {
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.CODE_LUCA = Uint8Array.from([Config.CODE_ORG_ID,AR,1,TG,0,SP]);
+                const vm1 = new BioVM();
+                const org = vm1.orgs.get(0);
+                
+                vm1.world.moveOrg(org, WIDTH + 2);
+                org.compile();
+                Config.codeLinesPerIteration = org.code.length;
+
+                expect(vm1.world.getOrgIdx(1)).toBe(-1);
+                expect(vm1.orgsMols.items).toBe(1);
+                expect(vm1.orgs.items).toBe(1);
+                vm1.run();
+
                 expect(vm1.orgs.items).toBe(2);
-                expect(vm1.orgsMols.items).toBe(2); 
-                expect(vm1.orgs.get(1).energy).toBe(true); 
-                expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([AR,Config.CODE_ORG_ID,PU,1,TG,0,SP,PO]));
-                expect(vm1.orgs.get(1).code).toEqual(Uint8Array.from([1]));
+                expect(vm1.orgsMols.items).toBe(2);
+                expect(vm1.world.getOrgIdx(3)).not.toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([1,TG|MASK,0,SP|MASK]));
                 vm1.destroy();
             });
         });
