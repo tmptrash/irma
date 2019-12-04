@@ -285,31 +285,33 @@ describe('src/irma/VM', () => {
                 expect(org1.code).toEqual(Uint8Array.from([2,AR|MASK,1,TG|MASK,0,SP|MASK]));
                 vm1.destroy();
             });
-            xit('Checks organism splitting fail, because orgsMols is full',  () => {
+            it('Checks organism splitting fail, because orgsMols is full',  () => {
                 Config.molAmount = 0;
-                const vm1  = new VM();
+                Config.CODE_LUCA = Uint8Array.from([2,2,2,2,AR,1,TG,0,SP]);
+                const vm1  = new BioVM();
                 const org = vm1.orgs.get(0);
-                // split to the right
                 vm1.world.moveOrg(org, 0);
-                org.code = Uint8Array.from([2,2,AR,1,TG,0,SP]);
-                org.energy = org.code.length * Config.energyMultiplier;
                 org.compile();
                 Config.codeLinesPerIteration = org.code.length;
+
                 expect(vm1.world.getOrgIdx(1)).toBe(-1);
                 expect(vm1.orgsMols.items).toBe(1);
                 expect(vm1.orgs.items).toBe(1);
+                // split to the right
                 vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
                 expect(vm1.orgsMols.items).toBe(2); 
                 expect(vm1.world.getOrgIdx(1)).not.toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([2,AR,1,TG,0,SP]));
+                expect(org.code).toEqual(Uint8Array.from([2,2|MASK,AR,1|MASK,TG,0|MASK,SP|MASK]));
                 // split to the bottom
-                org.code[0] = 4;
+                org.code[1] = 4|MASK;
                 vm1.run();
+
                 expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(2); 
+                expect(vm1.orgsMols.items).toBe(2); // 2, not 3, because orgsMols is full
                 expect(vm1.world.getOrgIdx(10)).toBe(-1);
-                expect(org.code).toEqual(Uint8Array.from([4,AR,1,TG,0,SP]));
+                expect(org.code).toEqual(Uint8Array.from([2,4|MASK,AR,1|MASK,TG,0|MASK,SP|MASK]));
 
                 vm1.destroy();
             });
