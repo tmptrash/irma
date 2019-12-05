@@ -649,7 +649,7 @@ describe('src/irma/VM', () => {
         });
 
         describe('move tests', () => {
-            it('move first molecule to the end', () => {
+            it('move first molecule to the center', () => {
                 const code = Uint8Array.from([0,1,2,2,TG,MO]);
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
@@ -663,6 +663,36 @@ describe('src/irma/VM', () => {
                 expect(org.bx).toBe(2);
                 expect(org.ret).toBe(1);
                 expect(org.code).toEqual(Uint8Array.from([2,2|MASK,0,1|MASK,TG,MO|MASK]));
+            });
+            it('move first molecule with bx > molAmount', () => {
+                const code = Uint8Array.from([0,1,2,5,TG,MO]);
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = vm.split2Mols(code);
+                org.compile();
+                vm.run();
+        
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(5);
+                expect(org.ret).toBe(1);
+                expect(org.code).toEqual(Uint8Array.from([2,5|MASK,0,1|MASK,TG,MO|MASK]));
+            });
+            it('move first molecule with ax < 0', () => {
+                const code = Uint8Array.from([0,1,2,5,TG,0,NT,MO]);
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = vm.split2Mols(code);
+                org.compile();
+                vm.run();
+        
+                expect(org.ax).toBe(-1);
+                expect(org.bx).toBe(5);
+                expect(org.ret).toBe(1);
+                expect(org.code).toEqual(Uint8Array.from([2,5|MASK,TG,0|MASK,0,1|MASK,NT,MO|MASK]));
             });
         });
     });
