@@ -61,6 +61,7 @@ describe('src/irma/VM', () => {
     const AB        = Config.CODE_CMD_OFFS+49;
     const CB        = Config.CODE_CMD_OFFS+50;
     const FI        = Config.CODE_CMD_OFFS+51;
+    const MO        = Config.CODE_CMD_OFFS+52;
 
     let   vm        = null;
 
@@ -645,6 +646,24 @@ describe('src/irma/VM', () => {
             it('find molecule [3] at the middle',     () => run2([3|MASK,AR|MASK,3|MASK,1,TG,FI|MASK], 2, 1, 1));
             it('find molecule [0] at the beginning',  () => run2([0|MASK,4,AR|MASK,0,FI|MASK], 0, 0, 1));
             it('should not find molecule [0]',        () => run2([0|MASK,4,AR|MASK,1,FI|MASK], 1, 0, 0));
+        });
+
+        describe('move tests', () => {
+            it('move first molecule to the end', () => {
+                const code = Uint8Array.from([0,1,2,2,TG,MO]);
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = vm.split2Mols(code);
+                org.compile();
+                vm.run();
+        
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(2);
+                expect(org.ret).toBe(1);
+                expect(org.code).toEqual(Uint8Array.from([2,2|MASK,0,1|MASK,TG,MO|MASK]));
+            });
         });
     });
 });
