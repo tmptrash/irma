@@ -60,6 +60,7 @@ describe('src/irma/VM', () => {
     const CO        = Config.CODE_CMD_OFFS+48;
     const AB        = Config.CODE_CMD_OFFS+49;
     const CB        = Config.CODE_CMD_OFFS+50;
+    const FI        = Config.CODE_CMD_OFFS+51;
 
     let   vm        = null;
 
@@ -286,20 +287,20 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG|MASK,0,NT|MASK,SP|MASK]));
             });
             it('Checks basic organism splitting not fail, because bx > molAmount',  () => {
-                run([[2,AR,10,TG,0,NT,SP]], {molAmount: 0, orgAmount: 1}, [0]);
+                run([[2,AR,10,TG,1,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 
                 expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(1);
-                expect(vm.world.getOrgIdx(1)).toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,AR|MASK,10,TG|MASK,0,NT|MASK,SP|MASK]));
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.getOrgIdx(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,AR|MASK,1,SP|MASK]));
             });
-            it('Checks basic organism splitting fail, because ax > mols',  () => {
+            it('Checks basic organism splitting not fail, because ax > molAmount',  () => {
                 run([[2,AR,20,TG,0,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 
                 expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(1);
-                expect(vm.world.getOrgIdx(1)).toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,AR|MASK,20,TG|MASK,0,SP|MASK]));
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.getOrgIdx(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,SP|MASK]));
             });
             it('Checks basic organism splitting fail, because bx < ax',  () => {
                 run([[2,AR,0,TG,1,SP]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -566,9 +567,9 @@ describe('src/irma/VM', () => {
                 org.energy = energy;
                 vm.run();
 
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([20,TG|MASK,0,0|MASK,0,AB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy - 1);
-                expect(vm.orgs.get(0).ret).toEqual(0);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([20,TG,0,AB|MASK,0,0|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy - 4 * Config.energyMultiplier - 1);
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
         });
 
@@ -633,17 +634,16 @@ describe('src/irma/VM', () => {
                 org.energy = energy;
                 vm.run();
         
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([10,CB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy - 1);
-                expect(vm.orgs.get(0).ret).toEqual(0);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([10|MASK,CB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy + 2 * Config.energyMultiplier - 1);
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
         });
 
-        xdescribe('find tests', () => {
-            it('find0',  () => run([FI]));
-            it('find one toggle command between offsets 7 and 11',  () => run([11,TG,7,LI, 191,TG,1,AD,TG,0,NT,TG, FI], 8, -1, 1));
-            it('find one toggle command between offsets 0 and 3',   () => run([3,TG,0,LI,  191,TG,1,AD,TG,0,NT,TG, FI], 1, -1, 1));
-            it('can not find one eq command',                       () => run([30,TG,0,LI, 191,TG,2,AD,TG,0,NT,TG, FI], 193, -1, 0));
+        describe('find tests', () => {
+            it('find molecule [3,AR] at the end',  () => run2(vm.split2Mols([3,AR,1,TG,FI,0,3,AR]), 3, 1, 3));
+            it('find molecule [3] at the middle',  () => run2([3|MASK,AR|MASK,3|MASK,1,TG,FI|MASK], 2, 1, 1));
+            it('find molecule [0] at the beginning',  () => run2([0|MASK,4,AR|MASK,0,FI|MASK], 0, 0, 1));
         });
     });
 });
