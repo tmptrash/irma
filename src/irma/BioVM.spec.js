@@ -58,6 +58,7 @@ describe('src/irma/VM', () => {
 
     const OF        = Config.CODE_CMD_OFFS+47;
     const CO        = Config.CODE_CMD_OFFS+48;
+    const AB        = Config.CODE_CMD_OFFS+49;
 
     let   vm        = null;
 
@@ -108,7 +109,7 @@ describe('src/irma/VM', () => {
         Object.assign(Config, {CODE_LUCA: Uint8Array.from([0])});
         vm  = new BioVM();
         for (let i = 0; i < move.length; i++) {
-            vm.orgsMols.get(i).code = vm._split2Mols(Uint8Array.from(code[i]).slice());
+            vm.orgsMols.get(i).code = vm.split2Mols(Uint8Array.from(code[i]).slice());
             vm.world.moveOrg(vm.orgsMols.get(i), move[i]);
             vm.orgsMols.get(i).hasOwnProperty('energy') && vm.orgsMols.get(i).compile();
         }
@@ -478,6 +479,55 @@ describe('src/irma/VM', () => {
                 run2([2,NT,CO], -3);
 
                 expect(vm.orgs.get(0).color).toEqual(Config.ORG_MIN_COLOR);
+            });
+        });
+
+        describe('anab tests', () => {
+            it('simple anabolism', () => {
+                const code   = vm.split2Mols(Uint8Array.from([1,TG,0,AB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG,0,AB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy - (code.length * Config.energyMultiplier) - 1);
+            });
+            it('anabolism of one molecule only', () => {
+                const code   = vm.split2Mols(Uint8Array.from([AB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([AB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy - 1);
+                expect(vm.orgs.get(0).ret).toEqual(0);
+            });
+            it('joining two molecules from different places', () => {
+                const code   = vm.split2Mols(Uint8Array.from([2,TG,0,0,0,AB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,TG,0,AB|MASK,0,0|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMultiplier) - 1);
             });
         });
 

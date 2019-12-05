@@ -289,20 +289,20 @@ class BioVM extends VM {
 
             case ANAB: {
                 ++org.line;
-                let   code   = org.code;
-                const m1Offs = this._mol2Offs(code, org.ax);
-                const m2Offs = this._mol2Offs(code, org.bx);
-                if (m1Offs > m2Offs || m1Offs < 0 || m2Offs < 0) {org.ret = RET_ERR; return}
+                let   code      = org.code;
+                const m1Offs    = this._mol2Offs(code, org.ax);
+                const m2Offs    = this._mol2Offs(code, org.bx);
+                if (m1Offs > m2Offs || m1Offs < 0 || m2Offs < 0 || m1Offs >= m2Offs) {org.ret = RET_ERR; return}
                 const m1EndOffs = this._molLastOffs(code, m1Offs);
                 const m2EndOffs = this._molLastOffs(code, m2Offs);
-                const cutCode = code.subarray(m2Offs, m2EndOffs);
+                const cutCode   = code.subarray(m2Offs, m2EndOffs + 1);
                 //
                 // Important! We assume that this code change does not affect main
                 // code. Only food part. This is why we dont call org.compile()
                 //
-                code = code.splice(m2Offs, m2EndOffs - m2Offs);
-                code = code.splice(m1EndOffs, 0, cutCode);
-                org.energy -= ((m2EndOffs - m2Offs + m1EndOffs - m1Offs) * Config.energyMultiplier);
+                code = code.splice(m2Offs, m2EndOffs - m2Offs + 1);
+                code = code.splice(m1EndOffs + 1, 0, cutCode);
+                org.energy -= ((m2EndOffs - m2Offs + m1EndOffs - m1Offs + 2) * Config.energyMultiplier);
                 code[m1EndOffs] &= CODE_8_BIT_RESET_MASK;
                 org.code = code;
                 org.ret  = RET_OK;
@@ -474,7 +474,7 @@ class BioVM extends VM {
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
             if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            this.addOrg(offset, this._split2Mols(code.slice()), true);
+            this.addOrg(offset, this.split2Mols(code.slice()), true);
             // const luca = this.addOrg(offset, code.slice(), true);
             // this.db && this.db.put(luca);
         }
@@ -495,6 +495,22 @@ class BioVM extends VM {
             // const org = this.addOrg(offset, this._molCode());
             // this.db && this.db.put(org);
         }
+    }
+
+    /**
+     * Splits raw code into molecules by adding first bit flag to every Config.molCodeSize offset
+     * @param {Uint8Array} code Code we need to split
+     * @return {Uint8Array} The same array, but with meta info inside (molecule separator)
+     */
+    split2Mols(code) {
+        const size = Config.molCodeSize;
+        const len  = code.length;
+        let   i    = -1;
+        
+        while ((i += size) < len) {code[i] |= CODE_8_BIT_MASK}
+        code[len - 1] |= CODE_8_BIT_MASK; // last atom must be marked
+
+        return code;
     }
 
     /**
@@ -554,22 +570,6 @@ class BioVM extends VM {
         // Sets last atom bit on
         //
         code[size - 1] |= Config.CODE_8_BIT_MASK;
-
-        return code;
-    }
-
-    /**
-     * Splits raw code into molecules by adding first bit flag to every Config.molCodeSize offset
-     * @param {Uint8Array} code Code we need to split
-     * @return {Uint8Array} The same array, but with meta info inside (molecule separator)
-     */
-    _split2Mols(code) {
-        const size = Config.molCodeSize;
-        const len  = code.length;
-        let   i    = -1;
-        
-        while ((i += size) < len) {code[i] |= CODE_8_BIT_MASK}
-        code[len - 1] |= CODE_8_BIT_MASK; // last atom must be marked
 
         return code;
     }
