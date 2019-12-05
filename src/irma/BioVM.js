@@ -311,11 +311,10 @@ class BioVM extends VM {
 
             case CATAB: {
                 ++org.line;
-                if (org.ax < 0) {org.ret = RET_ERR; return}
                 const code    = org.code;
                 const ax      = this._mol2Offs(code, org.ax);
                 const axEnd   = this._molLastOffs(code, ax);
-                if (ax === axEnd) {org.ret = RET_ERR; return}
+                if (ax === axEnd || ax < 0) {org.ret = RET_ERR; return}
                 const molSize = axEnd - ax + 1;
                 code[ax + Math.floor(molSize / 2) - 1] |= CODE_8_BIT_MASK;
                 org.energy += (molSize * Config.energyMultiplier);
@@ -581,7 +580,7 @@ class BioVM extends VM {
      * @return {Number|-1} index of first atom or -1 if no last atom found
      */
     _mol2Offs(code, molIndex) {
-        if (molIndex === 0) {return 0}
+        if (molIndex <= 0) {return 0}
         for (let i = 0, len = code.length; i < len; i++) {
             if ((code[i] & CODE_8_BIT_MASK) && --molIndex < 1) {
                 return i + 1;

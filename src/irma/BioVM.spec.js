@@ -59,6 +59,7 @@ describe('src/irma/VM', () => {
     const OF        = Config.CODE_CMD_OFFS+47;
     const CO        = Config.CODE_CMD_OFFS+48;
     const AB        = Config.CODE_CMD_OFFS+49;
+    const CB        = Config.CODE_CMD_OFFS+50;
 
     let   vm        = null;
 
@@ -227,6 +228,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(2);
                 expect(vm.world.getOrgIdx(1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG|MASK,0,SP|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks organism splitting fail, because position is not free',  () => {
                 run([[2],[2,AR,1,TG,0,SP]], {molAmount: 0, orgAmount: 2}, [1,0]);
@@ -275,13 +277,21 @@ describe('src/irma/VM', () => {
                 expect(vm.world.getOrgIdx(1)).toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,AR|MASK,1,TG|MASK,0,SP|MASK]));
             });
-            it('Checks basic organism splitting fail, because ax < 0',  () => {
+            it('Checks basic organism splitting not fail, because ax < 0',  () => {
                 run([[2,AR,1,TG,0,NT,SP]], {molAmount: 0, orgAmount: 1}, [0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.getOrgIdx(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG|MASK,0,NT|MASK,SP|MASK]));
+            });
+            it('Checks basic organism splitting not fail, because bx > molAmount',  () => {
+                run([[2,AR,10,TG,0,NT,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(1)).toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,AR|MASK,1,TG|MASK,0,NT|MASK,SP|MASK]));
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,AR|MASK,10,TG|MASK,0,NT|MASK,SP|MASK]));
             });
             it('Checks basic organism splitting fail, because ax > mols',  () => {
                 run([[2,AR,20,TG,0,SP]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -528,6 +538,104 @@ describe('src/irma/VM', () => {
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,TG,0,AB|MASK,0,0|MASK]));
                 expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMultiplier) - 1);
+            });
+            it('joining two molecules when ax < 0', () => {
+                const code   = vm.split2Mols(Uint8Array.from([2,TG,0,0,0,NT,AB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,TG,0,NT|MASK,0,0|MASK,AB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMultiplier) - 1);
+            });
+            it('joining two molecules when bx > molAmount', () => {
+                const code   = vm.split2Mols(Uint8Array.from([20,TG,0,0,0,AB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([20,TG|MASK,0,0|MASK,0,AB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy - 1);
+                expect(vm.orgs.get(0).ret).toEqual(0);
+            });
+        });
+
+        describe('catab tests', () => {
+            it('simple catabolism', () => {
+                const code   = vm.split2Mols(Uint8Array.from([0,CB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0|MASK,CB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy + (code.length * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).ret).toEqual(1);
+            });
+            it('simple catabolism with longer molecule', () => {
+                const code   = vm.split2Mols(Uint8Array.from([0,1,2,3,4,1,CB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,1|MASK,2|MASK,3|MASK,4,1|MASK,CB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).ret).toEqual(1);
+            });
+            it('catabolism if ax < 0', () => {
+                const code   = vm.split2Mols(Uint8Array.from([1,NT,CB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|MASK,NT|MASK,CB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).ret).toEqual(1);
+            });
+            it('catabolism if ax > molAmount', () => {
+                const code   = vm.split2Mols(Uint8Array.from([10,CB]));
+                const energy = Config.energyMultiplier * 10;
+                Config.molAmount = 0;
+                Config.orgAmount = 1;
+                Config.codeLinesPerIteration = code.length;
+                const org = vm.orgs.get(0);
+                org.code  = code.slice(); // code copy
+                org.compile();
+                org.energy = energy;
+                vm.run();
+        
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([10,CB|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(energy - 1);
+                expect(vm.orgs.get(0).ret).toEqual(0);
             });
         });
 
