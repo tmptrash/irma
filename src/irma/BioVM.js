@@ -391,7 +391,7 @@ class BioVM extends VM {
 
             case MOLS: {
                 ++org.line;
-                org.ax = this._molsAmount(org);
+                org.ax = this._molsAmount(org.code);
                 // eslint-disable-next-line no-useless-return
                 return;
             }
@@ -604,16 +604,13 @@ class BioVM extends VM {
 
     /**
      * Returns molecules amount for specified organism
-     * @param {Organism} org Organism
+     * @param {Uint8Array} code Organism code
      * @return {Number} Molecules amount
      */
-    _molsAmount(org) {
-        const code = org.code;
-        let   mols = 0;
-        
+    _molsAmount(code) {
+        let mols = 0;
         for (let i = 0, len = code.length; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
-
-        return mols;
+        return mols || (code.length > 0 ? 1 : 0);
     }
     
     /**

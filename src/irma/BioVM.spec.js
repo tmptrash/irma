@@ -62,6 +62,7 @@ describe('src/irma/VM', () => {
     const CB        = Config.CODE_CMD_OFFS+50;
     const FI        = Config.CODE_CMD_OFFS+51;
     const MO        = Config.CODE_CMD_OFFS+52;
+    const ML        = Config.CODE_CMD_OFFS+53;
 
     let   vm        = null;
 
@@ -694,6 +695,12 @@ describe('src/irma/VM', () => {
                 expect(org.ret).toBe(1);
                 expect(org.code).toEqual(Uint8Array.from([2,5|MASK,TG,0|MASK,0,1|MASK,NT,MO|MASK]));
             });
+        });
+
+        describe('mols tests', () => {
+            it('mols0', () => run2([0|MASK,1,ML|MASK], 2));
+            it('mols1', () => run2([ML|MASK], 1));
+            it('mols2', () => run2([ML], 1));
         });
     });
 });
