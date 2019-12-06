@@ -659,6 +659,7 @@ describe('src/irma/VM', () => {
             it('find molecule [3,AR] at the end',     () => run2(vm.split2Mols([3,AR,1,TG,FI,0,3,AR]), 3, 1, 3));
             it('find molecule [3] at the middle',     () => run2([3|MASK,AR|MASK,3|MASK,1,TG,FI|MASK], 2, 1, 1));
             it('find molecule [0] at the beginning',  () => run2([0|MASK,4,AR|MASK,0,FI|MASK], 0, 0, 1));
+            it('find molecule [0,1] at the end',      () => run2([0,1|MASK,4,AR|MASK,1,TG,0,FI|MASK,0,1|MASK], 3, 1, 1));
             it('should not find molecule [0]',        () => run2([0|MASK,4,AR|MASK,1,FI|MASK], 1, 0, 0));
         });
 

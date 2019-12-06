@@ -47,7 +47,6 @@ class Organism {
         this.percent    = Config.orgMutationPercent;                   // Percent of mutations
         this.freq       = 0;                                           // Frequency for say, listen commands
         this.line       = 0;                                           // Current code line index
-        this.rIndex     = 0;                                           // Pointer to additional register. Depricated
         this.ax         = 0;                                           // Register ax
         this.bx         = 0;                                           // Register bx
         this.ret        = 0;                                           // Register ret

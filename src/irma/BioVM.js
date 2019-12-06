@@ -580,15 +580,14 @@ class BioVM extends VM {
      * @return {Number|-1} index of first atom or -1 if no last atom found
      */
     _mol2Offs(code, molIndex) {
-        if (molIndex <= 0) {return 0}
-        let index = -1;
+        let index = 0;
         for (let i = 0, len = code.length, len1 = len - 1; i < len; i++) {
             if ((code[i] & CODE_8_BIT_MASK)) {
-                if (--molIndex < 1) {return i + 1}
-                i < len1 && (index = i);
+                if (molIndex-- < 1) {return index}
+                i < len1 && (index = i + 1);
             }
         }
-        return index + 1;
+        return index;
     }
 
     /**
