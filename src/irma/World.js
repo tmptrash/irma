@@ -28,13 +28,14 @@ class World {
         this.viewOffs1 = (WORLD_CANVAS_HEIGHT - 1) * WORLD_WIDTH + WORLD_CANVAS_WIDTH - 1; // offset of canvas right-bottom corner
         this._data     = new Uint32Array(WORLD_HEIGHT * WORLD_WIDTH);
         this._canvas = new Canvas(options);
-        this._player = new Player();
+        this._player = new Player(Config);
     }
 
     destroy() {
         this._data = null;
         this._canvas.destroy();
         this._canvas = null;
+        this._player - null;
     }
 
     get data() {
