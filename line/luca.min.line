@@ -38,14 +38,14 @@ func             # func 0
     toggle       # ax=0       bx=findIdx  ret=len
     retax        # ax=len     bx=findIdx
     dec          # ax=len-1   bx=findIdx
-	toggle       # ax=findIdx bx=len-1
-	axret        # ax=findIdx bx=len-1    ret=findIdx
-	pop          # ax=0       bx=len-1
-	push         # ax=0       bx=len-1
-	toggle       # ax=len-1   bx=0
-	sub          # ax=len-1   bx=0
-	toggle       # ax=0       bx=len-1
-	retax        # ax=findIdx bx=len-1
+    toggle       # ax=findIdx bx=len-1
+    axret        # ax=findIdx bx=len-1    ret=findIdx
+    pop          # ax=0       bx=len-1
+    push         # ax=0       bx=len-1
+    toggle       # ax=len-1   bx=0
+    sub          # ax=len-1   bx=0
+    toggle       # ax=0       bx=len-1
+    retax        # ax=findIdx bx=len-1
     ifg
       pop
       pop        # resets stack
