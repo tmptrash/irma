@@ -137,11 +137,12 @@ ifp
     mols         # ax=mols
     dec          # ax=mols-1
     catab
-	toggle       # ax=?       bx=mols-1
-	eq           # ax=mols-1  bx=mols-1
-	inc          # ax=mols    bx=mols-1
-	toggle       # ax=mols-1  bx=mols
-	split
+    toggle       # ax=?       bx=mols-1
+    eq           # ax=mols-1  bx=mols-1
+    inc          # ax=mols    bx=mols-1
+    inc          # ax=mols+1  bx=mols-1
+    toggle       # ax=mols-1  bx=mols+1
+    split
   end
 end
 #

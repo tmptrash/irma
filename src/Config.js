@@ -199,6 +199,7 @@ module.exports = {
         CODE_OFFS,      //         toggle
         CODE_OFFS + 1,  //         eq
         CODE_OFFS + 7,  //         inc
+        CODE_OFFS + 7,  //         inc
         CODE_OFFS,      //         toggle
         CODE_OFFS + 38, //         split
         CODE_OFFS + 23, //     end

@@ -183,6 +183,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK,2,JO|MASK]));
+                expect(vm.orgs.get(0).energy).toEqual(2 * Config.energyMultiplier - 2);
             });
             it('Checks joining empty cell',  () => {
                 run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -330,6 +331,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(0)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step up-right', () => {
                 run([[1,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
@@ -338,6 +340,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step right', () => {
                 run([[2,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -346,6 +349,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step right-down', () => {
                 run([[3,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -354,6 +358,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(WIDTH+1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([3,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step down', () => {
                 run([[4,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -362,6 +367,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(WIDTH)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step down-left', () => {
                 run([[5,ST]], {molAmount: 0, orgAmount: 1}, [1]);
@@ -370,6 +376,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(WIDTH)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([5,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step left', () => {
                 run([[6,ST]], {molAmount: 0, orgAmount: 1}, [1]);
@@ -378,6 +385,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(0)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step left-up', () => {
                 run([[7,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH+1]);
@@ -386,6 +394,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.getOrgIdx(0)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([7,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step outside up (cyclical world)', () => {
                 run([[0,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -395,6 +404,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.getOrgIdx(0)).toBe(-1);
                 expect(vm.world.getOrgIdx(WIDTH * HEIGHT - WIDTH)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step outside down (cyclical world)', () => {
                 run([[4,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH * HEIGHT - WIDTH]);
@@ -404,6 +414,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.getOrgIdx(0)).not.toBe(-1);
                 expect(vm.world.getOrgIdx(WIDTH * HEIGHT - WIDTH)).toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step outside left (cyclical world)', () => {
                 run([[6,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
@@ -413,6 +424,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.getOrgIdx(WIDTH)).toBe(-1);
                 expect(vm.world.getOrgIdx(WIDTH-1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
             it('Checks step outside right (cyclical world)', () => {
                 run([[2,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
@@ -422,6 +434,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.getOrgIdx(WIDTH)).not.toBe(-1);
                 expect(vm.world.getOrgIdx(WIDTH-1)).toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|MASK]));
+                expect(vm.orgs.get(0).ret).toEqual(1);
             });
         });
 
