@@ -12,6 +12,7 @@
 #
 nop
 nop
+nop
 #
 # Helper func0 to find nop molecule-separator between main code
 # and food section. Returns separator molecule index in ret
@@ -48,9 +49,10 @@ func             # func1
   # 2. find nop molecule index and save it to m1
   #
   call
-  retax          # ax=food0
+  retax          # ax=nopIdx
   right          # m1
-  save           # m1=food0+1
+  inc            # ax=food0
+  save           # m1=food0
   #
   # 3. set m2=food1. Is a last molecule index
   #
@@ -61,8 +63,8 @@ func             # func1
   # loop through main code between nop molecule-separators 
   # and copy one molecule per loop iteration
   #
-  retax          # ax=food0
-  inc            # ax=food0+1
+  retax          # ax=nopIdx
+  inc            # ax=food0
   loop
     #
     # 4. set find limit [food0=nopMol1, food1=nopMol2] molecule
@@ -174,6 +176,8 @@ end
 # food molecules. After this molecule follows food section
 #
 ret
+nop
+nop
 nop
 nop
 nop

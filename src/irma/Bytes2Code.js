@@ -89,11 +89,12 @@ class Bytes2Code {
         const offs = org.offs;
         let code   = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
         let span   = '';
+        let mol    = 0;
 
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
             const cmd  = bytes[b] & CODE_8_BIT_RESET_MASK;
-            const sep  = (bytes[b] & CODE_8_BIT_MASK) ? '- ' : '  ';
+            const sep  = (bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `;
             const line = Bytes2Code.MAP[cmd];
             if (cmd === FUNC ||
                 cmd === LOOP ||

@@ -343,7 +343,12 @@ class BioVM extends VM {
                     if (atom === code[i]) {
                         if (code[i] & CODE_8_BIT_MASK) {org.ax = mol; org.ret = RET_OK; return}
                         for (let j = i + 1, k = 1;; j++,k++) {
-                            if (code[j] !== code[k]) {continue loop}
+                            if (code[j] !== code[k]) {
+                                if (code[i] & CODE_8_BIT_MASK) {continue loop}
+                                // eslint-disable-next-line no-empty
+                                while((code[++i] & CODE_8_BIT_MASK) === 0 && i < len) {}                                
+                                continue loop;
+                            }
                             if (code[j] & CODE_8_BIT_MASK) {break}
                         }
                         org.ax  = mol;
@@ -368,7 +373,7 @@ class BioVM extends VM {
                 if (find1 < find0) {org.ret = RET_ERR; return}
                 const moveCode = code.slice(find0, find1 + 1);
                 if (moveCode.length < 1) {org.ret = RET_ERR; return}
-                const bx       = this._molLastOffs(code, this._mol2Offs(code, org.bx)) + 1;
+                const bx       = Math.min(this._molLastOffs(code, this._mol2Offs(code, org.bx)) + 1, code.length);
                 const len      = find1 - find0 + 1;
                 const offs     = bx > find1 ? bx - len : (bx < find0 ? bx : find0);
                 if (find0 === offs) {org.ret = RET_OK; return}
@@ -581,10 +586,10 @@ class BioVM extends VM {
      */
     _mol2Offs(code, molIndex) {
         let index = 0;
-        for (let i = 0, len = code.length, len1 = len - 1; i < len; i++) {
+        for (let i = 0, len = code.length; i < len; i++) {
             if ((code[i] & CODE_8_BIT_MASK)) {
                 if (molIndex-- < 1) {return index}
-                i < len1 && (index = i + 1);
+                index = i + 1;
             }
         }
         return index;
@@ -596,8 +601,9 @@ class BioVM extends VM {
      * @param {Number} index Index of first atom in molecule
      */
     _molLastOffs(code, index) {
+        const len = code.length;
         // eslint-disable-next-line no-empty
-        while ((code[index] & CODE_8_BIT_MASK) === 0) {index++}
+        while ((code[index] & CODE_8_BIT_MASK) === 0 && index < len) {index++}
         return index;
     }
 
