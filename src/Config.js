@@ -128,6 +128,7 @@ module.exports = {
     CODE_LUCA                  : Uint8Array.from([
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
         CODE_OFFS + 21, // func
         CODE_OFFS + 53, //     mols
         CODE_OFFS + 8,  //     dec
@@ -224,6 +225,8 @@ module.exports = {
         CODE_OFFS + 22, // ret
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
         CODE_OFFS + 2   // nop
     ]),
     codeLinesPerIteration      : 10,
@@ -289,7 +292,7 @@ module.exports = {
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
     molAmount                  : 60000,
-    molCodeSize                : 2,
+    molCodeSize                : 3,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration

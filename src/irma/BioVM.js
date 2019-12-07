@@ -368,13 +368,13 @@ class BioVM extends VM {
                 if (find1 < find0) {org.ret = RET_ERR; return}
                 const moveCode = code.slice(find0, find1 + 1);
                 if (moveCode.length < 1) {org.ret = RET_ERR; return}
-                const bx       = this._mol2Offs(code, org.bx);
-                const newBx    = bx < 0 ? 0 : bx;
+                const bx       = this._molLastOffs(code, this._mol2Offs(code, org.bx)) + 1;
                 const len      = find1 - find0 + 1;
-                const offs     = newBx > find1 ? newBx - len : (newBx < find0 ? newBx : find0);
+                const offs     = bx > find1 ? bx - len : (bx < find0 ? bx : find0);
                 if (find0 === offs) {org.ret = RET_OK; return}
                 code = code.splice(find0, len);
                 org.code = code = code.splice(offs, 0, moveCode);
+
                 //
                 // Important: moving new commands insie the script may break it, because it's
                 // offsets, stack and context may be invalid. Generally, we have to compile

@@ -10,6 +10,7 @@ const Organism              = require('./Organism');
  */
 const CODE_PAD_SIZE         = 30;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
 //
 // Basic commands
 //
@@ -92,6 +93,7 @@ class Bytes2Code {
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
             const cmd  = bytes[b] & CODE_8_BIT_RESET_MASK;
+            const sep  = (bytes[b] & CODE_8_BIT_MASK) ? '- ' : '  ';
             const line = Bytes2Code.MAP[cmd];
             if (cmd === FUNC ||
                 cmd === LOOP ||
@@ -102,16 +104,16 @@ class Bytes2Code {
                 cmd === IFL  ||
                 cmd === IFE  ||
                 cmd === IFNE) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
                 if ((offs[b] || 0) > b + 1) {span += '  '}
                 continue;
             } else if (cmd === END) {
                 span = span.substr(0, span.length - 2);
             } else if (line === undefined) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${span}${cmd}`;
+                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${span}${cmd}`;
                 continue;
             }
-            code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+            code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
         }
 
         return code;
