@@ -167,7 +167,7 @@ class BioVM extends VM {
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
                     Mutations.mutate(clone);
                 }
-                if (org.code.length < 1) {this.delOrg(org); break}
+                if (org.code.length < 1) {this.delOrg(org); return}
                 //
                 // Important: after split, sequence of commands have been changed and it may break
                 // entire script. Generally, we have to compile new script to fix all offsets
@@ -248,7 +248,7 @@ class BioVM extends VM {
                 // const cutOrg  = this.addOrg(dOffset, newCode);
                 // this.db && this.db.put(cutOrg, nearOrg);
                 if (nearOrg.code.length < 1) {this.delOrg(nearOrg)}
-                if (org.code.length < 1) {this.delOrg(org); break}
+                if (org.code.length < 1) {this.delOrg(org); return}
                 org.ret = RET_OK;
                 return;
             }
