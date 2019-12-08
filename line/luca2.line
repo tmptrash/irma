@@ -36,8 +36,7 @@ end
 # 5. 5. move found molecule from food section to the end
 # 6. inc i
 # 7. 7. dec food section length
-# 8. set pointer to m0 fot next iteration
-# 9. This peace split clone from the tail
+# 8. This peace split clone from the tail
 #
 func             # func1
   #
@@ -99,16 +98,13 @@ func             # func1
     # 7. dec food section length
     #
     right        # m1
+    right        # m2
     load         # ax=food1
     dec          # ax=food1-1
     save
-    #
-    # 8. set pointer to m0 fot next iteration
-    #
-    right        # m2
   end
   #
-  # 9. This peace split clone from the tail
+  # 8. This peace split clone from the tail
   #
   17             # ax=17
   axret          # ret=17

@@ -45,10 +45,10 @@ func             # func1
     inc          # ax=i+1
     save         # m0=i+1
     right        # m1
+    right        # m2
     load         # ax=food1
     dec          # ax=food1-1
     save
-    right        # m2
   end
   17             # ax=17
   axret          # ret=17

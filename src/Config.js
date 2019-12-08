@@ -173,10 +173,10 @@ module.exports = {
         CODE_OFFS + 7,  //         inc
         CODE_OFFS + 35, //         save
         CODE_OFFS + 34, //         right
+        CODE_OFFS + 34, //         right
         CODE_OFFS + 36, //         load
         CODE_OFFS + 8,  //         dec
         CODE_OFFS + 35, //         save
-        CODE_OFFS + 34, //         right
         CODE_OFFS + 23, //     end
         17,             //     17
         CODE_OFFS + 25, //     axret
