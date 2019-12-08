@@ -7,6 +7,7 @@
  */
 const Helper                = require('./../common/Helper');
 const Config                = require('./../Config');
+const Molecule              = require('./Molecule');
 const VM                    = require('./VM');
 const Mutations             = require('./Mutations');
 const World                 = require('./World');
@@ -106,7 +107,7 @@ class BioVM extends VM {
     afterIteration(org) {
         if (org.energy < 0 || org.age > Config.orgMaxAge) {
             this.delOrg(org);
-            this.addOrg(org.offset, org.code);
+            this.addMol(org.offset, org.code);
         }
         org.energy--;
     }
@@ -124,7 +125,7 @@ class BioVM extends VM {
             case JOIN: {
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
-                const dot    = this.world.getOrgIdx(offset);
+                const dot    = this.world.index(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
                 if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; return}
@@ -139,7 +140,7 @@ class BioVM extends VM {
                 // line should not be uncommented:
                 // org.compile();
                 //
-                this.delOrg(nearOrg);
+                nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
                 org.ret = RET_OK;
                 return;
             }
@@ -149,25 +150,27 @@ class BioVM extends VM {
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
-                const dot     = this.world.getOrgIdx(offset);
+                const dot     = this.world.index(offset);
                 if (dot > -1) {org.ret = RET_ERR; return} // organism on the way
-                const code = org.code;
-                const ax   = this._mol2Offs(code, org.ax);
-                const bx   = this._mol2Offs(code, org.bx);
+                const code    = org.code;
+                const ax      = this._mol2Offs(code, org.ax);
+                const bx      = this._mol2Offs(code, org.bx);
                 if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; return}
                 const newCode = code.subarray(ax, bx);
-                org.code = code.splice(ax, bx - ax);
                 if (newCode.length < 1 || org.ret === IS_ORG_ID && this.orgs.full) {org.ret = RET_ERR; return}
+                org.code = code.splice(ax, bx - ax);
+                const energy  = Math.floor(org.energy / 2);
                 //
                 // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
                 // TODO: should be esupported by organism from parent to child
                 //
-                const clone   = this.addOrg(offset, newCode, org.ret === IS_ORG_ID);
+                const clone   = org.ret === IS_ORG_ID ? this.addOrg(offset, newCode, energy) : this.addMol(offset, newCode);
+                org.energy    = energy;
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
                     Mutations.mutate(clone);
                 }
-                if (org.code.length < 1) {this.delOrg(org); return}
+                if (org.code.length < 1) {this.delOrg(org); org.ret = RET_ERR; return}
                 //
                 // Important: after split, sequence of commands have been changed and it may break
                 // entire script. Generally, we have to compile new script to fix all offsets
@@ -188,7 +191,7 @@ class BioVM extends VM {
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 if (offset < -1) {offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
-                if (this.world.getOrgIdx(offset) > -1) {org.ret = RET_ERR; return}
+                if (this.world.index(offset) > -1) {org.ret = RET_ERR; return}
                 this.world.moveOrg(org, offset);
                 org.ret = RET_OK;
                 return;
@@ -198,9 +201,9 @@ class BioVM extends VM {
                 ++org.line;
                 const offset = org.offset + org.ax;
                 if (offset < 0 || offset > MAX_OFFS) {org.ax = 0; return}
-                const dot = this.world.getOrgIdx(offset);
+                const dot = this.world.index(offset);
                 const mol = this.orgsMols.ref()[dot];
-                org.ax = (dot < 0 ? 0 : mol.color || this._molColor(mol));
+                org.ax = (dot < 0 ? 0 : mol.color || this._molColor(mol.code));
                 return;
             }
 
@@ -220,7 +223,7 @@ class BioVM extends VM {
             case NREAD: {
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
-                const dot = this.world.getOrgIdx(offset);
+                const dot = this.world.index(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
                 org.ax  = (nearOrg.code[org.bx] & CODE_8_BIT_RESET_MASK) || 0;
@@ -232,10 +235,10 @@ class BioVM extends VM {
                 ++org.line;
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
-                const dot     = this.world.getOrgIdx(offset);
+                const dot     = this.world.index(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
                 const dOffset = this._freePos(org.offset);
-                const dDot    = this.world.getOrgIdx(dOffset);
+                const dDot    = this.world.index(dOffset);
                 if (dDot > -1) {org.ret = RET_ERR; return}
                 const nearOrg = this.orgsMols.ref()[dot];
                 const from    = this._mol2Offs(org.ax);
@@ -244,10 +247,10 @@ class BioVM extends VM {
                 const newCode = nearOrg.code.subarray(from, to);
                 nearOrg.code  = nearOrg.code.splice(from, to);
                 if (newCode.length < 1) {org.ret = RET_ERR; return}
-                this.addOrg(dOffset, newCode);
-                // const cutOrg  = this.addOrg(dOffset, newCode);
+                this.addMol(dOffset, newCode);
+                // const cutOrg  = this.addMol(dOffset, newCode);
                 // this.db && this.db.put(cutOrg, nearOrg);
-                if (nearOrg.code.length < 1) {this.delOrg(nearOrg)}
+                if (nearOrg.code.length < 1) {nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg)}
                 if (org.code.length < 1) {this.delOrg(org); return}
                 org.ret = RET_OK;
                 return;
@@ -256,9 +259,9 @@ class BioVM extends VM {
             case GET: {
                 ++org.line;
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
-                const dot = this.world.getOrgIdx(org.offset + DIR[Math.abs(org.ax) % 8]);
+                const dot = this.world.index(org.offset + DIR[Math.abs(org.ax) % 8]);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                this.delOrg(org.packet = this.orgsMols.ref()[dot]);
+                (org.packet = this.orgsMols.ref()[dot]).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
                 return;
             }
 
@@ -267,9 +270,9 @@ class BioVM extends VM {
                 if (!org.packet) {org.ret = RET_ERR; return}
                 if (this.orgsMols.full) {org.ret = RET_ERR; return}
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
-                const dot    = this.world.getOrgIdx(offset);
+                const dot    = this.world.index(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
-                this.addOrg(offset, org.packet.code, !!org.packet.energy);
+                org.packet.hasOwnProperty('energy') ? this.addOrg(offset, org.packet.code, org.packet.energy) : this.addMol(offset, org.packet.code);
                 // this.db && this.db.put(org.packet);
                 org.packet = null;
                 return;
@@ -416,26 +419,24 @@ class BioVM extends VM {
      * of organism extends it with additional properties like offset, color,...
      * @param {Number} offset Offset in a world
      * @param {Uint8Array} code Code to set
-     * @param {Boolean} isOrg Organism or molecule
+     * @param {Number} energy Amount of organism energy to start with
      * @override
      */
-    addOrg (offset, code, isOrg = false) {
+    addOrg (offset, code, energy) {
         const orgsMols = this.orgsMols;
-        const org = super.addOrg(isOrg ? this.orgs.freeIndex : orgsMols.freeIndex, code, !isOrg);
+        const org = super.addOrg(this.orgs.freeIndex, code);
         //
         // Extends organism properties
         //
-        org.offset = offset;
-        if (isOrg) {
-            org.molIndex = orgsMols.freeIndex;
-            org.color    = Config.orgColor;
-            org.packet   = null;
-            org.energy   = code.length * Config.energyMultiplier;
-            org.compile();
-        }
+        org.offset   = offset;
+        org.molIndex = orgsMols.freeIndex;
+        org.color    = Config.orgColor;
+        org.packet   = null;
+        org.energy   = energy;
+        org.compile();
 
         orgsMols.add(org);
-        this.world.org(offset, org, isOrg ? org.color : this._molColor(org));
+        this.world.org(offset, org);
 
         return org;
     }
@@ -447,12 +448,8 @@ class BioVM extends VM {
      * @override
      */
     delOrg(org) {
-        if (org.hasOwnProperty('energy')) { // This is an organism
-            this._delFromOrgsMolsArr(org.molIndex);
-            super.delOrg(org);
-        } else {
-            this._delFromOrgsMolsArr(org.index);
-        }
+        this._delFromOrgsMolsArr(org.molIndex);
+        super.delOrg(org);
         org.energy = 0;
         this.world.empty(org.offset);
         //
@@ -462,10 +459,36 @@ class BioVM extends VM {
         const world = this.world;
         while (packet) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) > -1) {continue}
-            this.addOrg(offset, packet.code, !!packet.energy);
+            if (world.index(offset) > -1) {continue}
+            packet.hasOwnProperty('energy') ? this.addOrg(offset, packet.code, packet.energy) : this.addMol(offset, packet.code);
             packet = packet.packet;
         }
+    }
+
+    /**
+     * Creates one molecule. Molecule is an instance of Organism class also, but
+     * it contains only few fields like offset and code.
+     * @param {Number} offset Offset in a world
+     * @param {Uint8Array} code Code to set
+     */
+    addMol(offset, code) {
+        const orgsMols = this.orgsMols;
+        const mol      = new Molecule(offset, orgsMols.freeIndex, code);
+
+        orgsMols.add(mol);
+        this.world.mol(offset, mol, this._molColor(mol.code));
+
+        return mol;
+    }
+
+    /**
+     * Removes molecule from the world totally. Places "packet" organism or
+     * molecule instead original if exists on the same position.
+     * @param {Organism} mol Molecule to remove
+     */
+    delMol(mol) {
+        this._delFromOrgsMolsArr(mol.index);
+        this.world.empty(mol.offset);
     }
 
     /**
@@ -477,9 +500,9 @@ class BioVM extends VM {
         let orgs    = Config.orgAmount;
         while (orgs-- > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) > -1) {orgs++; continue}
-            this.addOrg(offset, this.split2Mols(code.slice()), true);
-            // const luca = this.addOrg(offset, code.slice(), true);
+            if (world.index(offset) > -1) {orgs++; continue}
+            this.addOrg(offset, this.split2Mols(code.slice()), code.length * Config.energyMultiplier);
+            // const luca = this.addOrg(offset, code.slice(), code.length * Config.energyMultiplier);
             // this.db && this.db.put(luca);
         }
     }
@@ -494,9 +517,9 @@ class BioVM extends VM {
         let molecules = cfg.molAmount;
         while (molecules-- > 0) {
             const offset = rand(MAX_OFFS);
-            if (world.getOrgIdx(offset) > -1) {molecules++; continue}
-            this.addOrg(offset, this._molCode());
-            // const org = this.addOrg(offset, this._molCode());
+            if (world.index(offset) > -1) {molecules++; continue}
+            this.addMol(offset, this._molCode());
+            // const org = this.addMol(offset, this._molCode());
             // this.db && this.db.put(org);
         }
     }
@@ -531,11 +554,10 @@ class BioVM extends VM {
 
     /**
      * Returns color of molecule by it's atoms
-     * @param {Organism} mol Molecule
+     * @param {Uint8Array} code Code
      * @return {Number} color Color in 0xRRGGBB format
      */
-    _molColor(mol) {
-        const code  = mol.code;
+    _molColor(code) {
         const len   = code.length;
         const bits  = len > 3 ? Math.floor(21 / len) || Config.molColor : 8;
         const left  = 8 - bits;
@@ -627,7 +649,7 @@ class BioVM extends VM {
         const world = this.world;
         
         for (let i = 0; i < 8; i++) {
-            if (world.getOrgIdx(offset + DIR[i++]) === -1) {
+            if (world.index(offset + DIR[i++]) === -1) {
                 return offset + DIR[i++];
             }
         }
@@ -665,8 +687,8 @@ class BioVM extends VM {
         for (let y = 0, height = Config.WORLD_CANVAS_HEIGHT; y < height; y++) {
             const yOffs = y * width;
             for (let x = 0; x < width; x++) {
-                const org = world.getOrgIdx(offs++);
-                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgMol[org].color || this._molColor(orgMol[org]));
+                const org = world.index(offs++);
+                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgMol[org].color || this._molColor(orgMol[org].code));
             }
             offs += row;
         }

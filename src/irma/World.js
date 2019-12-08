@@ -60,6 +60,37 @@ class World {
     }
 
     /**
+     * Draws organism as a dot in specified offset in a world map. It it's inside canvas, 
+     * then draws it there also. This method is optimized for speed.
+     * @param {Number} offset New organism offset
+     * @param {Organism} org Organism instance
+     */
+    org(offset, org) {
+        this._data[offset] = org.molIndex + 1;
+
+        if (offset < this.viewOffs || offset > this.viewOffs1) {return}
+        const x = offset % WORLD_WIDTH;
+        if (x < this.viewX || x > this.viewX1) {return}
+        this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color);
+    }
+
+    /**
+     * Draws olecule as a dot in specified offset in a world map. It it's inside canvas, 
+     * then draws it there also. This method is optimized for speed.
+     * @param {Number} offset New molecule offset
+     * @param {Molecule} mol Molecule instance
+     * @param {Number} color Molecule color
+     */
+    mol(offset, mol, color) {
+        this._data[offset] = mol.index + 1;
+
+        if (offset < this.viewOffs || offset > this.viewOffs1) {return}
+        const x = offset % WORLD_WIDTH;
+        if (x < this.viewX || x > this.viewX1) {return}
+        this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), color);
+    }
+
+    /**
      * Swaps two dots by offset. Swaps two dots in a world map and do it in a canvas if 
      * dots are there. If only one dot is inside the canvas then draws only one. This method
      * is optimized for speed.
@@ -97,22 +128,6 @@ class World {
     }
 
     /**
-     * Draws organism as a dot in specified offset in a world map. It it's inside canvas, 
-     * then draws it there also. This method is optimized for speed.
-     * @param {Number} offset New organism offset
-     * @param {Organism} org Organism instance
-     * @param {Number} color Available if it's a molecule
-     */
-    org(offset, org, color = 0xffffff) {
-        this._data[offset] = org.index + 1;
-
-        if (offset < this.viewOffs || offset > this.viewOffs1) {return}
-        const x = offset % WORLD_WIDTH;
-        if (x < this.viewX || x > this.viewX1) {return}
-        this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color || color);
-    }
-
-    /**
      * Returns offset of nearest free dot or -1 if no free dot near current
      * @param {Number} offset Offet of dot, near which we are looking 
      * @return {Number} Free dot ofset or -1 if no free space
@@ -134,11 +149,11 @@ class World {
     }
 
     /**
-     * Returns organism index in organisms and molecules FastArray list
+     * Returns organism or molecule index in FastArray list
      * @param {Number} offset Offset to check
      * @return {Number} -1 if at specified offset there is no organism or molecule, 0...xx - org|molecule index
      */
-    getOrgIdx(offset) {
+    index(offset) {
         const dot = this._data[offset];
         return !dot ? -1 : dot - 1;
     }
@@ -150,7 +165,7 @@ class World {
      */
     moveOrg(org, offset) {
         this._data[org.offset] = 0;
-        this._data[offset] = org.index + 1;
+        this._data[offset] = org.molIndex + 1;
 
         let x;
         if (org.offset >= this.viewOffs && org.offset <= this.viewOffs1 && (x = org.offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {

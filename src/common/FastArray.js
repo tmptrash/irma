@@ -68,8 +68,9 @@ class FastArray {
      * Adds one item into array at the end. To keep adding fast it doesn't check
      * if it's full or not
      * @param {*} value Any value to add
+     * @return {*} Added value
      */
-    add(value) {this._arr[this._items++] = value}
+    add(value) {return this._arr[this._items++] = value}
 
     /**
      * Returns value by index

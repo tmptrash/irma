@@ -3,10 +3,6 @@
  * in a population should be maximum. We should use typed arrays for that
  * and mimimum amount of properties. Compilation means code preprocessing
  * before run. It produces code metadata, which is used during code run.
- * There are two types of organisms: normal and simple. Normal is an organism
- * with all properties defined in this class. This is what we call digital
- * organism. Simple, is a short organism only with code and index within 
- * population list.
  *
  * @author flatline
  */
@@ -29,16 +25,13 @@ const END                   = Config.CODE_CMDS.END;
 
 class Organism {
     /**
-     * Creates new, default organism. We don't do code copy! May create 
-     * simple organism only with code and world position reference.
+     * Creates new, default organism. We don't do code copy!
      * @param {Number} index Index of this organism in population list
      * @param {Uint8Array} code Code of organism we need to set
-     * @param {Boolean} simple Create simple organism
      */
-    constructor(index, code, simple = false) {
+    constructor(index, code) {
         this.index      = index;                                       // Index in population list
         this.code       = code;                                        // Organism's code on "line" language
-        if (simple) {return this}
         this.mem        = new Int32Array(Config.orgMaxMemSize);        // Organism's memory
         this.memPos     = 0;                                           // Memory cell position
         this.age        = 1;                                           // Organism's age. Increases every iteration

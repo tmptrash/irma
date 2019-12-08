@@ -453,13 +453,10 @@ class VM {
      * Creates one organism with default parameters and specified code
      * @param {Number} index Index in population list
      * @param {Uint8Array} code Code to set
-     * @param {Boolean} simple simple organism or not
      * @return {Organism} Created organism
      */
-    addOrg(index, code = null, simple = false) {
-        const org = new Organism(index, code, simple);
-        !simple && this.orgs.add(org);
-        return org;
+    addOrg(index, code) {
+        return this.orgs.add(new Organism(index, code));
     }
 
     /**

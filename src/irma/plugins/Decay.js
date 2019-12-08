@@ -50,7 +50,7 @@ class Decay {
         const molSize = Config.molCodeSize;
         if (org.energy || org.code.length <= molSize) {return} // Skip organisms
         const offset = this._getNearPos(org);
-        const dot = this._vm.world.getOrgIdx(offset);
+        const dot = this._vm.world.index(offset);
         if (dot > -1) {return} // organism or molecule on the way
         //
         // This line moves index back to current item to decay it till the end.
@@ -72,9 +72,9 @@ class Decay {
         const startOffs = org.offset;
         const mol = org.code[0];
         let offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
-        if (offset < 0 || offset > MAX_OFFS || this._vm.world.getOrgIdx(offset) > -1) {
+        if (offset < 0 || offset > MAX_OFFS || this._vm.world.index(offset) > -1) {
             offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
-            if (offset < 0 || offset > MAX_OFFS || this._vm.world.getOrgIdx(offset) > -1) {
+            if (offset < 0 || offset > MAX_OFFS || this._vm.world.index(offset) > -1) {
                 offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
             }
         }
