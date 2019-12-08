@@ -60,7 +60,7 @@ class Decay {
         
         const newCode = org.code.subarray(0, molSize);
         org.code = org.code.splice(0, molSize);
-        this._vm.addOrg(offset, newCode);
+        this._vm.addMol(offset, this._vm.split2Mols(newCode));
     }
 
     /**

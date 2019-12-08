@@ -102,7 +102,7 @@ class VM {
      */
     constructor(amount) {
         this.orgs       = new FastArray(amount);
-        this.population = 0;
+        this.population = -1;
         this.iteration  = 0;
         this.plugins    = new Plugins(PLUGINS, this);
     }

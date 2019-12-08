@@ -127,7 +127,7 @@ class BioVM extends VM {
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.index(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                const nearOrg = this.orgsMols.ref()[dot];
+                const nearOrg = this.orgsMols.get(dot);
                 if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; return}
                 org.code = org.code.push(nearOrg.code);
                 nearOrg.energy && (org.energy += nearOrg.energy);
@@ -202,7 +202,7 @@ class BioVM extends VM {
                 const offset = org.offset + org.ax;
                 if (offset < 0 || offset > MAX_OFFS) {org.ax = 0; return}
                 const dot = this.world.index(offset);
-                const mol = this.orgsMols.ref()[dot];
+                const mol = this.orgsMols.get(dot);
                 org.ax = (dot < 0 ? 0 : mol.color || this._molColor(mol.code));
                 return;
             }
@@ -225,7 +225,7 @@ class BioVM extends VM {
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot = this.world.index(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                const nearOrg = this.orgsMols.ref()[dot];
+                const nearOrg = this.orgsMols.get(dot);
                 org.ax  = (nearOrg.code[org.bx] & CODE_8_BIT_RESET_MASK) || 0;
                 org.ret = RET_OK;
                 return;
@@ -240,7 +240,7 @@ class BioVM extends VM {
                 const dOffset = this._freePos(org.offset);
                 const dDot    = this.world.index(dOffset);
                 if (dDot > -1) {org.ret = RET_ERR; return}
-                const nearOrg = this.orgsMols.ref()[dot];
+                const nearOrg = this.orgsMols.get(dot);
                 const from    = this._mol2Offs(org.ax);
                 const to      = this._mol2Offs(org.bx);
                 if (from > to || from < 0 || to < 0) {org.ret = RET_ERR; return}
@@ -261,7 +261,7 @@ class BioVM extends VM {
                 if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
                 const dot = this.world.index(org.offset + DIR[Math.abs(org.ax) % 8]);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                (org.packet = this.orgsMols.ref()[dot]).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
+                (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
                 return;
             }
 
@@ -451,7 +451,6 @@ class BioVM extends VM {
         this._delFromOrgsMolsArr(org.molIndex);
         super.delOrg(org);
         org.energy = 0;
-        this.world.empty(org.offset);
         //
         // Extracts all packet organisms recursively
         //
@@ -484,11 +483,10 @@ class BioVM extends VM {
     /**
      * Removes molecule from the world totally. Places "packet" organism or
      * molecule instead original if exists on the same position.
-     * @param {Organism} mol Molecule to remove
+     * @param {Molecule} mol Molecule to remove
      */
     delMol(mol) {
         this._delFromOrgsMolsArr(mol.index);
-        this.world.empty(mol.offset);
     }
 
     /**
@@ -505,6 +503,7 @@ class BioVM extends VM {
             // const luca = this.addOrg(offset, code.slice(), code.length * Config.energyMultiplier);
             // this.db && this.db.put(luca);
         }
+        this.population++;
     }
 
     /**
@@ -545,11 +544,13 @@ class BioVM extends VM {
      * @param {Number} index Organism or molecule index
      */
     _delFromOrgsMolsArr(index) {
+        const org      = this.orgsMols.get(index);
         const movedOrg = this.orgsMols.del(index);
         if (movedOrg) {
-            movedOrg.molIndex = index;
+            movedOrg.hasOwnProperty('energy') ? movedOrg.molIndex = index : movedOrg.index = index;
             this.world.setItem(movedOrg.offset, index);
         }
+        this.world.empty(org.offset);
     }
 
     /**

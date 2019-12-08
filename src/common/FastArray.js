@@ -92,10 +92,11 @@ class FastArray {
      * @return {*} Moved value or undefined
      */
     del(i) {
-        if (this._arr[i] === null) {return}
-        this._arr[i] = this._arr[--this._items];
-        this._arr[this._items] = null;
-        return this._arr[i];
+        const arr = this._arr;
+        if (arr[i] === null) {return}
+        arr[i] = arr[--this._items];
+        arr[this._items] = null;
+        return arr[i];
     }
 }
 
