@@ -164,7 +164,7 @@ class BioVM extends VM {
                 // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
                 // TODO: should be esupported by organism from parent to child
                 //
-                const clone   = org.ret === IS_ORG_ID ? (this.addOrg(offset, newCode, energy), org.energy = energy) : this.addMol(offset, newCode);
+                const clone   = org.ret === IS_ORG_ID ? (org.energy = energy, this.addOrg(offset, newCode, energy)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
                     Mutations.mutate(clone);

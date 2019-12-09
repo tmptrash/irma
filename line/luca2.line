@@ -116,7 +116,8 @@ func             # func1
   load           # ax=food1
   toggle         # ax=?       bx=food1
   mols           # ax=mols    bx=food1
-  toggle         # ax=food1   bx=mold
+  toggle         # ax=food1   bx=mols
+  inc            # ax=food1+1 bx=mols
   split
 end
 #
@@ -134,7 +135,7 @@ ifp
   #
   # Every third molecule will be used for energy
   #
-  3
+  4
   rand
   ifz
     mols         # ax=mols
@@ -178,6 +179,8 @@ end
 # food molecules. After this molecule follows food section
 #
 ret
+nop
+nop
 nop
 nop
 nop

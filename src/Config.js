@@ -190,6 +190,7 @@ module.exports = {
         CODE_OFFS,      //     toggle
         CODE_OFFS + 53, //     mols
         CODE_OFFS,      //     toggle
+        CODE_OFFS + 7,  //     inc
         CODE_OFFS + 38, //     split
         CODE_OFFS + 23, // end
         CODE_OFFS + 11, // rand
@@ -197,7 +198,7 @@ module.exports = {
         CODE_OFFS + 37, // join
         CODE_OFFS + 24, // retax
         CODE_OFFS + 12, // ifp
-        3,              //     3
+        4,              //     4
         CODE_OFFS + 11, //     rand
         CODE_OFFS + 14, //     ifz
         CODE_OFFS + 53, //         mols
@@ -234,11 +235,13 @@ module.exports = {
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
         CODE_OFFS + 2   // nop
     ]),
     codeLinesPerIteration      : 10,
     codeRepeatsPerRun          : 20,
-    codeMutateEveryClone       : 7,
+    codeMutateEveryClone       : 10,
     codeMutateMutations        : false,
 
     /**
