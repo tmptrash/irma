@@ -164,8 +164,7 @@ class BioVM extends VM {
                 // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
                 // TODO: should be esupported by organism from parent to child
                 //
-                const clone   = org.ret === IS_ORG_ID ? this.addOrg(offset, newCode, energy) : this.addMol(offset, newCode);
-                org.energy    = energy;
+                const clone   = org.ret === IS_ORG_ID ? (this.addOrg(offset, newCode, energy), org.energy = energy) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
                     Mutations.mutate(clone);
@@ -345,7 +344,7 @@ class BioVM extends VM {
                     //
                     if (atom === code[i]) {
                         if (code[i] & CODE_8_BIT_MASK) {org.ax = mol; org.ret = RET_OK; return}
-                        for (let j = i + 1, k = 1;; j++,k++) {
+                        for (let j = i + 1, k = ax + 1;; j++,k++) {
                             if (code[j] !== code[k]) {
                                 if (code[i] & CODE_8_BIT_MASK) {continue loop}
                                 // eslint-disable-next-line no-empty
@@ -356,7 +355,7 @@ class BioVM extends VM {
                         }
                         org.ax  = mol;
                         org.ret = RET_OK;
-                        return; 
+                        return;
                     // eslint-disable-next-line no-else-return
                     } else {
                         if (code[i] & CODE_8_BIT_MASK) {continue}
@@ -370,7 +369,7 @@ class BioVM extends VM {
 
             case MOVE: {
                 ++org.line;
-                let    code     = org.code;
+                let    code    = org.code;
                 const find0    = this._mol2Offs(code, org.ax);
                 const find1    = this._molLastOffs(code, find0);
                 if (find1 < find0) {org.ret = RET_ERR; return}
@@ -382,7 +381,6 @@ class BioVM extends VM {
                 if (find0 === offs) {org.ret = RET_OK; return}
                 code = code.splice(find0, len);
                 org.code = code = code.splice(offs, 0, moveCode);
-
                 //
                 // Important: moving new commands insie the script may break it, because it's
                 // offsets, stack and context may be invalid. Generally, we have to compile
@@ -580,7 +578,7 @@ class BioVM extends VM {
      */
     _molCode() {
         const size = Config.molCodeSize;
-        if (Math.random() > .5) {
+        if (Math.random() <= Config.molRandomCodePercent) {
             const code = new Uint8Array(size);
             for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
             //
@@ -591,7 +589,7 @@ class BioVM extends VM {
         }
         let   code  = Config.CODE_LUCA;
         const len   = code.length;
-        const start = Math.floor(Math.random() * (len - size));
+        const start = size * Math.floor(Math.random() * Math.floor(len / 4));
         code = code.slice(start, start + size);
         //
         // Sets last atom bit on

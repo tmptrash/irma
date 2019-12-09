@@ -129,6 +129,7 @@ module.exports = {
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
+        CODE_OFFS + 2,  // nop
         CODE_OFFS + 21, // func
         CODE_OFFS + 53, //     mols
         CODE_OFFS + 8,  //     dec
@@ -148,6 +149,7 @@ module.exports = {
         CODE_OFFS + 7,  //     inc
         CODE_OFFS + 35, //     save
         CODE_OFFS + 53, //     mols
+        CODE_OFFS + 8,  //     dec
         CODE_OFFS + 34, //     right
         CODE_OFFS + 35, //     save
         CODE_OFFS + 24, //     retax
@@ -167,7 +169,11 @@ module.exports = {
         CODE_OFFS + 22, //             ret
         CODE_OFFS + 23, //         end
         CODE_OFFS + 53, //         mols
+        CODE_OFFS + 8,  //         dec
         CODE_OFFS,      //         toggle
+        CODE_OFFS + 17, //         ife
+        CODE_OFFS + 22, //             ret
+        CODE_OFFS + 23, //         end
         CODE_OFFS + 52, //         move
         CODE_OFFS + 36, //         load
         CODE_OFFS + 7,  //         inc
@@ -209,7 +215,7 @@ module.exports = {
         CODE_OFFS + 20, // call
         50,             // 50
         CODE_OFFS,      // toggle
-        20,             // 20
+        40,             // 40
         CODE_OFFS + 5,  // mul
         CODE_OFFS,      // toggle
         CODE_OFFS + 32, // len
@@ -217,6 +223,7 @@ module.exports = {
         0,              //     0
         CODE_OFFS + 20, //     call
         CODE_OFFS + 24, //     retax
+        CODE_OFFS + 7,  //     inc
         CODE_OFFS,      //     toggle
         CODE_OFFS + 53, //     mols
         CODE_OFFS,      //     toggle
@@ -292,13 +299,14 @@ module.exports = {
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
     molAmount                  : 60000,
-    molCodeSize                : 3,
+    molCodeSize                : 4,
+    molRandomCodePercent       : .1,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
      */
     energyStepCoef             : .015,
-    energyMultiplier           : 1000,
+    energyMultiplier           : 10000,
     /**
      * Plugins. Extends irma core by additional functionality
      * @constant

@@ -13,6 +13,7 @@
 nop
 nop
 nop
+nop
 #
 # Helper func0 to find nop molecule-separator between main code
 # and food section. Returns separator molecule index in ret
@@ -55,7 +56,7 @@ func             # func1
   #
   # 3. set m2=food1. Is a last molecule index
   #
-  mols           # ax=food1
+  mols           # ax=food1+1
   right          # m2
   save           # m2=food1
   #
@@ -86,7 +87,11 @@ func             # func1
     # 5. move found molecule from food section to the end
     #
     mols         # ax=mols    bx=molOffs
-    toggle       # ax=molOffs bx=mols    ret=0|1
+	dec          # ax=mols-1  bx=molOffs
+    toggle       # ax=molOffs bx=mols-1  ret=0|1
+    ife
+	  ret
+    end
     move
     #
     # 6. inc i
@@ -154,17 +159,18 @@ call
 #
 50               # ax=50      bx=0
 toggle           # ax=0       bx=50
-20               # ax=20      bx=50
-mul              # ax=1000    bx=50
-toggle           # ax=50      bx=1000
-len              # ax=len     bx=1000
+40               # ax=40      bx=50
+mul              # ax=2000    bx=50
+toggle           # ax=50      bx=2000
+len              # ax=len     bx=2000
 ifg
   0
   call
   retax          # ax=food0
-  toggle         # ax=?       bx=food0
-  mols           # ax=mols    bx=food0
-  toggle         # ax=food0   ax=mols
+  inc            # ax=food0+1
+  toggle         # ax=?       bx=food0+1
+  mols           # ax=mols    bx=food0+1
+  toggle         # ax=food0+1 ax=mols
   split
 end
 #

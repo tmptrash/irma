@@ -1,6 +1,7 @@
 nop
 nop
 nop
+nop
 func             # func0
   mols           # ax=mols
   dec            # ax=mols-1
@@ -19,7 +20,8 @@ func             # func1
   right          # m1
   inc            # ax=food0
   save           # m1=food0
-  mols           # ax=food1
+  mols           # ax=food1+1
+  dec            # ax=food1
   right          # m2
   save           # m2=food1
   retax          # ax=food0
@@ -39,7 +41,11 @@ func             # func1
       ret
     end
     mols         # ax=mols    bx=molOffs
-    toggle       # ax=molOffs bx=mols    ret=0|1
+    dec          # ax=mols-1  bx=molOffs
+    toggle       # ax=molOffs bx=mols-1  ret=0|1
+    ife
+	  ret
+    end
     move
     load         # ax=i
     inc          # ax=i+1
@@ -81,17 +87,18 @@ end
 call
 50               # ax=50      bx=0
 toggle           # ax=0       bx=50
-20               # ax=20      bx=50
-mul              # ax=1000    bx=50
-toggle           # ax=50      bx=1000
-len              # ax=len     bx=1000
+40               # ax=40      bx=50
+mul              # ax=2000    bx=50
+toggle           # ax=50      bx=2000
+len              # ax=len     bx=2000
 ifg
   0
   call
   retax          # ax=food0
-  toggle         # ax=?       bx=food0
-  mols           # ax=mols    bx=food0
-  toggle         # ax=food0   ax=mols
+  inc            # ax=food0+1
+  toggle         # ax=?       bx=food0+1
+  mols           # ax=mols    bx=food0+1
+  toggle         # ax=food0+1 ax=mols
   split
 end
 ret
