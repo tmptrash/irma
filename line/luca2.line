@@ -13,7 +13,6 @@
 nop
 nop
 nop
-nop
 #
 # Helper func0 to find nop molecule-separator between main code
 # and food section. Returns separator molecule index in ret
@@ -124,29 +123,32 @@ end
 # This peace moving randomly and eats any molecule or other 
 # organism which is on the way
 #
-rand
-step
-join
-#
-# Splits added molecule to make catabolism. To obtain energy
-#
-retax            # ax=0|1
-ifp
-  #
-  # Every third molecule will be used for energy
-  #
-  4
+10
+loop
   rand
-  ifz
-    mols         # ax=mols
-    dec          # ax=mols-1
-    catab
-    toggle       # ax=?       bx=mols-1
-    eq           # ax=mols-1  bx=mols-1
-    inc          # ax=mols    bx=mols-1
-    inc          # ax=mols+1  bx=mols-1
-    toggle       # ax=mols-1  bx=mols+1
-    split
+  step
+  join
+  #
+  # Splits added molecule to make catabolism. To obtain energy
+  #
+  retax            # ax=0|1
+  ifp
+    #
+    # Every third molecule will be used for energy
+    #
+    4
+    rand
+    ifz
+      mols         # ax=mols
+      dec          # ax=mols-1
+      catab
+      toggle       # ax=?       bx=mols-1
+      eq           # ax=mols-1  bx=mols-1
+      inc          # ax=mols    bx=mols-1
+      inc          # ax=mols+1  bx=mols-1
+      toggle       # ax=mols-1  bx=mols+1
+      split
+    end
   end
 end
 #

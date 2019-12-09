@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 / 4;
-const HEIGHT      = 1080 / 4;
+const WIDTH       = 1920;
+const HEIGHT      = 1080;
 const CODE_OFFS   = 128 - 64;
 const CODE_ORG_ID = 17;
 
@@ -129,7 +129,6 @@ module.exports = {
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
         CODE_OFFS + 2,  // nop
-        CODE_OFFS + 2,  // nop
         CODE_OFFS + 21, // func
         CODE_OFFS + 53, //     mols
         CODE_OFFS + 8,  //     dec
@@ -193,23 +192,26 @@ module.exports = {
         CODE_OFFS + 7,  //     inc
         CODE_OFFS + 38, //     split
         CODE_OFFS + 23, // end
-        CODE_OFFS + 11, // rand
-        CODE_OFFS + 39, // step
-        CODE_OFFS + 37, // join
-        CODE_OFFS + 24, // retax
-        CODE_OFFS + 12, // ifp
-        4,              //     4
+        10,             // 10
+        CODE_OFFS + 19, // loop
         CODE_OFFS + 11, //     rand
-        CODE_OFFS + 14, //     ifz
-        CODE_OFFS + 53, //         mols
-        CODE_OFFS + 8,  //         dec
-        CODE_OFFS + 50, //         catab
-        CODE_OFFS,      //         toggle
-        CODE_OFFS + 1,  //         eq
-        CODE_OFFS + 7,  //         inc
-        CODE_OFFS + 7,  //         inc
-        CODE_OFFS,      //         toggle
-        CODE_OFFS + 38, //         split
+        CODE_OFFS + 39, //     step
+        CODE_OFFS + 37, //     join
+        CODE_OFFS + 24, //     retax
+        CODE_OFFS + 12, //     ifp
+        4,              //         4
+        CODE_OFFS + 11, //         rand
+        CODE_OFFS + 14, //         ifz
+        CODE_OFFS + 53, //             mols
+        CODE_OFFS + 8,  //             dec
+        CODE_OFFS + 50, //             catab
+        CODE_OFFS,      //             toggle
+        CODE_OFFS + 1,  //             eq
+        CODE_OFFS + 7,  //             inc
+        CODE_OFFS + 7,  //             inc
+        CODE_OFFS,      //             toggle
+        CODE_OFFS + 38, //             split
+        CODE_OFFS + 23, //         end
         CODE_OFFS + 23, //     end
         CODE_OFFS + 23, // end
         1,              // 1
@@ -301,9 +303,9 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 60000,
-    molCodeSize                : 4,
-    molRandomCodePercent       : .1,
+    molAmount                  : 2000000,
+    molCodeSize                : 3,
+    molRandomCodePercent       : .3,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration

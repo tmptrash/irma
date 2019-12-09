@@ -589,7 +589,7 @@ class BioVM extends VM {
         }
         let   code  = Config.CODE_LUCA;
         const len   = code.length;
-        const start = size * Math.floor(Math.random() * Math.floor(len / 4));
+        const start = size * Math.floor(Math.random() * Math.ceil(len / 4));
         code = code.slice(start, start + size);
         //
         // Sets last atom bit on
