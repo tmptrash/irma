@@ -19,6 +19,8 @@ const rand                  = Helper.rand;
 const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+const RET_OK                = Config.CODE_RET_OK;
+const RET_ERR               = Config.CODE_RET_ERR;
 //
 // Basic commands
 //
@@ -59,6 +61,8 @@ const LEFT   = Config.CODE_CMDS.LEFT;
 const RIGHT  = Config.CODE_CMDS.RIGHT;
 const SAVE   = Config.CODE_CMDS.SAVE;
 const LOAD   = Config.CODE_CMDS.LOAD;
+const FIND   = Config.CODE_CMDS.FIND;
+const READ   = Config.CODE_CMDS.READ;
 
 class VM {
     /**
@@ -395,6 +399,35 @@ class VM {
                         case LOAD:
                             line++;
                             ax = org.mem[org.memPos];
+                            continue;
+
+                        case FIND: {
+                            ++line;
+                            const codeLen = code.length - 1;
+                            if (bx > codeLen) {bx = codeLen}
+                            if (ax < 0)  {ax = 0}
+                            if (bx < 0)  {bx = 0}
+                            if (ax > bx) {ax = bx}
+                            const mem    = org.mem;
+                            const memLen = mem.length;
+                            const pos    = org.memPos;
+                            let   ret    = RET_ERR;
+
+                            loop: for (let i = ax; i <= bx; i++) {
+                                for (let p = pos; mem[p] > 0 && p < memLen; p++) {
+                                    if (code[i + p - pos] !== mem[p]) {continue loop}
+                                }
+                                ax = i;
+                                ret = RET_OK;
+                                break;
+                            }
+                            org.ret = ret;
+                            continue;
+                        }
+
+                        case READ:
+                            ++line;
+                            ax = code[line];
                             continue;
                     }
                     //
