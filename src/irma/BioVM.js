@@ -48,6 +48,8 @@ const CATAB  = Config.CODE_CMDS.CATAB;
 const FINDM  = Config.CODE_CMDS.FINDM;
 const MOVE   = Config.CODE_CMDS.MOVE;
 const MOLS   = Config.CODE_CMDS.MOLS;
+const IDX    = Config.CODE_CMDS.IDX;
+const MOL    = Config.CODE_CMDS.MOL;
 
 class BioVM extends VM {
     /**
@@ -399,8 +401,32 @@ class BioVM extends VM {
             case MOLS: {
                 ++org.line;
                 org.ax = this._molsAmount(org.code);
-                // eslint-disable-next-line no-useless-return
                 return;
+            }
+
+            case IDX: {
+                ++org.line;
+                org.ax = this._mol2Offs(org.code, org.ax);
+                return;
+            }
+
+            case MOL: {
+                ++org.line;
+                const code = org.code;
+                const len  = code.length - 1;
+                let mol    = 0;
+                let index  = org.ax;
+                if (index > len) {index = len}
+                if (index <= 0)  {org.ax = 0; return}
+
+                for (let i = 0; i <= len; i++) {
+                    if ((code[i] & CODE_8_BIT_MASK)) {
+                        if (i >=index) {org.ax = mol; return}
+                        mol++;
+                    }
+                }
+                // eslint-disable-next-line no-useless-return
+                return;                
             }
         }
     }
