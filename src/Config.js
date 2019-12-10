@@ -78,26 +78,30 @@ module.exports = {
         RIGHT   : CODE_OFFS + 34,
         SAVE    : CODE_OFFS + 35,
         LOAD    : CODE_OFFS + 36,
+        FIND    : CODE_OFFS + 37,
+        READ    : CODE_OFFS + 38,
         //
         // Biological stuff
         //
-        JOIN    : CODE_OFFS + 37,
-        SPLIT   : CODE_OFFS + 38,
-        STEP    : CODE_OFFS + 39,
-        SEE     : CODE_OFFS + 40,
-        SAY     : CODE_OFFS + 41,
-        LISTEN  : CODE_OFFS + 42,
-        NREAD   : CODE_OFFS + 43,
-        NSPLIT  : CODE_OFFS + 44,
-        GET     : CODE_OFFS + 45,
-        PUT     : CODE_OFFS + 46,
-        OFFS    : CODE_OFFS + 47,
-        COLOR   : CODE_OFFS + 48,
-        ANAB    : CODE_OFFS + 49,
-        CATAB   : CODE_OFFS + 50,
-        FIND    : CODE_OFFS + 51,
-        MOVE    : CODE_OFFS + 52,
-        MOLS    : CODE_OFFS + 53
+        JOIN    : CODE_OFFS + 39,
+        SPLIT   : CODE_OFFS + 40,
+        STEP    : CODE_OFFS + 41,
+        SEE     : CODE_OFFS + 42,
+        SAY     : CODE_OFFS + 43,
+        LISTEN  : CODE_OFFS + 44,
+        NREAD   : CODE_OFFS + 45,
+        NSPLIT  : CODE_OFFS + 46,
+        GET     : CODE_OFFS + 47,
+        PUT     : CODE_OFFS + 48,
+        OFFS    : CODE_OFFS + 49,
+        COLOR   : CODE_OFFS + 50,
+        ANAB    : CODE_OFFS + 51,
+        CATAB   : CODE_OFFS + 52,
+        FINDM   : CODE_OFFS + 53,
+        MOVE    : CODE_OFFS + 54,
+        MOLS    : CODE_OFFS + 55,
+        IDX     : CODE_OFFS + 56,
+        MOL     : CODE_OFFS + 57
     },
     /**
      * {Number} Amount of supported commands in a code. This value must be
@@ -305,7 +309,7 @@ module.exports = {
     molDecayDistance           : 60,
     molAmount                  : 2000000,
     molCodeSize                : 3,
-    molRandomCodePercent       : .3,
+    molRandomAtomPercent       : .3,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration

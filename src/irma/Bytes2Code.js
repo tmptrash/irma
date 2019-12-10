@@ -201,7 +201,7 @@ Bytes2Code.MAP = {
     [COLOR ]: ['color',  'org.color=ax % 0xffffff'],
     [ANAB  ]: ['anab',   'anab(ax:fromIdx, bx:toIdx):ret'],
     [CATAB ]: ['catab',  'catab(ax:offs):ret'],
-    [FIND  ]: ['find',   'ax=find(ax:findIdx,bx:fromIdx,ret:toIdx):ret'],
+    [FIND  ]: ['findm',  'ax=findm(ax:findIdx,bx:fromIdx,ret:toIdx):ret'],
     [MOVE  ]: ['move',   'move(ax:fromIdx,bx:toIdx):ret'],
     [MOLS  ]: ['mols',   'ax=mols()']
 };

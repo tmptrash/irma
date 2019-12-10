@@ -45,7 +45,7 @@ const OFFS   = Config.CODE_CMDS.OFFS;
 const COLOR  = Config.CODE_CMDS.COLOR;
 const ANAB   = Config.CODE_CMDS.ANAB;
 const CATAB  = Config.CODE_CMDS.CATAB;
-const FIND   = Config.CODE_CMDS.FIND;
+const FINDM  = Config.CODE_CMDS.FINDM;
 const MOVE   = Config.CODE_CMDS.MOVE;
 const MOLS   = Config.CODE_CMDS.MOLS;
 
@@ -324,7 +324,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case FIND: {
+            case FINDM: {
                 ++org.line;
                 const code = org.code;
                 const ax   = this._mol2Offs(code, org.ax);
@@ -379,8 +379,9 @@ class BioVM extends VM {
                 const len      = find1 - find0 + 1;
                 const offs     = bx > find1 ? bx - len : (bx < find0 ? bx : find0);
                 if (find0 === offs) {org.ret = RET_OK; return}
-                code = code.splice(find0, len);
-                org.code = code = code.splice(offs, 0, moveCode);
+                code           = code.splice(find0, len);
+                org.code       = code = code.splice(offs, 0, moveCode);
+                org.energy    -= Config.energyMultiplier;
                 //
                 // Important: moving new commands insie the script may break it, because it's
                 // offsets, stack and context may be invalid. Generally, we have to compile
@@ -578,7 +579,7 @@ class BioVM extends VM {
      */
     _molCode() {
         const size = Config.molCodeSize;
-        if (Math.random() <= Config.molRandomCodePercent) {
+        if (Math.random() <= Config.molRandomAtomPercent) {
             const code = new Uint8Array(size);
             for (let i = 0; i < size; i++) {code[i] = Mutations.randCmd()}
             //
