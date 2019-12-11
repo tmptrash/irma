@@ -358,29 +358,44 @@ class BioVM extends VM {
 
             case MOLS: {
                 ++org.line;
-                org.ax = this._molsAmount(org.code);
+                const code = org.code;
+                let mols   = 0;
+                for (let i = 0, len = code.length; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
+                org.ax = mols || (code.length > 0 ? 1 : 0);
                 return;
             }
 
             case MOL: {
                 ++org.line;
-                org.ax = org.mol;
-                org.bx = this._molLastOffs(org.code, org.mol);
-                return;                
+                const mol = org.mol;
+                org.ax    = mol;
+                org.bx    = this._molLastOffs(org.code, mol) - mol;
+                return;
             }
 
             case SMOL: {
                 ++org.line;
+                org.mol = org.ax;
+                org.idx = this._mol2Offs(org.code, org.mol);
                 return;
             }
 
             case RMOL: {
                 ++org.line;
+                org.mol++;
+                if ((org.idx = this._molLastOffs(org.code, org.idx) + 1) >= org.code.length) {
+                    org.idx = org.mol = 0;
+                }
                 return;
             }
 
             case LMOL: {
                 ++org.line;
+                org.mol--;
+                // TODO:
+                //if ((org.idx = this._molLastOffs(org.code, org.idx) + 1) >= org.code.length) {
+                //    org.idx = org.mol = 0;
+                //}
                 // eslint-disable-next-line no-useless-return
                 return;
             }
@@ -414,6 +429,8 @@ class BioVM extends VM {
         org.color    = Config.orgColor;
         org.packet   = null;
         org.energy   = energy;
+        org.mol      = 0;
+        org.idx      = 0;
         org.compile();
 
         orgsMols.add(org);
@@ -609,17 +626,6 @@ class BioVM extends VM {
         // eslint-disable-next-line no-empty
         while ((code[index] & CODE_8_BIT_MASK) === 0 && index < len) {index++}
         return index;
-    }
-
-    /**
-     * Returns molecules amount for specified organism
-     * @param {Uint8Array} code Organism code
-     * @return {Number} Molecules amount
-     */
-    _molsAmount(code) {
-        let mols = 0;
-        for (let i = 0, len = code.length; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
-        return mols || (code.length > 0 ? 1 : 0);
     }
     
     /**
