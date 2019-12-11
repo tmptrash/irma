@@ -61,8 +61,8 @@ const LEFT   = Config.CODE_CMDS.LEFT;
 const RIGHT  = Config.CODE_CMDS.RIGHT;
 const SAVE   = Config.CODE_CMDS.SAVE;
 const LOAD   = Config.CODE_CMDS.LOAD;
-const FIND   = Config.CODE_CMDS.FIND;
 const READ   = Config.CODE_CMDS.READ;
+const CMP    = Config.CODE_CMDS.CMP;
 
 class VM {
     /**
@@ -401,34 +401,27 @@ class VM {
                             ax = org.mem[org.memPos];
                             continue;
 
-                        case FIND: {
-                            ++line;
-                            const codeLen = code.length - 1;
-                            if (bx > codeLen) {bx = codeLen}
-                            if (ax < 0)  {ax = 0}
-                            if (bx < 0)  {bx = 0}
-                            if (ax > bx) {ax = bx}
-                            const mem    = org.mem;
-                            const memLen = mem.length;
-                            const pos    = org.memPos;
-                            let   ret    = RET_ERR;
-
-                            loop: for (let i = ax; i <= bx; i++) {
-                                for (let p = pos; mem[p] > 0 && p < memLen; p++) {
-                                    if (code[i + p - pos] !== mem[p]) {continue loop}
-                                }
-                                ax = i;
-                                ret = RET_OK;
-                                break;
-                            }
-                            org.ret = ret;
-                            continue;
-                        }
-
                         case READ:
                             ++line;
                             ax = code[line];
                             continue;
+
+                        case CMP: {
+                            ++line;
+                            const codeLen = code.length - 1;
+                            const mem     = org.mem;
+                            const memLen  = mem.length - org.memPos;
+                            if (bx < 1) {bx = 1}
+                            if (bx > memLen) {bx = memLen}
+                            if (ax < 0) {ax = 0}
+                            if (ax > codeLen - bx) {ax = codeLen - bx}
+                            
+                            for (let i = ax, len = ax + bx, m = org.memPos; i < len; i++, m++) {
+                                if (mem[m] !==code[i]) {org.ret = RET_ERR; continue}
+                            }
+                            org.ret = RET_OK;
+                            continue;
+                        }
                     }
                     //
                     // We are on the last code line. Have to jump to the first

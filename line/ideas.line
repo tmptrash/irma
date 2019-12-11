@@ -1,0 +1,71 @@
+#
+# org.mol - содержит индекс текущей молекулы
+# org.idx - содержит смещение в коде текущей молекулы
+# move    - чем меньше молекула, тем больше нужно тратить энергии, чтобы ее переместить
+# cmp     - сравнивает несколько команд из памяти длиной ax с командами текущей молекулы
+# mol     - возвращает индекс текущий молекулы
+# smol    - устанавливает индекс текущей молекулы
+# rmol    - смещается на одну молекулу вправо. геном цикличный
+# lmol    - смещается на одну молекулу влево. геном цикличный
+# 
+#
+#  sep  repl                 sep  food
+# [0,0, 1,0,1, 1,0,2, 1,2,1, 0,0, 1,2,1, 0,0,2, 1,0,1]
+#
+# find molecule
+#
+func
+  mol         # ax=mol
+  toggle      # ax=?     bx=mol
+  mols        # ax=mols
+  sub         # ax=mols-mol
+  loop
+    2
+    cmp
+    retax
+    ifp
+	  axret
+      ret
+    end
+	rmol
+  end
+  0
+  dec
+  axret
+end
+#
+# make clone
+#
+func
+  #
+  # find first separator
+  #
+  0
+  save        # m[0]
+  right
+  save        # m[0,0]
+  left        # m0
+  smol        # mol=0
+  call
+  retax       # ret=offs|-1
+  ifn
+    ret
+  end
+  save        # m0=sep0
+  #
+  # find second separator
+  #
+  right       # m1
+  0
+  save        # m[?,0]
+  right
+  save        # m[?,0,0]
+  left        # m1
+  call
+  retax       # ret=offs-1
+  ifn
+    ret
+  end
+  save        # m1=sep1
+  
+end

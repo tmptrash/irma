@@ -45,11 +45,12 @@ const OFFS   = Config.CODE_CMDS.OFFS;
 const COLOR  = Config.CODE_CMDS.COLOR;
 const ANAB   = Config.CODE_CMDS.ANAB;
 const CATAB  = Config.CODE_CMDS.CATAB;
-const FINDM  = Config.CODE_CMDS.FINDM;
 const MOVE   = Config.CODE_CMDS.MOVE;
 const MOLS   = Config.CODE_CMDS.MOLS;
-const IDX    = Config.CODE_CMDS.IDX;
 const MOL    = Config.CODE_CMDS.MOL;
+const SMOL   = Config.CODE_CMDS.SMOL;
+const RMOL   = Config.CODE_CMDS.RMOL;
+const LMOL   = Config.CODE_CMDS.LMOL;
 
 class BioVM extends VM {
     /**
@@ -326,49 +327,6 @@ class BioVM extends VM {
                 return;
             }
 
-            case FINDM: {
-                ++org.line;
-                const code = org.code;
-                const ax   = this._mol2Offs(code, org.ax);
-                if (ax < 0) {org.ret = RET_ERR; return}
-                const atom = code[ax];
-                let   mol  = org.bx;
-                const bx   = this._mol2Offs(code, mol);
-                if (bx < 0 || bx < ax) {org.ret = RET_ERR; return}
-                const ret  = this._mol2Offs(code, org.ret);
-                if (ret < 0 || ret < bx) {org.ret = RET_ERR; return}
-                const len  = code.length;
-
-                loop: for (let i = bx; i <= ret; i++, mol++) {
-                    //
-                    // If first command of source molecule and first command of current molecule
-                    // doesn't equal, then skip all commands till the last in current molecule
-                    //
-                    if (atom === code[i]) {
-                        if (code[i] & CODE_8_BIT_MASK) {org.ax = mol; org.ret = RET_OK; return}
-                        for (let j = i + 1, k = ax + 1;; j++,k++) {
-                            if (code[j] !== code[k]) {
-                                if (code[i] & CODE_8_BIT_MASK) {continue loop}
-                                // eslint-disable-next-line no-empty
-                                while((code[++i] & CODE_8_BIT_MASK) === 0 && i < len) {}                                
-                                continue loop;
-                            }
-                            if (code[j] & CODE_8_BIT_MASK) {break}
-                        }
-                        org.ax  = mol;
-                        org.ret = RET_OK;
-                        return;
-                    // eslint-disable-next-line no-else-return
-                    } else {
-                        if (code[i] & CODE_8_BIT_MASK) {continue}
-                        // eslint-disable-next-line no-empty
-                        while((code[++i] & CODE_8_BIT_MASK) === 0 && i < len) {}
-                    }
-                }
-                org.ret = RET_ERR;
-                return;
-            }
-
             case MOVE: {
                 ++org.line;
                 let    code    = org.code;
@@ -404,29 +362,27 @@ class BioVM extends VM {
                 return;
             }
 
-            case IDX: {
+            case MOL: {
                 ++org.line;
-                org.ax = this._mol2Offs(org.code, org.ax);
+                org.ax = org.mol;
+                org.bx = this._molLastOffs(org.code, org.mol);
+                return;                
+            }
+
+            case SMOL: {
+                ++org.line;
                 return;
             }
 
-            case MOL: {
+            case RMOL: {
                 ++org.line;
-                const code = org.code;
-                const len  = code.length - 1;
-                let mol    = 0;
-                let index  = org.ax;
-                if (index > len) {index = len}
-                if (index <= 0)  {org.ax = 0; return}
+                return;
+            }
 
-                for (let i = 0; i <= len; i++) {
-                    if ((code[i] & CODE_8_BIT_MASK)) {
-                        if (i >=index) {org.ax = mol; return}
-                        mol++;
-                    }
-                }
+            case LMOL: {
+                ++org.line;
                 // eslint-disable-next-line no-useless-return
-                return;                
+                return;
             }
         }
     }

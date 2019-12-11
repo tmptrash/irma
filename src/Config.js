@@ -14,6 +14,73 @@ const WIDTH       = 1920;
 const HEIGHT      = 1080;
 const CODE_OFFS   = 128 - 64;
 const CODE_ORG_ID = 17;
+const COMMANDS    = {
+    //
+    // basic commands
+    //
+    TOGGLE  : CODE_OFFS,
+    EQ      : CODE_OFFS + 1,
+    NOP     : CODE_OFFS + 2,
+    ADD     : CODE_OFFS + 3,
+    SUB     : CODE_OFFS + 4,
+    MUL     : CODE_OFFS + 5,
+    DIV     : CODE_OFFS + 6,
+    INC     : CODE_OFFS + 7,
+    DEC     : CODE_OFFS + 8,
+    RSHIFT  : CODE_OFFS + 9,
+    LSHIFT  : CODE_OFFS + 10,
+    RAND    : CODE_OFFS + 11,
+    IFP     : CODE_OFFS + 12,
+    IFN     : CODE_OFFS + 13,
+    IFZ     : CODE_OFFS + 14,
+    IFG     : CODE_OFFS + 15,
+    IFL     : CODE_OFFS + 16,
+    IFE     : CODE_OFFS + 17,
+    IFNE    : CODE_OFFS + 18,
+    LOOP    : CODE_OFFS + 19,
+    CALL    : CODE_OFFS + 20,
+    FUNC    : CODE_OFFS + 21,
+    RET     : CODE_OFFS + 22,
+    END     : CODE_OFFS + 23,
+    RETAX   : CODE_OFFS + 24,
+    AXRET   : CODE_OFFS + 25,
+    AND     : CODE_OFFS + 26,
+    OR      : CODE_OFFS + 27,
+    XOR     : CODE_OFFS + 28,
+    NOT     : CODE_OFFS + 29,
+    AGE     : CODE_OFFS + 30,
+    LINE    : CODE_OFFS + 31,
+    LEN     : CODE_OFFS + 32,
+    LEFT    : CODE_OFFS + 33,
+    RIGHT   : CODE_OFFS + 34,
+    SAVE    : CODE_OFFS + 35,
+    LOAD    : CODE_OFFS + 36,
+    READ    : CODE_OFFS + 37,
+    CMP     : CODE_OFFS + 38,
+    //
+    // Biological stuff
+    //
+    JOIN    : CODE_OFFS + 39,
+    SPLIT   : CODE_OFFS + 40,
+    STEP    : CODE_OFFS + 41,
+    SEE     : CODE_OFFS + 42,
+    SAY     : CODE_OFFS + 43,
+    LISTEN  : CODE_OFFS + 44,
+    NREAD   : CODE_OFFS + 45,
+    NSPLIT  : CODE_OFFS + 46,
+    GET     : CODE_OFFS + 47,
+    PUT     : CODE_OFFS + 48,
+    OFFS    : CODE_OFFS + 49,
+    COLOR   : CODE_OFFS + 50,
+    ANAB    : CODE_OFFS + 51,
+    CATAB   : CODE_OFFS + 52,
+    MOVE    : CODE_OFFS + 53,
+    MOLS    : CODE_OFFS + 54,
+    MOL     : CODE_OFFS + 55,
+    SMOL    : CODE_OFFS + 56,
+    RMOL    : CODE_OFFS + 57,
+    LMOL    : CODE_OFFS + 58,
+};
 
 // TODO: rename all molecules related names to prefix "mol".
 // TODO: do we really can change all non constants in real time? worldZoomSpeed,...
@@ -37,78 +104,13 @@ module.exports = {
      * {Object} Map of commands
      * @constant
      */
-    CODE_CMDS                  : {
-        //
-        // basic commands
-        //
-        TOGGLE  : CODE_OFFS,
-        EQ      : CODE_OFFS + 1,
-        NOP     : CODE_OFFS + 2,
-        ADD     : CODE_OFFS + 3,
-        SUB     : CODE_OFFS + 4,
-        MUL     : CODE_OFFS + 5,
-        DIV     : CODE_OFFS + 6,
-        INC     : CODE_OFFS + 7,
-        DEC     : CODE_OFFS + 8,
-        RSHIFT  : CODE_OFFS + 9,
-        LSHIFT  : CODE_OFFS + 10,
-        RAND    : CODE_OFFS + 11,
-        IFP     : CODE_OFFS + 12,
-        IFN     : CODE_OFFS + 13,
-        IFZ     : CODE_OFFS + 14,
-        IFG     : CODE_OFFS + 15,
-        IFL     : CODE_OFFS + 16,
-        IFE     : CODE_OFFS + 17,
-        IFNE    : CODE_OFFS + 18,
-        LOOP    : CODE_OFFS + 19,
-        CALL    : CODE_OFFS + 20,
-        FUNC    : CODE_OFFS + 21,
-        RET     : CODE_OFFS + 22,
-        END     : CODE_OFFS + 23,
-        RETAX   : CODE_OFFS + 24,
-        AXRET   : CODE_OFFS + 25,
-        AND     : CODE_OFFS + 26,
-        OR      : CODE_OFFS + 27,
-        XOR     : CODE_OFFS + 28,
-        NOT     : CODE_OFFS + 29,
-        AGE     : CODE_OFFS + 30,
-        LINE    : CODE_OFFS + 31,
-        LEN     : CODE_OFFS + 32,
-        LEFT    : CODE_OFFS + 33,
-        RIGHT   : CODE_OFFS + 34,
-        SAVE    : CODE_OFFS + 35,
-        LOAD    : CODE_OFFS + 36,
-        FIND    : CODE_OFFS + 37,
-        READ    : CODE_OFFS + 38,
-        //
-        // Biological stuff
-        //
-        JOIN    : CODE_OFFS + 39,
-        SPLIT   : CODE_OFFS + 40,
-        STEP    : CODE_OFFS + 41,
-        SEE     : CODE_OFFS + 42,
-        SAY     : CODE_OFFS + 43,
-        LISTEN  : CODE_OFFS + 44,
-        NREAD   : CODE_OFFS + 45,
-        NSPLIT  : CODE_OFFS + 46,
-        GET     : CODE_OFFS + 47,
-        PUT     : CODE_OFFS + 48,
-        OFFS    : CODE_OFFS + 49,
-        COLOR   : CODE_OFFS + 50,
-        ANAB    : CODE_OFFS + 51,
-        CATAB   : CODE_OFFS + 52,
-        FINDM   : CODE_OFFS + 53,
-        MOVE    : CODE_OFFS + 54,
-        MOLS    : CODE_OFFS + 55,
-        IDX     : CODE_OFFS + 56,
-        MOL     : CODE_OFFS + 57
-    },
+    CODE_CMDS                  : COMMANDS,
     /**
      * {Number} Amount of supported commands in a code. This value must be
      * synchronized with real commands amount. See VM.js for details.
      * @constant
      */
-    CODE_COMMANDS              : 54,
+    CODE_COMMANDS              : Object.keys(COMMANDS).length,
     /**
      * {Number} Functions call stack size
      * @constant
