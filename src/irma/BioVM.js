@@ -48,9 +48,9 @@ const CATAB  = Config.CODE_CMDS.CATAB;
 const MOVE   = Config.CODE_CMDS.MOVE;
 const MOLS   = Config.CODE_CMDS.MOLS;
 const MOL    = Config.CODE_CMDS.MOL;
-const SMOL   = Config.CODE_CMDS.SMOL;
 const RMOL   = Config.CODE_CMDS.RMOL;
 const LMOL   = Config.CODE_CMDS.LMOL;
+const CMOL   = Config.CODE_CMDS.CMOL;
 
 class BioVM extends VM {
     /**
@@ -165,7 +165,7 @@ class BioVM extends VM {
                 const energy  = Math.floor(org.energy / 2);
                 //
                 // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
-                // TODO: should be esupported by organism from parent to child
+                // TODO: should be supported by organism from parent to child
                 //
                 const clone   = org.ret === IS_ORG_ID ? (org.energy = energy, this.addOrg(offset, newCode, energy)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
@@ -356,15 +356,6 @@ class BioVM extends VM {
                 return;
             }
 
-            case MOLS: {
-                ++org.line;
-                const code = org.code;
-                let mols   = 0;
-                for (let i = 0, len = code.length; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
-                org.ax = mols || (code.length > 0 ? 1 : 0);
-                return;
-            }
-
             case MOL: {
                 ++org.line;
                 const mol = org.mol;
@@ -373,16 +364,10 @@ class BioVM extends VM {
                 return;
             }
 
-            case SMOL: {
-                ++org.line;
-                org.mol = org.ax;
-                org.idx = this._mol2Offs(org.code, org.mol);
-                return;
-            }
-
             case RMOL: {
                 ++org.line;
                 org.mol++;
+                // TODO: don't forget about one atom molecules!
                 if ((org.idx = this._molLastOffs(org.code, org.idx) + 1) >= org.code.length) {
                     org.idx = org.mol = 0;
                 }
@@ -396,6 +381,18 @@ class BioVM extends VM {
                 //if ((org.idx = this._molLastOffs(org.code, org.idx) + 1) >= org.code.length) {
                 //    org.idx = org.mol = 0;
                 //}
+                // eslint-disable-next-line no-useless-return
+                return;
+            }
+
+            case CMOL: {
+                ++org.line;
+                const mem  = org.mem;
+                const code = org.code;
+                let memPos = org.memPos;
+                for (let i = org.idx, idx2 = this._molLastOffs(org.code, org.idx); i <= idx2; i++) {
+                    mem[memPos++] = code[i];
+                }
                 // eslint-disable-next-line no-useless-return
                 return;
             }
