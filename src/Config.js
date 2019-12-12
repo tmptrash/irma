@@ -67,19 +67,18 @@ const COMMANDS    = {
     SAY     : CODE_OFFS + 43,
     LISTEN  : CODE_OFFS + 44,
     NREAD   : CODE_OFFS + 45,
-    NSPLIT  : CODE_OFFS + 46,
-    GET     : CODE_OFFS + 47,
-    PUT     : CODE_OFFS + 48,
-    OFFS    : CODE_OFFS + 49,
-    COLOR   : CODE_OFFS + 50,
-    ANAB    : CODE_OFFS + 51,
-    CATAB   : CODE_OFFS + 52,
-    MOVE    : CODE_OFFS + 53,
-    MOL     : CODE_OFFS + 54,
-    SMOL    : CODE_OFFS + 55,
-    RMOL    : CODE_OFFS + 56,
-    LMOL    : CODE_OFFS + 57,
-    CMOL    : CODE_OFFS + 58
+    GET     : CODE_OFFS + 46,
+    PUT     : CODE_OFFS + 47,
+    OFFS    : CODE_OFFS + 48,
+    COLOR   : CODE_OFFS + 49,
+    ANAB    : CODE_OFFS + 50,
+    CATAB   : CODE_OFFS + 51,
+    MOVE    : CODE_OFFS + 52,
+    MOL     : CODE_OFFS + 53,
+    SMOL    : CODE_OFFS + 54,
+    RMOL    : CODE_OFFS + 55,
+    LMOL    : CODE_OFFS + 56,
+    CMOL    : CODE_OFFS + 57
 };
 
 // TODO: rename all molecules related names to prefix "mol".
