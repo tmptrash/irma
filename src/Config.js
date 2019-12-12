@@ -75,11 +75,11 @@ const COMMANDS    = {
     ANAB    : CODE_OFFS + 51,
     CATAB   : CODE_OFFS + 52,
     MOVE    : CODE_OFFS + 53,
-    MOLS    : CODE_OFFS + 54,
-    MOL     : CODE_OFFS + 55,
-    SMOL    : CODE_OFFS + 56,
-    RMOL    : CODE_OFFS + 57,
-    LMOL    : CODE_OFFS + 58,
+    MOL     : CODE_OFFS + 54,
+    SMOL    : CODE_OFFS + 55,
+    RMOL    : CODE_OFFS + 56,
+    LMOL    : CODE_OFFS + 57,
+    CMOL    : CODE_OFFS + 58
 };
 
 // TODO: rename all molecules related names to prefix "mol".

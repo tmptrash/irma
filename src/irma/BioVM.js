@@ -46,11 +46,11 @@ const COLOR  = Config.CODE_CMDS.COLOR;
 const ANAB   = Config.CODE_CMDS.ANAB;
 const CATAB  = Config.CODE_CMDS.CATAB;
 const MOVE   = Config.CODE_CMDS.MOVE;
-const MOLS   = Config.CODE_CMDS.MOLS;
 const MOL    = Config.CODE_CMDS.MOL;
 const SMOL   = Config.CODE_CMDS.SMOL;
 const RMOL   = Config.CODE_CMDS.RMOL;
 const LMOL   = Config.CODE_CMDS.LMOL;
+const CMOL   = Config.CODE_CMDS.CMOL;
 
 class BioVM extends VM {
     /**
@@ -148,31 +148,27 @@ class BioVM extends VM {
                 return;
             }
 
+            //
+            // TODO: This is bad idea to hardcode IS_ORG_ID into language. Because this mechanism
+            // TODO: should be supported by organism from parent to child
+            //
             case SPLIT: {
                 ++org.line;
-                if (this.orgsMols.full) {org.ret = RET_ERR; return}
+                if (this.orgsMols.full || org.ret === IS_ORG_ID && this.orgs.full) {org.ret = RET_ERR; return} // mols and orgs maximum was reached
                 const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
                 const dot     = this.world.index(offset);
-                if (dot > -1) {org.ret = RET_ERR; return} // organism on the way
+                if (dot > -1) {org.ret = RET_ERR; return} // something on the way
                 const code    = org.code;
-                const ax      = this._mol2Offs(code, org.ax);
-                const bx      = this._mol2Offs(code, org.bx);
-                if (ax < 0 || ax > code.length || bx <= ax) {org.ret = RET_ERR; return}
-                const newCode = code.subarray(ax, bx);
-                if (newCode.length < 1 || org.ret === IS_ORG_ID && this.orgs.full) {org.ret = RET_ERR; return}
-                org.code = code.splice(ax, bx - ax);
-                const energy  = Math.floor(org.energy / 2);
-                //
-                // TODO: This is bad idea to hardcode IS_ORG_ID into organism. Because this mechanism
-                // TODO: should be esupported by organism from parent to child
-                //
-                const clone   = org.ret === IS_ORG_ID ? (org.energy = energy, this.addOrg(offset, newCode, energy)) : this.addMol(offset, newCode);
+                const idx0    = org.mol;
+                const idx1    = this._molLastOffs(code, idx0) + 1;
+                const newCode = code.subarray(idx0, idx1);
+                if (newCode.length < 1) {org.ret = RET_ERR; return}
+                org.code      = code.splice(idx0, idx1 - idx0);
+                const clone   = org.ret === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
-                if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {
-                    Mutations.mutate(clone);
-                }
-                if (org.code.length < 1) {this.delOrg(org); org.ret = RET_ERR; return}
+                if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
+                if (org.code.length < 1) {this.delOrg(org)}
                 //
                 // Important: after split, sequence of commands have been changed and it may break
                 // entire script. Generally, we have to compile new script to fix all offsets
@@ -227,8 +223,19 @@ class BioVM extends VM {
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot = this.world.index(offset);
                 if (dot < 0) {org.ret = RET_ERR; return}
-                const nearOrg = this.orgsMols.get(dot);
-                org.ax  = (nearOrg.code[org.bx] & CODE_8_BIT_RESET_MASK) || 0;
+                const nearOrg  = this.orgsMols.get(dot);
+                const nearCode = nearOrg.code;
+                let   bx       = org.bx;
+                if (bx < 0) {bx = 0}
+                if (bx >= nearCode.length) {bx = nearCode.length - 1}
+                for (let i = bx;; i++) {if ((nearCode[i] & CODE_8_BIT_MASK) > 0) {bx = i; break}} // find molecule first atom
+                const mem  = org.mem;
+                const mLen = mem.length - 1;
+                for (let i = bx, m = org.memPos;; i++, m++) {
+                    mem[m] = nearCode[i];
+                    if ((nearCode[i] & CODE_8_BIT_MASK) > 0) {break}
+                    if (m > mLen) {m = -1}
+                }
                 org.ret = RET_OK;
                 return;
             }
@@ -356,15 +363,6 @@ class BioVM extends VM {
                 return;
             }
 
-            case MOLS: {
-                ++org.line;
-                const code = org.code;
-                let mols   = 0;
-                for (let i = 0, len = code.length; i < len; i++) {(code[i] & CODE_8_BIT_MASK) && ++mols}
-                org.ax = mols || (code.length > 0 ? 1 : 0);
-                return;
-            }
-
             case MOL: {
                 ++org.line;
                 const mol = org.mol;
@@ -396,6 +394,19 @@ class BioVM extends VM {
                 //if ((org.idx = this._molLastOffs(org.code, org.idx) + 1) >= org.code.length) {
                 //    org.idx = org.mol = 0;
                 //}
+                return;
+            }
+
+            case CMOL: {
+                ++org.line;
+                const code = org.code;
+                const mem  = org.mem;
+                const mLen = mem.length - 1;
+                for (let i = org.mol, m = org.memPos;; i++, m++) {
+                    mem[m] = code[i];
+                    if ((code[i] & CODE_8_BIT_MASK) > 0) {break}
+                    if (m > mLen) {m = -1}
+                }
                 // eslint-disable-next-line no-useless-return
                 return;
             }
@@ -430,7 +441,6 @@ class BioVM extends VM {
         org.packet   = null;
         org.energy   = energy;
         org.mol      = 0;
-        org.idx      = 0;
         org.compile();
 
         orgsMols.add(org);
