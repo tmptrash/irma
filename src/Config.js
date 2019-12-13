@@ -257,7 +257,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 5000000,
+    molAmount                  : 50000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
@@ -270,18 +270,13 @@ module.exports = {
      * List of radiostations
      */
     stations                   : [{
-            title: 'Ambient Radio',
+            title : 'Ambient Radio',
             source: 'http://uk2.internet-radio.com:31491/;stream.mp3?_=1'
         }, {
-            title: 'HitFM',
-            source: 'http://online2.hitfm.ua/HitFM_Best'
-        }, {
-            title: 'Vocal Trance',
-            source: 'http://176.9.36.203:8000/vocaltrance_320'
-        }, {
-            title: 'LuxFM',
-            source: 'http://icecastlv.luxnet.ua/lux'
-    }],
+            title : 'Ambiesphere',
+            source: 'http://uk5.internet-radio.com:8347/stream'
+        }
+    ],
     /**
      * Plugins. Extends irma core by additional functionality
      * @constant
