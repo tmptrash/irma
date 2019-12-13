@@ -1,42 +1,43 @@
 #
-# org.mol - содержит индекс текущей молекулы
-# org.idx - содержит смещение в коде текущей молекулы
-# move    - чем меньше молекула, тем больше нужно тратить энергии, чтобы ее переместить
-# cmp     - сравнивает несколько команд из памяти длиной ax с командами текущей молекулы
-# mol     - возвращает индекс текущий молекулы
-# smol    - устанавливает индекс текущей молекулы
-# rmol    - смещается на одну молекулу вправо. геном цикличный
-# lmol    - смещается на одну молекулу влево. геном цикличный
-# 
-#
 #  sep  repl                 sep  food
 # [0,0, 1,0,1, 1,0,2, 1,2,1, 0,0, 1,2,1, 0,0,2, 1,0,1]
 #
-# find molecule
-# in: m0     - molecule len
-# in: m1..mx - molecule
+# desc: find molecule index in a code
+# in  : m0        - molecule len
+# in  : m1..m[m0] - molecule atoms
+# in  : mol       - start index
+# in  : memPos = 0
+# out : idx|-1
 #
 func
   127
   loop
-    load      # ax=len
-	right
-    cmp
-	left
+    mol           # ax=idx0   bx=idx1
 	toggle
-    retax
-    ifp
-	  toggle
-	  axret
-      ret
-    end
-	rmol
-	retax
-	ifz
-	  0
-	  dec
-	  axret
-	  ret
+	sub
+	inc           # ax=molLen
+	toggle        # bx=molLen
+    load          # ax=len
+	ife
+	  right       # m1
+	  mol         # ax=idx0   bx=idx1
+      cmp         # ret=0|1
+	  left        # m0
+	  toggle      # bx=0|1
+      retax       # ax=0|1
+      ifp
+        toggle    # ax=0|1
+	    axret
+        ret
+      end
+	  rmol
+	  retax
+	  ifz
+        0
+	    dec
+	    axret
+	    ret
+	  end
 	end
   end
 end

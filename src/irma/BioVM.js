@@ -347,9 +347,8 @@ class BioVM extends VM {
 
             case MOL: {
                 ++org.line;
-                const mol = org.mol;
-                org.ax    = mol;
-                org.bx    = this._molLastOffs(org.code, mol) - mol;
+                org.ax    = org.mol;
+                org.bx    = this._molLastOffs(org.code, org.mol);
                 return;
             }
 
@@ -362,7 +361,13 @@ class BioVM extends VM {
             case LMOL: {
                 ++org.line;
                 const code = org.code;
-                for (let i = org.mol - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {org.mol = i + 1; break}}
+                for (let i = org.mol - 1;; i--) {
+                    if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
+                        if (i < 0) {i = code.length; continue}
+                        org.mol = i + 1;
+                        break;
+                    }
+                }
                 return;
             }
 
