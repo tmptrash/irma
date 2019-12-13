@@ -226,7 +226,7 @@ class BioVM extends VM {
                 let   bx       = org.bx;
                 if (bx < 0) {bx = 0}
                 if (bx >= nearCode.length) {bx = nearCode.length - 1}
-                for (let i = bx;; i++) {if ((nearCode[i] & CODE_8_BIT_MASK) > 0) {bx = i; break}} // find molecule first atom
+                for (let i = bx - 1;; i--) {if ((nearCode[i] & CODE_8_BIT_MASK) > 0 || i < 0) {bx = i + 1; break}} // find first atom of molecule
                 const mem  = org.mem;
                 const mLen = mem.length - 1;
                 for (let i = bx, m = org.memPos;; i++, m++) {
@@ -275,9 +275,10 @@ class BioVM extends VM {
             case ANAB: {
                 ++org.line;
                 let   code      = org.code;
-                const m1Offs    = this._mol2Offs(code, org.ax);
-                const m2Offs    = this._mol2Offs(code, org.bx);
-                if (m1Offs > m2Offs || m1Offs < 0 || m2Offs < 0 || m1Offs >= m2Offs) {org.ret = RET_ERR; return}
+                const m1Offs    = org.mol;
+                let   m2Offs    = org.ax;
+                for (let i = org.ax - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Offs = i + 1; break}} // find first atom of molecule
+                if (m1Offs === m2Offs) {org.ret = RET_ERR; return}
                 const m1EndOffs = this._molLastOffs(code, m1Offs);
                 const m2EndOffs = this._molLastOffs(code, m2Offs);
                 const cutCode   = code.subarray(m2Offs, m2EndOffs + 1);
@@ -285,12 +286,12 @@ class BioVM extends VM {
                 // Important! We assume that this code change does not affect main
                 // code. Only food part. This is why we dont call org.compile()
                 //
-                code = code.splice(m2Offs, m2EndOffs - m2Offs + 1);
-                code = code.splice(m1EndOffs + 1, 0, cutCode);
-                org.energy -= ((m2EndOffs - m2Offs + m1EndOffs - m1Offs + 2) * Config.energyMultiplier);
+                code            = code.splice(m2Offs, m2EndOffs - m2Offs + 1);
+                code            = code.splice(m1EndOffs + 1, 0, cutCode);
+                org.energy     -= ((m2EndOffs - m2Offs + m1EndOffs - m1Offs + 2) * Config.energyMultiplier);
                 code[m1EndOffs] &= CODE_8_BIT_RESET_MASK;
-                org.code = code;
-                org.ret  = RET_OK;
+                org.code        = code;
+                org.ret         = RET_OK;
                 return;
             }
 
@@ -373,18 +374,6 @@ class BioVM extends VM {
                     mem[m] = code[i];
                     if ((code[i] & CODE_8_BIT_MASK) > 0) {break}
                     if (m > mLen) {m = -1}
-                }
-                // eslint-disable-next-line no-useless-return
-                return;
-            }
-
-            case CMOL: {
-                ++org.line;
-                const mem  = org.mem;
-                const code = org.code;
-                let memPos = org.memPos;
-                for (let i = org.idx, idx2 = this._molLastOffs(org.code, org.idx); i <= idx2; i++) {
-                    mem[memPos++] = code[i];
                 }
                 // eslint-disable-next-line no-useless-return
                 return;
