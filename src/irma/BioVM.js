@@ -355,21 +355,14 @@ class BioVM extends VM {
 
             case RMOL: {
                 ++org.line;
-                org.mol++;
-                // TODO: don't forget about one atom molecules!
-                if ((org.idx = this._molLastOffs(org.code, org.idx) + 1) >= org.code.length) {
-                    org.idx = org.mol = 0;
-                }
+                if ((org.mol = this._molLastOffs(org.code, org.mol) + 1) >= org.code.length) {org.mol = 0}
                 return;
             }
 
             case LMOL: {
                 ++org.line;
-                org.mol--;
-                // TODO:
-                //if ((org.idx = this._molLastOffs(org.code, org.idx) + 1) >= org.code.length) {
-                //    org.idx = org.mol = 0;
-                //}
+                const code = org.code;
+                for (let i = org.mol - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {org.mol = i + 1; break}}
                 return;
             }
 
