@@ -275,21 +275,21 @@ class BioVM extends VM {
             case ANAB: {
                 ++org.line;
                 let   code      = org.code;
-                const m1Offs    = org.mol;
-                let   m2Offs    = org.ax;
-                for (let i = org.ax - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Offs = i + 1; break}} // find first atom of molecule
-                if (m1Offs === m2Offs) {org.ret = RET_ERR; return}
-                const m1EndOffs = this._molLastOffs(code, m1Offs);
-                const m2EndOffs = this._molLastOffs(code, m2Offs);
-                const cutCode   = code.subarray(m2Offs, m2EndOffs + 1);
+                const m1Idx     = org.mol;
+                let   m2Idx     = 0;
+                for (let i = org.ax - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
+                if (m1Idx === m2Idx) {org.ret = RET_ERR; return}
+                const m1EndIdx  = this._molLastOffs(code, m1Idx);
+                const m2EndIdx  = this._molLastOffs(code, m2Idx);
+                const cutCode   = code.subarray(m2Idx, m2EndIdx + 1);
                 //
                 // Important! We assume that this code change does not affect main
                 // code. Only food part. This is why we dont call org.compile()
                 //
-                code            = code.splice(m2Offs, m2EndOffs - m2Offs + 1);
-                code            = code.splice(m1EndOffs + 1, 0, cutCode);
-                org.energy     -= ((m2EndOffs - m2Offs + m1EndOffs - m1Offs + 2) * Config.energyMultiplier);
-                code[m1EndOffs] &= CODE_8_BIT_RESET_MASK;
+                code            = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
+                code            = code.splice(m1EndIdx + 1, 0, cutCode);
+                org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMultiplier);
+                code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
                 org.ret         = RET_OK;
                 return;
@@ -312,19 +312,25 @@ class BioVM extends VM {
 
             case MOVE: {
                 ++org.line;
+                //
+                // This code obtains source molecule
+                //
                 let    code    = org.code;
-                const find0    = this._mol2Offs(code, org.ax);
-                const find1    = this._molLastOffs(code, find0);
-                if (find1 < find0) {org.ret = RET_ERR; return}
-                const moveCode = code.slice(find0, find1 + 1);
+                let   m2Idx    = org.ax;
+                if (m2Idx < 0) {m2Idx = 0}
+                if (m2Idx >= code.length) {m2Idx = code.length - 1}
+                for (let i = m2Idx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
+                if (m2Idx === org.mol) {org.ret = RET_OK; return} // src and dest molecules are the same
+                const m2EndIdx = this._molLastOffs(code, m2Idx) + 1;
+                const moveCode = code.slice(m2Idx, m2EndIdx + 1);
                 if (moveCode.length < 1) {org.ret = RET_ERR; return}
-                const bx       = Math.min(this._molLastOffs(code, this._mol2Offs(code, org.bx)) + 1, code.length);
-                const len      = find1 - find0 + 1;
-                const offs     = bx > find1 ? bx - len : (bx < find0 ? bx : find0);
-                if (find0 === offs) {org.ret = RET_OK; return}
-                code           = code.splice(find0, len);
-                org.code       = code = code.splice(offs, 0, moveCode);
-                org.energy    -= Config.energyMultiplier;
+                //
+                // This code obtains destination molecule
+                //
+                const len      = m2EndIdx - m2Idx + 1;
+                code           = code.splice(m2Idx, len);
+                org.code       = code.splice(this._molLastOffs(code, org.mol) + 1, 0, moveCode);
+                org.energy    -= (Math.floor(Config.molCodeSize * 10 / len) || 1) * Config.energyMultiplier;
                 //
                 // Important: moving new commands insie the script may break it, because it's
                 // offsets, stack and context may be invalid. Generally, we have to compile
