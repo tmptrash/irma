@@ -257,7 +257,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 50000,
+    molAmount                  : 3000000,
     molCodeSize                : 8,
     molColor                   : 0xff0000,
     /**
