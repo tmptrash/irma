@@ -298,11 +298,13 @@ class BioVM extends VM {
             case CATAB: {
                 ++org.line;
                 const code    = org.code;
-                const ax      = this._mol2Offs(code, org.ax);
-                const axEnd   = this._molLastOffs(code, ax);
-                if (ax === axEnd || ax < 0) {org.ret = RET_ERR; return}
-                const molSize = axEnd - ax + 1;
-                code[ax + Math.floor(molSize / 2) - 1] |= CODE_8_BIT_MASK;
+                const mol     = org.mol;
+                const molEnd  = this._molLastOffs(code, mol);
+                if (mol === molEnd) {org.ret = RET_ERR; return}
+                let   cutPos  = org.bx;
+                const molSize = molEnd - mol + 1;
+                if (cutPos) {cutPos = mol + Math.floor(molSize / 2) - 1}
+                code[cutPos] |= CODE_8_BIT_MASK;
                 org.energy += (molSize * Config.energyMultiplier);
                 org.ret = RET_OK;
                 return;
