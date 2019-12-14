@@ -63,6 +63,7 @@ const SAVE   = Config.CODE_CMDS.SAVE;
 const LOAD   = Config.CODE_CMDS.LOAD;
 const READ   = Config.CODE_CMDS.READ;
 const CMP    = Config.CODE_CMDS.CMP;
+const BREAK  = Config.CODE_CMDS.BREAK;
 
 class VM {
     /**
@@ -416,10 +417,17 @@ class VM {
                             if (ax < 0) {ax = 0}
                             if (ax > codeLen - bx) {ax = codeLen - bx}
                             
-                            for (let i = ax, len = ax + bx, m = org.memPos; i < len; i++, m++) {
+                            for (let i = ax, m = org.memPos; i <= bx; i++, m++) {
                                 if (mem[m] !==code[i]) {org.ret = RET_ERR; continue}
                             }
                             org.ret = RET_OK;
+                            continue;
+                        }
+
+                        case BREAK: {
+                            const offs = org.offs[line] || 0;
+                            if ((code[offs] & CODE_8_BIT_RESET_MASK) === LOOP) {line = org.offs[offs] || 0}
+                            else {++line}
                             continue;
                         }
                     }

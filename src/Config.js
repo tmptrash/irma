@@ -57,28 +57,29 @@ const COMMANDS    = {
     LOAD    : CODE_OFFS + 36,
     READ    : CODE_OFFS + 37,
     CMP     : CODE_OFFS + 38,
+    BREAK   : CODE_OFFS + 39,
     //
     // Biological stuff
     //
-    JOIN    : CODE_OFFS + 39,
-    SPLIT   : CODE_OFFS + 40,
-    STEP    : CODE_OFFS + 41,
-    SEE     : CODE_OFFS + 42,
-    SAY     : CODE_OFFS + 43,
-    LISTEN  : CODE_OFFS + 44,
-    NREAD   : CODE_OFFS + 45,
-    GET     : CODE_OFFS + 46,
-    PUT     : CODE_OFFS + 47,
-    OFFS    : CODE_OFFS + 48,
-    COLOR   : CODE_OFFS + 49,
-    ANAB    : CODE_OFFS + 50,
-    CATAB   : CODE_OFFS + 51,
-    MOVE    : CODE_OFFS + 52,
-    MOL     : CODE_OFFS + 53,
-    SMOL    : CODE_OFFS + 54,
-    RMOL    : CODE_OFFS + 55,
-    LMOL    : CODE_OFFS + 56,
-    CMOL    : CODE_OFFS + 57
+    JOIN    : CODE_OFFS + 40,
+    SPLIT   : CODE_OFFS + 41,
+    STEP    : CODE_OFFS + 42,
+    SEE     : CODE_OFFS + 43,
+    SAY     : CODE_OFFS + 44,
+    LISTEN  : CODE_OFFS + 45,
+    NREAD   : CODE_OFFS + 46,
+    GET     : CODE_OFFS + 47,
+    PUT     : CODE_OFFS + 48,
+    OFFS    : CODE_OFFS + 49,
+    COLOR   : CODE_OFFS + 50,
+    ANAB    : CODE_OFFS + 51,
+    CATAB   : CODE_OFFS + 52,
+    MOVE    : CODE_OFFS + 53,
+    MOL     : CODE_OFFS + 54,
+    SMOL    : CODE_OFFS + 55,
+    RMOL    : CODE_OFFS + 56,
+    LMOL    : CODE_OFFS + 57,
+    CMOL    : CODE_OFFS + 58
 };
 
 // TODO: rename all molecules related names to prefix "mol".
@@ -309,7 +310,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 2000000,
+    molAmount                  : 200000,
     molCodeSize                : 3,
     molRandomAtomPercent       : .3,
     molColor                   : 0xff0000,

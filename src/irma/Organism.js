@@ -22,6 +22,7 @@ const IFNE                  = Config.CODE_CMDS.IFNE;
 const LOOP                  = Config.CODE_CMDS.LOOP;
 const FUNC                  = Config.CODE_CMDS.FUNC;
 const END                   = Config.CODE_CMDS.END;
+const BREAK                 = Config.CODE_CMDS.BREAK;
 
 class Organism {
     /**
@@ -62,6 +63,8 @@ class Organism {
         const offs     = this.offs;
         const funcs    = this.funcs;
         const stack    = new Int16Array(Config.orgMaxCodeSize);
+        const loops    = new Int16Array(Config.orgMaxCodeSize);
+        let   lCount   = -1;
         let   sCount   = -1;
         let   fCount   = 0;
 
@@ -74,6 +77,11 @@ class Organism {
                     break;
 
                 case LOOP:
+                    loops[++lCount] = i;
+                    stack[++sCount] = i;
+                    offs[i] = i + 1;
+                    break;
+
                 case IFP:
                 case IFN:
                 case IFZ:
@@ -85,8 +93,14 @@ class Organism {
                     offs[i] = i + 1;
                     break;
 
+                case BREAK:
+                    if (sCount < 0) {break}
+                    offs[i] = loops[lCount]; // loop offs
+                    break;
+
                 case END:
                     if (sCount < 0) {break}
+                    if ((code[stack[sCount]] & CODE_8_BIT_RESET_MASK) === LOOP) {lCount--}
                     offs[i] = stack[sCount];
                     offs[stack[sCount--]] = i + 1;
                     break;

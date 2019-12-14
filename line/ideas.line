@@ -52,7 +52,6 @@ end
 #
 # desc: find code length
 # out : last molecule index
-# 
 #
 func
   127
@@ -87,73 +86,116 @@ func
   #
   # sets separator molecule len
   3
-  save        # m[3]
-  right       # m1
+  save            # m[3]
+  right           # m1
   # sets separator molecule to the mem
   127
   toggle
   3
-  add         # ax=nop
-  save        # m[3,nop]
-  right       # m2
-  save        # m[3,nop,nop]
-  right       # m3
-  save        # m[3,nop,nop,nop]
+  add             # ax=nop
+  save            # m[3,nop]
+  right           # m2
+  save            # m[3,nop,nop]
+  right           # m3
+  save            # m[3,nop,nop,nop]
   # sets memory pointer back to m0
-  left        # m2
-  left        # m1
-  left        # m0
+  left            # m2
+  left            # m1
+  left            # m0
   # sets molecule pointer to 0 molecule
   0
-  smol        # mol=0
+  smol            # mol=0
   call
-  retax       # ret=offs|-1
+  retax           # ret=offs|-1
   ifn
     ret
   end
-  left        # m-1
+  left            # m-1
   rmol
   mol
-  save        # m-1=sep0+1
+  save            # m-1=sep0+1
   #
   # 2. find second separator
   #
   # we are looking for the same separator molecule
-  right       # m0
+  right           # m0
   0
   call
-  retax       # ret=offs-1
+  retax           # ret=offs-1
   ifn
     ret
   end
   rmol
   mol
-  save        # m0=sep1+1
-  right       # m1
+  save            # m0=sep1+1
+  right           # m1
   #
   # 3. get code length
   #
   1
   call
-  save        # m1=len
+  save            # m1=len
+  # resets memory pointer to m-1
+  left
+  left            # m-1
   #
   # 4. move right from first separator and copy one molecule to the mem
   #
-  left
-  left        # m-1
-  load
-  smol        # sep mol + 1
+  load            # ax=sep0+1
+  smol            # mol=sep0+1
   127
+  # main copy loop
   loop
+    # sets mem pointer to m2 and copy current repl molecule to mem
     right
 	right
-	right     # m2
+	right         # m2
 	cmol
+	# jumps to food section
 	left
-	left      # m0
-	smol      # sep1+x
+	left          # m0
+	load          # ax=sep1+i
+	smol          # sep1+x
+	# sets mem pointer to m2
+	right         # m1
+	right         # m2
+	127
+	# starts finding molecule from repl in food section
 	loop
+	  mol         # ax=idx0   bx=idx1
+	  toggle      # bx=idx0
+	  cmp
+	  retax
+	  # mol from food section similar to repl one
+	  ifp
+	    # jump to the end
+		left
+		load      # ax=end
+		smol
+		toggle    # ax=idx0
+	    # copy found mol here (to the end)
+		move
+		# jump back to the repl section
+		left      # m0
+		left      # m-1
+		load      # ax=sep0
+		smol
+		right     # m0
+		right     # m1
+		# code len--
+		load
+		dec
+		save
+		right     # m2
+	    left      # m1
+	    left      # m0
+	    left      # m-1
+		break
+	  end
+	  # move right to the next food molecule
+	  rmol
 	end
+	rmol
   end
 end
 
