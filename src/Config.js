@@ -117,6 +117,7 @@ module.exports = {
     CODE_STACK_SIZE            : 300,
     CODE_RET_OK                : 1,
     CODE_RET_ERR               : 0,
+    CODE_RET_SPECIAL           : -1,
     CODE_ORG_ID,
     /**
      * {Number} Mask, which is used for marking last atom in a molecule.

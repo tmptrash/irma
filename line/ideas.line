@@ -10,7 +10,7 @@
 # out : idx|-1
 #
 func
-  127
+  127             # 127 mols max
   loop
     mol           # ax=idx0   bx=idx1
 	toggle
@@ -21,32 +21,36 @@ func
 	ife
 	  right       # m1
 	  mol         # ax=idx0   bx=idx1
-      cmp         # ret=0|1
+      cmp         # ret=0|1|-1
 	  left        # m0
-	  toggle      # bx=0|1
-      retax       # ax=0|1
+	  toggle      # ax=idx1   bx=idx0
+      retax       # ax=0|1    bx=idx0
       ifp
-        toggle    # ax=0|1
-	    axret
+        toggle    # ax=idx0
+	    axret     # ret=idx0
         ret
       end
-	  rmol
-	  retax
-	  ifz
-        0
-	    dec
-	    axret
-	    ret
-	  end
+	end
+	rmol
+	retax
+	ifn
+      0
+	  dec
+	  axret
+	  ret
 	end
   end
 end
 #
-# make clone:
+# desc: Make clone. Stores in memory:
+#       m0 - first separator molecule
+#       m1 - last separator molecule
+#       m2 - body len in atoms
+# in  : nothing
+# 
 # 1. Sets separator molecule in mem and call find func
 # 2. Move right from first separator
 # by molecule.
-# 
 #
 func
   #

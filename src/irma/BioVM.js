@@ -16,6 +16,7 @@ const FastArray             = require('./../common/FastArray');
 const rand                  = Helper.rand;
 const RET_OK                = Config.CODE_RET_OK;
 const RET_ERR               = Config.CODE_RET_ERR;
+const RET_SPECIAL           = Config.CODE_RET_SPECIAL;
 const ORG_CODE_MAX_SIZE     = Config.orgMaxCodeSize;
 const IS_ORG_ID             = Config.CODE_ORG_ID;
 const DIR                   = Config.DIR;
@@ -352,22 +353,31 @@ class BioVM extends VM {
                 return;
             }
 
+            // TODO: what about case with zero length code?
             case RMOL: {
                 ++org.line;
-                if ((org.mol = this._molLastOffs(org.code, org.mol) + 1) >= org.code.length) {org.mol = 0}
+                if ((org.mol = this._molLastOffs(org.code, org.mol) + 1) >= org.code.length) {
+                    org.mol = 0;
+                    org.ret = RET_SPECIAL;
+                } else {
+                    org.ret = RET_OK;
+                }
                 return;
             }
 
+            // TODO: what about case with zero length code?
             case LMOL: {
                 ++org.line;
                 const code = org.code;
+                let   ret  = RET_OK;
                 for (let i = org.mol - 1;; i--) {
                     if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
-                        if (i < 0) {i = code.length; continue}
+                        if (i < 0) {ret = RET_SPECIAL; i = code.length; continue}
                         org.mol = i + 1;
                         break;
                     }
                 }
+                org.ret = ret;
                 return;
             }
 
