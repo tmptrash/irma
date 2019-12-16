@@ -131,7 +131,7 @@ describe('src/irma/VM', () => {
             const vm1 = new VM(1);
             
             expect(vm1.orgs.size).toBe(1);
-            expect(vm1.population).toBe(0);
+            expect(vm1.population).toBe(-1);
             expect(vm1.iteration).toBe(0);
         });
     });
