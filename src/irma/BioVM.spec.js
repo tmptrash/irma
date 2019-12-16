@@ -176,7 +176,7 @@ describe('src/irma/VM', () => {
     });
 
     describe('Scripts run', () => {
-        describe('join tests', () => {
+        xdescribe('join tests', () => {
             it('Checks joining right organism',  () => {
                 run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 2}, [1,0]);
 
@@ -224,7 +224,7 @@ describe('src/irma/VM', () => {
             });
         })
 
-        describe('split tests', () => {
+        xdescribe('split tests', () => {
             it('Checks basic organism splitting',  () => {
                 run([[2,AR,1,TG,0,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 
@@ -323,7 +323,7 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('step tests', () => {
+        xdescribe('step tests', () => {
             it('Checks step up', () => {
                 run([[0,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
 
@@ -438,7 +438,7 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('see tests', () => {
+        xdescribe('see tests', () => {
             it('see right on other organism', () => {
                 run([[1,SE],[2]], {molAmount: 1, orgAmount: 1}, [0,1]);
 
@@ -469,7 +469,7 @@ describe('src/irma/VM', () => {
             })
         });
 
-        describe('offs tests', () => {
+        xdescribe('offs tests', () => {
             it('Simple offset test', () => {
                 run([[1,OF]], {molAmount: 0, orgAmount: 1}, [1]);
 
@@ -493,7 +493,7 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('color tests', () => {
+        xdescribe('color tests', () => {
             it('organism color', () => {
                 expect(vm.orgs.get(0).color).toEqual(Config.orgColor);
                 run2([2,CO], 2);
@@ -508,7 +508,7 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('anab tests', () => {
+        xdescribe('anab tests', () => {
             it('simple anabolism', () => {
                 const code   = vm.split2Mols(Uint8Array.from([1,TG,0,AB]));
                 const energy = Config.energyMultiplier * 10;
@@ -588,7 +588,7 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('catab tests', () => {
+        xdescribe('catab tests', () => {
             it('simple catabolism', () => {
                 const code   = vm.split2Mols(Uint8Array.from([0,CB]));
                 const energy = Config.energyMultiplier * 10;
@@ -655,7 +655,7 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('find tests', () => {
+        xdescribe('find tests', () => {
             it('find molecule [3,AR] at the end',     () => run2(vm.split2Mols([3,AR,1,TG,FI,0,3,AR]), 3, 1, 3));
             it('find molecule [3] at the middle',     () => run2([3|MASK,AR|MASK,3|MASK,1,TG,FI|MASK], 2, 1, 1));
             it('find molecule [0] at the beginning',  () => run2([0|MASK,4,AR|MASK,0,FI|MASK], 0, 0, 1));
@@ -663,7 +663,7 @@ describe('src/irma/VM', () => {
             it('should not find molecule [0]',        () => run2([0|MASK,4,AR|MASK,1,FI|MASK], 1, 0, 0));
         });
 
-        describe('move tests', () => {
+        xdescribe('move tests', () => {
             it('move first molecule to the center', () => {
                 const code = Uint8Array.from([0,1,2,2,TG,MO]);
                 Config.molAmount = 0;
@@ -711,7 +711,7 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('mols tests', () => {
+        xdescribe('mols tests', () => {
             it('mols0', () => run2([0|MASK,1,ML|MASK], 2));
             it('mols1', () => run2([ML|MASK], 1));
             it('mols2', () => run2([ML], 1));
