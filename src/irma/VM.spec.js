@@ -627,7 +627,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const vm1  = new VM(1);
                 const org  = vm1.addOrg(0, code);
-                org.mem    = Int32Array.from([0,1,2,3,4,5]);
+                org.mem    = Int32Array.from([0,2,TG,3,4,5]);
                 org.memPos = 1;
                 vm1.run();
 
@@ -636,7 +636,7 @@ describe('src/irma/VM', () => {
                 expect(org.ret).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
-                expect(org.mem).toEqual(Int32Array.from([0,1,2,3,4,5]));
+                expect(org.mem).toEqual(Int32Array.from([0,2,TG,3,4,5]));
                 vm1.destroy();
             });
             it('compare one command1', () => {
@@ -703,6 +703,54 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([CM,2,3,4,5]));
+                vm1.destroy();
+            });
+            it('compare with incorrect indexes sequence', () => {
+                const code = [0,TG,2,CM];
+                Config.codeLinesPerIteration = code.length;
+                const vm1  = new VM(1);
+                const org  = vm1.addOrg(0, code);
+                org.mem    = Int32Array.from([0,2,3,4,5]);
+                vm1.run();
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(1);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+                expect(org.mem).toEqual(Int32Array.from([0,2,3,4,5]));
+                vm1.destroy();
+            });
+            it('compare two commands not equal values', () => {
+                const code = [0,1,TG,0,CM];
+                Config.codeLinesPerIteration = code.length;
+                const vm1 = new VM(1);
+                const org = vm1.addOrg(0, code);
+                org.mem   = Int32Array.from([0,0,2,3,4,5]);
+                vm1.run();
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(1);
+                expect(org.ret).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+                expect(org.mem).toEqual(Int32Array.from([0,0,2,3,4,5]));
+                vm1.destroy();
+            });
+            it('compare one command not equal values', () => {
+                const code = [CM];
+                Config.codeLinesPerIteration = code.length;
+                const vm1 = new VM(1);
+                const org = vm1.addOrg(0, code);
+                org.mem   = Int32Array.from([1,0,2,3,4,5]);
+                vm1.run();
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.ret).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+                expect(org.mem).toEqual(Int32Array.from([1,0,2,3,4,5]));
                 vm1.destroy();
             });
         });

@@ -418,10 +418,11 @@ class VM {
                             if (ax < 0)  {ax = 0}
                             if (ax > bx) {ax = bx}
 
+                            let ret = RET_OK;
                             for (let i = ax, m = org.memPos; i <= bx; i++, m++) {
-                                if (mem[m] !==code[i]) {org.ret = RET_ERR; continue}
+                                if (mem[m] !==code[i]) {ret = RET_ERR; continue}
                             }
-                            org.ret = RET_OK;
+                            org.ret = ret;
                             continue;
                         }
 
