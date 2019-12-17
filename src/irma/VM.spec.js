@@ -48,6 +48,8 @@ describe('src/irma/VM', () => {
     const RI        = Config.CODE_CMDS.RIGHT;
     const SA        = Config.CODE_CMDS.SAVE;
     const LO        = Config.CODE_CMDS.LOAD;
+    const RD        = Config.CODE_CMDS.READ;
+    const CM        = Config.CODE_CMDS.CMP;
 
     let   vm        = null;
 
@@ -411,7 +413,7 @@ describe('src/irma/VM', () => {
             it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
         });
 
-        describe('call/func tests', () => {
+        describe('call/func/end tests', () => {
             it('call0',  () => run([CA], 0, 0, 0, false, 1));
             it('call1',  () => run([CA,IN,FU,IN,EN], 1, 0, 0, false, 4));
             it('call2',  () => run([1,CA,IN,FU,IN,FU,EN,EN], 2, 0, 0, false, 6));
@@ -590,6 +592,35 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([2,1]));
+                vm1.destroy();
+            });
+        });
+
+        describe('read tests', () => {
+            it('read0', () => run([RD], RD));
+            it('read1', () => run([0,RD]));
+            it('read2', () => run([1,RD], RD));
+            it('read3', () => run([1,NT,RD], 1));
+            it('read4', () => run([10,RD], RD));
+            it('read5', () => run([0,1,2,7,4,3,RD], 7));
+        });
+
+        describe('cmp tests', () => {
+            it('simple compare', () => {
+                const code = [0,1,TG,0,CM];
+                Config.orgMaxMemSize = 2;
+                Config.codeLinesPerIteration = code.length;
+                const vm1 = new VM(1);
+                const org = vm1.addOrg(0, code);
+                org.mem   = Int32Array.from([0,1,2,3,4,5]);
+                vm1.run();
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(1);
+                expect(org.ret).toBe(1);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+                expect(org.mem).toEqual(Int32Array.from([0,1,2,3,4,5]));
                 vm1.destroy();
             });
         });

@@ -404,7 +404,9 @@ class VM {
 
                         case READ:
                             ++line;
-                            ax = code[line];
+                            if (ax < 0) {ax = 0}
+                            if (ax >= code.length) {ax = code.length - 1}
+                            ax = code[ax];
                             continue;
 
                         case CMP: {
