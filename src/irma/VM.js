@@ -413,12 +413,11 @@ class VM {
                             ++line;
                             const codeLen = code.length - 1;
                             const mem     = org.mem;
-                            const memLen  = mem.length - org.memPos;
-                            if (bx < 1) {bx = 1}
-                            if (bx > memLen) {bx = memLen}
-                            if (ax < 0) {ax = 0}
-                            if (ax > codeLen - bx) {ax = codeLen - bx}
-                            
+                            if (bx < 0)  {bx = 0}
+                            if (bx > codeLen) {bx = codeLen}
+                            if (ax < 0)  {ax = 0}
+                            if (ax > bx) {ax = bx}
+
                             for (let i = ax, m = org.memPos; i <= bx; i++, m++) {
                                 if (mem[m] !==code[i]) {org.ret = RET_ERR; continue}
                             }
