@@ -50,6 +50,7 @@ describe('src/irma/VM', () => {
     const LO        = Config.CODE_CMDS.LOAD;
     const RD        = Config.CODE_CMDS.READ;
     const CM        = Config.CODE_CMDS.CMP;
+    const BR        = Config.CODE_CMDS.BREAK;
 
     let   vm        = null;
 
@@ -753,6 +754,11 @@ describe('src/irma/VM', () => {
                 expect(org.mem).toEqual(Int32Array.from([1,0,2,3,4,5]));
                 vm1.destroy();
             });
+        });
+
+        describe('break tests', () => {
+            it('break0', () => run([BR]));
+            it('break1', () => run([1,LP,BR,2,EN], 1, 0, 0, false, 3));
         });
     });
 });
