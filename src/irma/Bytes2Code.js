@@ -51,6 +51,9 @@ const LEFT                  = Config.CODE_CMDS.LEFT;
 const RIGHT                 = Config.CODE_CMDS.RIGHT;
 const SAVE                  = Config.CODE_CMDS.SAVE;
 const LOAD                  = Config.CODE_CMDS.LOAD;
+const READ                  = Config.CODE_CMDS.READ;
+const CMP                   = Config.CODE_CMDS.CMP;
+const BREAK                 = Config.CODE_CMDS.BREAK;
 //
 // Biological commands
 //
@@ -61,16 +64,18 @@ const SEE                   = Config.CODE_CMDS.SEE;
 const SAY                   = Config.CODE_CMDS.SAY;
 const LISTEN                = Config.CODE_CMDS.LISTEN;
 const NREAD                 = Config.CODE_CMDS.NREAD;
-const NSPLIT                = Config.CODE_CMDS.NSPLIT;
 const GET                   = Config.CODE_CMDS.GET;
 const PUT                   = Config.CODE_CMDS.PUT;
 const OFFS                  = Config.CODE_CMDS.OFFS;
 const COLOR                 = Config.CODE_CMDS.COLOR;
 const ANAB                  = Config.CODE_CMDS.ANAB;
 const CATAB                 = Config.CODE_CMDS.CATAB;
-const FIND                  = Config.CODE_CMDS.FIND;
 const MOVE                  = Config.CODE_CMDS.MOVE;
-const MOLS                  = Config.CODE_CMDS.MOLS;
+const MOL                   = Config.CODE_CMDS.MOL;
+const SMOL                  = Config.CODE_CMDS.SMOL;
+const RMOL                  = Config.CODE_CMDS.RMOL;
+const LMOL                  = Config.CODE_CMDS.LMOL;
+const CMOL                  = Config.CODE_CMDS.CMOL;
 
 class Bytes2Code {
     /**
@@ -184,6 +189,9 @@ Bytes2Code.MAP = {
     [RIGHT ]: ['right',  'org.memPos++'],
     [SAVE  ]: ['save',   'org.mem[org.memPos] = ax'],
     [LOAD  ]: ['load',   'ax = org.mem[org.memPos]'],
+    [READ  ]: ['read',   'ax = read(ax)'],
+    [CMP   ]: ['cmp',    'cmp(ax=fromIdx,bx=toIdx):ret'],
+    [BREAK ]: ['break',  'breaks from loop'],
     //
     // Biological stuff
     //
@@ -194,16 +202,18 @@ Bytes2Code.MAP = {
     [SAY   ]: ['say',    'ax=say(ax=val,bx=freq)'],
     [LISTEN]: ['listen', 'ax=listen(bx=freq)'],
     [NREAD ]: ['nread',  'ax=nread(ax=dir,bx=offs):ret'],
-    [NSPLIT]: ['nsplit', 'nsplit(ax:dir,bx:offs,ret:offs):ret'],
     [GET   ]: ['get',    'get(ax:dir)'],
     [PUT   ]: ['put',    'put(ax:dir)'],
     [OFFS  ]: ['offs',   'ax=org.offset'],
     [COLOR ]: ['color',  'org.color=ax % 0xffffff'],
     [ANAB  ]: ['anab',   'anab(ax:fromIdx, bx:toIdx):ret'],
     [CATAB ]: ['catab',  'catab(ax:offs):ret'],
-    [FIND  ]: ['findm',  'ax=findm(ax:findIdx,bx:fromIdx,ret:toIdx):ret'],
-    [MOVE  ]: ['move',   'move(ax:fromIdx,bx:toIdx):ret'],
-    [MOLS  ]: ['mols',   'ax=mols()']
+    [MOVE  ]: ['move',   'move(ax:fromIdx):ret'],
+    [MOL   ]: ['mol',    'ax,bx=mol()'],
+    [SMOL  ]: ['smol',   'mol=smol(ax)'],
+    [RMOL  ]: ['rmol',   'mol=rmol():ret'],
+    [LMOL  ]: ['lmol',   'mol=lmol():ret'],
+    [CMOL  ]: ['cmol',   'cmol():ret']
 };
 
 module.exports = Bytes2Code;

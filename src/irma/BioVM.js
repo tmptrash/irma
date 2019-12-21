@@ -47,6 +47,7 @@ const ANAB   = Config.CODE_CMDS.ANAB;
 const CATAB  = Config.CODE_CMDS.CATAB;
 const MOVE   = Config.CODE_CMDS.MOVE;
 const MOL    = Config.CODE_CMDS.MOL;
+const SMOL   = Config.CODE_CMDS.SMOL;
 const RMOL   = Config.CODE_CMDS.RMOL;
 const LMOL   = Config.CODE_CMDS.LMOL;
 const CMOL   = Config.CODE_CMDS.CMOL;
@@ -350,6 +351,20 @@ class BioVM extends VM {
                 ++org.line;
                 org.ax    = org.mol;
                 org.bx    = this._molLastOffs(org.code, org.mol);
+                return;
+            }
+
+            case SMOL: {
+                ++org.line;
+                const code = org.code;
+                if (org.ax < 0) {org.mol = org.ax = 0; org.ret = RET_OK; return}
+                if (org.ax >= code.length) {org.ax = code.length - 1}
+                for (let i = org.ax - 1;; i--) {
+                    if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
+                        org.mol = i + 1;
+                        break;
+                    }
+                }
                 return;
             }
 
