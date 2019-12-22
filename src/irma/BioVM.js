@@ -5,6 +5,7 @@
  * 
  * @author flatline
  */
+const Package               = require('./../../package.json');
 const Helper                = require('./../common/Helper');
 const Config                = require('./../Config');
 const Molecule              = require('./Molecule');
@@ -91,7 +92,7 @@ class BioVM extends VM {
     /**
      * Returns "line" language version
      */
-    get version() {return '2.0'}
+    get version() {return Package.version}
 
     /**
      * @override
