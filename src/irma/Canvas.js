@@ -243,7 +243,7 @@ class Canvas {
         canvas.setAttribute('width', Config.WORLD_CANVAS_WIDTH);
         canvas.setAttribute('height', Config.WORLD_CANVAS_HEIGHT);
 
-        return document.body.appendChild(canvas);
+        return document.querySelector(Config.WORLD_CANVAS_QUERY).appendChild(canvas);
     }
 
     _createHeader() {

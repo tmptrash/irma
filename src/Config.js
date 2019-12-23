@@ -297,6 +297,10 @@ module.exports = {
     WORLD_CANVAS_WIDTH         : WIDTH,
     WORLD_CANVAS_HEIGHT        : HEIGHT,
     /**
+     * {String} This query is used to put canvas with world in it
+     */
+    WORLD_CANVAS_QUERY         : '#world',
+    /**
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,
