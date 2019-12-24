@@ -132,7 +132,7 @@ module.exports = {
      * Start organims array. At least one organism must be presented in this array
      * @constant
      */
-    LUCA                       : [{
+    LUCAS                      : [{
         /**
          * {Uint8Array} Code of first organism - LUCA (Last Universal Common Ancestor)
          */
@@ -298,6 +298,10 @@ module.exports = {
     codeMutateMutations        : false,
 
     /**
+     * {Boolean} Turns on or off panzoom library
+     */
+    WORLD_USE_ZOOM             : true,
+    /**
      * World width and height in pixels
      * @constant
      */
@@ -317,10 +321,6 @@ module.exports = {
      * {Boolean} Show top-left buttons (fulscreen and visualize)
      */
     worldCanvasButtons         : true,
-    /**
-     * {Boolean} Turns on or off panzoom library
-     */
-    WORLD_USE_ZOOM             : true,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -349,7 +349,6 @@ module.exports = {
      */
     ORG_MIN_COLOR              : 0x96,
     orgColor                   : 0xFF0000,
-    orgAmount                  : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,

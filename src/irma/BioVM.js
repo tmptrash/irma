@@ -58,7 +58,7 @@ class BioVM extends VM {
      * Returns maximum amount of organisms only according to config and amount of molecules
      * @return {Number} max amount
      */
-    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.LUCA[0].code.length || 1)) + Config.orgAmount}
+    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.LUCAS[0].code.length || 1)) + Config.orgAmount}
 
     /**
      * Returns maximum amount of molecules and organisms according to config
@@ -502,10 +502,11 @@ class BioVM extends VM {
      */
     addOrgs() {
         const world = this.world;
-        const code  = Config.LUCA[0].code;
-        let orgs    = Config.orgAmount;
+        const lucas = Config.LUCAS;
+        let orgs    = lucas.length;
         while (orgs-- > 0) {
-            const offset = rand(MAX_OFFS);
+            const code   = lucas[orgs].code;
+            const offset = lucas[orgs].offs || rand(MAX_OFFS);
             if (world.index(offset) > -1) {orgs++; continue}
             this.addOrg(offset, this.split2Mols(code.slice()), code.length * Config.energyMultiplier);
             // const luca = this.addOrg(offset, code.slice(), code.length * Config.energyMultiplier);
@@ -597,7 +598,7 @@ class BioVM extends VM {
             code[size - 1] |= Config.CODE_8_BIT_MASK;
             return code;
         }
-        let   code  = Config.LUCA[0].code;
+        let   code  = Config.LUCAS[0].code;
         const len   = code.length;
         const start = size * Math.floor(Math.random() * Math.ceil(len / 4));
         code = code.slice(start, start + size);
