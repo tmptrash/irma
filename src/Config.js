@@ -301,6 +301,10 @@ module.exports = {
      */
     WORLD_CANVAS_QUERY         : '#world',
     /**
+     * {Boolean} Show top-left buttons (fulscreen and visualize)
+     */
+    worldCanvasButtons         : true,
+    /**
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,

@@ -21,8 +21,8 @@ class Canvas {
         this._visualize     = true;
         this._panZoom       = null;
         this._zoomObserver  = null;
-        this._fullEl        = this._createFullScreenBtn();
-        this._visualizeEl   = this._createVisualizeBtn();
+        this._fullEl        = Config.worldCanvasButtons ? this._createFullScreenBtn() : null;
+        this._visualizeEl   = Config.worldCanvasButtons ? this._createVisualizeBtn()  : null;
         this._xDataOffs     = 0;
         this._yDataOffs     = 0;
         this._visibleWidth  = Config.WORLD_CANVAS_WIDTH;
