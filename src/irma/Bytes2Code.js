@@ -101,8 +101,9 @@ class Bytes2Code {
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
-            const sep     = lines ? ((bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
+            const molIdx  = lines ? ((bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
+            const lineIdx = lines ? `${b ? '\n' : ''}${(b+'').padEnd(5)}` : '';
             const comment = comments ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
                 cmd === LOOP ||
@@ -113,16 +114,16 @@ class Bytes2Code {
                 cmd === IFL  ||
                 cmd === IFE  ||
                 cmd === IFNE) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
+                code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
                 if ((offs[b] || 0) > b + 1) {span += '  '}
                 continue;
             } else if (cmd === END) {
                 span = span.substr(0, span.length - 2);
             } else if (line === undefined) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${span}${cmd}`;
+                code += `${lineIdx}${molIdx}${span}${cmd}`;
                 continue;
             }
-            code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
+            code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
         }
 
         return code;
