@@ -74,7 +74,6 @@ describe('src/irma/VM', () => {
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
             molAmount                  : 1,
-            orgAmount                  : 1,
             orgMaxAge                  : 2000000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,

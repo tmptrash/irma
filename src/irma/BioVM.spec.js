@@ -86,7 +86,6 @@ describe('src/irma/VM', () => {
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
             molAmount                  : 1,
-            orgAmount                  : 1,
             orgMaxAge                  : 2000000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
@@ -118,8 +117,8 @@ describe('src/irma/VM', () => {
             vm.orgsMols.get(i).hasOwnProperty('energy') && vm.orgsMols.get(i).compile();
         }
 
-        expect(vm.orgs.items).toBe(Config.orgAmount);
-        expect(vm.orgsMols.items).toBe(Config.molAmount + Config.orgAmount);
+        expect(vm.orgs.items).toBe(Config.LUCAS.length);
+        expect(vm.orgsMols.items).toBe(Config.molAmount + Config.LUCAS.length);
         vm.run();
     }
 

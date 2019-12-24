@@ -58,13 +58,13 @@ class BioVM extends VM {
      * Returns maximum amount of organisms only according to config and amount of molecules
      * @return {Number} max amount
      */
-    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.LUCAS[0].code.length || 1)) + Config.orgAmount}
+    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.LUCAS[0].code.length || 1)) + Config.LUCAS.length}
 
     /**
      * Returns maximum amount of molecules and organisms according to config
      * @return {Number} max amount
      */
-    static _orgsMolsAmount() {return Config.molAmount + Config.orgAmount + 1}
+    static _orgsMolsAmount() {return Config.molAmount + Config.LUCAS.length + 1}
 
     constructor() {
         super(BioVM._orgsAmount());
@@ -75,7 +75,7 @@ class BioVM extends VM {
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
-        if (BioVM._orgsAmount() + BioVM._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "orgAmount" configs')}
+        if (BioVM._orgsAmount() + BioVM._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "LUCAS.length" configs')}
         this.addOrgs();
         this.addMols();
     }
