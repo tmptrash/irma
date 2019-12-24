@@ -92,11 +92,12 @@ class Bytes2Code {
         // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
         //
-        const org  = new Organism(-1, bytes);
-        const offs = org.offs;
-        let code   = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
-        let span   = '';
-        let mol    = 0;
+        const org     = new Organism(-1, bytes);
+        const offs    = org.offs;
+        const padSize = lines ? CODE_PAD_SIZE : 0;
+        let code      = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
+        let span      = '';
+        let mol       = 0;
 
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
@@ -114,7 +115,7 @@ class Bytes2Code {
                 cmd === IFL  ||
                 cmd === IFE  ||
                 cmd === IFNE) {
-                code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
+                code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)}${comment}`;
                 if ((offs[b] || 0) > b + 1) {span += '  '}
                 continue;
             } else if (cmd === END) {
@@ -123,7 +124,7 @@ class Bytes2Code {
                 code += `${lineIdx}${molIdx}${span}${cmd}`;
                 continue;
             }
-            code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
+            code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)}${comment}`;
         }
 
         return code;
