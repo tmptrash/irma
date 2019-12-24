@@ -123,10 +123,10 @@ class Canvas {
     }
  
     _prepareDom() {
-        const bodyEl = document.body;
+        const rootEl = document.querySelector(Config.WORLD_CANVAS_QUERY);
         const htmlEl = document.querySelector('html');
 
-        Helper.setStyles(bodyEl, {
+        Helper.setStyles(rootEl, {
             width          : '100%',
             height         : '100%',
             margin         : 0,
