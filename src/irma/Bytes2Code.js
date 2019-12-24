@@ -81,11 +81,12 @@ class Bytes2Code {
     /**
      * Converts bytes array to array of asm like strings
      * @param {Array} bytes Array of numbers (bytes)
+     * @param {Boolean} comment Show or not comments near every line
      * @param {Boolean} info Shows code information at the beginning
      * @param {Boolean} firstLineEmpty adds first empty line before script
      * @return {String} Array of asm like strings
      */
-    static toCode(bytes, info = false, firstLineEmpty = true) {
+    static toCode(bytes, comments = true, info = false, firstLineEmpty = true) {
         //
         // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
@@ -98,9 +99,10 @@ class Bytes2Code {
 
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
-            const cmd  = bytes[b] & CODE_8_BIT_RESET_MASK;
-            const sep  = (bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `;
-            const line = Bytes2Code.MAP[cmd];
+            const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
+            const sep     = (bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `;
+            const line    = Bytes2Code.MAP[cmd];
+            const comment = comments ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
                 cmd === LOOP ||
                 cmd === IFP  ||
@@ -110,7 +112,7 @@ class Bytes2Code {
                 cmd === IFL  ||
                 cmd === IFE  ||
                 cmd === IFNE) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
                 if ((offs[b] || 0) > b + 1) {span += '  '}
                 continue;
             } else if (cmd === END) {
@@ -119,7 +121,7 @@ class Bytes2Code {
                 code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${span}${cmd}`;
                 continue;
             }
-            code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+            code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}${comment}`;
         }
 
         return code;
