@@ -65,7 +65,7 @@ describe('src/irma/VM', () => {
             WORLD_WIDTH                : WIDTH,
             WORLD_HEIGHT               : HEIGHT,
             PLUGINS                    : [],
-            CODE_LUCA                  : [],
+            LUCA                       : [{code: Uint8Array.from([])}],
             // variables
             codeLinesPerIteration      : 1,
             codeRepeatsPerRun          : 1,

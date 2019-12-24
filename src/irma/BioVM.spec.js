@@ -82,7 +82,7 @@ describe('src/irma/VM', () => {
             codeRepeatsPerRun          : 1,
             codeMutateEveryClone       : 1000,
             codeMutateMutations        : false,
-            CODE_LUCA                   : [],
+            LUCA                       : [{code: [], offs: 0, energy: 10000}],
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
             molAmount                  : 1,
@@ -110,7 +110,7 @@ describe('src/irma/VM', () => {
     function run(code, cfg, move) {
         Config.codeLinesPerIteration = code[0].length;
         Object.assign(Config, cfg);
-        Object.assign(Config, {CODE_LUCA: Uint8Array.from([0])});
+        Object.assign(Config, {LUCA: [{code: Uint8Array.from([0])}]});
         vm  = new BioVM();
         for (let i = 0; i < move.length; i++) {
             vm.orgsMols.get(i).code = vm.split2Mols(Uint8Array.from(code[i]).slice());
@@ -169,7 +169,7 @@ describe('src/irma/VM', () => {
             const vm1 = new BioVM();
             const cfg = Config;
 
-            expect(vm1.orgs.size).toBe(Math.round(cfg.molAmount * cfg.molCodeSize / (cfg.CODE_LUCA.length || 1)) + cfg.orgAmount + 1);
+            expect(vm1.orgs.size).toBe(Math.round(cfg.molAmount * cfg.molCodeSize / (cfg.LUCA[0].code.length || 1)) + cfg.orgAmount + 1);
             expect(vm1.orgsMols.size).toBe(cfg.orgAmount + cfg.molAmount + 1);
             vm1.destroy();
         });
@@ -202,7 +202,7 @@ describe('src/irma/VM', () => {
             it('Checks joining right molecule',  () => {
                 Config.molAmount   = 1;
                 Config.orgAmount   = 1;
-                Config.CODE_LUCA   = Uint8Array.from([2,JO]);
+                Config.LUCA[0].code = Uint8Array.from([2,JO]);
                 Config.molCodeSize = 2;
                 Config.codeLinesPerIteration = 2;
                 const vm1  = new BioVM();
@@ -246,7 +246,7 @@ describe('src/irma/VM', () => {
             });
             it('Checks organism splitting fail, because orgsMols is full',  () => {
                 Config.molAmount = 0;
-                Config.CODE_LUCA = Uint8Array.from([2,2,2,2,AR,1,TG,0,SP]);
+                Config.LUCA[0].code = Uint8Array.from([2,2,2,2,AR,1,TG,0,SP]);
                 const vm1  = new BioVM();
                 const org = vm1.orgs.get(0);
                 vm1.world.moveOrg(org, 0);
