@@ -141,7 +141,10 @@ module.exports = {
             CODE_OFFS + 2,  // nop
             CODE_OFFS + 2,  // nop
             CODE_OFFS + 21, // func
-            127,            //   127
+            60,             //   60
+            CODE_OFFS,      //   toggle
+            5,              //   5
+            CODE_OFFS + 5,  //   mul
             CODE_OFFS + 19, //   loop
             CODE_OFFS + 54, //     mol
             CODE_OFFS,      //     toggle
@@ -173,7 +176,10 @@ module.exports = {
             CODE_OFFS + 23, //   end
             CODE_OFFS + 23, // end
             CODE_OFFS + 21, // func
-            127,            //   127
+            60,             //   60
+            CODE_OFFS,      //   toggle
+            5,              //   5
+            CODE_OFFS + 5,  //   mul
             CODE_OFFS + 19, //   loop
             CODE_OFFS + 54, //     mol
             CODE_OFFS,      //     toggle
@@ -192,7 +198,7 @@ module.exports = {
             3,              //   3
             CODE_OFFS + 35, //   save
             CODE_OFFS + 34, //   right
-            127,            //   127
+            63,             //   63
             CODE_OFFS,      //   toggle
             3,              //   3
             CODE_OFFS + 3,  //   add
@@ -234,7 +240,10 @@ module.exports = {
             CODE_OFFS + 33, //   left
             CODE_OFFS + 36, //   load
             CODE_OFFS + 55, //   smol
-            127,            //   127
+            60,             //   60
+            CODE_OFFS,      //   toggle
+            5,              //   5
+            CODE_OFFS + 5,  //   mul
             CODE_OFFS + 19, //   loop
             CODE_OFFS + 34, //     right
             CODE_OFFS + 34, //     right
@@ -246,7 +255,10 @@ module.exports = {
             CODE_OFFS + 55, //     smol
             CODE_OFFS + 34, //     right
             CODE_OFFS + 34, //     right
-            127,            //     127
+            60,             //     60
+            CODE_OFFS,      //     toggle
+            5,              //     5
+            CODE_OFFS + 5,  //     mul
             CODE_OFFS + 19, //     loop
             CODE_OFFS + 54, //       mol
             CODE_OFFS,      //       toggle
