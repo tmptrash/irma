@@ -81,12 +81,13 @@ class Bytes2Code {
     /**
      * Converts bytes array to array of asm like strings
      * @param {Array} bytes Array of numbers (bytes)
+     * @param {Boolean} lines Show or hide lines and molecules
      * @param {Boolean} comment Show or not comments near every line
      * @param {Boolean} info Shows code information at the beginning
      * @param {Boolean} firstLineEmpty adds first empty line before script
      * @return {String} Array of asm like strings
      */
-    static toCode(bytes, comments = true, info = false, firstLineEmpty = true) {
+    static toCode(bytes, lines = true, comments = true, info = false, firstLineEmpty = true) {
         //
         // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
@@ -100,7 +101,7 @@ class Bytes2Code {
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
-            const sep     = (bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `;
+            const sep     = lines ? ((bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
             const comment = comments ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
