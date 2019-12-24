@@ -104,7 +104,7 @@ class Bytes2Code {
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
             const molIdx  = lines ? ((bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
-            const lineIdx = lines ? `${b ? '\n' : ''}${(b+'').padEnd(5)}` : '';
+            const lineIdx = lines ? `${b ? '\n' : ''}${(b+'').padEnd(5)}` : '\n';
             const comment = comments ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
                 cmd === LOOP ||
