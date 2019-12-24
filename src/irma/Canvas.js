@@ -122,6 +122,10 @@ class Canvas {
         this._headerEl.textContent = text;
     }
  
+    update() {
+        this._ctx.putImageData(this._imgData, 0, 0, this._xDataOffs, this._yDataOffs, this._visibleWidth, this._visibleHeight);
+    }
+
     _prepareDom() {
         const bodyEl = document.body;
         const htmlEl = document.querySelector('html');
@@ -233,7 +237,7 @@ class Canvas {
 
     _onAnimate() {
         if (!this._panZoom) {return}
-        this._ctx.putImageData(this._imgData, 0, 0, this._xDataOffs, this._yDataOffs, this._visibleWidth, this._visibleHeight);
+        this.update();
 
         if (this._visualize === true) {
             window.requestAnimationFrame(this._animate);
