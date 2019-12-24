@@ -29,7 +29,7 @@ class Canvas {
         this._visibleHeight = Config.WORLD_CANVAS_HEIGHT;
 
         this._prepareDom();
-        this._initPanZoomLib();
+        Config.WORLD_USE_ZOOM && this._initPanZoomLib();
         this.clear();
         this._onFullscreen();
         window.requestAnimationFrame(this._animate);
@@ -38,7 +38,7 @@ class Canvas {
     destroy() {
         const parentNode = document.body;
 
-        this._panZoom.dispose();
+        Config.WORLD_USE_ZOOM && this._panZoom.dispose();
         parentNode.removeChild(this._canvasEl);
         parentNode.removeChild(this._fullEl);
         parentNode.removeChild(this._visualizeEl);
@@ -223,8 +223,10 @@ class Canvas {
     }
 
     _onFullscreen() {
-        this._panZoom.zoomAbs(0, 0, 1.0);
-        this._panZoom.moveTo(0, 0);
+        if (Config.WORLD_USE_ZOOM) {
+            this._panZoom.zoomAbs(0, 0, 1.0);
+            this._panZoom.moveTo(0, 0);
+        }
         this._canvasEl.style.width  = '100%';
         this._canvasEl.style.height = '100%';
     }
@@ -236,7 +238,6 @@ class Canvas {
     }
 
     _onAnimate() {
-        if (!this._panZoom) {return}
         this.update();
 
         if (this._visualize === true) {

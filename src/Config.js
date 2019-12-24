@@ -318,6 +318,10 @@ module.exports = {
      */
     worldCanvasButtons         : true,
     /**
+     * {Boolean} Turns on or off panzoom library
+     */
+    WORLD_USE_ZOOM             : true,
+    /**
      * {Number} Zoom speed 0..1
      */
     worldZoomSpeed             : 0.1,
