@@ -128,5 +128,18 @@ Mutations._MUTATION_CBS = [
     Mutations._onCopy.bind(this),
     Mutations._onCut.bind(this)
 ];
+/**
+ * {Array} Names of mutation types
+ */
+Mutations.NAMES = [
+    'change',
+    'delete',
+    'period',
+    'percent',
+    'probs',
+    'insert',
+    'copy',
+    'cut'
+];
 
 module.exports = Mutations;
