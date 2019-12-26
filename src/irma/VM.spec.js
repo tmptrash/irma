@@ -35,8 +35,8 @@ describe('src/irma/VM', () => {
     const FU        = Config.CODE_CMDS.FUNC;
     const RE        = Config.CODE_CMDS.RET;
     const EN        = Config.CODE_CMDS.END;
-    const RX        = Config.CODE_CMDS.RETAX;
-    const AR        = Config.CODE_CMDS.AXRET;
+    const RX        = Config.CODE_CMDS.REAX;
+    const AR        = Config.CODE_CMDS.AXRE;
     const AN        = Config.CODE_CMDS.AND;
     const OR        = Config.CODE_CMDS.OR;
     const XO        = Config.CODE_CMDS.XOR;
@@ -93,11 +93,11 @@ describe('src/irma/VM', () => {
      * @param {Uint8Array} code Code to run
      * @param {Number} ax ax register should be equal this value after run
      * @param {Number} bx bx register should be equal this value after run
-     * @param {Number} ret ret register should be equal this value after run
+     * @param {Number} re re register should be equal this value after run
      * @param {Boolean} checkLen If true, then org.code.length === lines
      * @param {Number} lines Amount of lines run after calling vm.run()
      */
-    function run(code, ax = 0, bx = 0, ret = 0, checkLen = true, lines = null) {
+    function run(code, ax = 0, bx = 0, re = 0, checkLen = true, lines = null) {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
@@ -105,13 +105,13 @@ describe('src/irma/VM', () => {
 
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
-        expect(org.ret).toBe(0);
+        expect(org.re).toBe(0);
         expect(org.line).toBe(0);
         vm.run();
 
         expect(org.ax).toBe(ax);
         expect(org.bx).toBe(bx);
-        expect(org.ret).toBe(ret);
+        expect(org.re).toBe(re);
         expect(org.code).toEqual(Uint8Array.from(code));
         checkLen && expect(org.line).toEqual(org.code.length);
     }
@@ -276,12 +276,12 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.line).toBe(0);
                 vm.run();
 
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
             })
@@ -430,30 +430,30 @@ describe('src/irma/VM', () => {
             it('call13', () => run([CA,IN,FU,IN,FU], 2, 0, 0, false, 5));
         });
 
-        describe('ret tests', () => {
-            it('ret0',   () => run([RE], 0, 0, 0, false, 1));
-            it('ret1',   () => run([FU,RE,EN,CA,IN], 1, 0, 0, false, 5));
-            it('ret2',   () => run([FU,RE,RE,EN,CA,IN], 1, 0, 0, false, 5));
-            it('ret3',   () => run([FU,IN,RE,EN,CA,IN], 1, 0, 0, false, 5));
-            it('ret4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 0, 0, false, 7));
-            it('ret5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, 0, false, 5));
-            it('ret6',   () => run([FU,FG,RE,EN,EN,CA,IN], 1, 0, 0, false, 5));
-            it('ret7',   () => run([FU,FG,FL,RE,EN,EN,EN,CA,IN], 1, 0, 0, false, 6));
-            it('ret8',   () => run([FU,FG,FL,IN,RE,EN,EN,EN,CA], 0, 0, 0, false, 6));
-            it('ret9',   () => run([NO,NO,RE,IN,IN], 0, 0, 0, false, 5));
-            it('ret10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, 0, false, 5));
-            it('ret11',  () => run([RE], 0, 0, 0, false, 10));
+        describe('re tests', () => {
+            it('re0',   () => run([RE], 0, 0, 0, false, 1));
+            it('re1',   () => run([FU,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('re2',   () => run([FU,RE,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('re3',   () => run([FU,IN,RE,EN,CA,IN], 1, 0, 0, false, 5));
+            it('re4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 0, 0, false, 7));
+            it('re5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, 0, false, 5));
+            it('re6',   () => run([FU,FG,RE,EN,EN,CA,IN], 1, 0, 0, false, 5));
+            it('re7',   () => run([FU,FG,FL,RE,EN,EN,EN,CA,IN], 1, 0, 0, false, 6));
+            it('re8',   () => run([FU,FG,FL,IN,RE,EN,EN,EN,CA], 0, 0, 0, false, 6));
+            it('re9',   () => run([NO,NO,RE,IN,IN], 0, 0, 0, false, 5));
+            it('re10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, 0, false, 5));
+            it('re11',  () => run([RE], 0, 0, 0, false, 10));
         });
 
         describe('retax tests', () => {
-            it('retax0', () => run([RX]));
-            it('retax1', () => run([2,AR,1,RX], 2, 0, 2));
+            it('reax0', () => run([RX]));
+            it('reax1', () => run([2,AR,1,RX], 2, 0, 2));
         });
 
         describe('axret tests', () => {
-            it('axret0', () => run([AR]));
-            it('axret1', () => run([1,AR], 1, 0, 1));
-            it('axret2', () => run([1,AR,2,AR], 2, 0, 2));
+            it('axre0', () => run([AR]));
+            it('axre1', () => run([1,AR], 1, 0, 1));
+            it('axre2', () => run([1,AR,2,AR], 2, 0, 2));
         });
 
         describe('and tests', () => {
@@ -512,14 +512,14 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.line).toBe(0);
                 vm.run();
 
                 expect(org.age).toBe(4);
                 expect(org.ax).toBe(3);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
             });
@@ -554,13 +554,13 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.line).toBe(0);
                 vm1.run();
 
                 expect(org.ax).toBe(1);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 vm1.destroy();
@@ -582,13 +582,13 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.line).toBe(0);
                 vm1.run();
 
                 expect(org.ax).toBe(2);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([2,1]));
@@ -616,7 +616,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(1);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([0,1,2,3,4,5]));
@@ -633,7 +633,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(1);
                 expect(org.bx).toBe(2);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([0,2,TG,3,4,5]));
@@ -650,7 +650,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(1);
                 expect(org.bx).toBe(1);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([0,1,2,3,4,5]));
@@ -667,7 +667,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([0,0,2,3,4,5]));
@@ -683,7 +683,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([0,2,3,4,5]));
@@ -699,7 +699,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(3);
                 expect(org.bx).toBe(3);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([CM,2,3,4,5]));
@@ -715,7 +715,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([0,2,3,4,5]));
@@ -731,7 +731,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(1);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([0,0,2,3,4,5]));
@@ -747,7 +747,7 @@ describe('src/irma/VM', () => {
 
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(0);
-                expect(org.ret).toBe(0);
+                expect(org.re).toBe(0);
                 expect(org.code).toEqual(code);
                 expect(org.line).toEqual(code.length);
                 expect(org.mem).toEqual(Int32Array.from([1,0,2,3,4,5]));

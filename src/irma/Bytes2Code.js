@@ -38,8 +38,8 @@ const CALL                  = Config.CODE_CMDS.CALL;
 const FUNC                  = Config.CODE_CMDS.FUNC;
 const RET                   = Config.CODE_CMDS.RET;
 const END                   = Config.CODE_CMDS.END;
-const RETAX                 = Config.CODE_CMDS.RETAX;
-const AXRET                 = Config.CODE_CMDS.AXRET;
+const REAX                  = Config.CODE_CMDS.REAX;
+const AXRE                  = Config.CODE_CMDS.AXRE;
 const AND                   = Config.CODE_CMDS.AND;
 const OR                    = Config.CODE_CMDS.OR;
 const XOR                   = Config.CODE_CMDS.XOR;
@@ -138,7 +138,7 @@ class Bytes2Code {
         return [
             'Abbreviations description:',
             '  ax, bx    - data registers',
-            '  ret       - commands return value register',
+            '  re        - commands return value register',
             '  offs      - absolute offset of command in a code',
             '  idx       - index of molecule in a code',
             '  fromIdx   - index of "from" molecule',
@@ -146,7 +146,7 @@ class Bytes2Code {
             '  dir       - one of 8 directions (up, right-up, right,...)',
             '  val       - value or number',
             '  freq      - frequency (related to say/listen commands',
-            '  cmd():ret - ret contains success of command',
+            '  cmd():re  - re contains success of command',
             '',
             ''
         ].join('\n');
@@ -181,8 +181,8 @@ Bytes2Code.MAP = {
     [FUNC  ]: ['func',   'function'],
     [RET   ]: ['ret',    'return'],
     [END   ]: ['end',    'end func/if/loop'],
-    [RETAX ]: ['retax',  'ax=ret'],
-    [AXRET ]: ['axret',  'ret=ax'],
+    [REAX  ]: ['reax',   'ax=re'],
+    [AXRE  ]: ['axre',   're=ax'],
     [AND   ]: ['and',    'ax&=bx'],
     [OR    ]: ['or',     'ax|=bx'],
     [XOR   ]: ['xor',    'ax^=bx'],
@@ -195,30 +195,30 @@ Bytes2Code.MAP = {
     [SAVE  ]: ['save',   'org.mem[org.memPos] = ax'],
     [LOAD  ]: ['load',   'ax = org.mem[org.memPos]'],
     [READ  ]: ['read',   'ax = read(ax)'],
-    [CMP   ]: ['cmp',    'cmp(ax=fromIdx,bx=toIdx):ret'],
+    [CMP   ]: ['cmp',    'cmp(ax=fromIdx,bx=toIdx):re'],
     [BREAK ]: ['break',  'breaks from loop'],
     //
     // Biological stuff
     //
-    [JOIN  ]: ['join',   'join(ax=dir):ret'],
-    [SPLIT ]: ['split',  'plit(ax=fromIdx,bx=toIdx,ret=dir):ret'],
-    [STEP  ]: ['step',   'step(ax=dir):ret'],
+    [JOIN  ]: ['join',   'join(ax=dir):re'],
+    [SPLIT ]: ['split',  'plit(ax=fromIdx,bx=toIdx,re=dir):re'],
+    [STEP  ]: ['step',   'step(ax=dir):re'],
     [SEE   ]: ['see',    'ax=see(offs+ax)'],
     [SAY   ]: ['say',    'ax=say(ax=val,bx=freq)'],
     [LISTEN]: ['listen', 'ax=listen(bx=freq)'],
-    [NREAD ]: ['nread',  'ax=nread(ax=dir,bx=offs):ret'],
+    [NREAD ]: ['nread',  'ax=nread(ax=dir,bx=offs):re'],
     [GET   ]: ['get',    'get(ax:dir)'],
     [PUT   ]: ['put',    'put(ax:dir)'],
     [OFFS  ]: ['offs',   'ax=org.offset'],
     [COLOR ]: ['color',  'org.color=ax % 0xffffff'],
-    [ANAB  ]: ['anab',   'anab(ax:fromIdx, bx:toIdx):ret'],
-    [CATAB ]: ['catab',  'catab(ax:offs):ret'],
-    [MOVE  ]: ['move',   'move(ax:fromIdx):ret'],
+    [ANAB  ]: ['anab',   'anab(ax:fromIdx, bx:toIdx):re'],
+    [CATAB ]: ['catab',  'catab(ax:offs):re'],
+    [MOVE  ]: ['move',   'move(ax:fromIdx):re'],
     [MOL   ]: ['mol',    'ax,bx=mol()'],
     [SMOL  ]: ['smol',   'mol=smol(ax)'],
-    [RMOL  ]: ['rmol',   'mol=rmol():ret'],
-    [LMOL  ]: ['lmol',   'mol=lmol():ret'],
-    [CMOL  ]: ['cmol',   'cmol():ret']
+    [RMOL  ]: ['rmol',   'mol=rmol():re'],
+    [LMOL  ]: ['lmol',   'mol=lmol():re'],
+    [CMOL  ]: ['cmol',   'cmol():re']
 };
 
 module.exports = Bytes2Code;

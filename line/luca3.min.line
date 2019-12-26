@@ -4,31 +4,31 @@ nop
 func
   127             # 127 mols max
   loop
-    mol           # ax=idx0   bx=idx1
+  mol             # ax=idx0   bx=idx1
 	toggle
 	sub
-	inc           # ax=molLen
-	toggle        # bx=molLen
-    load          # ax=len
+	inc             # ax=molLen
+	toggle          # bx=molLen
+  load            # ax=len
 	ife
-	  right       # m1
-	  mol         # ax=idx0   bx=idx1
-      cmp         # ret=0|1|-1
-	  left        # m0
-	  toggle      # ax=idx1   bx=idx0
-      retax       # ax=0|1    bx=idx0
-      ifp
-        toggle    # ax=idx0
-	    axret     # ret=idx0
-        ret
-      end
+	  right         # m1
+	  mol           # ax=idx0   bx=idx1
+    cmp           # re=0|1|-1
+	  left          # m0
+	  toggle        # ax=idx1   bx=idx0
+    reax          # ax=0|1    bx=idx0
+    ifp
+      toggle   # ax=idx0
+	    axre     # re=idx0
+      ret
+    end
 	end
 	rmol
-	retax
-    ifn
-      0
+	reax
+  ifn
+    0
 	  dec
-	  axret
+	  axre
 	  ret
 	end
   end
@@ -36,18 +36,18 @@ end
 func
   127
   loop
-    mol
-	toggle        # bx=idx0
-    rmol
-	retax
+  mol
+	toggle          # bx=idx0
+  rmol
+	reax
 	ifn
-	  toggle      # ax=idx0
+	  toggle        # ax=idx0
 	  ret
 	end
   end
   0
   dec
-  axret
+  axre
 end
 func
   3
@@ -68,7 +68,7 @@ func
   0
   smol            # mol=0
   call
-  retax           # ret=offs|-1
+  reax            # re=offs|-1
   ifn
     ret
   end
@@ -79,7 +79,7 @@ func
   right           # m0
   0
   call
-  retax           # ret=offs-1
+  reax            # re=offs-1
   ifn
     ret
   end
@@ -111,7 +111,7 @@ func
 	  mol         # ax=idx0   bx=idx1
 	  toggle      # bx=idx0
 	  cmp
-	  retax
+	  reax
 	  ifp
 		left
 		load      # ax=end
@@ -141,19 +141,3 @@ call
 nop
 nop
 nop
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
