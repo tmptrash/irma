@@ -21,15 +21,15 @@ class Canvas {
         this._visualize     = true;
         this._panZoom       = null;
         this._zoomObserver  = null;
-        this._fullEl        = this._createFullScreenBtn();
-        this._visualizeEl   = this._createVisualizeBtn();
+        this._fullEl        = Config.worldCanvasButtons ? this._createFullScreenBtn() : null;
+        this._visualizeEl   = Config.worldCanvasButtons ? this._createVisualizeBtn()  : null;
         this._xDataOffs     = 0;
         this._yDataOffs     = 0;
         this._visibleWidth  = Config.WORLD_CANVAS_WIDTH;
         this._visibleHeight = Config.WORLD_CANVAS_HEIGHT;
 
         this._prepareDom();
-        this._initPanZoomLib();
+        Config.WORLD_USE_ZOOM && this._initPanZoomLib();
         this.clear();
         this._onFullscreen();
         window.requestAnimationFrame(this._animate);
@@ -38,7 +38,7 @@ class Canvas {
     destroy() {
         const parentNode = document.body;
 
-        this._panZoom.dispose();
+        Config.WORLD_USE_ZOOM && this._panZoom.dispose();
         parentNode.removeChild(this._canvasEl);
         parentNode.removeChild(this._fullEl);
         parentNode.removeChild(this._visualizeEl);
@@ -122,14 +122,21 @@ class Canvas {
         this._headerEl.textContent = text;
     }
  
+    update() {
+        this._ctx.putImageData(this._imgData, 0, 0, this._xDataOffs, this._yDataOffs, this._visibleWidth, this._visibleHeight);
+    }
+
     _prepareDom() {
         const bodyEl = document.body;
         const htmlEl = document.querySelector('html');
+        const rootEl = document.querySelector(Config.WORLD_CANVAS_QUERY);
 
         Helper.setStyles(bodyEl, {
             width          : '100%',
             height         : '100%',
-            margin         : 0,
+            margin         : 0
+        });
+        Helper.setStyles(rootEl, {
             backgroundColor: '#9e9e9e'
         });
         Helper.setStyles(htmlEl, {
@@ -216,8 +223,10 @@ class Canvas {
     }
 
     _onFullscreen() {
-        this._panZoom.zoomAbs(0, 0, 1.0);
-        this._panZoom.moveTo(0, 0);
+        if (Config.WORLD_USE_ZOOM) {
+            this._panZoom.zoomAbs(0, 0, 1.0);
+            this._panZoom.moveTo(0, 0);
+        }
         this._canvasEl.style.width  = '100%';
         this._canvasEl.style.height = '100%';
     }
@@ -229,8 +238,7 @@ class Canvas {
     }
 
     _onAnimate() {
-        if (!this._panZoom) {return}
-        this._ctx.putImageData(this._imgData, 0, 0, this._xDataOffs, this._yDataOffs, this._visibleWidth, this._visibleHeight);
+        this.update();
 
         if (this._visualize === true) {
             window.requestAnimationFrame(this._animate);

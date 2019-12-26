@@ -81,26 +81,31 @@ class Bytes2Code {
     /**
      * Converts bytes array to array of asm like strings
      * @param {Array} bytes Array of numbers (bytes)
+     * @param {Boolean} lines Show or hide lines and molecules
+     * @param {Boolean} comment Show or not comments near every line
      * @param {Boolean} info Shows code information at the beginning
      * @param {Boolean} firstLineEmpty adds first empty line before script
      * @return {String} Array of asm like strings
      */
-    static toCode(bytes, info = false, firstLineEmpty = true) {
+    static toCode(bytes, lines = true, comments = true, info = false, firstLineEmpty = true) {
         //
         // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
         //
-        const org  = new Organism(-1, bytes);
-        const offs = org.offs;
-        let code   = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
-        let span   = '';
-        let mol    = 0;
+        const org     = new Organism(-1, bytes);
+        const offs    = org.offs;
+        const padSize = lines ? CODE_PAD_SIZE : 0;
+        let code      = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
+        let span      = '';
+        let mol       = 0;
 
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
-            const cmd  = bytes[b] & CODE_8_BIT_RESET_MASK;
-            const sep  = (bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `;
-            const line = Bytes2Code.MAP[cmd];
+            const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
+            const molIdx  = lines ? ((bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
+            const line    = Bytes2Code.MAP[cmd];
+            const lineIdx = lines ? `${b ? '\n' : ''}${(b+'').padEnd(5)}` : (b ? '\n' : '');
+            const comment = comments ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
                 cmd === LOOP ||
                 cmd === IFP  ||
@@ -110,16 +115,16 @@ class Bytes2Code {
                 cmd === IFL  ||
                 cmd === IFE  ||
                 cmd === IFNE) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+                code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)}${comment}`;
                 if ((offs[b] || 0) > b + 1) {span += '  '}
                 continue;
             } else if (cmd === END) {
                 span = span.substr(0, span.length - 2);
             } else if (line === undefined) {
-                code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${span}${cmd}`;
+                code += `${lineIdx}${molIdx}${span}${cmd}`;
                 continue;
             }
-            code += `${b ? '\n' : ''}${(b+'').padEnd(5)}${sep}${(span + line[0]).padEnd(CODE_PAD_SIZE)}// ${line[1]}`;
+            code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)}${comment}`;
         }
 
         return code;

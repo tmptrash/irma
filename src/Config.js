@@ -129,161 +129,190 @@ module.exports = {
     CODE_8_BIT_MASK            : 0b10000000,
     CODE_8_BIT_RESET_MASK      : 0b01111111,
     /**
-     * {Uint8Array} Code of first organism - LUCA (Last Universal Common Ancestor)
+     * Start organims array. At least one organism must be presented in this array
      * @constant
      */
-    CODE_LUCA                  : Uint8Array.from([
-        CODE_OFFS + 2,  // nop
-        CODE_OFFS + 2,  // nop
-        CODE_OFFS + 2,  // nop
-        CODE_OFFS + 21, // func
-        127,            //   127
-        CODE_OFFS + 19, //   loop
-        CODE_OFFS + 54, //     mol
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 4,  //     sub
-        CODE_OFFS + 7,  //     inc
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 36, //     load
-        CODE_OFFS + 17, //     ife
-        CODE_OFFS + 34, //       right
-        CODE_OFFS + 54, //       mol
-        CODE_OFFS + 38, //       cmp
-        CODE_OFFS + 33, //       left
-        CODE_OFFS,      //       toggle
-        CODE_OFFS + 24, //       retax
-        CODE_OFFS + 12, //       ifp
-        CODE_OFFS,      //         toggle
-        CODE_OFFS + 25, //         axret
-        CODE_OFFS + 22, //         ret
-        CODE_OFFS + 23, //       end
-        CODE_OFFS + 23, //     end
-        CODE_OFFS + 56, //     rmol
-        CODE_OFFS + 24, //     retax
-        CODE_OFFS + 13, //     ifn
-        0,              //       0
-        CODE_OFFS + 8,  //       dec
-        CODE_OFFS + 25, //       axret
-        CODE_OFFS + 22, //       ret 
-        CODE_OFFS + 23, //     end
-        CODE_OFFS + 23, //   end
-        CODE_OFFS + 23, // end
-        CODE_OFFS + 21, // func
-        127,            //   127
-        CODE_OFFS + 19, //   loop
-        CODE_OFFS + 54, //     mol
-        CODE_OFFS,      //     toggle
-        CODE_OFFS + 56, //     rmol
-        CODE_OFFS + 24, //     retax
-        CODE_OFFS + 13, //     ifn
-        CODE_OFFS,      //       toggle
-        CODE_OFFS + 22, //       ret
-        CODE_OFFS + 23, //     end
-        CODE_OFFS + 23, //   end
-        0,              //   0
-        CODE_OFFS + 8,  //   dec
-        CODE_OFFS + 25, //   axret
-        CODE_OFFS + 23, // end
-        CODE_OFFS + 21, // func
-        3,              //   3
-        CODE_OFFS + 35, //   save
-        CODE_OFFS + 34, //   right
-        127,            //   127
-        CODE_OFFS,      //   toggle
-        3,              //   3
-        CODE_OFFS + 3,  //   add
-        CODE_OFFS + 35, //   save
-        CODE_OFFS + 34, //   right
-        CODE_OFFS + 35, //   save
-        CODE_OFFS + 34, //   right
-        CODE_OFFS + 35, //   save
-        CODE_OFFS + 34, //   right
-        CODE_OFFS + 33, //   left
-        CODE_OFFS + 33, //   left
-        CODE_OFFS + 33, //   left
-        0,              //   0
-        CODE_OFFS + 55, //   smol
-        CODE_OFFS + 20, //   call
-        CODE_OFFS + 24, //   retax
-        CODE_OFFS + 13, //   ifn
-        CODE_OFFS + 22, //     ret
-        CODE_OFFS + 23, //   end
-        CODE_OFFS + 33, //   left
-        CODE_OFFS + 56, //   rmol
-        CODE_OFFS + 54, //   mol
-        CODE_OFFS + 35, //   save
-        CODE_OFFS + 34, //   right
-        0,              //   0
-        CODE_OFFS + 20, //   call
-        CODE_OFFS + 24, //   retax
-        CODE_OFFS + 13, //   ifn
-        CODE_OFFS + 22, //     ret
-        CODE_OFFS + 23, //   end
-        CODE_OFFS + 56, //   rmol
-        CODE_OFFS + 54, //   mol
-        CODE_OFFS + 35, //   save
-        CODE_OFFS + 34, //   right
-        1,              //   1
-        CODE_OFFS + 20, //   call
-        CODE_OFFS + 35, //   save
-        CODE_OFFS + 33, //   left
-        CODE_OFFS + 33, //   left
-        CODE_OFFS + 36, //   load
-        CODE_OFFS + 55, //   smol
-        127,            //   127
-        CODE_OFFS + 19, //   loop
-        CODE_OFFS + 34, //     right
-        CODE_OFFS + 34, //     right
-        CODE_OFFS + 34, //     right
-        CODE_OFFS + 58, //     cmol
-        CODE_OFFS + 33, //     left
-        CODE_OFFS + 33, //     left
-        CODE_OFFS + 36, //     load
-        CODE_OFFS + 55, //     smol
-        CODE_OFFS + 34, //     right
-        CODE_OFFS + 34, //     right
-        127,            //     127
-        CODE_OFFS + 19, //     loop
-        CODE_OFFS + 54, //       mol
-        CODE_OFFS,      //       toggle
-        CODE_OFFS + 38, //       cmp
-        CODE_OFFS + 24, //       retax
-        CODE_OFFS + 12, //       ifp
-        CODE_OFFS + 33, //         left
-        CODE_OFFS + 36, //         load
-        CODE_OFFS + 55, //         smol
-        CODE_OFFS,      //         toggle
-        CODE_OFFS + 53, //         move
-        CODE_OFFS + 33, //         left
-        CODE_OFFS + 33, //         left
-        CODE_OFFS + 36, //         load
-        CODE_OFFS + 55, //         smol
-        CODE_OFFS + 34, //         right
-        CODE_OFFS + 34, //         right
-        CODE_OFFS + 36, //         load
-        CODE_OFFS + 8,  //         dec
-        CODE_OFFS + 35, //         save
-        CODE_OFFS + 33, //         left
-        CODE_OFFS + 33, //         left
-        CODE_OFFS + 39, //         break
-        CODE_OFFS + 23, //       end
-        CODE_OFFS + 56, //       rmol
-        CODE_OFFS + 23, //     end
-        CODE_OFFS + 56, //     rmol
-        CODE_OFFS + 23, //   end
-        CODE_OFFS + 23, // end
-        2,              // 2
-        CODE_OFFS + 20, // call
-        CODE_OFFS + 2,  // nop
-        CODE_OFFS + 2,  // nop
-        CODE_OFFS + 2   // nop
-        
-    ]),
+    LUCAS                      : [{
+        /**
+         * {Uint8Array} Code of first organism - LUCA (Last Universal Common Ancestor)
+         */
+        code: Uint8Array.from([
+            CODE_OFFS + 2,  // nop
+            CODE_OFFS + 2,  // nop
+            CODE_OFFS + 2,  // nop
+            CODE_OFFS + 21, // func
+            60,             //   60
+            CODE_OFFS,      //   toggle
+            5,              //   5
+            CODE_OFFS + 5,  //   mul
+            CODE_OFFS + 19, //   loop
+            CODE_OFFS + 54, //     mol
+            CODE_OFFS,      //     toggle
+            CODE_OFFS + 4,  //     sub
+            CODE_OFFS + 7,  //     inc
+            CODE_OFFS,      //     toggle
+            CODE_OFFS + 36, //     load
+            CODE_OFFS + 17, //     ife
+            CODE_OFFS + 34, //       right
+            CODE_OFFS + 54, //       mol
+            CODE_OFFS + 38, //       cmp
+            CODE_OFFS + 33, //       left
+            CODE_OFFS,      //       toggle
+            CODE_OFFS + 24, //       retax
+            CODE_OFFS + 12, //       ifp
+            CODE_OFFS,      //         toggle
+            CODE_OFFS + 25, //         axret
+            CODE_OFFS + 22, //         ret
+            CODE_OFFS + 23, //       end
+            CODE_OFFS + 23, //     end
+            CODE_OFFS + 56, //     rmol
+            CODE_OFFS + 24, //     retax
+            CODE_OFFS + 13, //     ifn
+            0,              //       0
+            CODE_OFFS + 8,  //       dec
+            CODE_OFFS + 25, //       axret
+            CODE_OFFS + 22, //       ret 
+            CODE_OFFS + 23, //     end
+            CODE_OFFS + 23, //   end
+            CODE_OFFS + 23, // end
+            CODE_OFFS + 21, // func
+            60,             //   60
+            CODE_OFFS,      //   toggle
+            5,              //   5
+            CODE_OFFS + 5,  //   mul
+            CODE_OFFS + 19, //   loop
+            CODE_OFFS + 54, //     mol
+            CODE_OFFS,      //     toggle
+            CODE_OFFS + 56, //     rmol
+            CODE_OFFS + 24, //     retax
+            CODE_OFFS + 13, //     ifn
+            CODE_OFFS,      //       toggle
+            CODE_OFFS + 22, //       ret
+            CODE_OFFS + 23, //     end
+            CODE_OFFS + 23, //   end
+            0,              //   0
+            CODE_OFFS + 8,  //   dec
+            CODE_OFFS + 25, //   axret
+            CODE_OFFS + 23, // end
+            CODE_OFFS + 21, // func
+            3,              //   3
+            CODE_OFFS + 35, //   save
+            CODE_OFFS + 34, //   right
+            63,             //   63
+            CODE_OFFS,      //   toggle
+            3,              //   3
+            CODE_OFFS + 3,  //   add
+            CODE_OFFS + 35, //   save
+            CODE_OFFS + 34, //   right
+            CODE_OFFS + 35, //   save
+            CODE_OFFS + 34, //   right
+            CODE_OFFS + 35, //   save
+            CODE_OFFS + 34, //   right
+            CODE_OFFS + 33, //   left
+            CODE_OFFS + 33, //   left
+            CODE_OFFS + 33, //   left
+            0,              //   0
+            CODE_OFFS + 55, //   smol
+            CODE_OFFS + 20, //   call
+            CODE_OFFS + 24, //   retax
+            CODE_OFFS + 13, //   ifn
+            CODE_OFFS + 22, //     ret
+            CODE_OFFS + 23, //   end
+            CODE_OFFS + 33, //   left
+            CODE_OFFS + 56, //   rmol
+            CODE_OFFS + 54, //   mol
+            CODE_OFFS + 35, //   save
+            CODE_OFFS + 34, //   right
+            0,              //   0
+            CODE_OFFS + 20, //   call
+            CODE_OFFS + 24, //   retax
+            CODE_OFFS + 13, //   ifn
+            CODE_OFFS + 22, //     ret
+            CODE_OFFS + 23, //   end
+            CODE_OFFS + 56, //   rmol
+            CODE_OFFS + 54, //   mol
+            CODE_OFFS + 35, //   save
+            CODE_OFFS + 34, //   right
+            1,              //   1
+            CODE_OFFS + 20, //   call
+            CODE_OFFS + 35, //   save
+            CODE_OFFS + 33, //   left
+            CODE_OFFS + 33, //   left
+            CODE_OFFS + 36, //   load
+            CODE_OFFS + 55, //   smol
+            60,             //   60
+            CODE_OFFS,      //   toggle
+            5,              //   5
+            CODE_OFFS + 5,  //   mul
+            CODE_OFFS + 19, //   loop
+            CODE_OFFS + 34, //     right
+            CODE_OFFS + 34, //     right
+            CODE_OFFS + 34, //     right
+            CODE_OFFS + 58, //     cmol
+            CODE_OFFS + 33, //     left
+            CODE_OFFS + 33, //     left
+            CODE_OFFS + 36, //     load
+            CODE_OFFS + 55, //     smol
+            CODE_OFFS + 34, //     right
+            CODE_OFFS + 34, //     right
+            60,             //     60
+            CODE_OFFS,      //     toggle
+            5,              //     5
+            CODE_OFFS + 5,  //     mul
+            CODE_OFFS + 19, //     loop
+            CODE_OFFS + 54, //       mol
+            CODE_OFFS,      //       toggle
+            CODE_OFFS + 38, //       cmp
+            CODE_OFFS + 24, //       retax
+            CODE_OFFS + 12, //       ifp
+            CODE_OFFS + 33, //         left
+            CODE_OFFS + 36, //         load
+            CODE_OFFS + 55, //         smol
+            CODE_OFFS,      //         toggle
+            CODE_OFFS + 53, //         move
+            CODE_OFFS + 33, //         left
+            CODE_OFFS + 33, //         left
+            CODE_OFFS + 36, //         load
+            CODE_OFFS + 55, //         smol
+            CODE_OFFS + 34, //         right
+            CODE_OFFS + 34, //         right
+            CODE_OFFS + 36, //         load
+            CODE_OFFS + 8,  //         dec
+            CODE_OFFS + 35, //         save
+            CODE_OFFS + 33, //         left
+            CODE_OFFS + 33, //         left
+            CODE_OFFS + 39, //         break
+            CODE_OFFS + 23, //       end
+            CODE_OFFS + 56, //       rmol
+            CODE_OFFS + 23, //     end
+            CODE_OFFS + 56, //     rmol
+            CODE_OFFS + 23, //   end
+            CODE_OFFS + 23, // end
+            2,              // 2
+            CODE_OFFS + 20, // call
+            CODE_OFFS + 2,  // nop
+            CODE_OFFS + 2,  // nop
+            CODE_OFFS + 2   // nop
+        ])
+        /**
+         * {Number} absolute world offset of organism. If undefined, then will be 
+         * generated automatically
+         */
+        // offs: 0
+        /**
+         * {Number} Start amount of evergy. If undefined, then will be generated automatically
+         */
+        // energy: 1000
+    }],
     codeLinesPerIteration      : 10,
     codeRepeatsPerRun          : 20,
     codeMutateEveryClone       : 10,
     codeMutateMutations        : false,
 
+    /**
+     * {Boolean} Turns on or off panzoom library
+     */
+    WORLD_USE_ZOOM             : true,
     /**
      * World width and height in pixels
      * @constant
@@ -300,6 +329,10 @@ module.exports = {
      * {String} This query is used to put canvas with world in it
      */
     WORLD_CANVAS_QUERY         : '#world',
+    /**
+     * {Boolean} Show top-left buttons (fulscreen and visualize)
+     */
+    worldCanvasButtons         : true,
     /**
      * {Number} Zoom speed 0..1
      */
@@ -328,7 +361,6 @@ module.exports = {
      */
     ORG_MIN_COLOR              : 0x96,
     orgColor                   : 0xFF0000,
-    orgAmount                  : 1,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,

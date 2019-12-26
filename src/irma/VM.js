@@ -13,7 +13,6 @@ const Plugins               = require('../common/Plugins');
 const Organism              = require('./Organism');
 const Mutations             = require('./Mutations');
 
-const PLUGINS               = Helper.requirePlugins(Config.PLUGINS);
 const rand                  = Helper.rand;
 
 const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
@@ -109,7 +108,7 @@ class VM {
         this.orgs       = new FastArray(amount);
         this.population = -1;
         this.iteration  = 0;
-        this.plugins    = new Plugins(PLUGINS, this);
+        this.plugins    = new Plugins(Helper.requirePlugins(Config.PLUGINS), this);
     }
 
     /**
