@@ -132,13 +132,13 @@ Mutations._MUTATION_CBS = [
  * {Array} Names of mutation types
  */
 Mutations.NAMES = [
-    'change',
-    'delete',
-    'period',
-    'percent',
-    'probs',
-    'insert',
-    'copy',
+    'che',
+    'del',
+    'per',
+    'perc',
+    'prob',
+    'ins',
+    'cpy',
     'cut'
 ];
 
