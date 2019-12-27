@@ -161,16 +161,16 @@ module.exports = {
             CODE_OFFS + 24, //       retax
             CODE_OFFS + 12, //       ifp
             CODE_OFFS,      //         toggle
-            CODE_OFFS + 25, //         axret
+            CODE_OFFS + 25, //         axre
             CODE_OFFS + 22, //         ret
             CODE_OFFS + 23, //       end
             CODE_OFFS + 23, //     end
             CODE_OFFS + 56, //     rmol
-            CODE_OFFS + 24, //     retax
+            CODE_OFFS + 24, //     reax
             CODE_OFFS + 13, //     ifn
             0,              //       0
             CODE_OFFS + 8,  //       dec
-            CODE_OFFS + 25, //       axret
+            CODE_OFFS + 25, //       axre
             CODE_OFFS + 22, //       ret 
             CODE_OFFS + 23, //     end
             CODE_OFFS + 23, //   end
@@ -192,7 +192,7 @@ module.exports = {
             CODE_OFFS + 23, //   end
             0,              //   0
             CODE_OFFS + 8,  //   dec
-            CODE_OFFS + 25, //   axret
+            CODE_OFFS + 25, //   axre
             CODE_OFFS + 23, // end
             CODE_OFFS + 21, // func
             3,              //   3
@@ -207,14 +207,13 @@ module.exports = {
             CODE_OFFS + 35, //   save
             CODE_OFFS + 34, //   right
             CODE_OFFS + 35, //   save
-            CODE_OFFS + 34, //   right
             CODE_OFFS + 33, //   left
             CODE_OFFS + 33, //   left
             CODE_OFFS + 33, //   left
             0,              //   0
             CODE_OFFS + 55, //   smol
             CODE_OFFS + 20, //   call
-            CODE_OFFS + 24, //   retax
+            CODE_OFFS + 24, //   reax
             CODE_OFFS + 13, //   ifn
             CODE_OFFS + 22, //     ret
             CODE_OFFS + 23, //   end
@@ -225,7 +224,7 @@ module.exports = {
             CODE_OFFS + 34, //   right
             0,              //   0
             CODE_OFFS + 20, //   call
-            CODE_OFFS + 24, //   retax
+            CODE_OFFS + 24, //   reax
             CODE_OFFS + 13, //   ifn
             CODE_OFFS + 22, //     ret
             CODE_OFFS + 23, //   end
@@ -263,7 +262,7 @@ module.exports = {
             CODE_OFFS + 54, //       mol
             CODE_OFFS,      //       toggle
             CODE_OFFS + 38, //       cmp
-            CODE_OFFS + 24, //       retax
+            CODE_OFFS + 24, //       reax
             CODE_OFFS + 12, //       ifp
             CODE_OFFS + 33, //         left
             CODE_OFFS + 36, //         load
