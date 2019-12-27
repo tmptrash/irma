@@ -15,9 +15,9 @@ const World                 = require('./World');
 const FastArray             = require('./../common/FastArray');
 
 const rand                  = Helper.rand;
-const RET_OK                = Config.CODE_RET_OK;
-const RET_ERR               = Config.CODE_RET_ERR;
-const RET_SPECIAL           = Config.CODE_RET_SPECIAL;
+const RE_OK                 = Config.CODE_RE_OK;
+const RE_ERR                = Config.CODE_RE_ERR;
+const RE_SPECIAL            = Config.CODE_RE_SPECIAL;
 const ORG_CODE_MAX_SIZE     = Config.orgMaxCodeSize;
 const IS_ORG_ID             = Config.CODE_ORG_ID;
 const DIR                   = Config.DIR;
@@ -130,9 +130,9 @@ class BioVM extends VM {
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.index(offset);
-                if (dot < 0) {org.ret = RET_ERR; return}
+                if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
-                if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.ret = RET_ERR; return}
+                if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
                 org.code = org.code.push(nearOrg.code);
                 nearOrg.energy && (org.energy += nearOrg.energy);
                 //
@@ -145,7 +145,7 @@ class BioVM extends VM {
                 // org.compile();
                 //
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
-                org.ret = RET_OK;
+                org.re = RE_OK;
                 return;
             }
 
@@ -155,18 +155,18 @@ class BioVM extends VM {
             //
             case SPLIT: {
                 ++org.line;
-                if (this.orgsMols.full || org.ret === IS_ORG_ID && this.orgs.full) {org.ret = RET_ERR; return} // mols and orgs maximum was reached
-                const offset  = org.offset + DIR[Math.abs(org.ret) % 8];
-                if (offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
+                if (this.orgsMols.full || org.re === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
+                const offset  = org.offset + DIR[Math.abs(org.re) % 8];
+                if (offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
                 const dot     = this.world.index(offset);
-                if (dot > -1) {org.ret = RET_ERR; return} // something on the way
+                if (dot > -1) {org.re = RE_ERR; return} // something on the way
                 const code    = org.code;
                 const idx0    = org.mol;
                 const idx1    = this._molLastOffs(code, idx0) + 1;
                 const newCode = code.subarray(idx0, idx1);
-                if (newCode.length < 1) {org.ret = RET_ERR; return}
+                if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0);
-                const clone   = org.ret === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
+                const clone   = org.re === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
                 if (org.code.length < 1) {this.delOrg(org)}
@@ -180,7 +180,7 @@ class BioVM extends VM {
                 // org.compile();
                 // line = 0; 
                 //
-                org.ret = RET_OK;
+                org.re = RE_OK;
                 return;
             }
 
@@ -190,9 +190,9 @@ class BioVM extends VM {
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 if (offset < -1) {offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
-                if (this.world.index(offset) > -1) {org.ret = RET_ERR; return}
+                if (this.world.index(offset) > -1) {org.re = RE_ERR; return}
                 this.world.moveOrg(org, offset);
-                org.ret = RET_OK;
+                org.re = RE_OK;
                 return;
             }
 
@@ -223,7 +223,7 @@ class BioVM extends VM {
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot = this.world.index(offset);
-                if (dot < 0) {org.ret = RET_ERR; return}
+                if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg  = this.orgsMols.get(dot);
                 const nearCode = nearOrg.code;
                 let   bx       = org.bx;
@@ -237,26 +237,26 @@ class BioVM extends VM {
                     if ((nearCode[i] & CODE_8_BIT_MASK) > 0) {break}
                     if (m > mLen) {m = -1}
                 }
-                org.ret = RET_OK;
+                org.re = RE_OK;
                 return;
             }
 
             case GET: {
                 ++org.line;
-                if (org.ret !== 1 || org.packet) {org.ret = RET_ERR; return}
+                if (org.re !== 1 || org.packet) {org.re = RE_ERR; return}
                 const dot = this.world.index(org.offset + DIR[Math.abs(org.ax) % 8]);
-                if (dot < 0) {org.ret = RET_ERR; return}
+                if (dot < 0) {org.re = RE_ERR; return}
                 (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
                 return;
             }
 
             case PUT: {
                 ++org.line;
-                if (!org.packet) {org.ret = RET_ERR; return}
-                if (this.orgsMols.full) {org.ret = RET_ERR; return}
+                if (!org.packet) {org.re = RE_ERR; return}
+                if (this.orgsMols.full) {org.re = RE_ERR; return}
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.index(offset);
-                if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.ret = RET_ERR; return}
+                if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
                 org.packet.hasOwnProperty('energy') ? this.addOrg(offset, org.packet.code, org.packet.energy) : this.addMol(offset, org.packet.code);
                 // this.db && this.db.put(org.packet);
                 org.packet = null;
@@ -281,7 +281,7 @@ class BioVM extends VM {
                 const m1Idx     = org.mol;
                 let   m2Idx     = 0;
                 for (let i = org.ax - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
-                if (m1Idx === m2Idx) {org.ret = RET_ERR; return}
+                if (m1Idx === m2Idx) {org.re = RE_ERR; return}
                 const m1EndIdx  = this._molLastOffs(code, m1Idx);
                 const m2EndIdx  = this._molLastOffs(code, m2Idx);
                 const cutCode   = code.subarray(m2Idx, m2EndIdx + 1);
@@ -294,7 +294,7 @@ class BioVM extends VM {
                 org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMultiplier);
                 code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
-                org.ret         = RET_OK;
+                org.re         = RE_OK;
                 return;
             }
 
@@ -303,13 +303,13 @@ class BioVM extends VM {
                 const code    = org.code;
                 const mol     = org.mol;
                 const molEnd  = this._molLastOffs(code, mol);
-                if (mol === molEnd) {org.ret = RET_ERR; return}
+                if (mol === molEnd) {org.re = RE_ERR; return}
                 let   cutPos  = org.bx;
                 const molSize = molEnd - mol + 1;
                 if (cutPos) {cutPos = mol + Math.floor(molSize / 2) - 1}
                 code[cutPos] |= CODE_8_BIT_MASK;
                 org.energy += (molSize * Config.energyMultiplier);
-                org.ret = RET_OK;
+                org.re = RE_OK;
                 return;
             }
 
@@ -323,10 +323,10 @@ class BioVM extends VM {
                 if (m2Idx < 0) {m2Idx = 0}
                 if (m2Idx >= code.length) {m2Idx = code.length - 1}
                 for (let i = m2Idx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
-                if (m2Idx === org.mol) {org.ret = RET_OK; return} // src and dest molecules are the same
+                if (m2Idx === org.mol) {org.re = RE_OK; return} // src and dest molecules are the same
                 const m2EndIdx = this._molLastOffs(code, m2Idx) + 1;
                 const moveCode = code.slice(m2Idx, m2EndIdx + 1);
-                if (moveCode.length < 1) {org.ret = RET_ERR; return}
+                if (moveCode.length < 1) {org.re = RE_ERR; return}
                 //
                 // This code obtains destination molecule
                 //
@@ -344,7 +344,7 @@ class BioVM extends VM {
                 // org.compile();
                 // line = 0;
                 //
-                org.ret = RET_OK;
+                org.re = RE_OK;
                 return;
             }
 
@@ -358,7 +358,7 @@ class BioVM extends VM {
             case SMOL: {
                 ++org.line;
                 const code = org.code;
-                if (org.ax < 0) {org.mol = org.ax = 0; org.ret = RET_OK; return}
+                if (org.ax < 0) {org.mol = org.ax = 0; org.re = RE_OK; return}
                 if (org.ax >= code.length) {org.ax = code.length - 1}
                 for (let i = org.ax - 1;; i--) {
                     if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
@@ -374,9 +374,9 @@ class BioVM extends VM {
                 ++org.line;
                 if ((org.mol = this._molLastOffs(org.code, org.mol) + 1) >= org.code.length) {
                     org.mol = 0;
-                    org.ret = RET_SPECIAL;
+                    org.re = RE_SPECIAL;
                 } else {
-                    org.ret = RET_OK;
+                    org.re = RE_OK;
                 }
                 return;
             }
@@ -385,15 +385,15 @@ class BioVM extends VM {
             case LMOL: {
                 ++org.line;
                 const code = org.code;
-                let   ret  = RET_OK;
+                let   ret  = RE_OK;
                 for (let i = org.mol - 1;; i--) {
                     if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
-                        if (i < 0) {ret = RET_SPECIAL; i = code.length; continue}
+                        if (i < 0) {ret = RE_SPECIAL; i = code.length; continue}
                         org.mol = i + 1;
                         break;
                     }
                 }
-                org.ret = ret;
+                org.re = ret;
                 return;
             }
 

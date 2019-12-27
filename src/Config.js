@@ -42,8 +42,8 @@ const COMMANDS    = {
     FUNC    : CODE_OFFS + 21,
     RET     : CODE_OFFS + 22,
     END     : CODE_OFFS + 23,
-    RETAX   : CODE_OFFS + 24,
-    AXRET   : CODE_OFFS + 25,
+    REAX    : CODE_OFFS + 24,
+    AXRE    : CODE_OFFS + 25,
     AND     : CODE_OFFS + 26,
     OR      : CODE_OFFS + 27,
     XOR     : CODE_OFFS + 28,
@@ -116,9 +116,9 @@ module.exports = {
      * @constant
      */
     CODE_STACK_SIZE            : 300,
-    CODE_RET_OK                : 1,
-    CODE_RET_ERR               : 0,
-    CODE_RET_SPECIAL           : -1,
+    CODE_RE_OK                 : 1,
+    CODE_RE_ERR                : 0,
+    CODE_RE_SPECIAL            : -1,
     CODE_ORG_ID,
     /**
      * {Number} Mask, which is used for marking last atom in a molecule.

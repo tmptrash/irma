@@ -18,8 +18,8 @@ const rand                  = Helper.rand;
 const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
-const RET_OK                = Config.CODE_RET_OK;
-const RET_ERR               = Config.CODE_RET_ERR;
+const RE_OK                 = Config.CODE_RE_OK;
+const RE_ERR                = Config.CODE_RE_ERR;
 //
 // Basic commands
 //
@@ -47,8 +47,8 @@ const CALL   = Config.CODE_CMDS.CALL;
 const FUNC   = Config.CODE_CMDS.FUNC;
 const RET    = Config.CODE_CMDS.RET;
 const END    = Config.CODE_CMDS.END;
-const RETAX  = Config.CODE_CMDS.RETAX;
-const AXRET  = Config.CODE_CMDS.AXRET;
+const REAX   = Config.CODE_CMDS.REAX;
+const AXRE   = Config.CODE_CMDS.AXRE;
 const AND    = Config.CODE_CMDS.AND;
 const OR     = Config.CODE_CMDS.OR;
 const XOR    = Config.CODE_CMDS.XOR;
@@ -337,14 +337,14 @@ class VM {
                             }
                             continue;
 
-                        case RETAX:
+                        case REAX:
                             ++line;
-                            ax = org.ret;
+                            ax = org.re;
                             continue;
 
-                        case AXRET:
+                        case AXRE:
                             ++line;
-                            org.ret = ax;
+                            org.re = ax;
                             continue;
 
                         case AND:
@@ -417,11 +417,11 @@ class VM {
                             if (ax < 0)  {ax = 0}
                             if (ax > bx) {ax = bx}
 
-                            let ret = RET_OK;
+                            let re = RE_OK;
                             for (let i = ax, m = org.memPos; i <= bx; i++, m++) {
-                                if (mem[m] !==code[i]) {ret = RET_ERR; continue}
+                                if (mem[m] !==code[i]) {re = RE_ERR; continue}
                             }
-                            org.ret = ret;
+                            org.re = re;
                             continue;
                         }
 

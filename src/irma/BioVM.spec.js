@@ -141,13 +141,13 @@ describe('src/irma/VM', () => {
 
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
-        expect(org.ret).toBe(0);
+        expect(org.re).toBe(0);
         expect(org.line).toBe(0);
         vm.run();
 
         expect(org.ax).toBe(ax);
         expect(org.bx).toBe(bx);
-        expect(org.ret).toBe(ret);
+        expect(org.re).toBe(ret);
         expect(org.code).toEqual(Uint8Array.from(code));
         checkLen && expect(org.line).toEqual(org.code.length);
     }    
@@ -231,7 +231,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(2);
                 expect(vm.world.index(1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG|MASK,0,SP|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks organism splitting fail, because position is not free',  () => {
                 run([[2],[2,AR,1,TG,0,SP]], {molAmount: 0, orgAmount: 2}, [1,0]);
@@ -330,7 +330,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(0)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step up-right', () => {
                 run([[1,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
@@ -339,7 +339,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step right', () => {
                 run([[2,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -348,7 +348,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step right-down', () => {
                 run([[3,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -357,7 +357,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(WIDTH+1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([3,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step down', () => {
                 run([[4,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -366,7 +366,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(WIDTH)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step down-left', () => {
                 run([[5,ST]], {molAmount: 0, orgAmount: 1}, [1]);
@@ -375,7 +375,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(WIDTH)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([5,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step left', () => {
                 run([[6,ST]], {molAmount: 0, orgAmount: 1}, [1]);
@@ -384,7 +384,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(0)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step left-up', () => {
                 run([[7,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH+1]);
@@ -393,7 +393,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.world.index(0)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([7,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step outside up (cyclical world)', () => {
                 run([[0,ST]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -403,7 +403,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.index(0)).toBe(-1);
                 expect(vm.world.index(WIDTH * HEIGHT - WIDTH)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step outside down (cyclical world)', () => {
                 run([[4,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH * HEIGHT - WIDTH]);
@@ -413,7 +413,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.index(0)).not.toBe(-1);
                 expect(vm.world.index(WIDTH * HEIGHT - WIDTH)).toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step outside left (cyclical world)', () => {
                 run([[6,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
@@ -423,7 +423,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.index(WIDTH)).toBe(-1);
                 expect(vm.world.index(WIDTH-1)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('Checks step outside right (cyclical world)', () => {
                 run([[2,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
@@ -433,7 +433,7 @@ describe('src/irma/VM', () => {
                 expect(vm.world.index(WIDTH)).not.toBe(-1);
                 expect(vm.world.index(WIDTH-1)).toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|MASK]));
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
         });
 
@@ -537,7 +537,7 @@ describe('src/irma/VM', () => {
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([AB|MASK]));
                 expect(vm.orgs.get(0).energy).toEqual(energy - 1);
-                expect(vm.orgs.get(0).ret).toEqual(0);
+                expect(vm.orgs.get(0).re).toEqual(0);
             });
             it('joining two molecules from different places', () => {
                 const code   = vm.split2Mols(Uint8Array.from([2,TG,0,0,0,AB]));
@@ -583,7 +583,7 @@ describe('src/irma/VM', () => {
 
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([20,TG,0,AB|MASK,0,0|MASK]));
                 expect(vm.orgs.get(0).energy).toEqual(energy - 4 * Config.energyMultiplier - 1);
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
         });
 
@@ -602,7 +602,7 @@ describe('src/irma/VM', () => {
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0|MASK,CB|MASK]));
                 expect(vm.orgs.get(0).energy).toEqual(energy + (code.length * Config.energyMultiplier) - 1);
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('simple catabolism with longer molecule', () => {
                 const code   = vm.split2Mols(Uint8Array.from([0,1,2,3,4,1,CB]));
@@ -618,7 +618,7 @@ describe('src/irma/VM', () => {
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,1|MASK,2|MASK,3|MASK,4,1|MASK,CB|MASK]));
                 expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMultiplier) - 1);
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('catabolism if ax < 0', () => {
                 const code   = vm.split2Mols(Uint8Array.from([1,NT,CB]));
@@ -634,7 +634,7 @@ describe('src/irma/VM', () => {
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|MASK,NT|MASK,CB|MASK]));
                 expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMultiplier) - 1);
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('catabolism if ax > molAmount', () => {
                 const code   = vm.split2Mols(Uint8Array.from([10,CB]));
@@ -650,7 +650,7 @@ describe('src/irma/VM', () => {
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([10|MASK,CB|MASK]));
                 expect(vm.orgs.get(0).energy).toEqual(energy + 2 * Config.energyMultiplier - 1);
-                expect(vm.orgs.get(0).ret).toEqual(1);
+                expect(vm.orgs.get(0).re).toEqual(1);
             });
         });
 
@@ -675,7 +675,7 @@ describe('src/irma/VM', () => {
         
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(2);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(Uint8Array.from([2,2|MASK,0,1|MASK,TG,MO|MASK]));
             });
             it('move first molecule with bx > molAmount', () => {
@@ -690,7 +690,7 @@ describe('src/irma/VM', () => {
         
                 expect(org.ax).toBe(0);
                 expect(org.bx).toBe(5);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(Uint8Array.from([2,5|MASK,0,1|MASK,TG,MO|MASK]));
             });
             it('move first molecule with ax < 0', () => {
@@ -705,7 +705,7 @@ describe('src/irma/VM', () => {
         
                 expect(org.ax).toBe(-1);
                 expect(org.bx).toBe(5);
-                expect(org.ret).toBe(1);
+                expect(org.re).toBe(1);
                 expect(org.code).toEqual(Uint8Array.from([2,5|MASK,TG,0|MASK,0,1|MASK,NT,MO|MASK]));
             });
         });
