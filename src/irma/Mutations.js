@@ -132,8 +132,8 @@ Mutations._MUTATION_CBS = [
  * {Array} Names of mutation types
  */
 Mutations.NAMES = [
-    'che',
-    'del',
+    'chen',
+    'dele',
     'peri',
     'perc',
     'prob',
