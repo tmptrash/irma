@@ -134,11 +134,11 @@ Mutations._MUTATION_CBS = [
 Mutations.NAMES = [
     'che',
     'del',
-    'per',
+    'peri',
     'perc',
     'prob',
     'ins',
-    'cpy',
+    'copy',
     'cut'
 ];
 
