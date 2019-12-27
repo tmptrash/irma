@@ -134,7 +134,6 @@ class BioVM extends VM {
                 const nearOrg = this.orgsMols.get(dot);
                 if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
                 org.code = org.code.push(nearOrg.code);
-                nearOrg.energy && (org.energy += nearOrg.energy);
                 //
                 // Important: joining new commands into the script may break it, because it's
                 // offsets, stack and context may be invalid. Generally, we have to compile
