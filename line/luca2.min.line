@@ -1,114 +1,155 @@
 nop
 nop
 nop
-func             # func0
-  mols           # ax=mols
-  dec            # ax=mols-1
-  axret          # ax=mols-1  bx=?       ret=mols-1
-  1              # ax=1       bx=?       ret=mols-1
-  toggle         # ax=?       bx=1       ret=mols-1
-  0              # ax=0       bx=1       ret=mols-1
-  find           # ax=foodMol bx=?       ret=1
-  axret          # ax=foodMol bx=?       ret=foodMol
-end
-func             # func1
-  0              # ax=0
-  save           # m0=0
-  call
-  retax          # ax=nopIdx
-  right          # m1
-  inc            # ax=food0
-  save           # m1=food0
-  mols           # ax=food1+1
-  dec            # ax=food1
-  right          # m2
-  save           # m2=food1
-  retax          # ax=food0
-  inc            # ax=food0
+func
+  60
+  toggle
+  5
+  mul             # 300 mols max
   loop
-    load         # ax=food1
-    axret        # ret=food1
-    left         # m1
-    load         # ax=food0
-    toggle       # ax=?       bx=food0
-    left         # m0
-    load         # ax=i       bx=food0   ret=food1
-    find         # ax=molOffs bx=food0   ret=0|1
-    toggle       # ax=food0   bx=molOffs ret=0|1
-    retax        # ax=0|1     bx=molOffs
-    ifz
+    mol           # ax=idx0   bx=idx1
+    toggle
+    sub
+    inc           # ax=molLen
+    toggle        # bx=molLen
+    load          # ax=len
+    ife
+      right       # m1
+      mol         # ax=idx0   bx=idx1
+      cmp         # re=0|1|-1
+      left        # m0
+      toggle      # ax=idx1   bx=idx0
+      reax        # ax=0|1    bx=idx0
+      ifp
+        toggle    # ax=idx0
+        axre      # re=idx0
+        ret
+      end
+    end
+    rmol
+    reax
+    ifn
+      0
+      dec
+      axre
       ret
     end
-    mols         # ax=mols    bx=molOffs
-    dec          # ax=mols-1  bx=molOffs
-    toggle       # ax=molOffs bx=mols-1  ret=0|1
-    ife
-	  ret
-    end
-    move
-    load         # ax=i
-    inc          # ax=i+1
-    save         # m0=i+1
-    right        # m1
-    right        # m2
-    load         # ax=food1
-    dec          # ax=food1-1
-    save
-  end
-  17             # ax=17
-  axret          # ret=17
-  load           # ax=food1
-  toggle         # ax=?       bx=food1
-  mols           # ax=mols    bx=food1
-  toggle         # ax=food1   bx=mols
-  inc            # ax=food1+1 bx=mols
-  split
-end
-10
-loop
-  rand
-  step
-  join
-  retax          # ax=0|1
-  ifp
-    4
-    rand
-    ifz
-      mols       # ax=mols
-      dec        # ax=mols-1
-      catab
-      toggle     # ax=?       bx=mols-1
-      eq         # ax=mols-1  bx=mols-1
-      inc        # ax=mols    bx=mols-1
-      inc        # ax=mols+1  bx=mols-1
-      toggle     # ax=mols-1  bx=mols+1
-      split
-    end
   end
 end
-1
-call
-50               # ax=50      bx=0
-toggle           # ax=0       bx=50
-40               # ax=40      bx=50
-mul              # ax=2000    bx=50
-toggle           # ax=50      bx=2000
-len              # ax=len     bx=2000
-ifg
+func
+  60
+  toggle
+  5
+  mul             # 300 mols max
+  loop
+    mol
+    toggle        # bx=idx0
+    rmol
+    reax
+    ifn
+      toggle      # ax=idx0
+      ret
+    end
+  end
+  0
+  dec
+  axre
+end
+func
+  3
+  save            # m[3]
+  right           # m1
+  63
+  toggle
+  3
+  add             # ax=nop
+  save            # m[3,nop]
+  right           # m2
+  save            # m[3,nop,nop]
+  right           # m3
+  save            # m[3,nop,nop,nop]
+  left            # m2
+  left            # m1
+  left            # m0
+  0
+  smol            # mol=0
+  call
+  reax            # re=offs|-1
+  ifn
+    ret
+  end
+  left            # m-1
+  rmol
+  mol
+  save            # m-1=sep0+1
+  right           # m0
   0
   call
-  retax          # ax=food0
-  inc            # ax=food0+1
-  toggle         # ax=?       bx=food0+1
-  mols           # ax=mols    bx=food0+1
-  toggle         # ax=food0+1 ax=mols
-  split
+  reax            # re=offs-1
+  ifn
+    ret
+  end
+  rmol
+  mol
+  save            # m0=sep1+1
+  right           # m1
+  1
+  call
+  save            # m1=len
+  left
+  left            # m-1
+  load            # ax=sep0+1
+  smol            # mol=sep0+1
+  60
+  toggle
+  5
+  mul             # 300 mols max
+  loop
+    right
+    right
+    right         # m2
+    cmol
+    left
+    left          # m0
+    load          # ax=sep1+i
+    smol          # sep1+x
+    right         # m1
+    right         # m2
+    60
+    toggle
+    5
+    mul             # 300 mols max
+    loop
+      mol           # ax=idx0   bx=idx1
+      toggle        # bx=idx0
+      cmp
+      reax
+      ifp
+        left
+        load          # ax=end
+        smol
+        toggle        # ax=idx0
+        move
+        left      # m0
+        left      # m-1
+        load      # ax=sep0
+        smol
+        right     # m0
+        right     # m1
+        load
+        dec
+        save
+        left      # m0
+        left      # m-1
+        break
+      end
+      rmol
+    end
+    rmol
+  end
 end
-ret
-nop
-nop
-nop
-nop
+2
+call
 nop
 nop
 nop
