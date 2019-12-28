@@ -52,6 +52,7 @@ const SMOL   = Config.CODE_CMDS.SMOL;
 const RMOL   = Config.CODE_CMDS.RMOL;
 const LMOL   = Config.CODE_CMDS.LMOL;
 const CMOL   = Config.CODE_CMDS.CMOL;
+const MCMP   = Config.CODE_CMDS.MCMP;
 
 class BioVM extends VM {
     /**
@@ -406,6 +407,21 @@ class BioVM extends VM {
                     if ((code[i] & CODE_8_BIT_MASK) > 0) {break}
                     if (m > mLen) {m = -1}
                 }
+                return;
+            }
+
+            case MCMP: {
+                ++org.line;
+                const code = org.code;
+                const idx0 = org.mol;
+                const mem  = org.mem;
+                const idx1 = this._molLastOffs(code, idx0);
+
+                let re = RE_OK;
+                for (let i = idx0, m = org.memPos; i <= idx1; i++, m++) {
+                    if (mem[m] !==code[i]) {re = RE_ERR; return}
+                }
+                org.re = re;
                 // eslint-disable-next-line no-useless-return
                 return;
             }

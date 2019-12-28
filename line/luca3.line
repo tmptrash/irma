@@ -18,7 +18,10 @@ nop
 # out : idx|-1
 #
 func
-  127           # 127 mols max
+  60
+  toggle
+  5
+  mul             # 300 mols max
   loop
     mol           # ax=idx0   bx=idx1
     toggle
@@ -54,7 +57,10 @@ end
 # out : last molecule index
 #
 func
-  127
+  60
+  toggle
+  5
+  mul             # 300 mols max
   loop
     mol
     toggle        # bx=idx0
@@ -89,7 +95,7 @@ func
   save            # m[3]
   right           # m1
   # sets separator molecule to the mem
-  127
+  63
   toggle
   3
   add             # ax=nop
@@ -143,57 +149,63 @@ func
   #
   load            # ax=sep0+1
   smol            # mol=sep0+1
-  127
+  60
+  toggle
+  5
+  mul             # 300 mols max
   # main copy loop
   loop
     # sets mem pointer to m2 and copy current repl molecule to mem
     right
-	right
-	right         # m2
-	cmol
-	# jumps to food section
-	left
-	left          # m0
-	load          # ax=sep1+i
-	smol          # sep1+x
-	# sets mem pointer to m2
-	right         # m1
-	right         # m2
-	127
-	# starts finding molecule from repl in food section
-	loop
-	  mol         # ax=idx0   bx=idx1
-	  toggle      # bx=idx0
-	  cmp
-	  reax
-	  # mol from food section similar to repl one
-	  ifp
-	    # jump to the end
-		left
-		load      # ax=end
-		smol
-		toggle    # ax=idx0
-	    # copy found mol here (to the end)
-		move
-		# jump back to the repl section
-		left      # m0
-		left      # m-1
-		load      # ax=sep0
-		smol
-		right     # m0
-		right     # m1
-		# code len--
-		load
-		dec
-		save
-	    left      # m0
-	    left      # m-1
-		break
-	  end
-	  # move right to the next food molecule
-	  rmol
-	end
-	rmol
+    right
+    right         # m2
+    cmol
+    # jumps to food section
+    left
+    left          # m0
+    load          # ax=sep1+i
+    smol          # sep1+x
+    # sets mem pointer to m2
+    right         # m1
+    right         # m2
+    60
+    toggle
+    5
+    mul             # 300 mols max
+    # starts finding molecule from repl in food section
+    loop
+      mol           # ax=idx0   bx=idx1
+      toggle        # bx=idx0
+      cmp
+      reax
+      # mol from food section similar to repl one
+      ifp
+        # jump to the end
+        left
+        load          # ax=end
+        smol
+        toggle        # ax=idx0
+        # copy found mol here (to the end)
+        move
+        # jump back to the repl section
+        left      # m0
+        left      # m-1
+        load      # ax=sep0
+        smol
+        right     # m0
+        right     # m1
+        # code len--
+        load
+        dec
+        save
+        left      # m0
+        left      # m-1
+        break
+      end
+      # move right to the next food molecule
+      rmol
+    end
+    rmol
   end
 end
 #
