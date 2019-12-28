@@ -33,26 +33,30 @@ const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 //
 // Biological commands
 //
-const JOIN   = Config.CODE_CMDS.JOIN;
-const SPLIT  = Config.CODE_CMDS.SPLIT;
-const STEP   = Config.CODE_CMDS.STEP;
-const SEE    = Config.CODE_CMDS.SEE;
-const SAY    = Config.CODE_CMDS.SAY;
-const LISTEN = Config.CODE_CMDS.LISTEN;
-const NREAD  = Config.CODE_CMDS.NREAD;
-const GET    = Config.CODE_CMDS.GET;
-const PUT    = Config.CODE_CMDS.PUT;
-const OFFS   = Config.CODE_CMDS.OFFS;
-const COLOR  = Config.CODE_CMDS.COLOR;
-const ANAB   = Config.CODE_CMDS.ANAB;
-const CATAB  = Config.CODE_CMDS.CATAB;
-const MOVE   = Config.CODE_CMDS.MOVE;
-const MOL    = Config.CODE_CMDS.MOL;
-const SMOL   = Config.CODE_CMDS.SMOL;
-const RMOL   = Config.CODE_CMDS.RMOL;
-const LMOL   = Config.CODE_CMDS.LMOL;
-const CMOL   = Config.CODE_CMDS.CMOL;
-const MCMP   = Config.CODE_CMDS.MCMP;
+const JOIN                  = Config.CODE_CMDS.JOIN;
+const SPLIT                 = Config.CODE_CMDS.SPLIT;
+const STEP                  = Config.CODE_CMDS.STEP;
+const SEE                   = Config.CODE_CMDS.SEE;
+const SAY                   = Config.CODE_CMDS.SAY;
+const LISTEN                = Config.CODE_CMDS.LISTEN;
+const NREAD                 = Config.CODE_CMDS.NREAD;
+const GET                   = Config.CODE_CMDS.GET;
+const PUT                   = Config.CODE_CMDS.PUT;
+const OFFS                  = Config.CODE_CMDS.OFFS;
+const COLOR                 = Config.CODE_CMDS.COLOR;
+const ANAB                  = Config.CODE_CMDS.ANAB;
+const CATAB                 = Config.CODE_CMDS.CATAB;
+const MOVE                  = Config.CODE_CMDS.MOVE;
+const MOL                   = Config.CODE_CMDS.MOL;
+const SMOL                  = Config.CODE_CMDS.SMOL;
+const RMOL                  = Config.CODE_CMDS.RMOL;
+const LMOL                  = Config.CODE_CMDS.LMOL;
+const CMOL                  = Config.CODE_CMDS.CMOL;
+const MCMP                  = Config.CODE_CMDS.MCMP;
+const R2MOL                 = Config.CODE_CMDS.R2MOL;
+const W2MOL                 = Config.CODE_CMDS.W2MOL;
+const MOL2R                 = Config.CODE_CMDS.MOL2R;
+const MOL2W                 = Config.CODE_CMDS.MOL2W;
 
 class BioVM extends VM {
     /**
@@ -219,6 +223,7 @@ class BioVM extends VM {
                 org.ax = this.freq[Math.abs(org.bx) % Config.worldFrequency];
                 return;
 
+            // TODO: review this code
             case NREAD: {
                 ++org.line;
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
@@ -319,11 +324,11 @@ class BioVM extends VM {
                 // This code obtains source molecule
                 //
                 let    code    = org.code;
-                let   m2Idx    = org.ax;
+                let   m2Idx    = org.molRead;
                 if (m2Idx < 0) {m2Idx = 0}
                 if (m2Idx >= code.length) {m2Idx = code.length - 1}
                 for (let i = m2Idx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
-                if (m2Idx === org.mol) {org.re = RE_OK; return} // src and dest molecules are the same
+                if (m2Idx === org.molWrite) {org.re = RE_OK; return} // src and dest molecules are the same
                 const m2EndIdx = this._molLastOffs(code, m2Idx) + 1;
                 const moveCode = code.slice(m2Idx, m2EndIdx + 1);
                 if (moveCode.length < 1) {org.re = RE_ERR; return}
@@ -332,7 +337,7 @@ class BioVM extends VM {
                 //
                 const len      = m2EndIdx - m2Idx + 1;
                 code           = code.splice(m2Idx, len);
-                org.code       = code.splice(this._molLastOffs(code, org.mol) + 1, 0, moveCode);
+                org.code       = code.splice(this._molLastOffs(code, org.molWrite) + 1, 0, moveCode);
                 org.energy    -= (Math.floor(Config.molCodeSize * 10 / len) || 1) * Config.energyMultiplier;
                 //
                 // Important: moving new commands insie the script may break it, because it's
@@ -422,6 +427,30 @@ class BioVM extends VM {
                     if (mem[m] !==code[i]) {re = RE_ERR; return}
                 }
                 org.re = re;
+                return;
+            }
+
+            case R2MOL: {
+                ++org.line;
+                org.molRead = org.mol;
+                return;
+            }
+
+            case W2MOL: {
+                ++org.line;
+                org.molWrite = org.mol;
+                return;
+            }
+
+            case MOL2R: {
+                ++org.line;
+                org.mol = org.molRead;
+                return;
+            }
+
+            case MOL2W: {
+                ++org.line;
+                org.mol = org.molWrite;
                 // eslint-disable-next-line no-useless-return
                 return;
             }
@@ -456,6 +485,8 @@ class BioVM extends VM {
         org.packet   = null;
         org.energy   = energy;
         org.mol      = 0;
+        org.molRead  = 0;
+        org.molWrite = 0; 
         org.compile();
 
         orgsMols.add(org);

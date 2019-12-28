@@ -80,7 +80,11 @@ const COMMANDS    = {
     RMOL    : CODE_OFFS + 56,
     LMOL    : CODE_OFFS + 57,
     CMOL    : CODE_OFFS + 58,
-    MCMP    : CODE_OFFS + 59
+    MCMP    : CODE_OFFS + 59,
+    R2MOL   : CODE_OFFS + 60,
+    W2MOL   : CODE_OFFS + 61,
+    MOL2R   : CODE_OFFS + 62,
+    MOL2W   : CODE_OFFS + 63
 };
 
 // TODO: rename all molecules related names to prefix "mol".
