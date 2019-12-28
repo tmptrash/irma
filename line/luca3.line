@@ -11,7 +11,8 @@ nop
 # [0,0, 1,0,1, 1,0,2, 1,2,1, 0,0, 1,2,1, 0,0,2, 1,0,1]
 #
 # desc: search for molecule index in a code
-# in  : m0..mX - molecule
+# in  : m0     - finish index
+# in  : m1..mX - molecule
 # in  : mol    - search start index
 # out : idx|-1
 #
@@ -20,15 +21,22 @@ func
   lshift
   lshift           # 252 mols max
   loop
+    right          # m1
     mcmp           # re=0|1
+    left
     ifp
       mol          # ax=mol
       axre         # re=mol
       ret
     end
     rmol
-    reax
-    ifn
+    #
+    # Checks finish limit
+    #
+    mol
+    toggle
+    load
+    ifg
       0
       dec
       axre
@@ -44,21 +52,49 @@ func
   #
   # 1. finds first separator molecule
   #
-  3
-  toggle
+  # 1.1 sets search limit to m0
   63
-  add              # nop code
-  save
-  right
-  save
-  right            # m2
-  save             # m[nop,nop,nop]
-  left
+  lshift
+  lshift
+  save             # m0=252
+  right            # m1
+  # 1.2 sets 0 molecule as separator
+  0
+  cmol             # m1-m3[nop,nop,nop]
+  smol
   left             # m0
+  call
+  reax             # ax=sep0Mol
+  ifn
+    ret
+  end
+  left             # m-1
+  save             # m-1=sep0Mol
+  #
+  # 2. finds second separator molecule
+  #
+  right            # m0
   0
   smol
+  rmol
   call
-  reax             # ax=sepMol
+  ifn
+    ret
+  end
+  save             # m0=sep1Mol
+  #
+  # 3. sets read head to the food section
+  #
+  smol
+  rmol
+  r2mol
+  #
+  # 4. sets write head to the end
+  #
+  0
+  smol
+  lmol
+  w2mol
 end
 #
 # Try to make clone
