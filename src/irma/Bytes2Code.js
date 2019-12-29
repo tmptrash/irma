@@ -135,6 +135,25 @@ class Bytes2Code {
     }
 
     /**
+     * Converts string code to byte code array
+     * @param {String} code String code
+     * @return {Array} Byte code
+     */
+    static toByteCode(code) {
+        const splitted = code.split('\n');
+        const len      = splitted.length;
+        const bСode    = [];
+
+        for (let i = 0; i < len; i++) {
+            const ln   = splitted[i].split('#')[0].trim();
+            const byte = this._isNumeric(ln) ? +ln : this._map[ln];
+            byte !== undefined && bСode.push(byte);
+        }
+
+        return bСode;
+    }
+
+    /**
      * Returns information related to shorthands used in language. 
      * @return {String} info
      */
@@ -155,8 +174,39 @@ class Bytes2Code {
             ''
         ].join('\n');
     }
+
+    /**
+     * Checks if specified argument is numerical or not
+     * @param {*} n Value to check
+     * @return {Boolean} Is numeric
+     */
+    static _isNumeric(n) {
+        // eslint-disable-next-line no-restricted-globals
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    /**
+     * Returns commands map, where keys are string commands and
+     * values are their numeric codes
+     * @return {Object} Commands map
+     */
+    static _getCmdMap() {
+        const map    = Bytes2Code.MAP;
+        const cmdMap = {};
+        const keys   = Object.keys(map);
+
+        for (let i = 0, len = keys.length; i < len; i++) {
+            cmdMap[map[keys[i]][0]] = +keys[i];
+        }
+
+        return cmdMap;
+    }
 }
 
+/**
+ * {Object} Map of all available commands. Is used during byte
+ * code to human readable code convertion
+ */
 Bytes2Code.MAP = {
     //
     // "line" language core operators
@@ -228,5 +278,11 @@ Bytes2Code.MAP = {
     [MOL2R ]: ['mol2r',  'mol=molRead'],
     [MOL2W ]: ['mol2w',  'mol=molWrite']
 };
+
+/**
+ * {Object} Commands map. Inverted map, where keys are string 
+ * commands and values are their numeric codes
+ */
+Bytes2Code.CMD_MAP = Bytes2Code._getCmdMap();
 
 module.exports = Bytes2Code;
