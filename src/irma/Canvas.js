@@ -155,16 +155,18 @@ class Canvas {
         // Adds listener to change of canvas transform matrix. We need it
         // to handle zooming of the canvas
         //
-        this._zoomObserver = new MutationObserver(this._onZoom.bind(this));
-        this._zoomObserver.observe(this._canvasEl, {
-            attributes     : true,
-            childList      : false,
-            attributeFilter: ['style']
-        });
-        //
-        // Global keyup event handler
-        //
-        document.addEventListener('keydown', this._onKeyDown.bind(this));
+        if (Config.worldCanvasButtons) {
+            this._zoomObserver = new MutationObserver(this._onZoom.bind(this));
+            this._zoomObserver.observe(this._canvasEl, {
+                attributes     : true,
+                childList      : false,
+                attributeFilter: ['style']
+            });
+            //
+            // Global keyup event handler
+            //
+            document.addEventListener('keydown', this._onKeyDown.bind(this));
+        }
     }
 
     _createFullScreenBtn() {
