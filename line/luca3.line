@@ -5,11 +5,11 @@
 #
 nop
 nop
-nop
+nop               @mol
 #
 #  sep    repl                 sep    food
 # [66,66, 1,0,1, 1,0,2, 1,2,1, 66,66, 1,2,1, 0,0,2, 1,0,1]
-#  mol                                read                 write
+#  mol                                read                write
 #
 # desc: search for molecule index in a code
 # in  : m0     - finish index
@@ -19,31 +19,31 @@ nop
 #
 func
   63
-  lshift
-  lshift           # 252 mols max
+  lshift          @mol
+  lshift                # 252 mols max
   loop
-    right          # m1
-    cmp            # re=0|1
+    right         @mol  # m1
+    cmp                 # re=0|1
     left
-    ifp
-      mol          # ax=mol
-      axre         # re=mol
-      ret
+    ifp           @mol
+      mol               # ax=mol
+      axre              # re=mol
+      ret         @mol
     end
     rmol
     #
     # Checks finish limit
     #
-    mol
+    mol           @mol
     toggle
     load
-    ifg
+    ifg           @mol
       0
       dec
-      axre
+      axre        @mol
       ret
     end
-  end
+  end             @mol
 end
 #
 # desc: Make clone.
@@ -54,41 +54,41 @@ func
   # 1. finds second separator molecule
   #
   # 1.1 sets search limit to m0
-  63
+  63              @mol
   lshift
   lshift
-  save             # m0=252
+  save            @mol  # m0=252
   # 1.2 sets 0 molecule as separator
-  right            # m1
+  right                 # m1
   0
-  cmol             # m1-m3[nop,nop,nop]
+  cmol            @mol  # m1-m3[nop,nop,nop]
   smol
-  left             # m0
-  call
-  reax             # ax=sep1Mol
+  left                  # m0
+  call            @mol
+  reax                  # ax=sep1Mol
   ifn
-    ret
+    ret           @mol
   end
-  save             # m0=sep1Mol
+  save                  # m0=sep1Mol
   #
   # 2. sets read head to the food section
   #
-  smol
+  smol            @mol
   rmol
   r2mol
   #
   # 4. sets write head to the end
   #
-  0
+  0               @mol
   smol
   lmol
-  w2mol
+  w2mol           @mol
 end
 #
 # Try to make clone
 #
-2
-call
+1
+call              @mol
 nop
 nop
-nop
+nop               @mol
