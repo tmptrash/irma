@@ -52,7 +52,6 @@ const RIGHT                 = Config.CODE_CMDS.RIGHT;
 const SAVE                  = Config.CODE_CMDS.SAVE;
 const LOAD                  = Config.CODE_CMDS.LOAD;
 const READ                  = Config.CODE_CMDS.READ;
-const CMP                   = Config.CODE_CMDS.CMP;
 const BREAK                 = Config.CODE_CMDS.BREAK;
 //
 // Biological commands
@@ -76,7 +75,7 @@ const SMOL                  = Config.CODE_CMDS.SMOL;
 const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
-const MCMP                  = Config.CODE_CMDS.MCMP;
+const CMP                   = Config.CODE_CMDS.CMP;
 const R2MOL                 = Config.CODE_CMDS.R2MOL;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2R                 = Config.CODE_CMDS.MOL2R;
@@ -200,7 +199,6 @@ Bytes2Code.MAP = {
     [SAVE  ]: ['save',   'org.mem[org.memPos] = ax'],
     [LOAD  ]: ['load',   'ax = org.mem[org.memPos]'],
     [READ  ]: ['read',   'ax = read(ax)'],
-    [CMP   ]: ['cmp',    'cmp(ax=fromIdx,bx=toIdx):re'],
     [BREAK ]: ['break',  'breaks from loop'],
     //
     // Biological stuff
@@ -224,7 +222,7 @@ Bytes2Code.MAP = {
     [RMOL  ]: ['rmol',   'mol=rmol():re'],
     [LMOL  ]: ['lmol',   'mol=lmol():re'],
     [CMOL  ]: ['cmol',   'cmol():re'],
-    [MCMP  ]: ['mcmp',   'mcpm():re'],
+    [CMP   ]: ['cmp',    'cmp():re'],
     [R2MOL ]: ['r2mol',  'molRead=mol'],
     [W2MOL ]: ['w2mol',  'molWrite=mol'],
     [MOL2R ]: ['mol2r',  'mol=molRead'],

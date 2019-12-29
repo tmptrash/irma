@@ -61,7 +61,6 @@ const RIGHT  = Config.CODE_CMDS.RIGHT;
 const SAVE   = Config.CODE_CMDS.SAVE;
 const LOAD   = Config.CODE_CMDS.LOAD;
 const READ   = Config.CODE_CMDS.READ;
-const CMP    = Config.CODE_CMDS.CMP;
 const BREAK  = Config.CODE_CMDS.BREAK;
 
 class VM {
@@ -407,23 +406,6 @@ class VM {
                             if (ax >= code.length) {ax = code.length - 1}
                             ax = code[ax];
                             continue;
-
-                        case CMP: {
-                            ++line;
-                            const codeLen = code.length - 1;
-                            const mem     = org.mem;
-                            if (bx < 0)  {bx = 0}
-                            if (bx > codeLen) {bx = codeLen}
-                            if (ax < 0)  {ax = 0}
-                            if (ax > bx) {ax = bx}
-
-                            let re = RE_OK;
-                            for (let i = ax, m = org.memPos; i <= bx; i++, m++) {
-                                if (mem[m] !==code[i]) {re = RE_ERR; continue}
-                            }
-                            org.re = re;
-                            continue;
-                        }
 
                         case BREAK: {
                             const offs = org.offs[line] || 0;

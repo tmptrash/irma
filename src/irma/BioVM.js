@@ -52,7 +52,7 @@ const SMOL                  = Config.CODE_CMDS.SMOL;
 const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
-const MCMP                  = Config.CODE_CMDS.MCMP;
+const CMP                   = Config.CODE_CMDS.CMP;
 const R2MOL                 = Config.CODE_CMDS.R2MOL;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2R                 = Config.CODE_CMDS.MOL2R;
@@ -415,7 +415,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case MCMP: {
+            case CMP: {
                 ++org.line;
                 const code = org.code;
                 const idx0 = org.mol;
