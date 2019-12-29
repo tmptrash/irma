@@ -139,6 +139,7 @@ class Bytes2Code {
      * @param {String} code String code
      * @return {Array} Byte code
      */
+    // TODO: add molecules support
     static toByteCode(code) {
         const splitted = code.split('\n');
         const len      = splitted.length;
