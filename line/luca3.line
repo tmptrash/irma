@@ -17,7 +17,7 @@ nop               @mol
 # in  : mol    - search start index
 # out : idx|-1
 #
-func
+func                    # func0
   63
   lshift          @mol
   lshift                # 252 mols max
@@ -25,70 +25,73 @@ func
     right         @mol  # m1
     cmp                 # re=0|1
     left
-    ifp           @mol
+	reax          @mol  # ax=0|1
+    ifp
       mol               # ax=mol
-      axre              # re=mol
-      ret         @mol
+      axre        @mol  # re=mol
+      ret
     end
-    rmol
+    rmol          @mol
     #
     # Checks finish limit
     #
-    mol           @mol
+    mol
     toggle
-    load
-    ifg           @mol
+    load          @mol
+    ifg
       0
-      dec
-      axre        @mol
+      dec         @mol
+      axre
       ret
-    end
-  end             @mol
+    end           @mol
+  end
 end
 #
 # desc: Make clone.
 # in  : nothing
 #
-func
+func              @mol  # func1
   #
   # 1. finds second separator molecule
   #
   # 1.1 sets search limit to m0
-  63              @mol
+  63
   lshift
-  lshift
-  save            @mol  # m0=252
+  lshift          @mol
+  save                  # m0=252
   # 1.2 sets 0 molecule as separator
   right                 # m1
-  0
-  cmol            @mol  # m1-m3[nop,nop,nop]
+  0               @mol
+  cmol                  # m1-m3[nop,nop,nop]
   smol
+  rmol            @mol
   left                  # m0
-  call            @mol
-  reax                  # ax=sep1Mol
+  call
+  reax            @mol  # ax=sep1Mol
   ifn
-    ret           @mol
-  end
+    ret
+  end             @mol
   save                  # m0=sep1Mol
   #
   # 2. sets read head to the food section
   #
-  smol            @mol
-  rmol
+  smol
+  rmol            @mol
   r2mol
   #
   # 4. sets write head to the end
   #
-  0               @mol
-  smol
+  0
+  smol            @mol
   lmol
-  w2mol           @mol
-end
+  w2mol
+end               @mol
 #
 # Try to make clone
 #
 1
-call              @mol
+call
+nop               @mol
 nop
 nop
 nop               @mol
