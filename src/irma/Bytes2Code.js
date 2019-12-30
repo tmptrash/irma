@@ -145,16 +145,25 @@ class Bytes2Code {
         const splitted = code.split('\n');
         const len      = splitted.length;
         const bСode    = [];
-        const map      = this.CMD_MAP;
 
         for (let i = 0; i < len; i++) {
-            const isMol = splitted[i].indexOf(MOL_STR) !== -1;
-            const ln    = splitted[i].split(COMMENT)[0].trim();
-            const byte  = this._isNumeric(ln) ? +ln : map[ln];
-            byte !== undefined && bСode.push(isMol ? byte | CODE_8_BIT_MASK : byte);
+            const byte = this.cmd(splitted[i]);
+            byte !== undefined && bСode.push(byte);
         }
 
         return bСode;
+    }
+
+    /**
+     * Parses a line and returns a command without spaces, comments and all other stuff
+     * @param {String} line One script line
+     * @return {String} cmd
+     */
+    static byte(line) {
+        const isMol = line.indexOf(MOL_STR) !== -1;
+        const ln    = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
+        const byte  =  this._isNumeric(ln) ? +ln : this.CMD_MAP[ln];
+        return isMol ? byte | CODE_8_BIT_MASK : byte;
     }
 
     /**
