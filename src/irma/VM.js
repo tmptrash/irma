@@ -18,8 +18,6 @@ const rand                  = Helper.rand;
 const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
-const RE_OK                 = Config.CODE_RE_OK;
-const RE_ERR                = Config.CODE_RE_ERR;
 //
 // Basic commands
 //

@@ -111,7 +111,7 @@ class Bytes2Code {
             const molIdx  = lines ? ((bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
             const lineIdx = lines ? `${b ? '\n' : ''}${(b+'').padEnd(5)}` : (b ? '\n' : '');
-            const comment = comments ? `// ${line[1]}` : '';
+            const comment = comments && line ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
                 cmd === LOOP ||
                 cmd === IFP  ||
@@ -144,14 +144,14 @@ class Bytes2Code {
     static toByteCode(code) {
         const splitted = code.split('\n');
         const len      = splitted.length;
-        const bСode    = [];
+        const bCode    = [];
 
         for (let i = 0; i < len; i++) {
             const byte = this.byte(splitted[i]);
-            byte !== null && bСode.push(byte);
+            byte !== null && bCode.push(byte);
         }
 
-        return bСode;
+        return bCode;
     }
 
     /**

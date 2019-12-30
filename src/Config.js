@@ -148,163 +148,102 @@ module.exports = {
         /**
          * {Uint8Array} Code of first organism - LUCA (Last Universal Common Ancestor)
          */
-        code: Uint8Array.from([
-            CODE_OFFS + 2,  // nop
-            CODE_OFFS + 2,  // nop
-            CODE_OFFS + 2,  // nop
-            CODE_OFFS + 21, // func
-            60,             //   60
-            CODE_OFFS,      //   toggle
-            5,              //   5
-            CODE_OFFS + 5,  //   mul
-            CODE_OFFS + 19, //   loop
-            CODE_OFFS + 54, //     mol
-            CODE_OFFS,      //     toggle
-            CODE_OFFS + 4,  //     sub
-            CODE_OFFS + 7,  //     inc
-            CODE_OFFS,      //     toggle
-            CODE_OFFS + 36, //     load
-            CODE_OFFS + 17, //     ife
-            CODE_OFFS + 34, //       right
-            CODE_OFFS + 54, //       mol
-            CODE_OFFS + 38, //       cmp
-            CODE_OFFS + 33, //       left
-            CODE_OFFS,      //       toggle
-            CODE_OFFS + 24, //       retax
-            CODE_OFFS + 12, //       ifp
-            CODE_OFFS,      //         toggle
-            CODE_OFFS + 25, //         axre
-            CODE_OFFS + 22, //         ret
-            CODE_OFFS + 23, //       end
-            CODE_OFFS + 23, //     end
-            CODE_OFFS + 56, //     rmol
-            CODE_OFFS + 24, //     reax
-            CODE_OFFS + 13, //     ifn
-            0,              //       0
-            CODE_OFFS + 8,  //       dec
-            CODE_OFFS + 25, //       axre
-            CODE_OFFS + 22, //       ret 
-            CODE_OFFS + 23, //     end
-            CODE_OFFS + 23, //   end
-            CODE_OFFS + 23, // end
-            CODE_OFFS + 21, // func
-            60,             //   60
-            CODE_OFFS,      //   toggle
-            5,              //   5
-            CODE_OFFS + 5,  //   mul
-            CODE_OFFS + 19, //   loop
-            CODE_OFFS + 54, //     mol
-            CODE_OFFS,      //     toggle
-            CODE_OFFS + 56, //     rmol
-            CODE_OFFS + 24, //     retax
-            CODE_OFFS + 13, //     ifn
-            CODE_OFFS,      //       toggle
-            CODE_OFFS + 22, //       ret
-            CODE_OFFS + 23, //     end
-            CODE_OFFS + 23, //   end
-            0,              //   0
-            CODE_OFFS + 8,  //   dec
-            CODE_OFFS + 25, //   axre
-            CODE_OFFS + 23, // end
-            CODE_OFFS + 21, // func
-            3,              //   3
-            CODE_OFFS + 35, //   save
-            CODE_OFFS + 34, //   right
-            63,             //   63
-            CODE_OFFS,      //   toggle
-            3,              //   3
-            CODE_OFFS + 3,  //   add
-            CODE_OFFS + 35, //   save
-            CODE_OFFS + 34, //   right
-            CODE_OFFS + 35, //   save
-            CODE_OFFS + 34, //   right
-            CODE_OFFS + 35, //   save
-            CODE_OFFS + 33, //   left
-            CODE_OFFS + 33, //   left
-            CODE_OFFS + 33, //   left
-            0,              //   0
-            CODE_OFFS + 55, //   smol
-            CODE_OFFS + 20, //   call
-            CODE_OFFS + 24, //   reax
-            CODE_OFFS + 13, //   ifn
-            CODE_OFFS + 22, //     ret
-            CODE_OFFS + 23, //   end
-            CODE_OFFS + 33, //   left
-            CODE_OFFS + 56, //   rmol
-            CODE_OFFS + 54, //   mol
-            CODE_OFFS + 35, //   save
-            CODE_OFFS + 34, //   right
-            0,              //   0
-            CODE_OFFS + 20, //   call
-            CODE_OFFS + 24, //   reax
-            CODE_OFFS + 13, //   ifn
-            CODE_OFFS + 22, //     ret
-            CODE_OFFS + 23, //   end
-            CODE_OFFS + 56, //   rmol
-            CODE_OFFS + 54, //   mol
-            CODE_OFFS + 35, //   save
-            CODE_OFFS + 34, //   right
-            1,              //   1
-            CODE_OFFS + 20, //   call
-            CODE_OFFS + 35, //   save
-            CODE_OFFS + 33, //   left
-            CODE_OFFS + 33, //   left
-            CODE_OFFS + 36, //   load
-            CODE_OFFS + 55, //   smol
-            60,             //   60
-            CODE_OFFS,      //   toggle
-            5,              //   5
-            CODE_OFFS + 5,  //   mul
-            CODE_OFFS + 19, //   loop
-            CODE_OFFS + 34, //     right
-            CODE_OFFS + 34, //     right
-            CODE_OFFS + 34, //     right
-            CODE_OFFS + 58, //     cmol
-            CODE_OFFS + 33, //     left
-            CODE_OFFS + 33, //     left
-            CODE_OFFS + 36, //     load
-            CODE_OFFS + 55, //     smol
-            CODE_OFFS + 34, //     right
-            CODE_OFFS + 34, //     right
-            60,             //     60
-            CODE_OFFS,      //     toggle
-            5,              //     5
-            CODE_OFFS + 5,  //     mul
-            CODE_OFFS + 19, //     loop
-            CODE_OFFS + 54, //       mol
-            CODE_OFFS,      //       toggle
-            CODE_OFFS + 38, //       cmp
-            CODE_OFFS + 24, //       reax
-            CODE_OFFS + 12, //       ifp
-            CODE_OFFS + 33, //         left
-            CODE_OFFS + 36, //         load
-            CODE_OFFS + 55, //         smol
-            CODE_OFFS,      //         toggle
-            CODE_OFFS + 53, //         move
-            CODE_OFFS + 33, //         left
-            CODE_OFFS + 33, //         left
-            CODE_OFFS + 36, //         load
-            CODE_OFFS + 55, //         smol
-            CODE_OFFS + 34, //         right
-            CODE_OFFS + 34, //         right
-            CODE_OFFS + 36, //         load
-            CODE_OFFS + 8,  //         dec
-            CODE_OFFS + 35, //         save
-            CODE_OFFS + 33, //         left
-            CODE_OFFS + 33, //         left
-            CODE_OFFS + 39, //         break
-            CODE_OFFS + 23, //       end
-            CODE_OFFS + 56, //       rmol
-            CODE_OFFS + 23, //     end
-            CODE_OFFS + 56, //     rmol
-            CODE_OFFS + 23, //   end
-            CODE_OFFS + 23, // end
-            2,              // 2
-            CODE_OFFS + 20, // call
-            CODE_OFFS + 2,  // nop
-            CODE_OFFS + 2,  // nop
-            CODE_OFFS + 2   // nop
-        ])
+        code: `
+        #
+        # This is molecule-separator. The same one at the end of
+        # replicator code. This is how we distinguish replicator code 
+        # and food segment
+        #
+        nop
+        nop
+        nop               @mol
+        #
+        #  sep    repl                 sep    food
+        # [66,66, 1,0,1, 1,0,2, 1,2,1, 66,66, 1,2,1, 0,0,2, 1,0,1]
+        #  mol                                read                write
+        #
+        # desc: search for molecule index in a code
+        # in  : m0     - finish index
+        # in  : m1..mX - molecule
+        # in  : mol    - search start index
+        # out : idx|-1
+        #
+        func
+          63
+          lshift          @mol
+          lshift                # 252 mols max
+          loop
+            right         @mol  # m1
+            cmp                 # re=0|1
+            left
+            ifp           @mol
+              mol               # ax=mol
+              axre              # re=mol
+              ret         @mol
+            end
+            rmol
+            #
+            # Checks finish limit
+            #
+            mol           @mol
+            toggle
+            load
+            ifg           @mol
+              0
+              dec
+              axre        @mol
+              ret
+            end
+          end             @mol
+        end
+        #
+        # desc: Make clone.
+        # in  : nothing
+        #
+        func
+          #
+          # 1. finds second separator molecule
+          #
+          # 1.1 sets search limit to m0
+          63              @mol
+          lshift
+          lshift
+          save            @mol  # m0=252
+          # 1.2 sets 0 molecule as separator
+          right                 # m1
+          0
+          cmol            @mol  # m1-m3[nop,nop,nop]
+          smol
+          left                  # m0
+          call            @mol
+          reax                  # ax=sep1Mol
+          ifn
+            ret           @mol
+          end
+          save                  # m0=sep1Mol
+          #
+          # 2. sets read head to the food section
+          #
+          smol            @mol
+          rmol
+          r2mol
+          #
+          # 4. sets write head to the end
+          #
+          0               @mol
+          smol
+          lmol
+          w2mol           @mol
+        end
+        #
+        # Try to make clone
+        #
+        1
+        call              @mol
+        nop
+        nop
+        nop               @mol        
+        `
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
          * generated automatically

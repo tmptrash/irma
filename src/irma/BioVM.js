@@ -13,6 +13,7 @@ const VM                    = require('./VM');
 const Mutations             = require('./Mutations');
 const World                 = require('./World');
 const FastArray             = require('./../common/FastArray');
+const Bytes2Code            = require('./Bytes2Code');
 
 const rand                  = Helper.rand;
 const RE_OK                 = Config.CODE_RE_OK;
@@ -81,6 +82,7 @@ class BioVM extends VM {
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
         if (BioVM._orgsAmount() + BioVM._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "LUCAS.length" configs')}
+        debugger;
         this.addOrgs();
         this.addMols();
     }
@@ -393,7 +395,7 @@ class BioVM extends VM {
                 let   ret  = RE_OK;
                 for (let i = org.mol - 1;; i--) {
                     if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
-                        if (i < 0) {ret = RE_SPECIAL; i = code.length; continue}
+                        if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue}
                         org.mol = i + 1;
                         break;
                     }
@@ -405,9 +407,10 @@ class BioVM extends VM {
             case CMOL: {
                 ++org.line;
                 const code = org.code;
+                const len  = code.length;
                 const mem  = org.mem;
                 const mLen = mem.length - 1;
-                for (let i = org.mol, m = org.memPos;; i++, m++) {
+                for (let i = org.mol, m = org.memPos; i < len; i++, m++) {
                     mem[m] = code[i];
                     if ((code[i] & CODE_8_BIT_MASK) > 0) {break}
                     if (m > mLen) {m = -1}
@@ -551,10 +554,12 @@ class BioVM extends VM {
         const lucas = Config.LUCAS;
         let orgs    = lucas.length;
         while (orgs-- > 0) {
-            const code   = lucas[orgs].code;
-            const offset = lucas[orgs].offs || rand(MAX_OFFS);
+            const luca   = lucas[orgs];
+            const code   = luca.code;
+            const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(code);
+            const offset = luca.offs || rand(MAX_OFFS);
             if (world.index(offset) > -1) {orgs++; continue}
-            this.addOrg(offset, this.split2Mols(code.slice()), code.length * Config.energyMultiplier);
+            this.addOrg(offset, bCode.slice(), code.length * Config.energyMultiplier);
             // const luca = this.addOrg(offset, code.slice(), code.length * Config.energyMultiplier);
             // this.db && this.db.put(luca);
         }
@@ -576,22 +581,6 @@ class BioVM extends VM {
             // const org = this.addMol(offset, this._molCode());
             // this.db && this.db.put(org);
         }
-    }
-
-    /**
-     * Splits raw code into molecules by adding first bit flag to every Config.molCodeSize offset
-     * @param {Uint8Array} code Code we need to split
-     * @return {Uint8Array} The same array, but with meta info inside (molecule separator)
-     */
-    split2Mols(code) {
-        const size = Config.molCodeSize;
-        const len  = code.length;
-        let   i    = -1;
-        
-        while ((i += size) < len) {code[i] |= CODE_8_BIT_MASK}
-        code[len - 1] |= CODE_8_BIT_MASK; // last atom must be marked
-
-        return code;
     }
 
     /**
@@ -630,7 +619,7 @@ class BioVM extends VM {
 
     /**
      * Generates random code and code based on organism parts
-     * @returns {Array}
+     * @returns {Uint8Array}
      * @private
      */
     _molCode() {
@@ -644,16 +633,15 @@ class BioVM extends VM {
             code[size - 1] |= Config.CODE_8_BIT_MASK;
             return code;
         }
-        let   code  = Config.LUCAS[0].code;
-        const len   = code.length;
-        const start = size * Math.floor(Math.random() * Math.ceil(len / 4));
-        code = code.slice(start, start + size);
+        const luca  = Config.LUCAS[0];
+        const bCode = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(luca.code);
+        const len   = bCode.length;
+        let   start = Math.floor(Math.random() * len);
         //
-        // Sets last atom bit on
+        // Sets start to the first atom in a molecule
         //
-        code[size - 1] |= Config.CODE_8_BIT_MASK;
-
-        return code;
+        for (let i = start - 1;; i--) {if ((bCode[i] & CODE_8_BIT_MASK) > 0 || i < 0) {start = i + 1; break}}
+        return bCode.slice(start, this._molLastOffs(bCode, start) + 1);
     }
 
     /**
@@ -677,6 +665,7 @@ class BioVM extends VM {
      * Returns index of last atom in molecule in a code
      * @param {Uint8Array} code Code we a looking in
      * @param {Number} index Index of first atom in molecule
+     * @return {Number} Index of last atom
      */
     _molLastOffs(code, index) {
         const len = code.length;
