@@ -162,9 +162,20 @@ class Bytes2Code {
     static byte(line) {
         const isMol = line.indexOf(MOL_STR) !== -1;
         const ln    = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
-        const byte  =  this._isNumeric(ln) ? +ln : this.CMD_MAP[ln];
+        const byte  = this._isNumeric(ln) ? +ln : this.CMD_MAP[ln];
         if (byte === undefined) {return null}
         return isMol ? byte | CODE_8_BIT_MASK : byte;
+    }
+
+    /**
+     * Checks if one script code line valid
+     * @param {String} line One code line
+     * @return {Boolean} valid status
+     */
+    static valid(line) {
+        const isMol = line.indexOf(MOL_STR) !== -1;
+        const ln    = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
+        return ln === '' || (this._isNumeric(ln) ? true : !!this.CMD_MAP[ln]);
     }
 
     /**
