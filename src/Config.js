@@ -99,6 +99,14 @@ module.exports = {
      */
     DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
     /**
+     * {String} Line comment symbol
+     */
+    CODE_COMMENT_SYMBOL        : '#',
+    /**
+     * {String} Annotation for last atom in a molecule. Should be before comment
+     */
+    CODE_MOL_STR               : '@mol',
+    /**
      * {Number} This offset will be added to commands value. This is how we
      * add an ability to use numbers in a code, just putting them as command
      * @constant

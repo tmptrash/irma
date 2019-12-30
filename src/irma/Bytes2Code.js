@@ -11,6 +11,8 @@ const Organism              = require('./Organism');
 const CODE_PAD_SIZE         = 30;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
+const COMMENT               = Config.CODE_COMMENT_SYMBOL;
+const MOL_STR               = Config.CODE_MOL_STR;
 //
 // Basic commands
 //
@@ -139,16 +141,16 @@ class Bytes2Code {
      * @param {String} code String code
      * @return {Array} Byte code
      */
-    // TODO: add molecules support
     static toByteCode(code) {
         const splitted = code.split('\n');
         const len      = splitted.length;
         const bСode    = [];
 
         for (let i = 0; i < len; i++) {
-            const ln   = splitted[i].split('#')[0].trim();
-            const byte = this._isNumeric(ln) ? +ln : this._map[ln];
-            byte !== undefined && bСode.push(byte);
+            const isMol = splitted[i].indexOf(MOL_STR) !== -1;
+            const ln    = splitted[i].split(COMMENT)[0].trim();
+            const byte  = this._isNumeric(ln) ? +ln : this._map[ln];
+            byte !== undefined && bСode.push(isMol ? byte | CODE_8_BIT_MASK : byte);
         }
 
         return bСode;
