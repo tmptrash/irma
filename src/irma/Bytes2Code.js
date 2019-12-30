@@ -145,11 +145,12 @@ class Bytes2Code {
         const splitted = code.split('\n');
         const len      = splitted.length;
         const bСode    = [];
+        const map      = this.CMD_MAP;
 
         for (let i = 0; i < len; i++) {
             const isMol = splitted[i].indexOf(MOL_STR) !== -1;
             const ln    = splitted[i].split(COMMENT)[0].trim();
-            const byte  = this._isNumeric(ln) ? +ln : this._map[ln];
+            const byte  = this._isNumeric(ln) ? +ln : map[ln];
             byte !== undefined && bСode.push(isMol ? byte | CODE_8_BIT_MASK : byte);
         }
 
