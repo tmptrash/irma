@@ -157,12 +157,13 @@ class Bytes2Code {
     /**
      * Parses a line and returns a command without spaces, comments and all other stuff
      * @param {String} line One script line
-     * @return {String} cmd
+     * @return {String|null} cmd or null
      */
     static byte(line) {
         const isMol = line.indexOf(MOL_STR) !== -1;
         const ln    = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
         const byte  =  this._isNumeric(ln) ? +ln : this.CMD_MAP[ln];
+        if (byte === undefined) {return null}
         return isMol ? byte | CODE_8_BIT_MASK : byte;
     }
 
