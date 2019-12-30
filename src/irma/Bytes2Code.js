@@ -147,8 +147,8 @@ class Bytes2Code {
         const bСode    = [];
 
         for (let i = 0; i < len; i++) {
-            const byte = this.cmd(splitted[i]);
-            byte !== undefined && bСode.push(byte);
+            const byte = this.byte(splitted[i]);
+            byte && bСode.push(byte);
         }
 
         return bСode;
