@@ -179,6 +179,15 @@ class Bytes2Code {
     }
 
     /**
+     * checks if specified line of code is a last atom in a molecule
+     * @param {String} line One code line
+     * @return {Boolean} Last or not
+     */
+    static isMol(line) {
+        return line.indexOf(MOL_STR) !== -1;
+    }
+
+    /**
      * Returns information related to shorthands used in language. 
      * @return {String} info
      */
