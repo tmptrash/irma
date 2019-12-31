@@ -1,57 +1,63 @@
 nop
 nop
-nop
-func
+nop               @mol
+func                    # func0
   63
-  lshift
-  lshift           # 252 mols max
+  lshift          @mol
+  lshift                # 252 mols max
   loop
-    right          # m1
-    cmp            # re=0|1
+    right         @mol  # m1
+    cmp                 # re=0|1
     left
+    reax          @mol  # ax=0|1
     ifp
-      mol          # ax=mol
-      axre         # re=mol
+      mol               # ax=mol
+      axre        @mol  # re=mol
       ret
     end
-    rmol
+    rmol          @mol
     mol
     toggle
-    load
-    ifg
+    load          @mol
+    ifl
       0
-      dec
+      dec         @mol
       axre
       ret
-    end
+    end           @mol
   end
 end
-func
+func              @mol  # func1
   63
   lshift
-  lshift
-  save             # m0=252
-  right            # m1
-  0
-  cmol             # m1-m3[nop,nop,nop]
+  lshift          @mol
+  save                  # m0=252
+  right                 # m1
+  0               @mol
+  cmol                  # m1-m3[nop,nop,nop]
   smol
-  left             # m0
+  rmol            @mol
+  left                  # m0
   call
-  reax             # ax=sep1Mol
+  reax            @mol  # ax=sep1Mol
   ifn
     ret
-  end
-  save             # m0=sep1Mol
+  end             @mol
+  save                  # m0=sep1Mol
   smol
-  rmol
+  rmol            @mol
+  reax
+  ifn
+    ret           @mol
+  end
   r2mol
-  0
+  0               @mol
   smol
   lmol
-  w2mol
+  w2mol           @mol
 end
-2
-call
+1
+call              @mol
 nop
 nop
-nop
+nop               @mol

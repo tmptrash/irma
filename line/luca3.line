@@ -25,7 +25,7 @@ func                    # func0
     right         @mol  # m1
     cmp                 # re=0|1
     left
-	reax          @mol  # ax=0|1
+    reax          @mol  # ax=0|1
     ifp
       mol               # ax=mol
       axre        @mol  # re=mol
@@ -38,7 +38,7 @@ func                    # func0
     mol
     toggle
     load          @mol
-    ifg
+    ifl
       0
       dec         @mol
       axre
@@ -77,21 +77,25 @@ func              @mol  # func1
   #
   smol
   rmol            @mol
+  reax
+  # 2.1 If organism has no food section
+  ifn
+    ret           @mol
+  end
   r2mol
   #
   # 4. sets write head to the end
   #
-  0
-  smol            @mol
+  0               @mol
+  smol
   lmol
-  w2mol
-end               @mol
+  w2mol           @mol
+end
 #
 # Try to make clone
 #
 1
-call
-nop               @mol
+call              @mol
 nop
 nop
 nop               @mol
