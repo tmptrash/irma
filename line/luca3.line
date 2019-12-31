@@ -7,9 +7,139 @@ nop
 nop
 nop               @mol
 #
-#  sep    repl                 sep    food
-# [66,66, 1,0,1, 1,0,2, 1,2,1, 66,66, 1,2,1, 0,0,2, 1,0,1]
-#  mol                                read                write
+#  sep    repl                 sep  food
+# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1]
+#  mol                              read              write
+#
+# desc: search for molecule index in a code
+# in  : m0     - finish index
+# in  : m1..mX - molecule
+# in  : mol    - search start index
+# out : idx|-1
+#
+func                    # func0
+  63
+  lshift          @mol
+  lshift                # 252 mols max
+  loop
+    right         @mol  # m1
+    cmp                 # re=0|1
+    left
+    reax          @mol  # ax=0|1
+    ifp
+      mol               # ax=mol
+      axre        @mol  # re=mol
+      ret
+    end
+    rmol          @mol
+    #
+    # Checks finish limit
+    #
+    mol
+    toggle
+    load          @mol
+    ifl
+      0
+      dec         @mol
+      axre
+      ret
+    end           @mol
+  end
+end
+#
+# desc: Make clone.
+# in  : nothing
+#
+func              @mol  # func1
+  #
+  # 1. finds second separator molecule
+  #
+  # 1.1 sets search limit to m0
+  63
+  lshift
+  lshift          @mol
+  save                  # m0=252
+  # 1.2 sets 0 molecule as separator
+  right                 # m1
+  0               @mol
+  cmol                  # m1-m3[nop,nop,nop]
+  smol
+  rmol            @mol
+  left                  # m0
+  call
+  reax            @mol  # ax=sep1Mol
+  ifn
+    ret
+  end             @mol
+  save                  # m0=sep1Mol
+  #
+  # 2. sets read head to the food section
+  #
+  smol
+  rmol            @mol
+  reax
+  # 2.1 If organism has no food section
+  ifn
+    ret           @mol
+  end
+  r2mol
+  #
+  # 4. sets write head to the end
+  #
+  0               @mol
+  smol
+  lmol
+  w2mol           @mol
+  #
+  # 5. Here starts main loop, where organism
+  # walk through it's replicator section and
+  # search for it's molecules in food section.
+  # m0 stores current replicator molecule index
+  #
+  # 5.1. sets mol pointer to the first molecule 
+  0
+  smol
+  save            @mol
+  # 5.2. sets max interations
+  right
+  63
+  lshift
+  lshift
+  loop
+    # 5.3. copy current replicator molecule to m1...mX
+    cmol
+    # 5.4. jumps to food section
+    mol2r
+    # 5.5. sets search limit and search molecule
+	
+    left
+    load
+    inc
+    save
+  end
+end
+#
+# Try to make clone
+#
+1
+call
+ret
+nop
+nop
+nop
+nop
+nop               @mol
+#
+# here is test food section. This part---------------------
+# should be removed after tests----------------------------
+#
+nop
+nop
+nop               @mol
+#
+#  sep    repl                 sep  food
+# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1]
+#  mol                              read              write
 #
 # desc: search for molecule index in a code
 # in  : m0     - finish index
