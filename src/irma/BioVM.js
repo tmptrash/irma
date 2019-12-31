@@ -47,8 +47,8 @@ const OFFS                  = Config.CODE_CMDS.OFFS;
 const COLOR                 = Config.CODE_CMDS.COLOR;
 const ANAB                  = Config.CODE_CMDS.ANAB;
 const CATAB                 = Config.CODE_CMDS.CATAB;
-const MOVE                  = Config.CODE_CMDS.MOVE;
 const MOL                   = Config.CODE_CMDS.MOL;
+const MMOL                  = Config.CODE_CMDS.MMOL;
 const SMOL                  = Config.CODE_CMDS.SMOL;
 const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
@@ -319,7 +319,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case MOVE: {
+            case MMOL: {
                 ++org.line;
                 //
                 // This code obtains source molecule

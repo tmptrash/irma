@@ -71,8 +71,8 @@ const OFFS                  = Config.CODE_CMDS.OFFS;
 const COLOR                 = Config.CODE_CMDS.COLOR;
 const ANAB                  = Config.CODE_CMDS.ANAB;
 const CATAB                 = Config.CODE_CMDS.CATAB;
-const MOVE                  = Config.CODE_CMDS.MOVE;
 const MOL                   = Config.CODE_CMDS.MOL;
+const MMOL                  = Config.CODE_CMDS.MMOL;
 const SMOL                  = Config.CODE_CMDS.SMOL;
 const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
@@ -300,8 +300,8 @@ Bytes2Code.MAP = {
     [COLOR ]: ['color',  'org.color=ax % 0xffffff'],
     [ANAB  ]: ['anab',   'anab(ax:fromIdx, bx:toIdx):re'],
     [CATAB ]: ['catab',  'catab(ax:offs):re'],
-    [MOVE  ]: ['move',   'move(ax:fromIdx):re'],
     [MOL   ]: ['mol',    'ax,bx=mol()'],
+    [MMOL  ]: ['mmol',   'mmol(ax:fromIdx):re'],
     [SMOL  ]: ['smol',   'mol=smol(ax)'],
     [RMOL  ]: ['rmol',   'mol=rmol():re'],
     [LMOL  ]: ['lmol',   'mol=lmol():re'],
