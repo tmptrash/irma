@@ -84,7 +84,7 @@ describe('src/irma/VM', () => {
             molDecayDistance           : 60,
             molCodeSize                : 8,
             energyStepCoef             : 0.01,
-            energyMultiplier           : 10000
+            energyMetabolismCoef           : 10000
         });
     }
 

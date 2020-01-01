@@ -96,7 +96,7 @@ describe('src/irma/VM', () => {
             molDecayDistance           : 60,
             molCodeSize                : 2,
             energyStepCoef             : 0.01,
-            energyMultiplier           : 10000
+            energyMetabolismCoef           : 10000
         });
     }
 
@@ -182,7 +182,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK,2,JO|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(2 * Config.energyMultiplier - 2);
+                expect(vm.orgs.get(0).energy).toEqual(2 * Config.energyMetabolismCoef - 2);
             });
             it('Checks joining empty cell',  () => {
                 run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 1}, [0]);
@@ -510,7 +510,7 @@ describe('src/irma/VM', () => {
         xdescribe('anab tests', () => {
             it('simple anabolism', () => {
                 const code   = vm.split2Mols(Uint8Array.from([1,TG,0,AB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -521,11 +521,11 @@ describe('src/irma/VM', () => {
                 vm.run();
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG,0,AB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy - (code.length * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy - (code.length * Config.energyMetabolismCoef) - 1);
             });
             it('anabolism of one molecule only', () => {
                 const code   = vm.split2Mols(Uint8Array.from([AB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -541,7 +541,7 @@ describe('src/irma/VM', () => {
             });
             it('joining two molecules from different places', () => {
                 const code   = vm.split2Mols(Uint8Array.from([2,TG,0,0,0,AB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -552,11 +552,11 @@ describe('src/irma/VM', () => {
                 vm.run();
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,TG,0,AB|MASK,0,0|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMetabolismCoef) - 1);
             });
             it('joining two molecules when ax < 0', () => {
                 const code   = vm.split2Mols(Uint8Array.from([2,TG,0,0,0,NT,AB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -567,11 +567,11 @@ describe('src/irma/VM', () => {
                 vm.run();
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,TG,0,NT|MASK,0,0|MASK,AB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMetabolismCoef) - 1);
             });
             it('joining two molecules when bx > molAmount', () => {
                 const code   = vm.split2Mols(Uint8Array.from([20,TG,0,0,0,AB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -582,7 +582,7 @@ describe('src/irma/VM', () => {
                 vm.run();
 
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([20,TG,0,AB|MASK,0,0|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy - 4 * Config.energyMultiplier - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy - 4 * Config.energyMetabolismCoef - 1);
                 expect(vm.orgs.get(0).re).toEqual(1);
             });
         });
@@ -590,7 +590,7 @@ describe('src/irma/VM', () => {
         xdescribe('catab tests', () => {
             it('simple catabolism', () => {
                 const code   = vm.split2Mols(Uint8Array.from([0,CB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -601,12 +601,12 @@ describe('src/irma/VM', () => {
                 vm.run();
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0|MASK,CB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy + (code.length * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy + (code.length * Config.energyMetabolismCoef) - 1);
                 expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('simple catabolism with longer molecule', () => {
                 const code   = vm.split2Mols(Uint8Array.from([0,1,2,3,4,1,CB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -617,12 +617,12 @@ describe('src/irma/VM', () => {
                 vm.run();
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,1|MASK,2|MASK,3|MASK,4,1|MASK,CB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMetabolismCoef) - 1);
                 expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('catabolism if ax < 0', () => {
                 const code   = vm.split2Mols(Uint8Array.from([1,NT,CB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -633,12 +633,12 @@ describe('src/irma/VM', () => {
                 vm.run();
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|MASK,NT|MASK,CB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMultiplier) - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMetabolismCoef) - 1);
                 expect(vm.orgs.get(0).re).toEqual(1);
             });
             it('catabolism if ax > molAmount', () => {
                 const code   = vm.split2Mols(Uint8Array.from([10,CB]));
-                const energy = Config.energyMultiplier * 10;
+                const energy = Config.energyMetabolismCoef * 10;
                 Config.molAmount = 0;
                 Config.orgAmount = 1;
                 Config.codeLinesPerIteration = code.length;
@@ -649,7 +649,7 @@ describe('src/irma/VM', () => {
                 vm.run();
         
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([10|MASK,CB|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(energy + 2 * Config.energyMultiplier - 1);
+                expect(vm.orgs.get(0).energy).toEqual(energy + 2 * Config.energyMetabolismCoef - 1);
                 expect(vm.orgs.get(0).re).toEqual(1);
             });
         });

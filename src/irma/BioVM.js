@@ -297,7 +297,7 @@ class BioVM extends VM {
                 //
                 code            = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
                 code            = code.splice(m1EndIdx + 1, 0, cutCode);
-                org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMultiplier);
+                org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                 code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
                 org.re         = RE_OK;
@@ -314,7 +314,7 @@ class BioVM extends VM {
                 const molSize = molEnd - mol + 1;
                 if (cutPos) {cutPos = mol + Math.floor(molSize / 2) - 1}
                 code[cutPos] |= CODE_8_BIT_MASK;
-                org.energy += (molSize * Config.energyMultiplier);
+                org.energy += (molSize * Config.energyMetabolismCoef);
                 org.re = RE_OK;
                 return;
             }
@@ -339,7 +339,7 @@ class BioVM extends VM {
                 const len      = m2EndIdx - m2Idx + 1;
                 code           = code.splice(m2Idx, len);
                 org.code       = code.splice(this._molLastOffs(code, org.molWrite + (m2Idx < org.molWrite ? -len : 0)) + 1, 0, moveCode);
-                org.energy    -= (Math.floor(Config.molCodeSize * 10 / len) || 1) * Config.energyMultiplier;
+                org.energy    -= Config.energyMove;
                 //
                 // Important: moving new commands insie the script may break it, because it's
                 // offsets, stack and context may be invalid. Generally, we have to compile
@@ -556,9 +556,10 @@ class BioVM extends VM {
             const code   = luca.code;
             const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(code);
             const offset = luca.offs || rand(MAX_OFFS);
+            const energy = luca.energy ? luca.energy : 600000;
             if (world.index(offset) > -1) {orgs++; continue}
-            this.addOrg(offset, bCode.slice(), code.length * Config.energyMultiplier);
-            // const luca = this.addOrg(offset, code.slice(), code.length * Config.energyMultiplier);
+            this.addOrg(offset, bCode.slice(), energy);
+            // const luca = this.addOrg(offset, code.slice(), energy);
             // this.db && this.db.put(luca);
         }
         this.population++;

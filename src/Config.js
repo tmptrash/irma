@@ -243,7 +243,7 @@ module.exports = {
         nop
         nop
         nop               @mol        
-        `
+        `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
          * generated automatically
@@ -252,7 +252,7 @@ module.exports = {
         /**
          * {Number} Start amount of evergy. If undefined, then will be generated automatically
          */
-        // energy: 1000
+        energy: 600 * 1000 // 600 sec * 1000 commands
     }],
     codeLinesPerIteration      : 10,
     codeRepeatsPerRun          : 20,
@@ -335,7 +335,8 @@ module.exports = {
      * {Number} Energy related configuration
      */
     energyStepCoef             : .015,
-    energyMultiplier           : 10000,
+    energyMove                 : 3,
+    energyMetabolismCoef       : 100,
     /**
      * Plugins. Extends irma core by additional functionality
      * @constant
