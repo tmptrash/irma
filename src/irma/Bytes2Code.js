@@ -8,7 +8,7 @@ const Organism              = require('./Organism');
 /**
  * {Number} Offset of the first command. Before it, just numbers
  */
-const CODE_PAD_SIZE         = 20;
+const CODE_PAD_SIZE         = 30;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
 const COMMENT               = Config.CODE_COMMENT_SYMBOL;
