@@ -112,7 +112,7 @@ class Bytes2Code {
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
             const molIdx  = lines ? (isMol ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
-            const lineIdx = lines ? `${b ? '\n' : ''}${(b+'').padEnd(5)}` : (b ? '\n' : '');
+            const lineIdx = lines ? `${b ? '\n' : ''}${(b.toString()).padEnd(5)}` : (b ? '\n' : '');
             const comment = comments && line ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
                 cmd === LOOP ||
@@ -153,7 +153,7 @@ class Bytes2Code {
             byte !== null && bCode.push(byte);
         }
 
-        return bCode;
+        return Uint8Array.from(bCode);
     }
 
     /**

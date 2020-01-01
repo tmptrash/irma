@@ -330,7 +330,7 @@ class BioVM extends VM {
                 if (m2Idx >= code.length) {m2Idx = code.length - 1}
                 for (let i = m2Idx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
                 if (m2Idx === org.molWrite) {org.re = RE_OK; return} // src and dest molecules are the same
-                const m2EndIdx = this._molLastOffs(code, m2Idx) + 1;
+                const m2EndIdx = this._molLastOffs(code, m2Idx);
                 const moveCode = code.slice(m2Idx, m2EndIdx + 1);
                 if (moveCode.length < 1) {org.re = RE_ERR; return}
                 //
