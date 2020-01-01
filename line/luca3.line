@@ -151,14 +151,17 @@ func              @mol  # func1
     right               # m0
     load
     smol          @mol
-  end
+    right
+    right
+  end             @mol
 end
 #
 # Try to make clone
 #
-1                 @mol
-call
+1
+call              @mol
 ret
+nop
 nop               @mol
 nop
 nop
@@ -166,11 +169,6 @@ nop               @mol
 #
 # here is test food section. This part---------------------
 # should be removed after tests----------------------------
-#
-#
-# This is molecule-separator. The same one at the end of
-# replicator code. This is how we distinguish replicator code 
-# and food segment
 #
 #
 # This is molecule-separator. The same one at the end of
@@ -325,14 +323,17 @@ func              @mol  # func1
     right               # m0
     load
     smol          @mol
-  end
+    right
+    right
+  end             @mol
 end
 #
 # Try to make clone
 #
-1                 @mol
-call
+1
+call              @mol
 ret
+nop
 nop               @mol
 nop
 nop
