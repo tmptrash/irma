@@ -8,7 +8,7 @@ const Organism              = require('./Organism');
 /**
  * {Number} Offset of the first command. Before it, just numbers
  */
-const CODE_PAD_SIZE         = 30;
+const CODE_PAD_SIZE         = 20;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
 const COMMENT               = Config.CODE_COMMENT_SYMBOL;
@@ -107,8 +107,10 @@ class Bytes2Code {
 
         org.compile();
         for (let b = 0; b < bytes.length; b++) {
+            const isMol   = bytes[b] & CODE_8_BIT_MASK;
+            const molStr  = isMol ? '@mol' : '    ';
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
-            const molIdx  = lines ? ((bytes[b] & CODE_8_BIT_MASK) ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
+            const molIdx  = lines ? (isMol ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
             const lineIdx = lines ? `${b ? '\n' : ''}${(b+'').padEnd(5)}` : (b ? '\n' : '');
             const comment = comments && line ? `// ${line[1]}` : '';
@@ -121,16 +123,16 @@ class Bytes2Code {
                 cmd === IFL  ||
                 cmd === IFE  ||
                 cmd === IFNE) {
-                code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)}${comment}`;
+                code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)} ${molStr}${comment}`;
                 if ((offs[b] || 0) > b + 1) {span += '  '}
                 continue;
             } else if (cmd === END) {
                 span = span.substr(0, span.length - 2);
-            } else if (line === undefined) {
-                code += `${lineIdx}${molIdx}${span}${cmd}`;
+            } else if (line === undefined) { // number constant
+                code += `${lineIdx}${molIdx}${span}${cmd} ${molStr}`;
                 continue;
             }
-            code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)}${comment}`;
+            code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)} ${molStr}${comment}`;
         }
 
         return code;
