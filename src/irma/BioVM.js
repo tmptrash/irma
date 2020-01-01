@@ -338,7 +338,7 @@ class BioVM extends VM {
                 //
                 const len      = m2EndIdx - m2Idx + 1;
                 code           = code.splice(m2Idx, len);
-                org.code       = code.splice(this._molLastOffs(code, org.molWrite) + 1, 0, moveCode);
+                org.code       = code.splice(this._molLastOffs(code, org.molWrite + (m2Idx < org.molWrite ? -len : 0)) + 1, 0, moveCode);
                 org.energy    -= (Math.floor(Config.molCodeSize * 10 / len) || 1) * Config.energyMultiplier;
                 //
                 // Important: moving new commands insie the script may break it, because it's
