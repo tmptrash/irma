@@ -392,7 +392,7 @@ class BioVM extends VM {
                 ++org.line;
                 const code = org.code;
                 let   ret  = RE_OK;
-                for (let i = org.mol - 1;; i--) {
+                for (let i = org.mol - 2;; i--) {
                     if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
                         if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue}
                         org.mol = i + 1;
