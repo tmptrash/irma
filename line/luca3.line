@@ -99,23 +99,55 @@ func              @mol  # func1
   # 5.1. sets mol pointer to the first molecule 
   0
   smol
-  save            @mol
-  # 5.2. sets max interations
+  save            @mol  # m0=i
+  # 5.2. sets limit index
   right
+  mol2w
+  mol
+  save                  # m1=limit
+  # 5.3. sets max interations
+  right                 # m2=curMol
   63
   lshift
   lshift
   loop
-    # 5.3. copy current replicator molecule to m1...mX
+    # 5.4. copy current replicator molecule to m2...mX
+	# sets search limit and call search function
     cmol
-    # 5.4. jumps to food section
     mol2r
-    # 5.5. sets search limit and search molecule
-	
+    left
+    mol
+    save                # m1=limit
+    0
+    call
+    reax
+	ifn
+      ret
+    end
+    # 5.5. move found molecule
+	mol2r
+	toggle              # ax=?        bx=foundMol
+    mol                 # ax=food     bx=foundMol
+    toggle              # ax=foundMol bx=food
+    smol
+	r2mol
+    toggle              # ax=food     bx=foundMol
+    smol
+    mmol
+    r2mol
+    # 5.6. updates limit value
+	load
+    smol
+    lmol
+    mol
+    save                # m1=limit-1
+    # 5.7. updates i
     left
     load
-    inc
-    save
+    smol
+	rmol
+	mol
+	save                # m0=i+1
   end
 end
 #
