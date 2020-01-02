@@ -129,7 +129,7 @@ func              @mol  # func1
     # 5.5. move found molecule (ax,mol=found idx)
     r2mol
     mmol          @mol
-    # 5.6. updates limit value (memory and write head)
+    # 5.6. updates limit value (memory)
     load
     smol
     lmol          @mol
@@ -142,35 +142,23 @@ func              @mol  # func1
     rmol          @mol
     mol
     save                # m0=i+1
-    # 5.8. sets read head back to food section
-    left          @mol  # m-1
-    load
-    smol
-    r2mol         @mol
-    # 5.9. sets mol head to i
-    right               # m0
-    load
-    smol          @mol
+    # 5.8. sets mem to m2
+    right         @mol
+    right
   end
-end
+end               @mol
 #
 # Try to make clone
 #
-1                 @mol
+1
 call
-ret
-nop               @mol
+ret               @mol
 nop
 nop
 nop               @mol
 #
 # here is test food section. This part---------------------
 # should be removed after tests----------------------------
-#
-#
-# This is molecule-separator. The same one at the end of
-# replicator code. This is how we distinguish replicator code 
-# and food segment
 #
 #
 # This is molecule-separator. The same one at the end of
@@ -303,7 +291,7 @@ func              @mol  # func1
     # 5.5. move found molecule (ax,mol=found idx)
     r2mol
     mmol          @mol
-    # 5.6. updates limit value (memory and write head)
+    # 5.6. updates limit value (memory)
     load
     smol
     lmol          @mol
@@ -316,24 +304,17 @@ func              @mol  # func1
     rmol          @mol
     mol
     save                # m0=i+1
-    # 5.8. sets read head back to food section
-    left          @mol  # m-1
-    load
-    smol
-    r2mol         @mol
-    # 5.9. sets mol head to i
-    right               # m0
-    load
-    smol          @mol
+    # 5.8. sets mem to m2
+    right         @mol
+    right
   end
-end
+end               @mol
 #
 # Try to make clone
 #
-1                 @mol
+1
 call
-ret
-nop               @mol
+ret               @mol
 nop
 nop
 nop               @mol
