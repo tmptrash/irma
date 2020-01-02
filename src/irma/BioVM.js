@@ -73,9 +73,9 @@ class BioVM extends VM {
     static _orgsMolsAmount() {return Config.molAmount + Config.LUCAS.length + 1}
 
     constructor() {
-        super(BioVM._orgsAmount());
+        super(BioVM._orgsAmount() + 1);
 
-        this.orgsMols   = new FastArray(BioVM._orgsMolsAmount());
+        this.orgsMols   = new FastArray(BioVM._orgsMolsAmount() + 1);
         this.world      = new World({scroll: this._onScroll.bind(this)});
         this.freq       = new Int32Array(Config.worldFrequency);
         //
