@@ -51,63 +51,55 @@ func              @mol  # func1
     ret           @mol
   end
   r2mol
-  mol
+  mol             @mol
   left                  # m-1
   save                  # m-1=food idx
-  right                 # m0
-  0               @mol
-  smol
-  lmol
-  w2mol           @mol
+  right           @mol  # m0
   0
   smol
-  save            @mol  # m0=i
+  lmol            @mol
+  w2mol
+  0
+  smol            @mol
+  save                  # m0=i
   mol2w
-  mol
+  mol             @mol
   right                 # m1
   save                  # m1=limit
-  right                 # m2=curMol
+  right           @mol  # m2=curMol
   63
   lshift
-  lshift
+  lshift          @mol
   loop
     cmol                # m2[nop,nop,nop]
-    mol2r
+    mol2r         @mol
     left                # m1
     0
-    call
+    call          @mol
     reax
-	ifn
-      ret
+    ifn
+      ret         @mol
     end
     r2mol
-    mmol
-	load
+    mmol          @mol
+    load
     smol
-    lmol
-    w2mol
+    lmol          @mol
     mol
     save                # m1=limit-1
-    left
+    left          @mol
     load
     smol
-	rmol
-	mol
-	save                # m0=i+1
-    left                # m-1
-    load
-    smol
-    r2mol
-    right               # m0
-    load
-    smol
+    rmol          @mol
+    mol
+    save                # m0=i+1
+    right         @mol
+    right
   end
-end
+end               @mol
 1
 call
-ret
-nop
-nop
+ret               @mol
 nop
 nop
 nop               @mol

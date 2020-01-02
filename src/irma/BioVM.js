@@ -73,9 +73,9 @@ class BioVM extends VM {
     static _orgsMolsAmount() {return Config.molAmount + Config.LUCAS.length + 1}
 
     constructor() {
-        super(BioVM._orgsAmount());
+        super(BioVM._orgsAmount() + 1);
 
-        this.orgsMols   = new FastArray(BioVM._orgsMolsAmount());
+        this.orgsMols   = new FastArray(BioVM._orgsMolsAmount() + 1);
         this.world      = new World({scroll: this._onScroll.bind(this)});
         this.freq       = new Int32Array(Config.worldFrequency);
         //
@@ -166,11 +166,15 @@ class BioVM extends VM {
                 const dot     = this.world.index(offset);
                 if (dot > -1) {org.re = RE_ERR; return} // something on the way
                 const code    = org.code;
-                const idx0    = org.mol;
-                const idx1    = this._molLastOffs(code, idx0) + 1;
-                const newCode = code.subarray(idx0, idx1);
+                let   idx0    = org.mol;
+                let   idx1    = org.ax;
+                if (idx1 < 0) {idx1 = 0}
+                if (idx1 >= code.length) {idx1 = code.length - 1}
+                for (let i = idx1 - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {idx1 = i + 1; break}}
+                if (idx0 > idx1) {const tmp = idx0; idx1 = idx0; idx0 = tmp}
+                const newCode = code.subarray(idx0, idx1 + 1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
-                org.code      = code.splice(idx0, idx1 - idx0);
+                org.code      = code.splice(idx0, idx1 - idx0 + 1);
                 const clone   = org.re === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}

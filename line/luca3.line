@@ -47,7 +47,7 @@ func                    # func0
   end
 end
 #
-# desc: Make clone.
+# desc: Makes clone.
 # in  : nothing
 #
 func              @mol  # func1
@@ -129,7 +129,7 @@ func              @mol  # func1
     # 5.5. move found molecule (ax,mol=found idx)
     r2mol
     mmol          @mol
-    # 5.6. updates limit value (memory and write head)
+    # 5.6. updates limit value (memory)
     load
     smol
     lmol          @mol
@@ -142,27 +142,36 @@ func              @mol  # func1
     rmol          @mol
     mol
     save                # m0=i+1
-    # 5.8. sets read head back to food section
+    # 5.8. checks if copy has done
     left          @mol  # m-1
     load
-    smol
-    r2mol         @mol
-    # 5.9. sets mol head to i
-    right               # m0
+    toggle
+    right         @mol  # m0
     load
-    smol          @mol
-    right
-    right
-  end             @mol
-end
+    ife
+      break       @mol
+    end
+    ifg
+      break       @mol
+    end
+    # 5.9. sets mem to m2
+    right               # m1
+    right         @mol  # m2
+  end
+  #
+  # 6. cut the tail with copied organism
+  #
+  rand
+  axre            @mol
+  len
+  split
+end               @mol
 #
 # Try to make clone
 #
 1
-call              @mol
-ret
-nop
-nop               @mol
+call
+ret               @mol
 nop
 nop
 nop               @mol
@@ -219,7 +228,7 @@ func                    # func0
   end
 end
 #
-# desc: Make clone.
+# desc: Makes clone.
 # in  : nothing
 #
 func              @mol  # func1
@@ -301,7 +310,7 @@ func              @mol  # func1
     # 5.5. move found molecule (ax,mol=found idx)
     r2mol
     mmol          @mol
-    # 5.6. updates limit value (memory and write head)
+    # 5.6. updates limit value (memory)
     load
     smol
     lmol          @mol
@@ -314,27 +323,36 @@ func              @mol  # func1
     rmol          @mol
     mol
     save                # m0=i+1
-    # 5.8. sets read head back to food section
+    # 5.8. checks if copy has done
     left          @mol  # m-1
     load
-    smol
-    r2mol         @mol
-    # 5.9. sets mol head to i
-    right               # m0
+    toggle
+    right         @mol  # m0
     load
-    smol          @mol
-    right
-    right
-  end             @mol
-end
+    ife
+      break       @mol
+    end
+    ifg
+      break       @mol
+    end
+    # 5.9. sets mem to m2
+    right               # m1
+    right         @mol  # m2
+  end
+  #
+  # 6. cut the tail with copied organism
+  #
+  rand
+  axre            @mol
+  len
+  split
+end               @mol
 #
 # Try to make clone
 #
 1
-call              @mol
-ret
-nop
-nop               @mol
+call
+ret               @mol
 nop
 nop
 nop               @mol
