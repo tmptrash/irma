@@ -47,7 +47,7 @@ func                    # func0
   end
 end
 #
-# desc: Make clone.
+# desc: Makes clone.
 # in  : nothing
 #
 func              @mol  # func1
@@ -142,17 +142,30 @@ func              @mol  # func1
     rmol          @mol
     mol
     save                # m0=i+1
-    # 5.8. sets mem to m2
-    right         @mol
-    right
+    # 5.8. checks if copy has done
+    left          @mol  # m-1
+    load
+    toggle
+    right         @mol  # m0
+    load
+    ife
+      ret         @mol
+    end
+    ifg
+      ret         @mol
+    end
+    # 5.9. sets mem to m2
+    right               # m1
+    right         @mol  # m2
   end
-end               @mol
+end
 #
 # Try to make clone
 #
-1
+1                 @mol
 call
-ret               @mol
+ret
+nop               @mol
 nop
 nop
 nop               @mol
@@ -209,7 +222,7 @@ func                    # func0
   end
 end
 #
-# desc: Make clone.
+# desc: Makes clone.
 # in  : nothing
 #
 func              @mol  # func1
@@ -304,17 +317,30 @@ func              @mol  # func1
     rmol          @mol
     mol
     save                # m0=i+1
-    # 5.8. sets mem to m2
-    right         @mol
-    right
+    # 5.8. checks if copy has done
+    left          @mol  # m-1
+    load
+    toggle
+    right         @mol  # m0
+    load
+    ife
+      ret         @mol
+    end
+    ifg
+      ret         @mol
+    end
+    # 5.9. sets mem to m2
+    right               # m1
+    right         @mol  # m2
   end
-end               @mol
+end
 #
 # Try to make clone
 #
-1
+1                 @mol
 call
-ret               @mol
+ret
+nop               @mol
 nop
 nop
 nop               @mol
