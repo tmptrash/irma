@@ -166,8 +166,12 @@ class BioVM extends VM {
                 const dot     = this.world.index(offset);
                 if (dot > -1) {org.re = RE_ERR; return} // something on the way
                 const code    = org.code;
-                const idx0    = org.mol;
-                const idx1    = this._molLastOffs(code, idx0) + 1;
+                let   idx0    = org.mol;
+                let   idx1    = org.ax;
+                for (let i = idx1 - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {idx1 = i + 1; break}}
+                if (idx1 < 0) {idx1 = 0}
+                if (idx1 >= code.length) {idx1 = code.length - 1}
+                if (idx0 > idx1) {const tmp = idx0; idx1 = idx0; idx0 = tmp}
                 const newCode = code.subarray(idx0, idx1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0);

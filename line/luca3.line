@@ -149,15 +149,19 @@ func              @mol  # func1
     right         @mol  # m0
     load
     ife
-      ret         @mol
+      break       @mol
     end
     ifg
-      ret         @mol
+      break       @mol
     end
     # 5.9. sets mem to m2
     right               # m1
     right         @mol  # m2
   end
+  #
+  # 6. cut the tail with copied organism
+  #
+  split
 end
 #
 # Try to make clone
