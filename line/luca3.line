@@ -161,15 +161,17 @@ func              @mol  # func1
   #
   # 6. cut the tail with copied organism
   #
+  rand
+  axre            @mol
+  len
   split
-end
+end               @mol
 #
 # Try to make clone
 #
-1                 @mol
+1
 call
-ret
-nop               @mol
+ret               @mol
 nop
 nop
 nop               @mol
@@ -328,23 +330,29 @@ func              @mol  # func1
     right         @mol  # m0
     load
     ife
-      ret         @mol
+      break       @mol
     end
     ifg
-      ret         @mol
+      break       @mol
     end
     # 5.9. sets mem to m2
     right               # m1
     right         @mol  # m2
   end
-end
+  #
+  # 6. cut the tail with copied organism
+  #
+  rand
+  axre            @mol
+  len
+  split
+end               @mol
 #
 # Try to make clone
 #
-1                 @mol
+1
 call
-ret
-nop               @mol
+ret               @mol
 nop
 nop
 nop               @mol

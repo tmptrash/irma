@@ -172,7 +172,7 @@ class BioVM extends VM {
                 if (idx1 < 0) {idx1 = 0}
                 if (idx1 >= code.length) {idx1 = code.length - 1}
                 if (idx0 > idx1) {const tmp = idx0; idx1 = idx0; idx0 = tmp}
-                const newCode = code.subarray(idx0, idx1);
+                const newCode = code.subarray(idx0, idx1 + 1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0);
                 const clone   = org.re === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
