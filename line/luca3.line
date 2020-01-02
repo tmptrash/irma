@@ -161,7 +161,7 @@ func              @mol  # func1
   #
   # 6. cut the tail with copied organism
   #
-  rand
+  17
   axre            @mol
   len
   split
@@ -342,7 +342,7 @@ func              @mol  # func1
   #
   # 6. cut the tail with copied organism
   #
-  rand
+  17
   axre            @mol
   len
   split

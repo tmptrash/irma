@@ -170,8 +170,8 @@ class BioVM extends VM {
                 let   idx1    = org.ax;
                 if (idx1 < 0) {idx1 = 0}
                 if (idx1 >= code.length) {idx1 = code.length - 1}
-                for (let i = idx1 - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {idx1 = i + 1; break}}
                 if (idx0 > idx1) {const tmp = idx0; idx1 = idx0; idx0 = tmp}
+                idx1 = this._molLastOffs(code, idx1);
                 const newCode = code.subarray(idx0, idx1 + 1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0 + 1);
