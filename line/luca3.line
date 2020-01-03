@@ -62,8 +62,8 @@ func              @mol  # func1
   # 1.2 sets 0 molecule as separator
   right                 # m1
   0               @mol
-  cmol                  # m1-m3[nop,nop,nop]
   smol
+  cmol                  # m1-m3[nop,nop,nop]
   rmol            @mol
   left                  # m0
   call
@@ -243,8 +243,8 @@ func              @mol  # func1
   # 1.2 sets 0 molecule as separator
   right                 # m1
   0               @mol
-  cmol                  # m1-m3[nop,nop,nop]
   smol
+  cmol                  # m1-m3[nop,nop,nop]
   rmol            @mol
   left                  # m0
   call
