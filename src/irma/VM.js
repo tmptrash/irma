@@ -47,10 +47,7 @@ const RET    = Config.CODE_CMDS.RET;
 const END    = Config.CODE_CMDS.END;
 const REAX   = Config.CODE_CMDS.REAX;
 const AXRE   = Config.CODE_CMDS.AXRE;
-const AND    = Config.CODE_CMDS.AND;
-const OR     = Config.CODE_CMDS.OR;
-const XOR    = Config.CODE_CMDS.XOR;
-const NOT    = Config.CODE_CMDS.NOT;
+const NAND   = Config.CODE_CMDS.NAND;
 const AGE    = Config.CODE_CMDS.AGE;
 const LINE   = Config.CODE_CMDS.LINE;
 const LEN    = Config.CODE_CMDS.LEN;
@@ -344,24 +341,9 @@ class VM {
                             org.re = ax;
                             continue;
 
-                        case AND:
+                        case NAND:
                             ++line;
-                            ax &= bx;
-                            continue;
-
-                        case OR:
-                            ++line;
-                            ax |= bx;
-                            continue;
-
-                        case XOR:
-                            ++line;
-                            ax ^= bx;
-                            continue;
-
-                        case NOT:
-                            ++line;
-                            ax = ~ax;
+                            ax = ~(ax & bx);
                             continue;
 
                         case AGE:
