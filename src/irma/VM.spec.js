@@ -36,7 +36,6 @@ describe('src/irma/VM', () => {
     const RE        = Config.CODE_CMDS.RET;
     const EN        = Config.CODE_CMDS.END;
     const RX        = Config.CODE_CMDS.REAX;
-    const AR        = Config.CODE_CMDS.AXRE;
     const AN        = Config.CODE_CMDS.AND;
     const OR        = Config.CODE_CMDS.OR;
     const XO        = Config.CODE_CMDS.XOR;
@@ -447,13 +446,7 @@ describe('src/irma/VM', () => {
 
         describe('retax tests', () => {
             it('reax0', () => run([RX]));
-            it('reax1', () => run([2,AR,1,RX], 2, 0, 2));
-        });
-
-        describe('axret tests', () => {
-            it('axre0', () => run([AR]));
-            it('axre1', () => run([1,AR], 1, 0, 1));
-            it('axre2', () => run([1,AR,2,AR], 2, 0, 2));
+            xit('reax1', () => run([2,AR,1,RX], 2, 0, 2));
         });
 
         describe('and tests', () => {

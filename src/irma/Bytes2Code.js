@@ -41,7 +41,6 @@ const FUNC                  = Config.CODE_CMDS.FUNC;
 const RET                   = Config.CODE_CMDS.RET;
 const END                   = Config.CODE_CMDS.END;
 const REAX                  = Config.CODE_CMDS.REAX;
-const AXRE                  = Config.CODE_CMDS.AXRE;
 const AND                   = Config.CODE_CMDS.AND;
 const OR                    = Config.CODE_CMDS.OR;
 const XOR                   = Config.CODE_CMDS.XOR;
@@ -272,7 +271,6 @@ Bytes2Code.MAP = {
     [RET   ]: ['ret',    'return'],
     [END   ]: ['end',    'end func/if/loop'],
     [REAX  ]: ['reax',   'ax=re'],
-    [AXRE  ]: ['axre',   're=ax'],
     [AND   ]: ['and',    'ax&=bx'],
     [OR    ]: ['or',     'ax|=bx'],
     [XOR   ]: ['xor',    'ax^=bx'],

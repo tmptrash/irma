@@ -162,7 +162,7 @@ func              @mol  # func1
   # 6. cut the tail with copied organism
   #
   17
-  axre            @mol
+  save            @mol
   len
   split
 end               @mol

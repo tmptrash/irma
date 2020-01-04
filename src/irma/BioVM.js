@@ -160,7 +160,7 @@ class BioVM extends VM {
             //
             case SPLIT: {
                 ++org.line;
-                if (this.orgsMols.full || org.re === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
+                if (this.orgsMols.full || org.mem[org.memPos] === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
                 const offset  = org.offset + DIR[Math.abs(org.re) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
                 const dot     = this.world.index(offset);
@@ -175,7 +175,7 @@ class BioVM extends VM {
                 const newCode = code.subarray(idx0, idx1 + 1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0 + 1);
-                const clone   = org.re === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
+                const clone   = org.mem[org.memPos] === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
                 if (org.code.length < 1) {this.delOrg(org)}
@@ -253,7 +253,7 @@ class BioVM extends VM {
 
             case GET: {
                 ++org.line;
-                if (org.re !== 1 || org.packet) {org.re = RE_ERR; return}
+                if (org.packet) {org.re = RE_ERR; return}
                 const dot = this.world.index(org.offset + DIR[Math.abs(org.ax) % 8]);
                 if (dot < 0) {org.re = RE_ERR; return}
                 (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
@@ -304,7 +304,7 @@ class BioVM extends VM {
                 org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                 code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
-                org.re         = RE_OK;
+                org.re          = RE_OK;
                 return;
             }
 

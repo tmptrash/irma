@@ -46,7 +46,6 @@ const FUNC   = Config.CODE_CMDS.FUNC;
 const RET    = Config.CODE_CMDS.RET;
 const END    = Config.CODE_CMDS.END;
 const REAX   = Config.CODE_CMDS.REAX;
-const AXRE   = Config.CODE_CMDS.AXRE;
 const NAND   = Config.CODE_CMDS.NAND;
 const AGE    = Config.CODE_CMDS.AGE;
 const LINE   = Config.CODE_CMDS.LINE;
@@ -334,11 +333,6 @@ class VM {
                         case REAX:
                             ++line;
                             ax = org.re;
-                            continue;
-
-                        case AXRE:
-                            ++line;
-                            org.re = ax;
                             continue;
 
                         case NAND:
