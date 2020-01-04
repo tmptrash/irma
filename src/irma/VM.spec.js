@@ -48,7 +48,7 @@ describe('src/irma/VM', () => {
     const SA        = Config.CODE_CMDS.SAVE;
     const LO        = Config.CODE_CMDS.LOAD;
     const RD        = Config.CODE_CMDS.READ;
-    const CM        = Config.CODE_CMDS.CMP;
+    const CM        = Config.CODE_CMDS.MCMP;
     const BR        = Config.CODE_CMDS.BREAK;
 
     let   vm        = null;
@@ -598,7 +598,7 @@ describe('src/irma/VM', () => {
             it('read5', () => run([0,1,2,7,4,3,RD], 7));
         });
 
-        describe('cmp tests', () => {
+        describe('mcmp tests', () => {
             it('compare two commands', () => {
                 const code = [0,1,TG,0,CM];
                 Config.codeLinesPerIteration = code.length;

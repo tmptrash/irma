@@ -53,7 +53,7 @@ const SMOL                  = Config.CODE_CMDS.SMOL;
 const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
-const CMP                   = Config.CODE_CMDS.CMP;
+const MCMP                  = Config.CODE_CMDS.MCMP;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
 
@@ -132,23 +132,15 @@ class BioVM extends VM {
         switch (cmd) {
             case JOIN: {
                 ++org.line;
-                const offset = org.offset + DIR[Math.abs(org.ax) % 8];
-                const dot    = this.world.index(offset);
+                const offset  = org.offset + DIR[Math.abs(org.ax) % 8];
+                const dot     = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
                 if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
-                org.code = org.code.push(nearOrg.code);
-                //
-                // Important: joining new commands into the script may break it, because it's
-                // offsets, stack and context may be invalid. Generally, we have to compile
-                // it after join. But this process resets stack and current running script line
-                // to zero line and script start running from the beginning. To fix this we 
-                // add any joined command to the end of script and skip compile. So, next
-                // line should not be uncommented:
-                // org.compile();
-                //
+                org.code      = org.code.push(nearOrg.code);
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
-                org.re = RE_OK;
+                org.re        = RE_OK;
+                org.compile();
                 return;
             }
 
@@ -177,17 +169,8 @@ class BioVM extends VM {
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
                 if (org.code.length < 1) {this.delOrg(org)}
-                //
-                // Important: after split, sequence of commands have been changed and it may break
-                // entire script. Generally, we have to compile new script to fix all offsets
-                // and run t again from the beginning. Preprocessing resets the context and stack.
-                // So nothing will be running after split command. To fix this, we just assume that 
-                // we split commands from tail, which don't affect main (replicator) part. Next line
-                // should be commented
-                // org.compile();
-                // line = 0; 
-                //
-                org.re = RE_OK;
+                org.re        = RE_OK;
+                org.compile(idx0, idx1 + 1, -1);
                 return;
             }
 
@@ -293,16 +276,16 @@ class BioVM extends VM {
                 const m1EndIdx  = this._molLastOffs(code, m1Idx);
                 const m2EndIdx  = this._molLastOffs(code, m2Idx);
                 const cutCode   = code.subarray(m2Idx, m2EndIdx + 1);
-                //
-                // Important! We assume that this code change does not affect main
-                // code. Only food part. This is why we dont call org.compile()
-                //
                 code            = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
-                code            = code.splice(m1EndIdx + 1, 0, cutCode);
+                const insIdx    = m1EndIdx + 1;
+                code            = code.splice(insIdx, 0, cutCode);
                 org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                 code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
                 org.re          = RE_OK;
+                // TODO: can we optimize this? we do not need to compile second time. Only update metadata
+                org.compile(m2Idx, m2EndIdx + 1, -1);
+                org.compile(insIdx, insIdx + cutCode.length, 1);
                 return;
             }
 
@@ -340,19 +323,13 @@ class BioVM extends VM {
                 //
                 const len      = m2EndIdx - m2Idx + 1;
                 code           = code.splice(m2Idx, len);
-                org.code       = code.splice(this._molLastOffs(code, org.molWrite + (m2Idx < org.molWrite ? -len : 0)) + 1, 0, moveCode);
+                const insIdx   = this._molLastOffs(code, org.molWrite + (m2Idx < org.molWrite ? -len : 0)) + 1;
+                org.code       = code.splice(insIdx, 0, moveCode);
                 org.energy    -= Config.energyMove;
-                //
-                // Important: moving new commands insie the script may break it, because it's
-                // offsets, stack and context may be invalid. Generally, we have to compile
-                // it after move. But this process resets stack and current running script line
-                // to zero line and script start running from the beginning. To fix this we 
-                // just assume that moving command doesn't belong to main (replicator) script
-                // part and skip compile. So, next line should not be uncommented
-                // org.compile();
-                // line = 0;
-                //
-                org.re = RE_OK;
+                org.re         = RE_OK;
+                // TODO: can we optimize this? we do not need to compile second time. Only update metadata
+                org.compile(m2Idx, m2EndIdx + 1, -1);
+                org.compile(insIdx, insIdx + moveCode.length, 1);
                 return;
             }
 
@@ -419,7 +396,7 @@ class BioVM extends VM {
                 return;
             }
 
-            case CMP: {
+            case MCMP: {
                 ++org.line;
                 const code = org.code;
                 const idx0 = org.mol;

@@ -75,7 +75,7 @@ const COMMANDS    = {
     RMOL    : CODE_OFFS + 51,
     LMOL    : CODE_OFFS + 52,
     CMOL    : CODE_OFFS + 53,
-    CMP     : CODE_OFFS + 54,
+    MCMP    : CODE_OFFS + 54,
     W2MOL   : CODE_OFFS + 55,
     MOL2W   : CODE_OFFS + 56
 };
@@ -168,7 +168,7 @@ module.exports = {
           lshift                # 252 mols max
           loop
             right         @mol  # m1
-            cmp                 # re=0|1
+            mcmp                # re=0|1
             left
             ifp           @mol
               mol               # ax=mol

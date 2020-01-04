@@ -45,21 +45,9 @@ class Mutations {
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
     
-    // TODO: do we need this?
-    static crossover(destOrg, srcOrg) {
-        const destCode = destOrg.code;
-        const srcCode  = srcOrg.code;
-        const codeLen  = destCode.length < srcCode.length ? destCode.length : srcCode.length;
-        const start    = rand(codeLen);
-        const end      = start + rand(codeLen - start);
+    static _onChange (code, org) {const idx = rand(code.length); code[idx] = Mutations.randCmd(); org.compile(idx, idx, 1)}
 
-        destOrg.code = destCode.splice(start, end - start + 1, srcCode.slice(start, end + 1));
-        destOrg.compile();
-    }
-
-    static _onChange (code, org) {code[rand(code.length)] = Mutations.randCmd(); org.compile()}
-
-    static _onDel    (code, org) {org.code = code.splice(rand(code.length), 1); org.compile()}
+    static _onDel    (code, org) {const idx = rand(code.length); org.code = code.splice(idx, 1); org.compile(idx, idx + 1, -1)}
 
     static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
 
@@ -69,8 +57,9 @@ class Mutations {
     
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
-        org.code = code.splice(rand(code.length), 0, [Mutations.randCmd()]);
-        org.compile();
+        const idx = rand(code.length);
+        org.code  = code.splice(idx, 0, [Mutations.randCmd()]);
+        org.compile(idx, idx + 1, 1);
     }
 
     /**
@@ -95,13 +84,17 @@ class Mutations {
         // We may insert copied piece before "start" (0) or after "end" (1)
         //
         if (rand(2) === 0) {
-            org.code = code.splice(rand(start), 0, code.slice(start, end));
-            org.compile();
+            const idx = rand(start);
+            const insCode = code.slice(start, end);
+            org.code      = code.splice(idx, 0, insCode);
+            org.compile(idx, idx + insCode.length, 1);
             return end - start;
         }
 
-        org.code = code.splice(end + rand(codeLen - end + 1), 0, code.slice(start, end));
-        org.compile();
+        const idx     = end + rand(codeLen - end + 1);
+        const insCode = code.slice(start, end);
+        org.code      = code.splice(idx, 0, insCode);
+        org.compile(idx, idx + insCode.length, 1);
 
         return end - start;
     }
@@ -110,7 +103,7 @@ class Mutations {
         const start = rand(code.length);
         const end   = rand(code.length - start);
         org.code    = code.splice(start, end);
-        org.compile();
+        org.compile(start, start + end, -1);
     }
 }
 
