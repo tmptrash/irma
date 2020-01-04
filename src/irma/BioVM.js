@@ -54,9 +54,7 @@ const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
 const CMP                   = Config.CODE_CMDS.CMP;
-const R2MOL                 = Config.CODE_CMDS.R2MOL;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
-const MOL2R                 = Config.CODE_CMDS.MOL2R;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
 
 class BioVM extends VM {
@@ -329,7 +327,7 @@ class BioVM extends VM {
                 // This code obtains source molecule
                 //
                 let    code    = org.code;
-                let   m2Idx    = org.molRead;
+                let   m2Idx    = org.mol;
                 if (m2Idx < 0) {m2Idx = 0}
                 if (m2Idx >= code.length) {m2Idx = code.length - 1}
                 for (let i = m2Idx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
@@ -435,21 +433,9 @@ class BioVM extends VM {
                 return;
             }
 
-            case R2MOL: {
-                ++org.line;
-                org.molRead = org.mol;
-                return;
-            }
-
             case W2MOL: {
                 ++org.line;
                 org.molWrite = org.mol;
-                return;
-            }
-
-            case MOL2R: {
-                ++org.line;
-                org.mol = org.molRead;
                 return;
             }
 
@@ -490,7 +476,6 @@ class BioVM extends VM {
         org.packet   = null;
         org.energy   = energy;
         org.mol      = 0;
-        org.molRead  = 0;
         org.molWrite = 0; 
         org.compile();
 

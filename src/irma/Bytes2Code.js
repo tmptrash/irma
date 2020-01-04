@@ -77,9 +77,7 @@ const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
 const CMP                   = Config.CODE_CMDS.CMP;
-const R2MOL                 = Config.CODE_CMDS.R2MOL;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
-const MOL2R                 = Config.CODE_CMDS.MOL2R;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
 
 class Bytes2Code {
@@ -307,9 +305,7 @@ Bytes2Code.MAP = {
     [LMOL  ]: ['lmol',   'mol=lmol():re'],
     [CMOL  ]: ['cmol',   'cmol():re'],
     [CMP   ]: ['cmp',    'cmp():re'],
-    [R2MOL ]: ['r2mol',  'molRead=mol'],
     [W2MOL ]: ['w2mol',  'molWrite=mol'],
-    [MOL2R ]: ['mol2r',  'mol=molRead'],
     [MOL2W ]: ['mol2w',  'mol=molWrite']
 };
 
