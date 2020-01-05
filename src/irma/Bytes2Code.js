@@ -93,13 +93,13 @@ class Bytes2Code {
         // blocks are located (func/ifxx/loop...end)
         //
         const org     = new Organism(-1, bytes);
+        org.compile();
         const offs    = org.offs;
         const padSize = lines ? CODE_PAD_SIZE : 0;
         let code      = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
         let span      = '';
         let mol       = 0;
 
-        org.compile();
         for (let b = 0; b < bytes.length; b++) {
             const isMol   = bytes[b] & CODE_8_BIT_MASK;
             const molStr  = isMol ? '@mol' : '    ';
