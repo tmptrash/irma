@@ -283,9 +283,8 @@ class BioVM extends VM {
                 code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
                 org.re          = RE_OK;
-                // TODO: can we optimize this? we do not need to compile second time. Only update metadata
                 org.compile(m2Idx, m2EndIdx + 1, -1);
-                org.compile(insIdx, insIdx + cutCode.length, 1);
+                org.updateMetadata(insIdx, insIdx + cutCode.length, 1);
                 return;
             }
 
@@ -327,9 +326,8 @@ class BioVM extends VM {
                 org.code       = code.splice(insIdx, 0, moveCode);
                 org.energy    -= Config.energyMove;
                 org.re         = RE_OK;
-                // TODO: can we optimize this? we do not need to compile second time. Only update metadata
                 org.compile(m2Idx, m2EndIdx + 1, -1);
-                org.compile(insIdx, insIdx + moveCode.length, 1);
+                org.updateMetadata(insIdx, insIdx + moveCode.length, 1);
                 return;
             }
 

@@ -118,11 +118,18 @@ class Organism {
             return;
         }
         
+        this.updateMetadata(index1, index2, dir, fCount);
+
+        this.fCount = fCount;                                           // Functions amount must be updated in any case
+    }
+
+    updateMetadata(index1 = 0, index2 = 0, dir = 1, fCount = -1) {
         const amount = (index2 - index1) * dir;                         // This is second or more time we compile the code. We have to update
         const line   = this.line;                                       // call stack and current line depending on amount of changes in a code
         if (line > index2) {this.line += amount}
         else if (line >= index1 && line <= index2) {this.line = index1}
         
+        if (fCount === -1) {fCount = this.fCount}
         if (this.fCount !== fCount) {this.stackIndex = -1}              // Amount of functions were changed. In this case, we have to remove call stack
         else {                                                          // Updates every call stack item according to code changes
             const stk = this.stack;
@@ -132,8 +139,6 @@ class Organism {
                 else if (ln >= index1 && ln <= index2) {stk[i] = index1}
             }
         }
-
-        this.fCount = fCount;                                           // Functions amount must be updated in any case
     }
 }
 
