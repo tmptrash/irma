@@ -201,7 +201,7 @@ func                    # func0
   lshift                # 252 mols max
   loop
     right         @mol  # m1
-    MCMP                 # re=0|1
+    mcmp                # re=0|1
     left
     reax          @mol  # ax=0|1
     ifp
@@ -350,7 +350,3 @@ nop               @mol
 nop
 nop
 nop               @mol
-#
-# here is test food section. This part---------------------
-# should be removed after tests----------------------------
-#

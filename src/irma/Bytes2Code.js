@@ -41,10 +41,7 @@ const FUNC                  = Config.CODE_CMDS.FUNC;
 const RET                   = Config.CODE_CMDS.RET;
 const END                   = Config.CODE_CMDS.END;
 const REAX                  = Config.CODE_CMDS.REAX;
-const AND                   = Config.CODE_CMDS.AND;
-const OR                    = Config.CODE_CMDS.OR;
-const XOR                   = Config.CODE_CMDS.XOR;
-const NOT                   = Config.CODE_CMDS.NOT;
+const NAND                  = Config.CODE_CMDS.NAND;
 const AGE                   = Config.CODE_CMDS.AGE;
 const LINE                  = Config.CODE_CMDS.LINE;
 const LEN                   = Config.CODE_CMDS.LEN;
@@ -269,10 +266,7 @@ Bytes2Code.MAP = {
     [RET   ]: ['ret',    'return'],
     [END   ]: ['end',    'end func/if/loop'],
     [REAX  ]: ['reax',   'ax=re'],
-    [AND   ]: ['and',    'ax&=bx'],
-    [OR    ]: ['or',     'ax|=bx'],
-    [XOR   ]: ['xor',    'ax^=bx'],
-    [NOT   ]: ['not',    'ax=~ax'],
+    [NAND  ]: ['nand',   'ax=nand(ax,bx)'],
     [AGE   ]: ['age',    'ax=org.age'],
     [LINE  ]: ['line',   'ax=org.line'],
     [LEN   ]: ['len',    'ax=org.code.length'],
