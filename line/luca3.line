@@ -49,11 +49,20 @@ end
 #
 # desc: Makes clone.
 # in  : nothing
+# info: m-1  - food section start
+#       m0   - i
+#       m1   - food section end
+#       m2.. - molecule
 #
 func              @mol  # func1
   #
   # 1. finds second separator molecule
   #
+  # 1.1. sets write head to the end
+  0
+  smol            @mol
+  lmol
+  w2mol
   # 1.1 sets search limit to m0
   63
   lshift
@@ -72,9 +81,8 @@ func              @mol  # func1
     ret
   end             @mol
   #
-  # 2. sets read head to the food section
+  # 2. sets mol head to the food section
   #
-  smol
   rmol
   reax            @mol
   # 2.1 If organism has no food section
@@ -85,13 +93,6 @@ func              @mol  # func1
   left                  # m-1
   save            @mol  # m-1=food idx
   right                 # m0
-  #
-  # 4. sets write head to the end
-  #
-  0
-  smol            @mol
-  lmol
-  w2mol
   #
   # 5. Here starts main loop, where organism
   # walk through it's replicator section and
