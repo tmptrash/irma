@@ -272,10 +272,10 @@ class VM {
 
                         case CALL: {
                             if (org.fCount === 0) {++line; continue}
-                            let index = org.stackIndex;
+                            let index     = org.stackIndex;
                             if (index >= CODE_STACK_SIZE) {index = -1}
-                            const func     = Math.abs(ax) % org.fCount;
-                            const newLine  = org.funcs[func] || 0;
+                            const func    = Math.abs(ax) % org.fCount;
+                            const newLine = org.funcs[func] || 0;
                             if ((org.offs[newLine - 1] || 0) === newLine) {++line; continue}
                             org.stack[org.stackIndex = ++index] = line + 1;
                             line = newLine;
