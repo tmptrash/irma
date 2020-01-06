@@ -133,7 +133,7 @@ class Organism {
         if (this.fCount !== fCount) {this.stackIndex = -1}              // Amount of functions were changed. In this case, we have to remove call stack
         else {                                                          // Updates every call stack item according to code changes
             const stk = this.stack;
-            for (let i = 0; i < 0; i += 3) {
+            for (let i = 0, len = this.stackIndex + 1; i <= len; i += 3) {
                 const ln = stk[i];                                      // Updates back line
                 if (ln > index2) {stk[i] += amount}
                 else if (ln >= index1 && ln <= index2) {stk[i] = index1}
