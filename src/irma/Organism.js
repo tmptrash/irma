@@ -166,6 +166,7 @@ class Organism {
                 const iterations = loops[l];
                 if (l > index2) {newLoop[l + amount] = iterations}
                 else if (l >= index1 && l <= index2) {newLoop[index1] = iterations}
+                else {newLoop[l] = iterations}
             }
         }
         this.loops = newLoop;
