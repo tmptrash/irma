@@ -71,7 +71,6 @@ class Organism {
         let   sCount = -1;
         let   fCount = 0;
 
-        this.loops = {};
         for (let i = 0, len = code.length; i < len; i++) {
             // eslint-disable-next-line default-case
             switch(code[i] & CODE_8_BIT_RESET_MASK) {

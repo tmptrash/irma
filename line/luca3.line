@@ -28,24 +28,22 @@ func                    # func0
     reax          @mol  # ax=0|1
     ifp
       mol               # ax=mol
-      save        @mol  # m1=mol
-      ret
+      ret         @mol
     end
-    rmol          @mol
+    rmol
     #
     # Checks finish limit
     #
-    mol
+    mol           @mol
     toggle
-    load          @mol
-    ifl
+    load
+    ifl           @mol
       0
-      dec         @mol
-      save
-      ret
-    end           @mol
+      dec
+      ret         @mol
+    end
   end
-end
+end               @mol
 #
 # desc: Makes clone.
 # in  : nothing
@@ -54,29 +52,28 @@ end
 #       m1   - food section end
 #       m2.. - molecule
 #
-func              @mol  # func1
+func                    # func1
   #
   # 1. finds second separator molecule
   #
   # 1.1. sets write head to the last molecule
   0
-  smol
-  lmol            @mol
+  smol            @mol
+  lmol
   w2mol
   # 1.2. sets search limit to m0
-  63
-  lshift          @mol
+  63              @mol
   lshift
-  save                  # m0=252
+  lshift
+  save            @mol  # m0=252
   # 1.3. sets 0 molecule as separator
-  right           @mol  # m1
+  right                 # m1
   0
-  smol
-  cmol            @mol  # m1-m3[nop,nop,nop]
+  smol            @mol
+  cmol                  # m1-m3[nop,nop,nop]
   rmol
-  left                  # m0
-  call            @mol
-  load                  # ax=sep1Mol
+  left            @mol  # m0
+  call                  # ax=sep1Mol
   ifn
     ret           @mol
   end
@@ -126,11 +123,11 @@ func              @mol  # func1
     cmol                # m2[nop,nop,nop]
     left          @mol  # m1
     0
-    call
-    load          @mol
-    ifn
+    call                # ax=molIdx
+    ifn           @mol
       ret
-    end           @mol
+    end
+	smol          @mol
     # 5.5. move found molecule (ax,mol=found idx)
     mmol
     # 5.6. updates limit value (memory)
@@ -194,9 +191,9 @@ nop
 nop
 nop               @mol
 #
-#  sep    repl                 sep  food
-# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1]
-#  mol                              read              write
+#  sep    repl                 sep  food               repl copy
+# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1, 1,3,2,1,1,2]
+#         mol                       mol                write
 #
 # desc: search for molecule index in a code
 # in  : m0     - search limit index
@@ -215,24 +212,22 @@ func                    # func0
     reax          @mol  # ax=0|1
     ifp
       mol               # ax=mol
-      save        @mol  # m1=mol
-      ret
+      ret         @mol
     end
-    rmol          @mol
+    rmol
     #
     # Checks finish limit
     #
-    mol
+    mol           @mol
     toggle
-    load          @mol
-    ifl
+    load
+    ifl           @mol
       0
-      dec         @mol
-      save
-      ret
-    end           @mol
+      dec
+      ret         @mol
+    end
   end
-end
+end               @mol
 #
 # desc: Makes clone.
 # in  : nothing
@@ -241,29 +236,28 @@ end
 #       m1   - food section end
 #       m2.. - molecule
 #
-func              @mol  # func1
+func                    # func1
   #
   # 1. finds second separator molecule
   #
   # 1.1. sets write head to the last molecule
   0
-  smol
-  lmol            @mol
+  smol            @mol
+  lmol
   w2mol
   # 1.2. sets search limit to m0
-  63
-  lshift          @mol
+  63              @mol
   lshift
-  save                  # m0=252
+  lshift
+  save            @mol  # m0=252
   # 1.3. sets 0 molecule as separator
-  right           @mol  # m1
+  right                 # m1
   0
-  smol
-  cmol            @mol  # m1-m3[nop,nop,nop]
+  smol            @mol
+  cmol                  # m1-m3[nop,nop,nop]
   rmol
-  left                  # m0
-  call            @mol
-  load                  # ax=sep1Mol
+  left            @mol  # m0
+  call                  # ax=sep1Mol
   ifn
     ret           @mol
   end
@@ -313,11 +307,11 @@ func              @mol  # func1
     cmol                # m2[nop,nop,nop]
     left          @mol  # m1
     0
-    call
-    load          @mol
-    ifn
+    call                # ax=molIdx
+    ifn           @mol
       ret
-    end           @mol
+    end
+	smol          @mol
     # 5.5. move found molecule (ax,mol=found idx)
     mmol
     # 5.6. updates limit value (memory)
