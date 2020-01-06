@@ -49,7 +49,7 @@ class Organism {
         this.stackIndex = -1;                                          // Current index in stack (used for function calls)
 
         this.loops      = {};                                          // Offsets of end operator for loop operator
-        this.stack      = new Int32Array(Config.CODE_STACK_SIZE * 3);  // ax, bx + back line
+        this.stack      = new Int32Array(Config.CODE_STACK_SIZE);      // back lines
         this.offs       = {};                                          // General offsets array (ifxx, loop, func, end operators)
         this.funcs      = {};                                          // Array for function offsets
     }

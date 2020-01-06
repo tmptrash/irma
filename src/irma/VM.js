@@ -275,35 +275,25 @@ class VM {
                             let index = org.stackIndex;
                             if (index >= CODE_STACK_SIZE * 3) {index = -1}
                             const func     = Math.abs(ax) % org.fCount;
-                            const stack    = org.stack;
                             const newLine  = org.funcs[func] || 0;
                             if ((org.offs[newLine - 1] || 0) === newLine) {++line; continue}
-                            stack[++index] = line + 1;
-                            stack[++index] = ax;
-                            stack[++index] = bx;
+                            org.stack[org.stackIndex = ++index] = line + 1;
                             line = newLine;
-                            org.stackIndex = index;
                             continue;
                         }
 
                         case FUNC:
                             line = (org.offs[line] || 0);
                             if (line === 0 && org.stackIndex >= 0) {
-                                const stack = org.stack;
-                                bx   = stack[2];
-                                ax   = stack[1];
-                                line = stack[0];
+                                line = org.stack[0];
                                 org.stackIndex = -1;
                             }
                             continue;
 
                         case RET: {
-                            const stack = org.stack;
                             let index = org.stackIndex;
                             if (index < 0) {line = 0; continue}
-                            bx   = stack[index--];
-                            ax   = stack[index--];
-                            line = stack[index--];
+                            line = org.stack[index--];
                             org.stackIndex = index;
                             continue;
                         }
@@ -315,12 +305,9 @@ class VM {
                                     org.isLoop = true;
                                     break;
                                 case FUNC: {
-                                    const stack = org.stack;
                                     let index = org.stackIndex;
                                     if (index < 0) {break}
-                                    bx   = stack[index--];
-                                    ax   = stack[index--];
-                                    line = stack[index--];
+                                    line = org.stack[index--];
                                     org.stackIndex = index;
                                     break;
                                 }
@@ -393,10 +380,7 @@ class VM {
                     //
                     if (line >= code.length) {
                         if (org.stackIndex >= 0) {
-                            const stack = org.stack;
-                            bx   = stack[2];
-                            ax   = stack[1];
-                            line = stack[0];
+                            line = org.stack[0];
                             org.stackIndex = -1;
                         } else {
                             line = 0;
