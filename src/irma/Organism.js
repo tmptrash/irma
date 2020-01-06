@@ -164,7 +164,7 @@ class Organism {
             if (loops.hasOwnProperty(l)) {
                 const ln = loops[l];
                 if (l > index2) {newLoop[l + amount] = ln}
-                else if (l >= index1 && l <= index2) {newLoop[l] = index1}
+                else if (l >= index1 && l <= index2) {newLoop[index1] = ln}
             }
         }
         this.loops = newLoop;
