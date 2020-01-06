@@ -55,8 +55,11 @@ class Organism {
     }
 
     /**
-     * Preprocesses code before run it. Finds all functions and map them
-     * in org.funcs map. After this call operator start to work.
+     * Compiles code before run it. Compilation means to find pairs of block
+     * operations. Fro example: ifxx..end, loop..end, func..end, call..ret
+     * and so on. We store this metadata in Organism.offs|funcs|stack. After
+     * every code change (mutation) we have to compile it again to update 
+     * this metadata.
      * @param {Number} index1 Start index in a code, where change was occure
      * @param {Number} index2 End index in a code where changed were occure
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
@@ -122,15 +125,29 @@ class Organism {
         this.fCount = fCount;                                           // Functions amount must be updated in any case
     }
 
+    /**
+     * This method only updates metadata: Organism.offs|funcs|stack.
+     * @param {Number} index1 Start index in a code, where change was occure
+     * @param {Number} index2 End index in a code where changed were occure
+     * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
+     * @param {Number} fCount Previous amount of functions in a code
+     */
     updateMetadata(index1 = 0, index2 = 0, dir = 1, fCount = -1) {
-        const amount = (index2 - index1) * dir;                         // This is second or more time we compile the code. We have to update
-        const line   = this.line;                                       // call stack and current line depending on amount of changes in a code
+        const amount = (index2 - index1) * dir;
+        //
+        // Updates current line
+        //
+        const line   = this.line;
         if (line > index2) {this.line += amount}
         else if (line >= index1 && line <= index2) {this.line = index1}
-        
+        //
+        // Updates function metadata (indexes in a code). If amount of functions
+        // were changed we have to remove call stack. In other case we have to 
+        // update all call stack indexes
+        //
         if (fCount === -1) {fCount = this.fCount}
-        if (this.fCount !== fCount) {this.stackIndex = -1}              // Amount of functions were changed. In this case, we have to remove call stack
-        else {                                                          // Updates every call stack item according to code changes
+        if (this.fCount !== fCount) {this.stackIndex = -1}
+        else {
             const stk = this.stack;
             for (let i = 0, len = this.stackIndex + 1; i <= len; i += 3) {
                 const ln = stk[i];                                      // Updates back line
@@ -138,6 +155,19 @@ class Organism {
                 else if (ln >= index1 && ln <= index2) {stk[i] = index1}
             }
         }
+        //
+        // Updates loop metadata (after loop lines indexes)
+        //
+        const loops   = this.loops;
+        const newLoop = {};
+        for (const l in loops) {
+            if (loops.hasOwnProperty(l)) {
+                const ln = loops[l];
+                if (l > index2) {newLoop[l + amount] = ln}
+                else if (l >= index1 && l <= index2) {newLoop[l] = index1}
+            }
+        }
+        this.loops = newLoop;
     }
 }
 
