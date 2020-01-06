@@ -308,8 +308,8 @@ module.exports = {
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,
-    orgMaxCodeSize             : 2048,
-    orgMaxMemSize              : 64,
+    orgMaxCodeSize             : 1024,
+    orgMaxMemSize              : 32,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

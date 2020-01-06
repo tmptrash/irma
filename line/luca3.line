@@ -7,9 +7,9 @@ nop
 nop
 nop               @mol
 #
-#  sep    repl                 sep  food
-# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1]
-#  mol                              read              write
+#  sep    repl                 sep  food               repl copy
+# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1, 1,3,2,1,1,2]
+#         mol                       mol                write
 #
 # desc: search for molecule index in a code
 # in  : m0     - search limit index
