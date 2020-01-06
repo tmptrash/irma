@@ -306,7 +306,7 @@ class VM {
                                     break;
                                 case FUNC: {
                                     let index = org.stackIndex;
-                                    if (index < 0) {break}
+                                    if (index < 0) {++line; break}
                                     line = org.stack[index--];
                                     org.stackIndex = index;
                                     break;
