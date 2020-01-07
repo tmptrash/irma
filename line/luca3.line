@@ -96,18 +96,18 @@ func                    # func1
   # Sets start and end search indexes
   #
   load                  # ax=start search index
-  right
+  right           @mol
   toggle
   load                  # ax=end       bx=start
-  toggle                # ax=start     bx=end
+  toggle          @mol  # ax=start     bx=end
   find
   ifn
-    ret
+    ret           @mol
   end
   #
   # Creates new molecule using anabolism and catabolism
   #
-  loop
+  loop            @mol
   end
 end
 #
@@ -196,7 +196,11 @@ func                    # func1
     0
     call                # ax=molIdx
     ifn           @mol
-      ret
+      1
+	  call
+      ifn
+        ret       @mol
+      end
     end
     smol          @mol
     # 5.5. move found molecule (ax,mol=found idx)
@@ -254,3 +258,8 @@ nop               @mol
 # here is test food section. This part---------------------
 # should be removed after tests----------------------------
 #
+inc
+nop               @mol
+nop
+nop               @mol
+inc               @mol
