@@ -56,6 +56,7 @@ const CMOL                  = Config.CODE_CMDS.CMOL;
 const MCMP                  = Config.CODE_CMDS.MCMP;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
+const FIND                  = Config.CODE_CMDS.FIND;
 
 class BioVM extends VM {
     /**
@@ -417,6 +418,28 @@ class BioVM extends VM {
             case MOL2W: {
                 ++org.line;
                 org.mol = org.molWrite;
+                return;
+            }
+
+            case FIND: {
+                ++org.line;
+                const code   = org.code;
+                const idx0   = org.ax;
+                const idx1   = org.bx;
+                const mol    = org.mol;
+                const molLen = this._molLastOffs(code, mol) - mol + 1;
+                const mPos   = org.memPos;
+                const mem    = org.mem;
+
+                loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1) - molLen; i <= till; i++) {
+                    for (let j = mPos, l = mPos + molLen; j <= l; j++) {
+                        if (code[i + j - mPos] !== mem[j]) {continue loop}
+                    }
+                    org.ax  = i;
+                    org.ret = RE_OK;
+                    return;
+                }
+                org.ret = RE_ERR;
                 // eslint-disable-next-line no-useless-return
                 return;
             }
