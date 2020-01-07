@@ -1,40 +1,78 @@
 #
-# This file contains LUCA - Last Universal Common Ancestor
+# This file contains LUCA - Last Universal Common Ancestor code.
+# It's a code of one digital organism for irma simulation. The 
+# whole virtual world starts from this one organism. The meaning
+# of this code is to:
+# - find needed molecules in outside world and eat them
+# - obtain energy from some found molecules
+# - assemble self copy from found molecules
+# - excrete unneeded molecules into the world
+# We also should use @mol annotation to split code into molecules. 
+# Here is the general structure of one organism's code:
 #
 #  sep    repl                 sep  food               repl copy
 # [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1, 1,3,2,1,1,2]
 #         mol                       mol                write
 #
+# It consists of 5 parts: separators, replicator, food and it's copy.
+# Simulation starts only with first three parts. Food and replopy 
+# will be appended later during lifetime.
+#
+# Where:
+# - sep   - separator molecule
+# - repl  - replicator code
+# - food  - food section (molecules found in a world)
+# - copy  - self copy in a tail
+# - mol   - molecule head (pointer to molecule)
+# - write - write head (pointer to write position (molecule))
+#
+# We use some shortcuts in a code below:
+# - m0..mX   - Memory positions (indexes)
+# - @mol     - Last atom in a molecule (marker between molecules)
+# - ax,bx,re - registers
+# - mol      - Molecule
+# - sep      - Molecule-separator (nop,nop,nop)
+#
 # This is molecule-separator. The same one at the end of
 # replicator code. This is how we distinguish replicator code 
-# and food segment
+# and food section. This separator shold be copied into child
+# organism as well
 #
 nop
 nop
 nop               @mol
 #
-# desc: search for molecule index in a code
+# desc: Search for molecule in a code and returns it's index or -1.
+#       Parent code should set search limit (or index), search molecule
+#       in a memory and set mol head into start position (or index)
 # in  : m0     - search limit index
-# in  : m1..mX - molecule
+# in  : m1..mX - search molecule
 # in  : mol    - search start index
-# out : idx|-1
+# out : ax     - idx|-1
 #
 func                    # func0
+  #
+  # This is just big number to make loop longer
+  # then amount of molecules insize the organism
+  #
   63
   lshift          @mol
-  lshift                # 252 mols max
+  lshift                # 252 molecules/iterations
   loop
     right         @mol  # m1
     mcmp                # re=0|1
-    left
+    left                # m0
     reax          @mol  # ax=0|1
+	#
+	# Molecule found. Return index in ax
+	#
     ifp
       mol               # ax=mol
       ret         @mol
     end
     rmol
     #
-    # Checks finish limit
+    # Checks search limit
     #
     mol           @mol
     toggle
@@ -47,23 +85,66 @@ func                    # func0
   end
 end               @mol
 #
-# desc: Makes clone.
+# desc: Try to use catabolism and anabolist to assemble
+#       needed molecule
+# in  : m0  - start line index
+#     : m1  - search limit
+#     : m2  - molecule size in atoms
+#     : m3  - search molecule
+#     : mol - search start index
+# out : ax  - molecule index|-1
+func                    # func1
+  #
+  # This part seaches for similar atoms sequence
+  # without binding to molecules structure
+  #
+  63
+  lshift
+  lshift
+  loop
+    load                # ax=search atom[i]
+    toggle              # bx=search atom[i]
+    read                # ax=cur atom[i]
+    ife
+      loop
+        load
+        toggle
+      end
+    end
+	#
+    # Checks if search limit is reached
+    #
+    load                # ax=search limit
+    ife           @mol
+      0
+      dec
+      ret         @mol
+    end
+  end
+end
+#
+# desc: Try to make clone getting molecules form
+#       food section and move them in a same way 
+#       like in replicator section
 # in  : nothing
 # info: m-1  - food section start
-#       m0   - i
+#       m0   - i (current repl molecule)
 #       m1   - food section end
 #       m2.. - molecule
 #
 func                    # func1
   #
-  # 1. finds second separator molecule
+  # 1. Finds second separator molecule
   #
-  # 1.1. sets write head to the last molecule
+  # 1.1. Sets write head to the last molecule.
+  #      We assume that first separator in a 
+  #      position of zero
   0
   smol            @mol
   lmol
   w2mol
-  # 1.2. sets search limit to m0
+  # 1.2. sets search limit to m0. We set just a big
+  #      amount into the limit memory cell
   63              @mol
   lshift
   lshift
@@ -185,184 +266,3 @@ nop               @mol
 # here is test food section. This part---------------------
 # should be removed after tests----------------------------
 #
-#
-# This is molecule-separator. The same one at the end of
-# replicator code. This is how we distinguish replicator code 
-# and food segment
-#
-nop
-nop
-nop               @mol
-#
-#  sep    repl                 sep  food               repl copy
-# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1, 1,3,2,1,1,2]
-#         mol                       mol                write
-#
-# desc: search for molecule index in a code
-# in  : m0     - search limit index
-# in  : m1..mX - molecule
-# in  : mol    - search start index
-# out : idx|-1
-#
-func                    # func0
-  63
-  lshift          @mol
-  lshift                # 252 mols max
-  loop
-    right         @mol  # m1
-    mcmp                # re=0|1
-    left
-    reax          @mol  # ax=0|1
-    ifp
-      mol               # ax=mol
-      ret         @mol
-    end
-    rmol
-    #
-    # Checks finish limit
-    #
-    mol           @mol
-    toggle
-    load
-    ifl           @mol
-      0
-      dec
-      ret         @mol
-    end
-  end
-end               @mol
-#
-# desc: Makes clone.
-# in  : nothing
-# info: m-1  - food section start
-#       m0   - i
-#       m1   - food section end
-#       m2.. - molecule
-#
-func                    # func1
-  #
-  # 1. finds second separator molecule
-  #
-  # 1.1. sets write head to the last molecule
-  0
-  smol            @mol
-  lmol
-  w2mol
-  # 1.2. sets search limit to m0
-  63              @mol
-  lshift
-  lshift
-  save            @mol  # m0=252
-  # 1.3. sets 0 molecule as separator
-  right                 # m1
-  0
-  smol            @mol
-  cmol                  # m1-m3[nop,nop,nop]
-  rmol
-  left            @mol  # m0
-  call                  # ax=sep1Mol
-  ifn
-    ret           @mol
-  end
-  #
-  # 2. sets mol head to the food section
-  #
-  rmol
-  reax            @mol
-  # 2.1 If organism has no food section
-  ifn
-    ret
-  end             @mol
-  mol
-  left                  # m-1
-  save            @mol  # m-1=food idx
-  right                 # m0
-  #
-  # 5. Here starts main loop, where organism
-  # walk through it's replicator section and
-  # search for it's molecules in food section.
-  # m0 stores current replicator molecule index
-  #
-  # 5.1. sets mol pointer to the first molecule 
-  0
-  smol            @mol
-  save                  # m0=i
-  # 5.2. sets limit index
-  mol2w
-  mol             @mol
-  right                 # m1
-  save                  # m1=limit
-  # 5.3. set mol head to food section
-  left            @mol  # m0
-  left                  # m-1
-  load                  # ax=foodIdx
-  smol            @mol
-  # 5.3. sets max interations and to m2
-  right                 # m0
-  right                 # m1
-  right           @mol  # m2=curMol
-  63
-  lshift
-  lshift          @mol
-  loop
-    # 5.4. copy current replicator molecule to m2...mX
-    # sets search limit and call search function
-    cmol                # m2[nop,nop,nop]
-    left          @mol  # m1
-    0
-    call                # ax=molIdx
-    ifn           @mol
-      ret
-    end
-    smol          @mol
-    # 5.5. move found molecule (ax,mol=found idx)
-    mmol
-    # 5.6. updates limit value (memory)
-    load
-    smol          @mol
-    lmol
-    mol
-    save          @mol  # m1=limit-1
-    # 5.7. updates i
-    left                # m0
-    load
-    smol          @mol
-    rmol
-    mol
-    save                # m0=i+1
-    # 5.8. checks if copy has done
-    left          @mol  # m-1
-    load
-    smol
-    toggle        @mol
-    right               # m0
-    load
-    ife           @mol
-      break
-    end
-    ifg           @mol
-      break
-    end
-    # 5.9. sets mem to m2
-    right         @mol  # m1
-    right               # m2
-  end
-  #
-  # 6. cut the tail with copied organism
-  #
-  17              @mol
-  save
-  len
-  split           @mol
-end
-#
-# Try to make clone
-#
-1
-call              @mol
-ret
-nop
-nop               @mol
-nop
-nop
-nop               @mol
