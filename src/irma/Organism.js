@@ -41,15 +41,15 @@ class Organism {
         this.percent    = Config.orgMutationPercent;                   // Percent of mutations
         this.freq       = 0;                                           // Frequency for say, listen commands
         this.line       = 0;                                           // Current code line index
-        this.ax         = 0;                                           // Register ax
-        this.bx         = 0;                                           // Register bx
-        this.re         = 0;                                           // Register re
+        this.ax         = 0;                                           // int 32 register - ax
+        this.bx         = 0;                                           // int 32 register - bx
+        this.re         = 0;                                           // int 32 register - re
         this.isLoop     = false;                                       // Uses with loop command (see loop+end commands)
         this.fCount     = 0;                                           // Amount of functions in a code
         this.stackIndex = -1;                                          // Current index in stack (used for function calls)
 
         this.loops      = {};                                          // Offsets of end operator for loop operator
-        this.stack      = new Int32Array(Config.CODE_STACK_SIZE);      // back lines
+        this.stack      = new Uint16Array(Config.CODE_STACK_SIZE);     // back lines
         this.offs       = {};                                          // General offsets array (ifxx, loop, func, end operators)
         this.funcs      = {};                                          // Array for function offsets
     }

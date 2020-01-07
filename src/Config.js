@@ -315,7 +315,7 @@ module.exports = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : new Uint8Array([10,1,1,1,1,1,1,1]),
+    orgProbs                   : Uint8Array.from([10,1,1,1,1,1,1,1]),
     /**
      * Molecules related configs
      */
