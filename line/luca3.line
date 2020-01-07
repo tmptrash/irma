@@ -87,39 +87,27 @@ end               @mol
 #
 # desc: Try to use catabolism and anabolist to assemble
 #       needed molecule
-# in  : m0  - start line index
-#     : m1  - search limit
-#     : m2  - molecule size in atoms
-#     : m3  - search molecule
-#     : mol - search start index
+# in  : m0  - start search index
+#     : m1  - end search index
+#     : mol - molecule to search
 # out : ax  - molecule index|-1
 func                    # func1
   #
-  # This part seaches for similar atoms sequence
-  # without binding to molecules structure
+  # Sets start and end search indexes
   #
-  63
-  lshift
-  lshift
+  load                  # ax=start search index
+  right
+  toggle
+  load                  # ax=end       bx=start
+  toggle                # ax=start     bx=end
+  find
+  ifn
+    ret
+  end
+  #
+  # Creates new molecule using anabolism and catabolism
+  #
   loop
-    load                # ax=search atom[i]
-    toggle              # bx=search atom[i]
-    read                # ax=cur atom[i]
-    ife
-      loop
-        load
-        toggle
-      end
-    end
-	#
-    # Checks if search limit is reached
-    #
-    load                # ax=search limit
-    ife           @mol
-      0
-      dec
-      ret         @mol
-    end
   end
 end
 #
@@ -254,7 +242,7 @@ end
 #
 # Try to make clone
 #
-1
+2
 call              @mol
 ret
 nop
