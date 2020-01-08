@@ -309,9 +309,9 @@ class BioVM extends VM {
                 const mol     = org.mol;
                 const molEnd  = this._molLastOffs(code, mol);
                 if (mol === molEnd) {org.re = RE_ERR; return}
-                let   cutPos  = org.bx;
+                let   cutPos  = org.ax;
                 const molSize = molEnd - mol + 1;
-                if (cutPos) {cutPos = mol + Math.floor(molSize / 2) - 1}
+                if (cutPos < 0 || cutPos > molEnd) {cutPos = mol + Math.floor(molSize / 2) - 1}
                 code[cutPos] |= CODE_8_BIT_MASK;
                 org.energy += (molSize * Config.energyMetabolismCoef);
                 org.re = RE_OK;
