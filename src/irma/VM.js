@@ -56,6 +56,7 @@ const SAVE   = Config.CODE_CMDS.SAVE;
 const LOAD   = Config.CODE_CMDS.LOAD;
 const READ   = Config.CODE_CMDS.READ;
 const BREAK  = Config.CODE_CMDS.BREAK;
+const RR     = Config.CODE_CMDS.RR;
 
 class VM {
     /**
@@ -372,6 +373,20 @@ class VM {
                             const offs = org.offs[line] || 0;
                             if ((code[offs] & CODE_8_BIT_RESET_MASK) === LOOP) {line = org.offs[offs] || 0}
                             else {++line}
+                            continue;
+                        }
+
+                        case RR: {
+                            ++line;
+                            let cx = org.cx;
+                            ax ^= cx;
+                            org.cx = (cx ^= ax);
+                            ax ^= cx;
+
+                            let dx = org.dx;
+                            bx ^= dx;
+                            org.dx = (dx ^= bx);
+                            bx ^= dx;
                             continue;
                         }
                     }

@@ -271,6 +271,20 @@ class BioVM extends VM {
                 ++org.line;
                 let   code      = org.code;
                 const m1Idx     = org.mol;
+                //
+                // Join current and next molecules
+                //
+                if (org.ax < 0) {
+                    const m1EndIdx  = this._molLastOffs(code, m1Idx);
+                    const m2Idx     = m1EndIdx + 1;
+                    const m2EndIdx  = this._molLastOffs(code, m2Idx);
+                    org.energy -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
+                    code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
+                    return;
+                }
+                //
+                // Join current and molecule in ax
+                //
                 let   m2Idx     = 0;
                 for (let i = org.ax - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
                 if (m1Idx === m2Idx) {org.re = RE_ERR; return}

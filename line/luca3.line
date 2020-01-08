@@ -90,33 +90,39 @@ func                    # func0
   end
 end               @mol
 #
-# desc: Try to use catabolism and anabolist to assemble
+# desc: Try to use catabolism and anabolism to assemble
 #       needed molecule
-# in  : m0  - start search index
-#     : m1  - end search index
+# in  : cx  - start search index
+#     : dx  - end search index
 #     : mol - molecule to search
 # out : ax  - molecule index|-1
 func                    # func1
   #
   # Sets start and end search indexes
   #
-  left            @mol  # m0
-  load
-  smol                  # mol=search molecule
-  right                 # m-1
-  load                  # ax=end
-  toggle
-  left
-  left
-  load                  # ax=start    bx=end
+  rr                    # ax=start     bx=end
+  #
+  # Search for atoms and saves index in far memory
+  #
   find
+  rr                    # cx=molIdx
+  reax
   ifn
     ret           @mol
   end
   #
-  # Creates new molecule using anabolism and catabolism
+  # Get destination molecule len
   #
-  loop            @mol
+  mol
+  toggle
+  sub
+  inc                   # ax=molLen
+  loop
+    #
+    # Sets mol head to previous molecule
+    #
+    dec
+    smol
   end
 end
 #
@@ -203,11 +209,22 @@ func                    # func1
     left                # m-1
     load
     smol          @mol
-    right
-    right
+    right               # m0
+    right               # m1
     0
     call                # ax=molIdx
     ifn           @mol
+      left              # m0
+      load
+	  smol              # mol=molIdx
+      left              # m-1
+      load              # ax=start
+      toggle            # bx=start
+      right             # m0
+      right             # m1
+      load              # ax=end       bx=start
+	  toggle            # ax=start     bx=end
+	  rr                # cx=start     dx=end
       1
       call
       ifn
