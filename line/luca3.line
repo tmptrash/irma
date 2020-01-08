@@ -136,8 +136,19 @@ func                    # func1
   sub
   catab
   #
-  # 
+  # Separate next and current molecules
   #
+  rr                    # ax=molIdx    bx=molLen
+  add                   # ax=molEndIdx
+  inc
+  toggle                # bx=molEndIdx+1
+  0
+  dec                   # ax-1         bx=molEndIdx+1
+  catab
+  #
+  # joins all inner molecules
+  #
+  load                  # molIdx       bx=molEndIdx+1
 end
 #
 # desc: Try to make clone getting molecules form
