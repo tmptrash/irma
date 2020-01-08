@@ -63,9 +63,9 @@ func                    # func0
     mcmp                # re=0|1
     left                # m0
     reax          @mol  # ax=0|1
-	#
-	# Molecule found. Return index in ax
-	#
+    #
+    # Molecule found. Return index in ax
+    #
     ifp
       mol               # ax=mol
       ret         @mol
@@ -209,7 +209,7 @@ func                    # func1
     call                # ax=molIdx
     ifn           @mol
       1
-	  call
+      call
       ifn
         ret       @mol
       end
