@@ -120,9 +120,24 @@ func                    # func1
   #
   # Separate previous molecule and new one
   #
-  rr                    # ax=molIdx
+  rr                    # ax=molIdx    cx=molLen
   smol
-  
+  left                  # m-1
+  left                  # m-2
+  save                  # m-2=molIdx
+  rr                    # ax=molLen    cx=molIdx
+  toggle                # bx=molIdx
+  load                  # ax=molIdx    bx=molLen
+  rr                    # cx=molIdx    dx=molLen
+  mol
+  toggle
+  load                  # ax=molIdx    bx=curMolIdx
+  toggle
+  sub
+  catab
+  #
+  # 
+  #
 end
 #
 # desc: Try to make clone getting molecules form

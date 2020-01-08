@@ -305,7 +305,24 @@ class BioVM extends VM {
 
             case CATAB: {
                 ++org.line;
-                const code    = org.code;
+                const code = org.code;
+                //
+                // Cuts molecules by index
+                //
+                if (org.ax < 0) {
+                    let idx;
+                    let bx = org.bx;
+                    if (bx < 0) {bx = 0}
+                    if (bx >= code.length) {bx = code.length - 1}
+                    for (let i = bx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
+                    code[bx] |= CODE_8_BIT_MASK;
+                    const idxEnd = this._molLastOffs(code, bx + 1);
+                    org.energy += ((idxEnd - idx + 1) * Config.energyMetabolismCoef);
+                    return;
+                }
+                //
+                // Cuts molecule by mol gead and ax
+                //
                 const mol     = org.mol;
                 const molEnd  = this._molLastOffs(code, mol);
                 if (mol === molEnd) {org.re = RE_ERR; return}
