@@ -428,12 +428,10 @@ class BioVM extends VM {
                 const idx1   = org.bx;
                 const mol    = org.mol;
                 const molLen = this._molLastOffs(code, mol) - mol + 1;
-                const mPos   = org.memPos;
-                const mem    = org.mem;
 
                 loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1) - molLen; i <= till; i++) {
-                    for (let j = mPos, l = mPos + molLen; j <= l; j++) {
-                        if (code[i + j - mPos] !== mem[j]) {continue loop}
+                    for (let j = mol, l = mol + molLen; j <= l; j++) {
+                        if (code[i + j - mol] !== code[j]) {continue loop}
                     }
                     org.ax  = i;
                     org.ret = RE_OK;
