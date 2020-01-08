@@ -149,6 +149,11 @@ func                    # func1
   # joins all inner molecules
   #
   load                  # molIdx       bx=molEndIdx+1
+  #
+  # Return to previous memory position
+  #
+  right
+  right
 end
 #
 # desc: Try to make clone getting molecules form
