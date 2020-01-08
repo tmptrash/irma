@@ -117,13 +117,12 @@ func                    # func1
   toggle
   sub
   inc                   # ax=molLen
-  loop
-    #
-    # Sets mol head to previous molecule
-    #
-    dec
-    smol
-  end
+  #
+  # Separate previous molecule and new one
+  #
+  rr                    # ax=molIdx
+  smol
+  
 end
 #
 # desc: Try to make clone getting molecules form
