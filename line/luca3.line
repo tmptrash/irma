@@ -43,8 +43,8 @@ nop
 nop               @mol
 #
 # desc: Search for molecule in a code and returns it's index or -1.
-#       Parent code should set search limit (or index), search molecule
-#       in a memory and set mol head into start position (or index)
+#       Parent code should set search limit (or end index), search 
+#       molecule in a memory and set mol head into start search index
 # in  : m0     - search limit index
 # in  : m1..mX - search molecule
 # in  : mol    - search start index
@@ -61,99 +61,100 @@ func                    # func0
   loop
     right         @mol  # m1
     mcmp                # re=0|1
-    left                # m0
-    reax          @mol  # ax=0|1
+    reax                # ax=0|1
     #
     # Molecule found. Return index in ax
     #
-    ifp
+    ifp           @mol
       mol               # ax=mol
-      ret         @mol
-    end
+      ret
+    end           @mol
     rmol
     #
     # Checks search limit
     #
-    mol           @mol
-    toggle
-    load
-    ifl           @mol
+    mol
+    inc           @mol  # ax=start+1
+    toggle              # ax=end       bx=start+1
+    left                # m0
+    load          @mol # ax=limit     bx=start+1
+    ifl
       0
-      dec
-      ret         @mol
-    end
-    ife
-      0           @mol
-      dec
+      dec         @mol
       ret
-    end           @mol
-  end
-end               @mol
+    end
+  end             @mol
+end
 #
 # desc: Try to use catabolism and anabolism to assemble
 #       needed molecule
-# in  : cx  - start search index
-#     : dx  - end search index
+# in  : m0  - start search index
+#     : m1  - end search index
 #     : mol - molecule to search
 # out : ax  - molecule index|-1
 func                    # func1
   #
   # Sets start and end search indexes
   #
-  rr                    # ax=start     bx=end
-  #
-  # Search for atoms and saves index in far memory
-  #
+  load            @mol  # ax=start
+  right                 # m1
+  toggle
+  load            @mol  # ax=end       bx=start
+  toggle                # ax=start     bx=end
   find
-  rr                    # cx=molIdx
+  toggle          @mol
   reax
   ifn
     ret           @mol
   end
-  #
-  # Get destination molecule len
-  #
-  mol
-  toggle
-  sub
-  inc                   # ax=molLen
+  toggle                # ax=idx
   #
   # Separate previous molecule and new one
   #
-  rr                    # ax=molIdx    cx=molLen
-  smol
-  left                  # m-1
-  left                  # m-2
-  save                  # m-2=molIdx
-  rr                    # ax=molLen    cx=molIdx
-  toggle                # bx=molIdx
-  load                  # ax=molIdx    bx=molLen
-  rr                    # cx=molIdx    dx=molLen
-  mol
-  toggle
-  load                  # ax=molIdx    bx=curMolIdx
+  dec             @mol
+  toggle                # bx=idx-1
+  save                  # m1=idx-1
+  0               @mol
+  dec                   # ax=-1        bx=idx-1
+  catab
+  #
+  # Gets molecule len
+  #
+  mol             @mol
   toggle
   sub
-  catab
+  inc             @mol
+  toggle                # bx=molLen
   #
   # Separate next and current molecules
   #
-  rr                    # ax=molIdx    bx=molLen
+  load                  # ax=molIdx-1
+  inc             @mol
   add                   # ax=molEndIdx
   inc
-  toggle                # bx=molEndIdx+1
+  toggle          @mol  # bx=molEndIdx+1
   0
   dec                   # ax-1         bx=molEndIdx+1
-  catab
+  catab           @mol
   #
-  # joins all inner molecules
+  # Joins near molecules if needed until we 
+  # obtain molecule, which we search
   #
-  load                  # molIdx       bx=molEndIdx+1
-  #
-  # Return to previous memory position
-  #
+  load                  # ax=molIdx
+  savea                 # m1=molIdx    m2=molEndIdx+1
+  smol            @mol
   right
-  right
+  10
+  loop            @mol
+    mol
+    load                # ax=molEnd1   bx=molEnd2
+    ife           @mol
+      break
+    end
+	0             @mol
+	dec
+    anab
+  end             @mol
 end
 #
 # desc: Try to make clone getting molecules form
@@ -165,150 +166,166 @@ end
 #       m1   - food section end
 #       m2.. - molecule
 #
-func                    # func1
+func                    # func2
   #
   # 1. Finds second separator molecule
   #
   # 1.1. Sets write head to the last molecule.
-  #      We assume that first separator in a 
-  #      position of zero
-  0
-  smol            @mol
+  #
+  0               @mol
+  smol
   lmol
   w2mol
-  # 1.2. sets search limit to m0. We set just a big
-  #      amount into the limit memory cell
-  63              @mol
-  lshift
-  lshift
-  save            @mol  # m0=252
+  #
+  # 1.2. Prepares to call func0, to find second 
+  # separator sets search limit to m0. Search limit
+  # is a last molecule
+  #
+  mol             @mol  # ax=last molecule
+  save                  # m0=last molecule
+  #
   # 1.3. sets 0 molecule as separator
+  #
   right                 # m1
-  0
-  smol            @mol
+  0               @mol
+  smol
   cmol                  # m1-m3[nop,nop,nop]
-  rmol
-  left            @mol  # m0
-  call                  # ax=sep1Mol
+  rmol            @mol
+  left                  # m0
+  call                  # ax=sep1Idx
+  ifn             @mol
+    ret
+  end
+  toggle          @mol  # bx=sep1Idx
+  #
+  # 2. Sets data to memory:
+  #    m0 - i
+  #    m1 - food segment start
+  #    m2 - food segment end
+  #    m3 - cur molecule
+  #
+  0
+  smol
+  save            @mol  # m0=i
+  #
+  # 2.1. m1 - food segment start
+  #
+  toggle                # ax=sep1Idx
+  smol
+  rmol            @mol
+  reax
   ifn
     ret           @mol
   end
-  #
-  # 2. sets mol head to the food section
-  #
-  rmol
-  reax            @mol
-  # 2.1 If organism has no food section
-  ifn
-    ret
-  end             @mol
   mol
-  left                  # m-1
-  save            @mol  # m-1=food idx
-  right                 # m0
+  right           @mol  # m1
+  save                  # m1=foodStart
   #
-  # 5. Here starts main loop, where organism
+  # 2.2. m2 - food segment end
+  #
+  w2mol
+  mol             @mol
+  right                 # m2
+  save                  # m2=foodEnd
+  #
+  # 3. Here starts main loop, where organism
   # walk through it's replicator section and
   # search for it's molecules in food section.
   # m0 stores current replicator molecule index
   #
-  # 5.1. sets mol pointer to the first molecule 
-  0
-  smol            @mol
-  save                  # m0=i
-  # 5.2. sets limit index
-  mol2w
-  mol             @mol
-  right                 # m1
-  save                  # m1=limit
-  # 5.3. set mol head to food section
-  left            @mol  # m0
+  # 3.1. Sets mol head to first repl molecule
+  #
+  left            @mol  # m1
+  left                  # m0
   load
-  smol                  # mol=i
-  right                 # m1
-  right                 # m2
+  smol            @mol
+  #
+  # 3.2 Sets big number for loop
+  #
   63
   lshift
   lshift          @mol
   loop
-    # 5.4. copy current replicator molecule to m2...mX
+    #
+    # 3.3. copy current replicator molecule to m3...mX,
     # sets search limit and call search function
-    cmol                # m2[nop,nop,nop]
-    left          @mol  # m1
-    left                # m0
-    left                # m-1
+    #
+    cmol                # m3[nop,nop,nop]
+    left          @mol  # m2
+    left                # m1=foodStart
     load
     smol          @mol
-    right               # m0
-    right               # m1
+    right               # m2
     0
-    call                # ax=molIdx
-    ifn           @mol
-      left              # m0
+    call          @mol  # ax=molIdx
+    ifn
+      left              # m1
+      left        @mol  # m0
       load
 	  smol              # mol=molIdx
-      left              # m-1
-      load              # ax=start
-      toggle            # bx=start
-      right             # m0
-      right             # m1
-      load              # ax=end       bx=start
-	  toggle            # ax=start     bx=end
-	  rr                # cx=start     dx=end
+      right       @mol  # m1
       1
       call
-      ifn
-        ret       @mol
+      ifn         @mol
+        ret
       end
-    end
-    smol          @mol
-    # 5.5. move found molecule (ax,mol=found idx)
+    end           @mol
+    #
+    # 3.4. Move found molecule (ax,mol=found idx)
+    #
     mmol
-    # 5.6. updates limit value (memory)
-    load
-    smol          @mol
+    #
+    # 3.5. Updates limit value (memory)
+    #
+    left                # m2=foodEnd
+    load          @mol
+    smol
     lmol
-    mol
-    save          @mol  # m1=limit-1
-    # 5.7. updates i
-    left                # m0
-    load
-    smol          @mol
-    rmol
-    mol
-    save                # m0=i+1
-    # 5.8. checks if copy has done
-    left          @mol  # m-1
+    mol           @mol
+    save                # m2=foodEnd-1
+    #
+    # 3.6. updates i
+    #
+    left                # m1
+    left          @mol  # m0
     load
     smol
-    toggle        @mol
-    right               # m0
+    rmol          @mol
+    mol
+    save                # m0=i++
+    #
+    # 3.7. checks if copy has done
+    #
+    right         @mol  # m1=foodstart
     load
-    ife           @mol
-      break
+    toggle
+    right         @mol  # m2
+    load                # ax=foodEnd   bx=foodStart
+    ife
+      break       @mol
     end
-    ifg           @mol
-      break
+    ifl
+      break       @mol
     end
-    # 5.9. sets mem to m2
-    right         @mol  # m1
-    right               # m2
-  end
+    #
+    # 3.8. Sets mem back to m3
+    #
+    right               # m3
+  end             @mol
   #
   # 6. cut the tail with copied organism
   #
-  17              @mol
+  17
   save
-  len
-  split           @mol
+  len             @mol
+  split
 end
 #
 # Try to make clone
 #
-2
-call              @mol
+2                 @mol
+call
 ret
-nop
 nop               @mol
 nop
 nop
@@ -317,8 +334,335 @@ nop               @mol
 # here is test food section. This part---------------------
 # should be removed after tests----------------------------
 #
-inc
-nop               @mol
+#
+# This file contains LUCA - Last Universal Common Ancestor code.
+# It's a code of one digital organism for irma simulation. The 
+# whole virtual world starts from this one organism. The meaning
+# of this code is to:
+# - find needed molecules in outside world and eat them
+# - obtain energy from some found molecules
+# - assemble self copy from found molecules
+# - excrete unneeded molecules into the world
+# We also should use @mol annotation to split code into molecules. 
+# Here is the general structure of one organism's code:
+#
+#  sep    repl                 sep  food               repl copy
+# [66,66, 1,0,1,1,0,2,1,2,1, 66,66, 1,2,1,0,0,2,1,0,1, 1,3,2,1,1,2]
+#         mol                       mol                write
+#
+# It consists of 5 parts: separators, replicator, food and it's copy.
+# Simulation starts only with first three parts. Food and replopy 
+# will be appended later during lifetime.
+#
+# Where:
+# - sep   - separator molecule
+# - repl  - replicator code
+# - food  - food section (molecules found in a world)
+# - copy  - self copy in a tail
+# - mol   - molecule head (pointer to molecule)
+# - write - write head (pointer to write position (molecule))
+#
+# We use some shortcuts in a code below:
+# - m0..mX   - Memory positions (indexes)
+# - @mol     - Last atom in a molecule (marker between molecules)
+# - ax,bx,re - registers
+# - mol      - Molecule
+# - sep      - Molecule-separator (nop,nop,nop)
+#
+# This is molecule-separator. The same one at the end of
+# replicator code. This is how we distinguish replicator code 
+# and food section. This separator shold be copied into child
+# organism as well
+#
+nop
 nop
 nop               @mol
-inc               @mol
+#
+# desc: Search for molecule in a code and returns it's index or -1.
+#       Parent code should set search limit (or end index), search 
+#       molecule in a memory and set mol head into start search index
+# in  : m0     - search limit index
+# in  : m1..mX - search molecule
+# in  : mol    - search start index
+# out : ax     - idx|-1
+#
+func                    # func0
+  #
+  # This is just big number to make loop longer
+  # then amount of molecules insize the organism
+  #
+  63
+  lshift          @mol
+  lshift                # 252 molecules/iterations
+  loop
+    right         @mol  # m1
+    mcmp                # re=0|1
+    reax                # ax=0|1
+    #
+    # Molecule found. Return index in ax
+    #
+    ifp           @mol
+      mol               # ax=mol
+      ret
+    end           @mol
+    rmol
+    #
+    # Checks search limit
+    #
+    mol
+    inc           @mol  # ax=start+1
+    toggle              # ax=end       bx=start+1
+    left                # m0
+    load          @mol # ax=limit     bx=start+1
+    ifl
+      0
+      dec         @mol
+      ret
+    end
+  end             @mol
+end
+#
+# desc: Try to use catabolism and anabolism to assemble
+#       needed molecule
+# in  : m0  - start search index
+#     : m1  - end search index
+#     : mol - molecule to search
+# out : ax  - molecule index|-1
+func                    # func1
+  #
+  # Sets start and end search indexes
+  #
+  load            @mol  # ax=start
+  right                 # m1
+  toggle
+  load            @mol  # ax=end       bx=start
+  toggle                # ax=start     bx=end
+  find
+  toggle          @mol
+  reax
+  ifn
+    ret           @mol
+  end
+  toggle                # ax=idx
+  #
+  # Separate previous molecule and new one
+  #
+  dec             @mol
+  toggle                # bx=idx-1
+  save                  # m1=idx-1
+  0               @mol
+  dec                   # ax=-1        bx=idx-1
+  catab
+  #
+  # Gets molecule len
+  #
+  mol             @mol
+  toggle
+  sub
+  inc             @mol
+  toggle                # bx=molLen
+  #
+  # Separate next and current molecules
+  #
+  load                  # ax=molIdx-1
+  inc             @mol
+  add                   # ax=molEndIdx
+  inc
+  toggle          @mol  # bx=molEndIdx+1
+  0
+  dec                   # ax-1         bx=molEndIdx+1
+  catab           @mol
+  #
+  # Joins near molecules if needed until we 
+  # obtain molecule, which we search
+  #
+  load                  # ax=molIdx
+  savea                 # m1=molIdx    m2=molEndIdx+1
+  smol            @mol
+  right
+  10
+  loop            @mol
+    mol
+    load                # ax=molEnd1   bx=molEnd2
+    ife           @mol
+      break
+    end
+	0             @mol
+	dec
+    anab
+  end             @mol
+end
+#
+# desc: Try to make clone getting molecules form
+#       food section and move them in a same way 
+#       like in replicator section
+# in  : nothing
+# info: m-1  - food section start
+#       m0   - i (current repl molecule)
+#       m1   - food section end
+#       m2.. - molecule
+#
+func                    # func2
+  #
+  # 1. Finds second separator molecule
+  #
+  # 1.1. Sets write head to the last molecule.
+  #
+  0               @mol
+  smol
+  lmol
+  w2mol
+  #
+  # 1.2. Prepares to call func0, to find second 
+  # separator sets search limit to m0. Search limit
+  # is a last molecule
+  #
+  mol             @mol  # ax=last molecule
+  save                  # m0=last molecule
+  #
+  # 1.3. sets 0 molecule as separator
+  #
+  right                 # m1
+  0               @mol
+  smol
+  cmol                  # m1-m3[nop,nop,nop]
+  rmol            @mol
+  left                  # m0
+  call                  # ax=sep1Idx
+  ifn             @mol
+    ret
+  end
+  toggle          @mol  # bx=sep1Idx
+  #
+  # 2. Sets data to memory:
+  #    m0 - i
+  #    m1 - food segment start
+  #    m2 - food segment end
+  #    m3 - cur molecule
+  #
+  0
+  smol
+  save            @mol  # m0=i
+  #
+  # 2.1. m1 - food segment start
+  #
+  toggle                # ax=sep1Idx
+  smol
+  rmol            @mol
+  reax
+  ifn
+    ret           @mol
+  end
+  mol
+  right           @mol  # m1
+  save                  # m1=foodStart
+  #
+  # 2.2. m2 - food segment end
+  #
+  w2mol
+  mol             @mol
+  right                 # m2
+  save                  # m2=foodEnd
+  #
+  # 3. Here starts main loop, where organism
+  # walk through it's replicator section and
+  # search for it's molecules in food section.
+  # m0 stores current replicator molecule index
+  #
+  # 3.1. Sets mol head to first repl molecule
+  #
+  left            @mol  # m1
+  left                  # m0
+  load
+  smol            @mol
+  #
+  # 3.2 Sets big number for loop
+  #
+  63
+  lshift
+  lshift          @mol
+  loop
+    #
+    # 3.3. copy current replicator molecule to m3...mX,
+    # sets search limit and call search function
+    #
+    cmol                # m3[nop,nop,nop]
+    left          @mol  # m2
+    left                # m1=foodStart
+    load
+    smol          @mol
+    right               # m2
+    0
+    call          @mol  # ax=molIdx
+    ifn
+      left              # m1
+      left        @mol  # m0
+      load
+	  smol              # mol=molIdx
+      right       @mol  # m1
+      1
+      call
+      ifn         @mol
+        ret
+      end
+    end           @mol
+    #
+    # 3.4. Move found molecule (ax,mol=found idx)
+    #
+    mmol
+    #
+    # 3.5. Updates limit value (memory)
+    #
+    left                # m2=foodEnd
+    load          @mol
+    smol
+    lmol
+    mol           @mol
+    save                # m2=foodEnd-1
+    #
+    # 3.6. updates i
+    #
+    left                # m1
+    left          @mol  # m0
+    load
+    smol
+    rmol          @mol
+    mol
+    save                # m0=i++
+    #
+    # 3.7. checks if copy has done
+    #
+    right         @mol  # m1=foodstart
+    load
+    toggle
+    right         @mol  # m2
+    load                # ax=foodEnd   bx=foodStart
+    ife
+      break       @mol
+    end
+    ifl
+      break       @mol
+    end
+    #
+    # 3.8. Sets mem back to m3
+    #
+    right               # m3
+  end             @mol
+  #
+  # 6. cut the tail with copied organism
+  #
+  17
+  save
+  len             @mol
+  split
+end
+#
+# Try to make clone
+#
+2                 @mol
+call
+ret
+nop               @mol
+nop
+nop
+nop               @mol

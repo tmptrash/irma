@@ -51,35 +51,36 @@ const COMMANDS    = {
     RIGHT   : CODE_OFFS + 30,
     SAVE    : CODE_OFFS + 31,
     LOAD    : CODE_OFFS + 32,
-    READ    : CODE_OFFS + 33,
-    BREAK   : CODE_OFFS + 34,
-    RR      : CODE_OFFS + 35,
+    SAVEA   : CODE_OFFS + 33,
+    LOADA   : CODE_OFFS + 34,
+    READ    : CODE_OFFS + 35,
+    BREAK   : CODE_OFFS + 36,
     //
     // Biological stuff
     //
-    JOIN    : CODE_OFFS + 36,
-    SPLIT   : CODE_OFFS + 37,
-    STEP    : CODE_OFFS + 38,
-    SEE     : CODE_OFFS + 39,
-    SAY     : CODE_OFFS + 40,
-    LISTEN  : CODE_OFFS + 41,
-    NREAD   : CODE_OFFS + 42,
-    GET     : CODE_OFFS + 43,
-    PUT     : CODE_OFFS + 44,
-    OFFS    : CODE_OFFS + 45,
-    COLOR   : CODE_OFFS + 46,
-    ANAB    : CODE_OFFS + 47,
-    CATAB   : CODE_OFFS + 48,
-    MOL     : CODE_OFFS + 49,
-    MMOL    : CODE_OFFS + 50,
-    SMOL    : CODE_OFFS + 51,
-    RMOL    : CODE_OFFS + 52,
-    LMOL    : CODE_OFFS + 53,
-    CMOL    : CODE_OFFS + 54,
-    MCMP    : CODE_OFFS + 55,
-    W2MOL   : CODE_OFFS + 56,
-    MOL2W   : CODE_OFFS + 57,
-    FIND    : CODE_OFFS + 58
+    JOIN    : CODE_OFFS + 37,
+    SPLIT   : CODE_OFFS + 38,
+    STEP    : CODE_OFFS + 39,
+    SEE     : CODE_OFFS + 40,
+    SAY     : CODE_OFFS + 41,
+    LISTEN  : CODE_OFFS + 42,
+    NREAD   : CODE_OFFS + 43,
+    GET     : CODE_OFFS + 44,
+    PUT     : CODE_OFFS + 45,
+    OFFS    : CODE_OFFS + 46,
+    COLOR   : CODE_OFFS + 47,
+    ANAB    : CODE_OFFS + 48,
+    CATAB   : CODE_OFFS + 49,
+    MOL     : CODE_OFFS + 50,
+    MMOL    : CODE_OFFS + 51,
+    SMOL    : CODE_OFFS + 52,
+    RMOL    : CODE_OFFS + 53,
+    LMOL    : CODE_OFFS + 54,
+    CMOL    : CODE_OFFS + 55,
+    MCMP    : CODE_OFFS + 56,
+    W2MOL   : CODE_OFFS + 57,
+    MOL2W   : CODE_OFFS + 58,
+    FIND    : CODE_OFFS + 59
 };
 
 // TODO: rename all molecules related names to prefix "mol".
@@ -306,12 +307,12 @@ module.exports = {
      * @constant
      */
     ORG_MIN_COLOR              : 0x96,
+    ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 1200001,
     orgMaxCodeSize             : 1024,
-    orgMaxMemSize              : 32,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut
      * Is used for new created organisms. During cloning, all

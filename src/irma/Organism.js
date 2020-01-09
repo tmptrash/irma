@@ -9,6 +9,7 @@
 const Config                = require('./../Config');
 
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+const ORG_MAX_MEM_SIZE      = Config.ORG_MAX_MEM_SIZE;
 //
 // Basic commands
 //
@@ -33,7 +34,7 @@ class Organism {
     constructor(index, code) {
         this.index      = index;                                       // Index in population list
         this.code       = code;                                        // Organism's code on "line" language
-        this.mem        = new Int32Array(Config.orgMaxMemSize);        // Organism's memory
+        this.mem        = new Int32Array(ORG_MAX_MEM_SIZE);            // Organism's memory
         this.memPos     = 0;                                           // Memory cell position
         this.age        = 1;                                           // Organism's age. Increases every iteration
         this.probs      = Config.orgProbs.slice();                     // Probabilities for different types of mutations
@@ -43,8 +44,6 @@ class Organism {
         this.line       = 0;                                           // Current code line index
         this.ax         = 0;                                           // int 32 register - ax
         this.bx         = 0;                                           // int 32 register - bx
-        this.cx         = 0;                                           // int 32 register - cx
-        this.dx         = 0;                                           // int 32 register - dx
         this.re         = 0;                                           // int 32 register - re
         this.isLoop     = false;                                       // Uses with loop command (see loop+end commands)
         this.fCount     = 0;                                           // Amount of functions in a code

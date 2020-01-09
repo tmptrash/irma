@@ -18,6 +18,7 @@ const rand                  = Helper.rand;
 const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+const ORG_MAX_MEM_SIZE      = Config.ORG_MAX_MEM_SIZE;
 //
 // Basic commands
 //
@@ -54,9 +55,10 @@ const LEFT   = Config.CODE_CMDS.LEFT;
 const RIGHT  = Config.CODE_CMDS.RIGHT;
 const SAVE   = Config.CODE_CMDS.SAVE;
 const LOAD   = Config.CODE_CMDS.LOAD;
+const SAVEA  = Config.CODE_CMDS.SAVEA;
+const LOADA  = Config.CODE_CMDS.LOADA;
 const READ   = Config.CODE_CMDS.READ;
 const BREAK  = Config.CODE_CMDS.BREAK;
-const RR     = Config.CODE_CMDS.RR;
 
 class VM {
     /**
@@ -362,6 +364,22 @@ class VM {
                             ax = org.mem[org.memPos];
                             continue;
 
+                        case SAVEA: {
+                            line++;
+                            let mPos = org.memPos;
+                            org.mem[mPos++] = ax;
+                            org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos] = bx;
+                            continue;
+                        }
+
+                        case LOADA: {
+                            line++;
+                            let mPos = org.memPos;
+                            ax = org.mem[mPos++];
+                            ax = org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos];
+                            continue;
+                        }
+
                         case READ:
                             ++line;
                             if (ax < 0) {ax = 0}
@@ -373,20 +391,6 @@ class VM {
                             const offs = org.offs[line] || 0;
                             if ((code[offs] & CODE_8_BIT_RESET_MASK) === LOOP) {line = org.offs[offs] || 0}
                             else {++line}
-                            continue;
-                        }
-
-                        case RR: {
-                            ++line;
-                            let cx = org.cx;
-                            ax ^= cx;
-                            org.cx = (cx ^= ax);
-                            ax ^= cx;
-
-                            let dx = org.dx;
-                            bx ^= dx;
-                            org.dx = (dx ^= bx);
-                            bx ^= dx;
                             continue;
                         }
                     }

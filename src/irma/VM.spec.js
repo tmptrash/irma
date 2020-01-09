@@ -73,11 +73,11 @@ describe('src/irma/VM', () => {
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
             molAmount                  : 1,
+            ORG_MAX_MEM_SIZE           : 16,
             orgMaxAge                  : 2000000,
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
             orgMaxCodeSize             : 50,
-            orgMaxMemSize              : 16,
             orgProbs                   : new Uint32Array([10,1,3,1,5,1,1]),
             molDecayPeriod             : 1000,
             molDecayDistance           : 60,
@@ -540,7 +540,7 @@ describe('src/irma/VM', () => {
             it('left5',    () => run([LF,RI,1,SA,LF,2,SA,RI,LO], 1));
             it('left loop test', () => {
                 const code = [1,SA,RI,RI];
-                Config.orgMaxMemSize = 2;
+                Config.ORG_MAX_MEM_SIZE = 2;
                 Config.codeLinesPerIteration = code.length;
                 const vm1 = new VM(1);
                 const org = vm1.addOrg(0, code);
@@ -568,7 +568,7 @@ describe('src/irma/VM', () => {
             it('load1',    () => run([1,LO]));
             it('save and load', () => {
                 const code = [1,SA,LO,RI,SA,RI,2,SA];
-                Config.orgMaxMemSize = 2;
+                Config.ORG_MAX_MEM_SIZE = 2;
                 Config.codeLinesPerIteration = code.length;
                 const vm1 = new VM(1);
                 const org = vm1.addOrg(0, code);
