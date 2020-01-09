@@ -124,7 +124,7 @@ module.exports = {
      * {Number} Functions call stack size
      * @constant
      */
-    CODE_STACK_SIZE            : 128,
+    CODE_STACK_SIZE            : 64,
     CODE_RE_OK                 : 1,
     CODE_RE_ERR                : 0,
     CODE_RE_SPECIAL            : -1,
