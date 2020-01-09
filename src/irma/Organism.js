@@ -150,7 +150,7 @@ class Organism {
         if (this.fCount !== fCount) {this.stackIndex = -1}
         else {
             const stk = this.stack;
-            for (let i = 0, len = this.stackIndex + 1; i <= len; i += 3) {
+            for (let i = 0, len = this.stackIndex + 1; i <= len; i++) {
                 const ln = stk[i];                                      // Updates back line
                 if (ln > index2) {stk[i] += amount}
                 else if (ln >= index1 && ln <= index2) {stk[i] = index1}
