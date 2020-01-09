@@ -278,8 +278,9 @@ class BioVM extends VM {
                     const m1EndIdx  = this._molLastOffs(code, m1Idx);
                     const m2Idx     = m1EndIdx + 1;
                     const m2EndIdx  = this._molLastOffs(code, m2Idx);
-                    org.energy -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
+                    org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                     code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
+                    org.re          = RE_OK;
                     return;
                 }
                 //
@@ -315,9 +316,14 @@ class BioVM extends VM {
                     if (bx < 0) {bx = 0}
                     if (bx >= code.length) {bx = code.length - 1}
                     for (let i = bx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
+                    if (code[bx] & CODE_8_BIT_MASK) {
+                        org.re = RE_ERR;
+                        return;
+                    }
                     code[bx] |= CODE_8_BIT_MASK;
                     const idxEnd = this._molLastOffs(code, bx + 1);
                     org.energy += ((idxEnd - idx + 1) * Config.energyMetabolismCoef);
+                    org.re = RE_OK;
                     return;
                 }
                 //
