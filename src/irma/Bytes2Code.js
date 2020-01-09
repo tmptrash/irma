@@ -49,6 +49,8 @@ const LEFT                  = Config.CODE_CMDS.LEFT;
 const RIGHT                 = Config.CODE_CMDS.RIGHT;
 const SAVE                  = Config.CODE_CMDS.SAVE;
 const LOAD                  = Config.CODE_CMDS.LOAD;
+const SAVEA                 = Config.CODE_CMDS.SAVEA;
+const LOADA                 = Config.CODE_CMDS.LOADA;
 const READ                  = Config.CODE_CMDS.READ;
 const BREAK                 = Config.CODE_CMDS.BREAK;
 //
@@ -275,6 +277,8 @@ Bytes2Code.MAP = {
     [RIGHT ]: ['right',  'org.memPos++'],
     [SAVE  ]: ['save',   'org.mem[org.memPos] = ax'],
     [LOAD  ]: ['load',   'ax = org.mem[org.memPos]'],
+    [SAVEA ]: ['savea',  'org.mem[org.memPos]=ax,bx'],
+    [LOADA ]: ['loada',  'ax,bx = org.mem[org.memPos]'],
     [READ  ]: ['read',   'ax = read(ax)'],
     [BREAK ]: ['break',  'breaks from loop'],
     //
