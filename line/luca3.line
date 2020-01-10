@@ -102,6 +102,8 @@ func                    # func1
   load            @mol  # ax=end       bx=start
   toggle                # ax=start     bx=end
   find
+  right                 # m2
+  save                  # m2=idx-1
   toggle          @mol
   reax
   ifn
@@ -112,8 +114,6 @@ func                    # func1
   # Separate previous molecule and new one
   #
   dec             @mol
-  right                 # m2
-  save                  # m2=idx-1
   toggle                # bx=idx-1
   0               @mol
   dec                   # ax=-1        bx=idx-1
@@ -130,7 +130,6 @@ func                    # func1
   # Separate next and current molecules
   #
   load                  # ax=molIdx-1
-  inc             @mol
   add                   # ax=molEndIdx
   toggle          @mol  # bx=molEndIdx+1
   0
@@ -343,5 +342,6 @@ nop               @mol
 0                 @mol
 nop
 nop               @mol
-nop
-0                 @mol
+nop               @mol
+0
+1                 @mol

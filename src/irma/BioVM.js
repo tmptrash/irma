@@ -321,7 +321,7 @@ class BioVM extends VM {
                         return;
                     }
                     code[bx] |= CODE_8_BIT_MASK;
-                    const idxEnd = this._molLastOffs(code, bx + 1);
+                    const idxEnd = this._molLastOffs(code, bx);
                     org.energy += ((idxEnd - idx + 1) * Config.energyMetabolismCoef);
                     org.re = RE_OK;
                     return;
