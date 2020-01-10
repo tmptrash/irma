@@ -77,7 +77,7 @@ func                    # func0
     inc           @mol  # ax=start+1
     toggle              # ax=end       bx=start+1
     left                # m0
-    load          @mol # ax=limit     bx=start+1
+    load          @mol  # ax=limit     bx=start+1
     ifl
       0
       dec         @mol
