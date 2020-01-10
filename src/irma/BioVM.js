@@ -138,10 +138,11 @@ class BioVM extends VM {
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
                 if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
+                const oldLen  = org.code.length;
                 org.code      = org.code.push(nearOrg.code);
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
                 org.re        = RE_OK;
-                org.compile();
+                org.compile(oldLen, oldLen + nearOrg.code.length, 1);
                 return;
             }
 
