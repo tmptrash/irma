@@ -140,9 +140,27 @@ func                    # func1
   # obtain molecule, which we search
   #
   load                  # ax=molIdx
-  savea                 # m1=molIdx    m2=molEndIdx+1
+  toggle
+  dec
+  toggle
+  savea                 # m2=molIdx    m3=molEndIdx
   smol            @mol
+  #
+  # Updates write head position
+  #
+  0               @mol
+  smol
+  lmol
+  w2mol
+  #
+  # Sets mol head to current molecule
+  #
+  load
+  smol
   right
+  #
+  # Join molecules
+  #
   10
   loop            @mol
     mol
@@ -269,9 +287,7 @@ func                    # func2
       right       @mol  # m1
       1
       call
-      ifn         @mol
-        ret
-      end
+      ret
     end           @mol
     #
     # 3.4. Move found molecule to write head
