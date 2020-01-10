@@ -112,8 +112,9 @@ func                    # func1
   # Separate previous molecule and new one
   #
   dec             @mol
+  right                 # m2
+  save                  # m2=idx-1
   toggle                # bx=idx-1
-  save                  # m1=idx-1
   0               @mol
   dec                   # ax=-1        bx=idx-1
   catab
@@ -131,7 +132,6 @@ func                    # func1
   load                  # ax=molIdx-1
   inc             @mol
   add                   # ax=molEndIdx
-  inc
   toggle          @mol  # bx=molEndIdx+1
   0
   dec                   # ax-1         bx=molEndIdx+1
