@@ -151,7 +151,7 @@ class BioVM extends VM {
             //
             case SPLIT: {
                 ++org.line;
-                if (this.orgsMols.full || org.mem[org.memPos] === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
+                if (this.orgsMols.full || org.mem[org.mPos] === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
                 const offset  = org.offset + DIR[Math.abs(org.re) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
                 const dot     = this.world.index(offset);
@@ -166,7 +166,7 @@ class BioVM extends VM {
                 const newCode = code.subarray(idx0, idx1 + 1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0 + 1);
-                const clone   = org.mem[org.memPos] === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
+                const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
                 if (org.code.length < 1) {this.delOrg(org)}
@@ -224,7 +224,7 @@ class BioVM extends VM {
                 for (let i = bx - 1;; i--) {if ((nearCode[i] & CODE_8_BIT_MASK) > 0 || i < 0) {bx = i + 1; break}} // find first atom of molecule
                 const mem  = org.mem;
                 const mLen = mem.length - 1;
-                for (let i = bx, m = org.memPos;; i++, m++) {
+                for (let i = bx, m = org.mPos;; i++, m++) {
                     mem[m] = nearCode[i];
                     if ((nearCode[i] & CODE_8_BIT_MASK) > 0) {break}
                     if (m > mLen) {m = -1}
@@ -424,7 +424,7 @@ class BioVM extends VM {
                 const len  = code.length;
                 const mem  = org.mem;
                 const mLen = mem.length - 1;
-                for (let i = org.mol, m = org.memPos; i < len; i++, m++) {
+                for (let i = org.mol, m = org.mPos; i < len; i++, m++) {
                     mem[m] = code[i];
                     if ((code[i] & CODE_8_BIT_MASK) > 0) {break}
                     if (m > mLen) {m = -1}
@@ -439,7 +439,7 @@ class BioVM extends VM {
                 const mem  = org.mem;
                 const idx1 = this._molLastOffs(code, idx0);
 
-                for (let i = idx0, m = org.memPos; i <= idx1; i++, m++) {
+                for (let i = idx0, m = org.mPos; i <= idx1; i++, m++) {
                     if (mem[m] !== code[i]) {org.re = RE_ERR; return}
                 }
                 org.re = RE_OK;

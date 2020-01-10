@@ -346,27 +346,27 @@ class VM {
 
                         case LEFT:
                             line++;
-                            if (--org.memPos < 0) {org.memPos = org.mem.length - 1}
+                            if (--org.mPos < 0) {org.mPos = org.mem.length - 1}
                             continue;
 
                         case RIGHT:
                             line++;
-                            if (++org.memPos === org.mem.length) {org.memPos = 0}
+                            if (++org.mPos === org.mem.length) {org.mPos = 0}
                             continue;
 
                         case SAVE:
                             line++;
-                            org.mem[org.memPos] = ax;
+                            org.mem[org.mPos] = ax;
                             continue;
 
                         case LOAD:
                             line++;
-                            ax = org.mem[org.memPos];
+                            ax = org.mem[org.mPos];
                             continue;
 
                         case SAVEA: {
                             line++;
-                            let mPos = org.memPos;
+                            let mPos = org.mPos;
                             org.mem[mPos++] = ax;
                             org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos] = bx;
                             continue;
@@ -374,7 +374,7 @@ class VM {
 
                         case LOADA: {
                             line++;
-                            let mPos = org.memPos;
+                            let mPos = org.mPos;
                             ax = org.mem[mPos++];
                             ax = org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos];
                             continue;

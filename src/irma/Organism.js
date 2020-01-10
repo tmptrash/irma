@@ -35,7 +35,7 @@ class Organism {
         this.index      = index;                                       // Index in population list
         this.code       = code;                                        // Organism's code on "line" language
         this.mem        = new Int32Array(ORG_MAX_MEM_SIZE);            // Organism's memory
-        this.memPos     = 0;                                           // Memory cell position
+        this.mPos       = 0;                                           // Memory cell position
         this.age        = 1;                                           // Organism's age. Increases every iteration
         this.probs      = Config.orgProbs.slice();                     // Probabilities for different types of mutations
         this.period     = Config.orgMutationPeriod;                    // Amount of iterations between mutations

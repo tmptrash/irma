@@ -621,7 +621,7 @@ describe('src/irma/VM', () => {
                 const vm1  = new VM(1);
                 const org  = vm1.addOrg(0, code);
                 org.mem    = Int32Array.from([0,2,TG,3,4,5]);
-                org.memPos = 1;
+                org.mPos = 1;
                 vm1.run();
 
                 expect(org.ax).toBe(1);
@@ -638,7 +638,7 @@ describe('src/irma/VM', () => {
                 const vm1  = new VM(1);
                 const org  = vm1.addOrg(0, code);
                 org.mem    = Int32Array.from([0,1,2,3,4,5]);
-                org.memPos = 1;
+                org.mPos = 1;
                 vm1.run();
 
                 expect(org.ax).toBe(1);
@@ -655,7 +655,7 @@ describe('src/irma/VM', () => {
                 const vm1  = new VM(1);
                 const org  = vm1.addOrg(0, code);
                 org.mem    = Int32Array.from([0,0,2,3,4,5]);
-                org.memPos = 1;
+                org.mPos = 1;
                 vm1.run();
 
                 expect(org.ax).toBe(0);
