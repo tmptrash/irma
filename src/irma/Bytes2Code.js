@@ -105,7 +105,7 @@ class Bytes2Code {
 
         for (let b = 0; b < bytes.length; b++) {
             const isMol   = bytes[b] & CODE_8_BIT_MASK;
-            const molStr  = isMol ? '@mol' : '    ';
+            const molStr  = isMol ? '@mol ' : '     ';
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
             const molIdx  = lines ? (isMol ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
@@ -126,7 +126,7 @@ class Bytes2Code {
             } else if (cmd === END) {
                 span = span.substr(0, span.length - 2);
             } else if (line === undefined) { // number constant
-                code += `${lineIdx}${molIdx}${span}${cmd} ${molStr}`;
+                code += `${lineIdx}${molIdx}${(span + cmd).padEnd(padSize)} ${molStr}`;
                 continue;
             }
             code += `${lineIdx}${molIdx}${(span + line[0]).padEnd(padSize)} ${molStr}${comment}`;

@@ -10,10 +10,9 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920;
-const HEIGHT      = 1080;
+const WIDTH       = 1920 /4;
+const HEIGHT      = 1080 / 4;
 const CODE_OFFS   = 128 - 64;
-const CODE_ORG_ID = 17;
 const COMMANDS    = {
     //
     // basic commands
@@ -128,7 +127,7 @@ module.exports = {
     CODE_RE_OK                 : 1,
     CODE_RE_ERR                : 0,
     CODE_RE_SPECIAL            : -1,
-    CODE_ORG_ID,
+    CODE_ORG_ID                : 17,
     /**
      * {Number} Mask, which is used for marking last atom in a molecule.
      * It means that after this atom (command) new molecule is follow. Every
@@ -605,7 +604,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 200000,
+    molAmount                  : 120000,
     molCodeSize                : 3,
     molRandomAtomPercent       : .3,
     molColor                   : 0xff0000,
@@ -619,5 +618,5 @@ module.exports = {
      * Plugins. Extends irma core by additional functionality
      * @constant
      */
-    PLUGINS                    : ['Decay', 'Status']
+    PLUGINS                    : [/* 'Decay', */ 'Status']
 };

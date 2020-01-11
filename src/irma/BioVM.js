@@ -63,7 +63,7 @@ class BioVM extends VM {
      * Returns maximum amount of organisms only according to config and amount of molecules
      * @return {Number} max amount
      */
-    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.LUCAS[0].code.length || 1)) + Config.LUCAS.length}
+    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.LUCAS[0].code.split('\n').length || 1)) + Config.LUCAS.length}
 
     /**
      * Returns maximum amount of molecules and organisms according to config
