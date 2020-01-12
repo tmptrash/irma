@@ -57,6 +57,7 @@ const MCMP                  = Config.CODE_CMDS.MCMP;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
 const FIND                  = Config.CODE_CMDS.FIND;
+const REAX                  = Config.CODE_CMDS.REAX;
 
 class BioVM extends VM {
     /**
@@ -476,9 +477,14 @@ class BioVM extends VM {
                     return;
                 }
                 org.ret = RE_ERR;
-                // eslint-disable-next-line no-useless-return
                 return;
             }
+
+            case REAX:
+                ++org.line;
+                org.ax = org.re;
+                // eslint-disable-next-line no-useless-return
+                return;
         }
     }
 
@@ -507,13 +513,14 @@ class BioVM extends VM {
         //
         // Extends organism properties
         //
-        org.offset   = offset;
-        org.molIndex = orgsMols.freeIndex;
-        org.color    = Config.orgColor;
-        org.packet   = null;
-        org.energy   = energy;
-        org.mol      = 0;
-        org.molWrite = 0; 
+        org.offset   = offset;              // Absolute position of organism in a world
+        org.molIndex = orgsMols.freeIndex;  // Index of organism in orgsMols array
+        org.color    = Config.orgColor;     // Current organism color
+        org.packet   = null;                // Special place for storing atom, molecule or other organism
+        org.energy   = energy;              // Orgainm's energy
+        org.mol      = 0;                   // Molecule head. Pointer to some code position
+        org.molWrite = 0;                   // Write head. Pointer to write position. Used with mmol command
+        org.re       = 0;                   // Register "re". Is used as result for command (mmol, step, see,...)
         if (parent) {
             org.mem     = parent.mem.slice();
             org.mPos    = parent.mPos;

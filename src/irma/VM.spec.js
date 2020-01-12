@@ -89,11 +89,10 @@ describe('src/irma/VM', () => {
      * @param {Uint8Array} code Code to run
      * @param {Number} ax ax register should be equal this value after run
      * @param {Number} bx bx register should be equal this value after run
-     * @param {Number} re re register should be equal this value after run
      * @param {Boolean} checkLen If true, then org.code.length === lines
      * @param {Number} lines Amount of lines run after calling vm.run()
      */
-    function run(code, ax = 0, bx = 0, re = 0, checkLen = true, lines = null) {
+    function run(code, ax = 0, bx = 0, checkLen = true, lines = null) {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
@@ -101,13 +100,11 @@ describe('src/irma/VM', () => {
 
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
-        expect(org.re).toBe(0);
         expect(org.line).toBe(0);
         vm.run();
 
         expect(org.ax).toBe(ax);
         expect(org.bx).toBe(bx);
-        expect(org.re).toBe(re);
         expect(org.code).toEqual(Uint8Array.from(code));
         checkLen && expect(org.line).toEqual(org.code.length);
     }
@@ -185,17 +182,19 @@ describe('src/irma/VM', () => {
             it('nop1', () => run([NO,NO,NO]));
             it('nop2', () => run([1,NO], 1));
             it('nop3', () => run([NO,1,NO], 1));
-            it('nop4', () => run([2,LP,NO,EN], 2, 0, 0, false, 7));
+            it('nop4', () => run([2,LP,NO,EN], 2, 0, false, 7));
             it('nop5', () => run([1,IN,NO,IN], 3));
         });
 
-        // describe('add tests', () => {
-        //     it('add0', () => run([AD]));
-        //     it('add1', () => run([1,TG,2,AD], 3, 1));
-        //     it('add2', () => run([1,TG,0,AD], 1, 1));
-        //     it('add3', () => run([1,TG,AD,AD], 2, 1));
-        //     it('add4', () => run([1,TG,2,AD], 3, 1));
-        // });
+        describe('add tests', () => {
+            it('add0', () => run([AD]));
+            it('add1', () => run([1,TG,2,AD], 3, 1));
+            it('add2', () => run([1,TG,0,AD], 1, 1));
+            it('add3', () => run([1,TG,AD,AD], 2, 1));
+            it('add4', () => run([1,TG,2,AD], 3, 1));
+            it('add5', () => run([DE,TG,2,AD], 1, -1));
+            it('add6', () => run([1,TG,1,AD,AD], 3, 1));
+        });
 
         // describe('sub tests', () => {
         //     it('sub0', () => run([SU]));

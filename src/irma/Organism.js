@@ -45,7 +45,6 @@ class Organism {
         this.line       = 0;                                           // Current code line index
         this.ax         = 0;                                           // int 32 register - ax
         this.bx         = 0;                                           // int 32 register - bx
-        this.re         = 0;                                           // int 32 register - re
         this.isLoop     = false;                                       // Uses with loop command (see loop+end commands)
         this.fCount     = 0;                                           // Amount of functions in a code
         this.stackIndex = -1;                                          // Current index in stack (used for function calls)
