@@ -10,6 +10,7 @@ const Config                = require('./../Config');
 
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 const ORG_MAX_MEM_SIZE      = Config.ORG_MAX_MEM_SIZE;
+const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
 //
 // Basic commands
 //
@@ -36,7 +37,7 @@ class Organism {
         this.code       = code;                                        // Organism's code on "line" language
         this.mem        = new Int32Array(ORG_MAX_MEM_SIZE);            // Organism's memory
         this.mPos       = 0;                                           // Memory cell position
-        this.age        = 1;                                           // Organism's age. Increases every iteration
+        this.age        = 1;                                           // Organism's age. Increases every iteration. Should be 1, not 0 to prevent mutations on start
         this.probs      = Config.orgProbs.slice();                     // Probabilities for different types of mutations
         this.period     = Config.orgMutationPeriod;                    // Amount of iterations between mutations
         this.percent    = Config.orgMutationPercent;                   // Percent of mutations
@@ -50,7 +51,7 @@ class Organism {
         this.stackIndex = -1;                                          // Current index in stack (used for function calls)
 
         this.loops      = {};                                          // Offsets of end operator for loop operator
-        this.stack      = new Uint16Array(Config.CODE_STACK_SIZE);     // back lines
+        this.stack      = new Uint16Array(CODE_STACK_SIZE);            // Back lines
         this.offs       = {};                                          // General offsets array (ifxx, loop, func, end operators)
         this.funcs      = {};                                          // Array for function offsets
     }

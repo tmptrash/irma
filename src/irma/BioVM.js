@@ -167,7 +167,7 @@ class BioVM extends VM {
                 const newCode = code.subarray(idx0, idx1 + 1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0 + 1);
-                const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
+                const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(org, offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
                 if (org.code.length < 1) {this.delOrg(org)}
@@ -250,7 +250,7 @@ class BioVM extends VM {
                 const offset = org.offset + DIR[Math.abs(org.ax) % 8];
                 const dot    = this.world.index(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
-                org.packet.hasOwnProperty('energy') ? this.addOrg(offset, org.packet.code, org.packet.energy) : this.addMol(offset, org.packet.code);
+                org.packet.hasOwnProperty('energy') ? this.addOrg(org.packet, offset, org.packet.code, org.packet.energy) : this.addMol(offset, org.packet.code);
                 // this.db && this.db.put(org.packet);
                 org.packet = null;
                 return;
@@ -493,12 +493,15 @@ class BioVM extends VM {
     /**
      * Creates one organism or molecule depending on isOrg parameter. In case
      * of organism extends it with additional properties like offset, color,...
+     * If parent parameter !== null, then copies additional properties from
+     * parent like memory, mutation rate and so on
+     * @param {Organism} parent Parent organism we are cloning from
      * @param {Number} offset Offset in a world
      * @param {Uint8Array} code Code to set
      * @param {Number} energy Amount of organism energy to start with
      * @override
      */
-    addOrg (offset, code, energy) {
+    addOrg (parent, offset, code, energy) {
         const orgsMols = this.orgsMols;
         const org = super.addOrg(this.orgs.freeIndex, code);
         //
@@ -511,6 +514,13 @@ class BioVM extends VM {
         org.energy   = energy;
         org.mol      = 0;
         org.molWrite = 0; 
+        if (parent) {
+            org.mem     = parent.mem.slice();
+            org.mPos    = parent.mPos;
+            org.probs   = parent.probs.slice();
+            org.period  = parent.period;
+            org.percent = parent.percent;
+        }
         org.compile();
 
         orgsMols.add(org);
@@ -581,7 +591,7 @@ class BioVM extends VM {
             const offset = luca.offs || rand(MAX_OFFS);
             const energy = luca.energy ? luca.energy : 600000;
             if (world.index(offset) > -1) {orgs++; continue}
-            this.addOrg(offset, bCode.slice(), energy);
+            this.addOrg(null, offset, bCode.slice(), energy);
             // const luca = this.addOrg(offset, code.slice(), energy);
             // this.db && this.db.put(luca);
         }
