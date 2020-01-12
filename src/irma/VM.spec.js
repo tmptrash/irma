@@ -196,95 +196,110 @@ describe('src/irma/VM', () => {
             it('add6', () => run([1,TG,1,AD,AD], 3, 1));
         });
 
-        // describe('sub tests', () => {
-        //     it('sub0', () => run([SU]));
-        //     it('sub1', () => run([1,TG,2,SU], 1, 1));
-        //     it('sub2', () => run([1,TG,SU], -1, 1));
-        //     it('sub3', () => run([NT,TG,1,NT,SU], -1, -1));
-        //     it('sub4', () => run([3,TG,1,SU], -2, 3));
-        // });
+        describe('sub tests', () => {
+            it('sub0', () => run([SU]));
+            it('sub1', () => run([1,TG,2,SU], 1, 1));
+            it('sub2', () => run([1,TG,SU], -1, 1));
+            it('sub3', () => run([0,DE,TG,EQ,SU], 0, -1));
+            it('sub4', () => run([3,TG,1,SU], -2, 3));
+        });
 
-        // describe('mul tests', () => {
-        //     it('mul0', () => run([MU]));
-        //     it('mul1', () => run([2,TG,3,MU], 6, 2));
-        //     it('mul2', () => run([1,TG,MU], 0, 1));
-        //     it('mul3', () => run([NT,TG,MU], 0, -1));
-        //     it('mul4', () => run([2,NT,TG,1,NT,MU], 6, -3));
-        //     it('mul5', () => run([1,TG,2,MU], 2, 1));
-        // });
+        describe('mul tests', () => {
+            it('mul0', () => run([MU]));
+            it('mul1', () => run([2,TG,3,MU], 6, 2));
+            it('mul2', () => run([1,TG,MU], 0, 1));
+            it('mul3', () => run([0,DE,TG,MU], 0, -1));
+            it('mul4', () => run([DE,DE,TG,EQ,MU], 4, -2));
+            it('mul5', () => run([1,TG,2,MU], 2, 1));
+        });
 
-        // describe('div tests', () => {
-        //     it('div0', () => run([DI], -Number.MAX_VALUE));
-        //     it('div1', () => run([3,TG,2,DI], 1, 3));
-        //     it('div2', () => run([1,TG,DI], 0, 1));
-        //     it('div3', () => run([NT,TG,DI], 0, -1));
-        //     it('div4', () => run([2,NT,TG,1,NT,DI], 1, -3));
-        //     it('div5', () => run([1,TG,2,DI], 2, 1));
-        //     it('div6', () => run([2,TG,NT,DI], 0, 2));
-        //     it('div7', () => run([2,DI], -Number.MAX_VALUE));
-        //     it('div8', () => run([5,TG,10,DI], 2, 5));
-        // });
+        describe('div tests', () => {
+            it('div0', () => run([DI], -Number.MAX_VALUE));
+            it('div1', () => run([3,TG,2,DI], 1, 3));
+            it('div2', () => run([1,TG,DI], 0, 1));
+            it('div3', () => run([DE,TG,DI], 0, -1));
+            it('div4', () => run([DE,DE,DE,TG,1,DE,DE,DE,DI], 1, -3));
+            it('div5', () => run([1,TG,2,DI], 2, 1));
+            it('div6', () => run([2,TG,DE,DI], 0, 2));
+            it('div7', () => run([2,DI], -Number.MAX_VALUE));
+            it('div8', () => run([5,TG,10,DI], 2, 5));
+        });
 
-        // describe('inc tests', () => {
-        //     it('inc0', () => run([IN], 1));
-        //     it('inc1', () => run([2,IN], 3));
-        //     it('inc2', () => run([2,IN,IN,IN], 5));
-        //     it('inc3', () => run([2,IN,IN,2,IN], 3));
-        //     it('inc4', () => run([1,NT,IN], -1));
-        //     it('inc5', () => run([1,IN], 2));
-        //     it('inc6', () => run([NT,IN]));
-        // });
+        describe('inc tests', () => {
+            it('inc0', () => run([IN], 1));
+            it('inc1', () => run([2,IN], 3));
+            it('inc2', () => run([2,IN,IN,IN], 5));
+            it('inc3', () => run([2,IN,IN,2,IN], 3));
+            it('inc4', () => run([DE,DE,IN], -1));
+            it('inc5', () => run([1,IN], 2));
+            it('inc6', () => run([DE,IN]));
+        });
 
-        // describe('dec tests', () => {
-        //     it('dec0', () => run([DE], -1));
-        //     it('dec1', () => run([2,DE], 1));
-        //     it('dec2', () => run([2,DE,DE,DE], -1));
-        //     it('dec3', () => run([2,DE,DE,2,DE], 1));
-        //     it('dec4', () => run([1,NT,DE], -3));
-        //     it('dec5', () => run([1,DE]));
-        // });
+        describe('dec tests', () => {
+            it('dec0', () => run([DE], -1));
+            it('dec1', () => run([2,DE], 1));
+            it('dec2', () => run([2,DE,DE,DE], -1));
+            it('dec3', () => run([2,DE,DE,2,DE], 1));
+            it('dec4', () => run([DE,DE,DE], -3));
+            it('dec5', () => run([1,DE]));
+        });
 
-        // describe('rshift tests', () => {
-        //     it('rshift0', () => run([RS]));
-        //     it('rshift1', () => run([1,RS]));
-        //     it('rshift2', () => run([2,RS], 1));
-        //     it('rshift3', () => run([8,RS], 4));
-        //     it('rshift4', () => run([8,RS,RS], 2));
-        //     it('rshift5', () => run([3,RS], 1));
-        //     it('rshift6', () => run([2,NT,RS], -2));
-        //     it('rshift7', () => run([4,RS], 2));
-        // });
+        describe('rshift tests', () => {
+            it('rshift0', () => run([RS]));
+            it('rshift1', () => run([1,RS]));
+            it('rshift2', () => run([2,RS], 1));
+            it('rshift3', () => run([8,RS], 4));
+            it('rshift4', () => run([8,RS,RS], 2));
+            it('rshift5', () => run([3,RS], 1));
+            it('rshift6', () => run([DE,DE,DE,RS], -2));
+            it('rshift7', () => run([4,RS], 2));
+        });
 
-        // describe('lshift tests', () => {
-        //     it('lshift0', () => run([LS]));
-        //     it('lshift1', () => run([1,LS], 2));
-        //     it('lshift2', () => run([2,LS], 4));
-        //     it('lshift3', () => run([8,LS], 16));
-        //     it('lshift4', () => run([8,LS,LS], 32));
-        //     it('lshift5', () => run([3,LS], 6));
-        //     it('lshift6', () => run([2,NT,LS], -6));
-        //     it('lshift7', () => run([3,NT,LS], -8));
-        // });
+        describe('lshift tests', () => {
+            it('lshift0', () => run([LS]));
+            it('lshift1', () => run([1,LS], 2));
+            it('lshift2', () => run([2,LS], 4));
+            it('lshift3', () => run([8,LS], 16));
+            it('lshift4', () => run([8,LS,LS], 32));
+            it('lshift5', () => run([3,LS], 6));
+            it('lshift6', () => run([DE,DE,DE,LS], -6));
+            it('lshift7', () => run([DE,DE,DE,DE,LS], -8));
+        });
 
-        // describe('rand tests', () => {
-        //     it('rand0', () => {
-        //         const code = [RA];
-        //         Config.codeLinesPerIteration = code.length;
-        //         const org  = vm.orgs.get(0);
-        //         org.code  = code;
+        describe('rand tests', () => {
+            it('rand0', () => {
+                const code = [RA];
+                Config.codeLinesPerIteration = code.length;
+                const org  = vm.orgs.get(0);
+                org.code   = code;
 
-        //         expect(org.ax).toBe(0);
-        //         expect(org.bx).toBe(0);
-        //         expect(org.re).toBe(0);
-        //         expect(org.line).toBe(0);
-        //         vm.run();
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.line).toBe(0);
+                vm.run();
 
-        //         expect(org.bx).toBe(0);
-        //         expect(org.re).toBe(0);
-        //         expect(org.code).toEqual(code);
-        //         expect(org.line).toEqual(code.length);
-        //     })
-        // });
+                expect(org.ax).toBeLessThan(256);
+                expect(org.bx).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            })
+            it('rand1', () => {
+                const code = [1,RA];
+                Config.codeLinesPerIteration = code.length;
+                const org  = vm.orgs.get(0);
+                org.code   = code;
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.line).toBe(0);
+                vm.run();
+
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            })
+        });
 
         // describe('ifp tests (ax > 0)', () => {
         //     it('ifp0',   () => run([1,FP,2,EN], 2, 0, 0, false));
