@@ -317,21 +317,21 @@ describe('src/irma/VM', () => {
             it('ifp12',  () => run([FP,2], 2, 0, false, 2));
         });
 
-        // describe('ifn tests (ax < 0)', () => {
-        //     it('ifn0',   () => run([1,FN,2,EN], 1, 0, 0, false, 2));
-        //     it('ifn1',   () => run([FN,2,EN], 0, 0, 0, false, 2));
-        //     it('ifn2',   () => run([FN,2,3,EN], 0, 0, 0, false, 2));
-        //     it('ifn3',   () => run([FN,1,FN,2,EN,3,EN], 0, 0, 0, false, 2));
-        //     it('ifn4',   () => run([NT,FN,1,NT,FN,4,EN,EN], 4, 0, 0, false, 6));
-        //     it('ifn5',   () => run([NT,FN,0,FN,4,EN,EN], 0, 0, 0, false, 4));
-        //     it('ifn6',   () => run([FN,1,FN,2,EN,3], 3, 0, 0, false, 4));
-        //     it('ifn7',   () => run([FN,2,EN,3,EN], 3, 0, 0, false, 3));
-        //     it('ifn8',   () => run([NT,FN,1,EN,3,EN], 3, 0, 0, false, 5));
-        //     it('ifn9',   () => run([FN,1,FN,2,EN], 1, 0, 0, false, 4));
-        //     it('ifn10',  () => run([FN,FN,2,EN], 0, 0, 0, false, 3));
-        //     it('ifn11',  () => run([FN,FN,2], 2, 0, 0, false, 3));
-        //     it('ifn12',  () => run([FN,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifn tests (ax < 0)', () => {
+            it('ifn0',   () => run([1,FN,2,EN], 1, 0, false, 2));
+            it('ifn1',   () => run([FN,2,EN], 0, 0, false, 2));
+            it('ifn2',   () => run([FN,2,3,EN], 0, 0, false, 2));
+            it('ifn3',   () => run([FN,1,FN,2,EN,3,EN], 0, 0, false, 2));
+            it('ifn4',   () => run([DE,FN,1,DE,DE,FN,4,EN,EN], 4, 0, false, 7));
+            it('ifn5',   () => run([DE,FN,0,FN,4,EN,EN], 0, 0, false, 4));
+            it('ifn6',   () => run([FN,1,FN,2,EN,3], 3, 0, false, 4));
+            it('ifn7',   () => run([FN,2,EN,3,EN], 3, 0, false, 3));
+            it('ifn8',   () => run([DE,FN,1,EN,3,EN], 3, 0, false, 5));
+            it('ifn9',   () => run([FN,1,FN,2,EN], 1, 0, false, 4));
+            it('ifn10',  () => run([FN,FN,2,EN], 0, 0, false, 3));
+            it('ifn11',  () => run([FN,FN,2], 2, 0, false, 3));
+            it('ifn12',  () => run([FN,2], 2, 0, false, 2));
+        });
 
         // describe('ifz tests (ax === 0)', () => {
         //     it('ifz0',   () => run([1,FZ,2,EN], 1, 0, 0, false, 3));
