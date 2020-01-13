@@ -40,7 +40,6 @@ const CALL                  = Config.CODE_CMDS.CALL;
 const FUNC                  = Config.CODE_CMDS.FUNC;
 const RET                   = Config.CODE_CMDS.RET;
 const END                   = Config.CODE_CMDS.END;
-const REAX                  = Config.CODE_CMDS.REAX;
 const NAND                  = Config.CODE_CMDS.NAND;
 const AGE                   = Config.CODE_CMDS.AGE;
 const LINE                  = Config.CODE_CMDS.LINE;
@@ -79,6 +78,7 @@ const MCMP                  = Config.CODE_CMDS.MCMP;
 const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
 const FIND                  = Config.CODE_CMDS.FIND;
+const REAX                  = Config.CODE_CMDS.REAX;
 
 class Bytes2Code {
     /**
@@ -268,7 +268,6 @@ Bytes2Code.MAP = {
     [FUNC  ]: ['func',   'function'],
     [RET   ]: ['ret',    'return'],
     [END   ]: ['end',    'end func/if/loop'],
-    [REAX  ]: ['reax',   'ax=re'],
     [NAND  ]: ['nand',   'ax=nand(ax,bx)'],
     [AGE   ]: ['age',    'ax=org.age'],
     [LINE  ]: ['line',   'ax=org.line'],
@@ -306,7 +305,8 @@ Bytes2Code.MAP = {
     [MCMP  ]: ['mcmp',    'mcmp():re'],
     [W2MOL ]: ['w2mol',  'molWrite=mol'],
     [MOL2W ]: ['mol2w',  'mol=molWrite'],
-    [FIND  ]: ['find',   'ax=find(ax=fromIdx,bx=toIdx):re']
+    [FIND  ]: ['find',   'ax=find(ax=fromIdx,bx=toIdx):re'],
+    [REAX  ]: ['reax',   'ax=re'],
 };
 
 /**
