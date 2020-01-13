@@ -64,7 +64,15 @@ class BioVM extends VM {
      * Returns maximum amount of organisms only according to config and amount of molecules
      * @return {Number} max amount
      */
-    static _orgsAmount() {return Math.round(Config.molAmount * Config.molCodeSize / (Config.LUCAS[0].code.split('\n').length || 1)) + Config.LUCAS.length}
+    static _orgsAmount() {
+        //
+        // We need to convert string to byte code representation to 
+        // remove all comments. This is how we obtain real amount of
+        // instructions in LUCA's code
+        //
+        const bCode = Bytes2Code.toByteCode(Config.LUCAS[0].code);
+        return Math.round(Config.molAmount * Config.molCodeSize / (bCode.length || 1)) + Config.LUCAS.length;
+    }
 
     /**
      * Returns maximum amount of molecules and organisms according to config
@@ -336,7 +344,7 @@ class BioVM extends VM {
                 if (mol === molEnd) {org.re = RE_ERR; return}
                 let   cutPos  = org.ax;
                 const molSize = molEnd - mol + 1;
-                if (cutPos < 0 || cutPos > molEnd) {cutPos = mol + Math.floor(molSize / 2) - 1}
+                if (cutPos > molEnd) {cutPos = mol + Math.floor(molSize / 2) - 1}
                 code[cutPos] |= CODE_8_BIT_MASK;
                 org.energy += (molSize * Config.energyMetabolismCoef);
                 org.re = RE_OK;
@@ -596,7 +604,7 @@ class BioVM extends VM {
             const code   = luca.code;
             const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(code);
             const offset = luca.offs || rand(MAX_OFFS);
-            const energy = luca.energy ? luca.energy : 600000;
+            const energy = luca.energy ? luca.energy : Config.energyOrg;
             if (world.index(offset) > -1) {orgs++; continue}
             this.addOrg(null, offset, bCode.slice(), energy);
             // const luca = this.addOrg(offset, code.slice(), energy);

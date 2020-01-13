@@ -499,11 +499,27 @@ module.exports = {
         #
         # Random walk and eating
         #
-        30
+        5
+        toggle                  # bx=5
+        30                @mol
         loop
+          8
           rand            @mol
           step
           join
+          #
+          # Half of molecules should be used for getting energy
+          # or catabolism
+          #
+          ifl             @mol  # ax=rnd       bx=5
+            reax
+            ifp
+              0           @mol
+              smol
+              lmol
+            catab       @mol
+            end
+          end
         end               @mol
         #
         # This command should be last before final 
@@ -519,7 +535,7 @@ module.exports = {
         #
         # here is test food section. This part---------------------
         # should be removed after tests----------------------------
-        #     
+        #
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
@@ -598,7 +614,7 @@ module.exports = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : Uint8Array.from([10,1,1,1,1,1,1,1]),
+    orgProbs                   : Uint8Array.from([10,1,1,1,1,1,1,1,3]),
     /**
      * Molecules related configs
      */
@@ -614,6 +630,11 @@ module.exports = {
     energyStepCoef             : .015,
     energyMove                 : 3,
     energyMetabolismCoef       : 100,
+    /**
+     * {Number} This value will be used for every LUCA on system start if
+     * there is no property "energy" in LUCAS config was specified
+     */
+    energyOrg                  : 600000,
     /**
      * Plugins. Extends irma core by additional functionality
      * @constant

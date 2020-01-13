@@ -352,11 +352,27 @@ call              @mol
 #
 # Random walk and eating
 #
-30
+5
+toggle                  # bx=5
+30                @mol
 loop
+  8
   rand            @mol
   step
   join
+  #
+  # Half of molecules should be used for getting energy
+  # or catabolism
+  #
+  ifl             @mol  # ax=rnd       bx=5
+    reax
+    ifp
+      0           @mol
+      smol
+      lmol
+	  catab       @mol
+    end
+  end
 end               @mol
 #
 # This command should be last before final 

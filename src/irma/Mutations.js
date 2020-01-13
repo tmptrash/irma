@@ -30,6 +30,15 @@ const CODE_MAX_STACK_SIZE  = 30000;
  * {Number} Default amount of mutations
  */
 const CODE_MUTATION_AMOUNT = .02;
+/**
+ * {Number} Last atom in molecule bit mask
+ */
+const CODE_8_BIT_MASK      = Config.CODE_8_BIT_MASK;
+/**
+ * {Number} nop command index
+ */
+const NOP                  = Config.CODE_CMDS.NOP;
+const NOP_MOL              = NOP | CODE_8_BIT_MASK;
 
 class Mutations {
     /**
@@ -45,9 +54,18 @@ class Mutations {
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
     
-    static _onChange (code, org) {const idx = rand(code.length); code[idx] = Mutations.randCmd(); org.compile(idx, idx, 1)}
+    static _onChange (code, org) {
+        const idx = rand(code.length);
+        code[idx] = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
+        org.compile(idx, idx, 1);
+    }
 
-    static _onDel    (code, org) {const idx = rand(code.length); org.code = code.splice(idx, 1); org.compile(idx, idx + 1, -1)}
+    static _onDel    (code, org) {
+        const idx = rand(code.length);
+        code[idx] = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
+        org.code  = code.splice(idx, 1);
+        org.compile(idx, idx + 1, -1);
+    }
 
     static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
 
@@ -58,7 +76,7 @@ class Mutations {
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
         const idx = rand(code.length);
-        org.code  = code.splice(idx, 0, [Mutations.randCmd()]);
+        org.code  = code.splice(idx, 0, Uint8Array.from([Mutations.randCmd()]));
         org.compile(idx, idx + 1, 1);
     }
 
@@ -105,6 +123,12 @@ class Mutations {
         org.code    = code.splice(start, end);
         org.compile(start, start + end, -1);
     }
+
+    static _onOff    (code, org) {
+        const idx = rand(code.length);
+        code[idx] = (code[idx] & CODE_8_BIT_MASK) ? NOP_MOL : NOP;
+        org.compile(idx, idx, 1);
+    }
 }
 
 /**
@@ -119,7 +143,8 @@ Mutations._MUTATION_CBS = [
     Mutations._onProbs.bind(this),
     Mutations._onInsert.bind(this),
     Mutations._onCopy.bind(this),
-    Mutations._onCut.bind(this)
+    Mutations._onCut.bind(this),
+    Mutations._onOff.bind(this)
 ];
 /**
  * {Array} Names of mutation types
@@ -132,7 +157,8 @@ Mutations.NAMES = [
     'prob',
     'ins',
     'copy',
-    'cut'
+    'cut',
+    'off'
 ];
 
 module.exports = Mutations;
