@@ -322,32 +322,32 @@ describe('src/irma/VM', () => {
             it('ifn1',   () => run([FN,2,EN], 0, 0, false, 2));
             it('ifn2',   () => run([FN,2,3,EN], 0, 0, false, 2));
             it('ifn3',   () => run([FN,1,FN,2,EN,3,EN], 0, 0, false, 2));
-            it('ifn4',   () => run([DE,FN,1,DE,DE,FN,4,EN,EN], 4, 0, false, 7));
+            it('ifn4',   () => run([DE,FN,1,DE,DE,FN,4,EN,EN], 4, 0, false, 9));
             it('ifn5',   () => run([DE,FN,0,FN,4,EN,EN], 0, 0, false, 4));
             it('ifn6',   () => run([FN,1,FN,2,EN,3], 3, 0, false, 4));
             it('ifn7',   () => run([FN,2,EN,3,EN], 3, 0, false, 3));
-            it('ifn8',   () => run([DE,FN,1,EN,3,EN], 3, 0, false, 5));
+            it('ifn8',   () => run([DE,FN,1,EN,3,EN], 3, 0, false, 6));
             it('ifn9',   () => run([FN,1,FN,2,EN], 1, 0, false, 4));
             it('ifn10',  () => run([FN,FN,2,EN], 0, 0, false, 3));
             it('ifn11',  () => run([FN,FN,2], 2, 0, false, 3));
             it('ifn12',  () => run([FN,2], 2, 0, false, 2));
         });
 
-        // describe('ifz tests (ax === 0)', () => {
-        //     it('ifz0',   () => run([1,FZ,2,EN], 1, 0, 0, false, 3));
-        //     it('ifz1',   () => run([FZ,2,EN], 2, 0, 0, false, 2));
-        //     it('ifz2',   () => run([FZ,2,3,EN], 3, 0, 0, false, 3));
-        //     it('ifz3',   () => run([FZ,1,FZ,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifz4',   () => run([NT,FZ,1,NT,FZ,4,EN,EN], -1, 0, 0, false, 3));
-        //     it('ifz5',   () => run([FZ,0,FZ,4,EN,EN], 4, 0, 0, false, 5));
-        //     it('ifz6',   () => run([FZ,1,FZ,2,EN,3], 3, 0, 0, false, 4));
-        //     it('ifz7',   () => run([FZ,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifz8',   () => run([FZ,1,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifz9',   () => run([FZ,NT,FZ,2,EN], -1, 0, 0, false, 4));
-        //     it('ifz10',  () => run([FZ,FZ,2,EN], 2, 0, 0, false, 3));
-        //     it('ifz11',  () => run([FZ,FZ,2], 2, 0, 0, false, 3));
-        //     it('ifz12',  () => run([FZ,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifz tests (ax === 0)', () => {
+            it('ifz0',   () => run([1,FZ,2,EN], 1, 0, false, 3));
+            it('ifz1',   () => run([FZ,2,EN], 2, 0, false, 2));
+            it('ifz2',   () => run([FZ,2,3,EN], 3, 0, false, 3));
+            it('ifz3',   () => run([FZ,1,FZ,2,EN,3,EN], 3, 0, false, 4));
+            it('ifz4',   () => run([DE,FZ,1,DE,DE,FZ,4,EN,EN], -1, 0, false, 3));
+            it('ifz5',   () => run([FZ,0,FZ,4,EN,EN], 4, 0, false, 5));
+            it('ifz6',   () => run([FZ,1,FZ,2,EN,3], 3, 0, false, 4));
+            it('ifz7',   () => run([FZ,2,EN,3,EN], 3, 0, false, 4));
+            it('ifz8',   () => run([FZ,1,EN,3,EN], 3, 0, false, 4));
+            it('ifz9',   () => run([FZ,DE,FZ,2,EN], -1, 0, false, 4));
+            it('ifz10',  () => run([FZ,FZ,2,EN], 2, 0, false, 3));
+            it('ifz11',  () => run([FZ,FZ,2], 2, 0, false, 3));
+            it('ifz12',  () => run([FZ,2], 2, 0, false, 2));
+        });
 
         // describe('ifg tests (ax > bx)', () => {
         //     it('ifg0',   () => run([FG,2,EN], 0, 0, 0, false, 2));
