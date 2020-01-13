@@ -397,21 +397,21 @@ describe('src/irma/VM', () => {
             it('ife12',  () => run([FE,2], 2, 0, false, 2));
         });
 
-        // describe('ifne tests (ax !== bx)', () => {
-        //     it('ifne0',  () => run([FNE,2,EN], 0, 0, 0, false, 2));
-        //     it('ifne1',  () => run([1,FNE,2,EN], 2, 0, 0, false, 4));
-        //     it('ifne2',  () => run([FNE,2,3,EN], 0, 0, 0, false, 4));
-        //     it('ifne3',  () => run([NT,FNE,2,FNE,3,EN,4,EN], 4, 0, 0, false, 8));
-        //     it('ifne4',  () => run([NT,FNE,1,NT,FNE,4,EN,EN], 4, 0, 0, false, 6));
-        //     it('ifne5',  () => run([FNE,0,FNE,4,EN,EN], 0, 0, 0, false, 2));
-        //     it('ifne6',  () => run([FNE,1,FNE,2,EN,3], 3, 0, 0, false, 6));
-        //     it('ifne7',  () => run([FNE,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifne8',  () => run([1,FNE,1,EN,3,EN], 3, 0, 0, false, 5));
-        //     it('ifne9',  () => run([FNE,NT,FNE,2,EN], 2, 0, 0, false, 5));
-        //     it('ifne10', () => run([FNE,FNE,2,EN], 0, 0, 0, false, 4));
-        //     it('ifne11', () => run([FNE,FNE,2], 2, 0, 0, false, 3));
-        //     it('ifne12', () => run([FNE,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifne tests (ax !== bx)', () => {
+            it('ifne0',  () => run([FNE,2,EN], 0, 0, false, 2));
+            it('ifne1',  () => run([1,FNE,2,EN], 2, 0, false, 4));
+            it('ifne2',  () => run([FNE,2,3,EN], 0, 0, false, 4));
+            it('ifne3',  () => run([DE,FNE,2,FNE,3,EN,4,EN], 4, 0, false, 8));
+            it('ifne4',  () => run([DE,FNE,1,DE,DE,FNE,4,EN,EN], 4, 0, false, 9));
+            it('ifne5',  () => run([FNE,0,FNE,4,EN,EN], 0, 0, false, 2));
+            it('ifne6',  () => run([FNE,1,FNE,2,EN,3], 3, 0, false, 6));
+            it('ifne7',  () => run([FNE,2,EN,3,EN], 3, 0, false, 4));
+            it('ifne8',  () => run([1,FNE,1,EN,3,EN], 3, 0, false, 5));
+            it('ifne9',  () => run([FNE,DE,FNE,2,EN], 2, 0, false, 5));
+            it('ifne10', () => run([FNE,FNE,2,EN], 0, 0, false, 4));
+            it('ifne11', () => run([FNE,FNE,2], 2, 0, false, 3));
+            it('ifne12', () => run([FNE,2], 2, 0, false, 2));
+        });
 
         // describe('loop tests', () => {
         //     it('loop0',  () => run([LP], 0, 0, 0, false, 1));
