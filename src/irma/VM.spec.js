@@ -349,37 +349,37 @@ describe('src/irma/VM', () => {
             it('ifz12',  () => run([FZ,2], 2, 0, false, 2));
         });
 
-        // describe('ifg tests (ax > bx)', () => {
-        //     it('ifg0',   () => run([FG,2,EN], 0, 0, 0, false, 2));
-        //     it('ifg1',   () => run([1,FG,2,EN], 2, 0, 0, false, 3));
-        //     it('ifg2',   () => run([FG,2,3,EN], 0, 0, 0, false, 2));
-        //     it('ifg3',   () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, 0, false, 8));
-        //     it('ifg4',   () => run([NT,FG,1,NT,FG,4,EN,EN], -1, 0, 0, false, 3));
-        //     it('ifg5',   () => run([1,FG,0,FG,4,EN,EN], 0, 0, 0, false, 5));
-        //     it('ifg6',   () => run([FG,1,FG,2,EN,3], 3, 0, 0, false, 6));
-        //     it('ifg7',   () => run([FG,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifg8',   () => run([FG,1,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifg9',   () => run([FG,NT,FG,2,EN], -1, 0, 0, false, 4));
-        //     it('ifg10',  () => run([FG,FG,2,EN], 0, 0, 0, false, 3));
-        //     it('ifg11',  () => run([FG,FG,2], 2, 0, 0, false, 3));
-        //     it('ifg12',  () => run([FG,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifg tests (ax > bx)', () => {
+            it('ifg0',   () => run([FG,2,EN], 0, 0, false, 2));
+            it('ifg1',   () => run([1,FG,2,EN], 2, 0, false, 3));
+            it('ifg2',   () => run([FG,2,3,EN], 0, 0, false, 2));
+            it('ifg3',   () => run([1,FG,2,FG,3,EN,4,EN], 4, 0, false, 8));
+            it('ifg4',   () => run([DE,FG,1,DE,DE,FG,4,EN,EN], -1, 0, false, 3));
+            it('ifg5',   () => run([1,FG,0,FG,4,EN,EN], 0, 0, false, 6));
+            it('ifg6',   () => run([FG,1,FG,2,EN,3], 3, 0, false, 6));
+            it('ifg7',   () => run([FG,2,EN,3,EN], 3, 0, false, 4));
+            it('ifg8',   () => run([FG,1,EN,3,EN], 3, 0, false, 4));
+            it('ifg9',   () => run([FG,DE,FG,2,EN], -1, 0, false, 4));
+            it('ifg10',  () => run([FG,FG,2,EN], 0, 0, false, 3));
+            it('ifg11',  () => run([FG,FG,2], 2, 0, false, 3));
+            it('ifg12',  () => run([FG,2], 2, 0, false, 2));
+        });
 
-        // describe('ifl tests (ax < bx)', () => {
-        //     it('ifl0',   () => run([FL,2,EN], 0, 0, 0, false, 2));
-        //     it('ifl1',   () => run([1,FL,2,EN], 1, 0, 0, false, 3));
-        //     it('ifl2',   () => run([FL,2,3,EN], 0, 0, 0, false, 2));
-        //     it('ifl3',   () => run([NT,FL,2,FL,3,EN,4,EN], 4, 0, 0, false, 7));
-        //     it('ifl4',   () => run([NT,FL,1,NT,FL,4,EN,EN], 4, 0, 0, false, 8));
-        //     it('ifl5',   () => run([1,FL,0,FL,4,EN,EN], 1, 0, 0, false, 3));
-        //     it('ifl6',   () => run([FL,1,FL,2,EN,3], 3, 0, 0, false, 5));
-        //     it('ifl7',   () => run([FL,2,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifl8',   () => run([FL,1,EN,3,EN], 3, 0, 0, false, 4));
-        //     it('ifl9',   () => run([FL,NT,FL,2,EN], 2, 0, 0, false, 4));
-        //     it('ifl10',  () => run([FL,FL,2,EN], 0, 0, 0, false, 3));
-        //     it('ifl11',  () => run([FL,FL,2], 2, 0, 0, false, 3));
-        //     it('ifl12',  () => run([FL,2], 2, 0, 0, false, 2));
-        // });
+        describe('ifl tests (ax < bx)', () => {
+            it('ifl0',   () => run([FL,2,EN], 0, 0, false, 2));
+            it('ifl1',   () => run([1,FL,2,EN], 1, 0, false, 3));
+            it('ifl2',   () => run([FL,2,3,EN], 0, 0, false, 2));
+            it('ifl3',   () => run([DE,FL,2,FL,3,EN,4,EN], 4, 0, false, 7));
+            it('ifl4',   () => run([DE,FL,1,DE,DE,FL,4,EN,EN], 4, 0, false, 8));
+            it('ifl5',   () => run([1,FL,0,FL,4,EN,EN], 1, 0, false, 3));
+            it('ifl6',   () => run([FL,1,FL,2,EN,3], 3, 0, false, 5));
+            it('ifl7',   () => run([FL,2,EN,3,EN], 3, 0, false, 4));
+            it('ifl8',   () => run([FL,1,EN,3,EN], 3, 0, false, 4));
+            it('ifl9',   () => run([FL,DE,FL,2,EN], 2, 0, false, 4));
+            it('ifl10',  () => run([FL,FL,2,EN], 0, 0, false, 3));
+            it('ifl11',  () => run([FL,FL,2], 2, 0, false, 3));
+            it('ifl12',  () => run([FL,2], 2, 0, false, 2));
+        });
 
         // describe('ife tests (ax === bx)', () => {
         //     it('ife0',   () => run([FE,2,EN], 2, 0, 0, false, 2));
