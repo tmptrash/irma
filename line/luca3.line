@@ -70,6 +70,12 @@ func                    # func0
       ret
     end           @mol
     rmol
+    reax
+    ifn           @mol
+      0
+      dec
+      ret         @mol
+    end
     #
     # Checks search limit
     #
@@ -97,16 +103,18 @@ func                    # func1
   # Sets start and end search indexes
   #
   load            @mol  # ax=start
-  right                 # m1
+  right                 # m3
   toggle
   load            @mol  # ax=end       bx=start
   toggle                # ax=start     bx=end
   find
-  right           @mol  # m2
+  right           @mol  # m4
   save                  # m2=idx-1
   toggle
   reax            @mol
   ifn
+    left                # m3
+    left                # m2
     ret
   end             @mol
   toggle                # ax=idx
@@ -143,7 +151,7 @@ func                    # func1
   toggle
   dec
   toggle          @mol
-  savea                 # m2=molIdx    m3=molEndIdx
+  savea                 # m4=molIdx    m5=molEndIdx
   smol
   #
   # Updates write head position
@@ -172,6 +180,9 @@ func                    # func1
     dec           @mol
     anab
   end
+  left
+  left
+  left
 end               @mol
 #
 # desc: Try to make clone getting molecules form
@@ -287,6 +298,16 @@ func                    # func2
       right             # m1
       1
       call        @mol
+      ifn
+        #
+        # We have to cut food section, because it's
+        # impossible to assemble a copy
+        #
+        load            # ax=foodStart
+        smol      @mol
+        len
+        split
+      end         @mol
       ret
     end
     #
@@ -395,3 +416,5 @@ nop               @mol
 # here is test food section. This part---------------------
 # should be removed after tests----------------------------
 #
+nop
+1                 @mol
