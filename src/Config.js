@@ -217,6 +217,12 @@ module.exports = {
               ret
             end           @mol
             rmol
+            reax
+            ifn           @mol
+              0
+              dec
+              ret         @mol
+            end
             #
             # Checks search limit
             #
@@ -244,16 +250,18 @@ module.exports = {
           # Sets start and end search indexes
           #
           load            @mol  # ax=start
-          right                 # m1
+          right                 # m3
           toggle
           load            @mol  # ax=end       bx=start
           toggle                # ax=start     bx=end
           find
-          right           @mol  # m2
+          right           @mol  # m4
           save                  # m2=idx-1
           toggle
           reax            @mol
           ifn
+            left                # m3
+            left                # m2
             ret
           end             @mol
           toggle                # ax=idx
@@ -290,7 +298,7 @@ module.exports = {
           toggle
           dec
           toggle          @mol
-          savea                 # m2=molIdx    m3=molEndIdx
+          savea                 # m4=molIdx    m5=molEndIdx
           smol
           #
           # Updates write head position
@@ -319,6 +327,9 @@ module.exports = {
             dec           @mol
             anab
           end
+          left
+          left
+          left
         end               @mol
         #
         # desc: Try to make clone getting molecules form
@@ -434,6 +445,16 @@ module.exports = {
               right             # m1
               1
               call        @mol
+              ifn
+                #
+                # We have to cut food section, because it's
+                # impossible to assemble a copy
+                #
+                load            # ax=foodStart
+                smol      @mol
+                len
+                split
+              end         @mol
               ret
             end
             #
@@ -514,28 +535,34 @@ module.exports = {
           ifl             @mol  # ax=rnd       bx=5
             reax
             ifp
+              #
+              # Obtain energy using catabolism
+              #
               0           @mol
               smol
               lmol
             catab       @mol
-            end
+              #
+              # Cut this molecule to outside world
+              #
+              len
+              split
+            end           @mol
           end
-        end               @mol
+        end
         #
         # This command should be last before final 
         # molecule-separator to do the infinite loop
         # of replicator code
         #
-        ret
-        nop
-        nop               @mol
+        ret               @mol
         nop
         nop
         nop               @mol
         #
         # here is test food section. This part---------------------
         # should be removed after tests----------------------------
-        #
+        #        
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
