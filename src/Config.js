@@ -610,7 +610,7 @@ module.exports = {
     orgMutationPeriod          : 1200001,
     orgMaxCodeSize             : 1024,
     /**
-     * {Array} change,del,period,amount,probs,insert,copy,cut
+     * {Array} change,del,period,amount,probs,insert,copy,cut 
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */

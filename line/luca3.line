@@ -373,11 +373,11 @@ loop
       0           @mol
       smol
       lmol
-      mol         @mol
-	  catab
+	  catab       @mol
       #
       # Cut this molecule to outside world
       #
+      len
       split
     end           @mol
   end
