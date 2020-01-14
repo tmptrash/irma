@@ -413,19 +413,19 @@ describe('src/irma/VM', () => {
             it('ifne12', () => run([FNE,2], 2, 0, false, 2));
         });
 
-        // describe('loop tests', () => {
-        //     it('loop0',  () => run([LP], 0, 0, 0, false, 1));
-        //     it('loop1',  () => run([LP,EN], 0, 0, 0, false, 2));
-        //     it('loop2',  () => run([LP,1,EN], 0, 0, 0, false, 2));
-        //     it('loop3',  () => run([1,LP,2,EN], 2, 0, 0, false, 4));
-        //     it('loop4',  () => run([1,LP,2,EN,3], 3, 0, 0, false, 6));
-        //     it('loop5',  () => run([1,LP,IN,EN], 2, 0, 0, false, 4));
-        //     it('loop6',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
-        //     it('loop7',  () => run([2,LP,IN,EN], 4, 0, 0, false, 7));
-        //     it('loop8',  () => run([1,LP,IN,EN], 2, 0, 0, false, 5));
-        //     it('loop9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, 0, false, 10));
-        //     it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, 0, false, 24));
-        // });
+        describe('loop tests', () => {
+            it('loop0',  () => run([LP], 0, 0, false, 1));
+            it('loop1',  () => run([LP,EN], 0, 0, false, 2));
+            it('loop2',  () => run([LP,1,EN], 0, 0, false, 2));
+            it('loop3',  () => run([1,LP,2,EN], 2, 0, false, 4));
+            it('loop4',  () => run([1,LP,2,EN,3], 3, 0, false, 6));
+            it('loop5',  () => run([1,LP,IN,EN], 2, 0, false, 4));
+            it('loop6',  () => run([2,LP,IN,EN], 4, 0, false, 7));
+            it('loop7',  () => run([2,LP,IN,EN], 4, 0, false, 7));
+            it('loop8',  () => run([1,LP,IN,EN], 2, 0, false, 5));
+            it('loop9',  () => run([1,LP,IN,LP,IN,EN,EN], 4, 0, false, 10));
+            it('loop10', () => run([2,LP,LP,IN,EN,EN], 8, 0, false, 24));
+        });
 
         // describe('call/func/end tests', () => {
         //     it('call0',  () => run([CA], 0, 0, 0, false, 1));
