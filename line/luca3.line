@@ -367,21 +367,27 @@ loop
   ifl             @mol  # ax=rnd       bx=5
     reax
     ifp
+      #
+      # Obtain energy using catabolism
+      #
       0           @mol
       smol
       lmol
-	  catab       @mol
-    end
+      mol         @mol
+	  catab
+      #
+      # Cut this molecule to outside world
+      #
+      split
+    end           @mol
   end
-end               @mol
+end
 #
 # This command should be last before final 
 # molecule-separator to do the infinite loop
 # of replicator code
 #
-ret
-nop
-nop               @mol
+ret               @mol
 nop
 nop
 nop               @mol
