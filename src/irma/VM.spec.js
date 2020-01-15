@@ -468,81 +468,45 @@ describe('src/irma/VM', () => {
             it('nand6', () => run([10,TG,EQ,NA], -11, 10));
         });
 
-        // describe('and tests', () => {
-        //     it('and0',   () => run([AN]));
-        //     it('and1',   () => run([1,TG, 1, AN], 1, 1));
-        //     it('and2',   () => run([1,AN]));
-        //     it('and3',   () => run([1,TG,AN], 0, 1));
-        //     it('and4',   () => run([3,TG,2,AN], 2, 3));
-        //     it('and5',   () => run([2,NT,TG,1,NT,AN], -4, -3));
-        //     it('and6',   () => run([3,AR,0,AN], 0, 0, 3));
-        // });
+        describe('age tests', () => {
+            it('age0',   () => {
+                const org = vm.orgs.get(0);
+                run([AG], 1);
 
-        // describe('or tests', () => {
-        //     it('or0',    () => run([OR]));
-        //     it('or1',    () => run([1,OR], 1));
-        //     it('or2',    () => run([1,TG,2,OR], 3, 1));
-        //     it('or3',    () => run([1,TG,OR],1, 1));
-        //     it('or4',    () => run([3,TG,2,OR], 3, 3));
-        //     it('or5',    () => run([2,NT,TG,1,NT,OR], -1, -3));
-        // });
+                expect(org.age).toBe(2);
+            });
+            it('age1',   () => {
+                const org = vm.orgs.get(0);
+                run([AG,AG], 1);
 
-        // describe('xor tests', () => {
-        //     it('xor0',   () => run([XO]));
-        //     it('xor1',   () => run([1,TG,1,XO], 0, 1));
-        //     it('xor2',   () => run([1,XO], 1));
-        //     it('xor3',   () => run([1,TG,2,XO], 3, 1));
-        //     it('xor4',   () => run([1,NT,XO], -2));
-        //     it('xor5',   () => run([2,TG,1,XO,XO], 1, 2));
-        // });
+                expect(org.age).toBe(2);
+            });
+            it('age2',   () => {
+                const code = [1,AG,AG];
+                Config.codeLinesPerIteration = 1;
+                Config.codeRepeatsPerRun = 3;
+                const org = vm.orgs.get(0);
+                org.code  = code;
 
-        // describe('not tests', () => {
-        //     it('not0',   () => run([NT], -1));
-        //     it('not1',   () => run([1,TG,1,NT], -2, 1));
-        //     it('not2',   () => run([1,NT], -2));
-        // });
+                expect(org.ax).toBe(0);
+                expect(org.bx).toBe(0);
+                expect(org.line).toBe(0);
+                vm.run();
 
-        // describe('age tests', () => {
-        //     it('age0',   () => {
-        //         const org = vm.orgs.get(0);
-        //         run([AG], 1);
+                expect(org.age).toBe(4);
+                expect(org.ax).toBe(3);
+                expect(org.bx).toBe(0);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            });
+        });
 
-        //         expect(org.age).toBe(2);
-        //     });
-        //     it('age1',   () => {
-        //         const org = vm.orgs.get(0);
-        //         run([AG,AG], 1);
-
-        //         expect(org.age).toBe(2);
-        //     });
-        //     it('age2',   () => {
-        //         const code = [1,AG,AG];
-        //         Config.codeLinesPerIteration = 1;
-        //         Config.codeRepeatsPerRun = 3;
-        //         const org = vm.orgs.get(0);
-        //         org.code  = code;
-
-        //         expect(org.ax).toBe(0);
-        //         expect(org.bx).toBe(0);
-        //         expect(org.re).toBe(0);
-        //         expect(org.line).toBe(0);
-        //         vm.run();
-
-        //         expect(org.age).toBe(4);
-        //         expect(org.ax).toBe(3);
-        //         expect(org.bx).toBe(0);
-        //         expect(org.re).toBe(0);
-        //         expect(org.code).toEqual(code);
-        //         expect(org.line).toEqual(code.length);
-        //     });
-        // });
-
-        // describe('line tests', () => {
-        //     it('line0',   () => run([LI]));
-        //     it('line1',   () => run([LI,LI], 1));
-        //     it('line2',   () => run([1,LI,LI,2], 2));
-        //     it('line3',   () => run([2,2,LP,LI,EN], 3, 0, 0, false, 9));
-        // });
+        describe('line tests', () => {
+            it('line0',   () => run([LI]));
+            it('line1',   () => run([LI,LI], 1));
+            it('line2',   () => run([1,LI,LI,2], 2));
+            it('line3',   () => run([2,2,LP,LI,EN], 3, 0, false, 9));
+        });
 
         // describe('len tests', () => {
         //     it('len0',    () => run([LE], 1));
