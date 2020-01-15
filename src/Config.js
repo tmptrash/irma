@@ -562,7 +562,7 @@ module.exports = {
         #
         # here is test food section. This part---------------------
         # should be removed after tests----------------------------
-        #        
+        #               
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 

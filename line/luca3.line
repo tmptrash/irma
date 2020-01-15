@@ -323,9 +323,9 @@ func                    # func2
     lmol
     mol
     save          @mol  # m2=foodEnd-1
-	#
-	# 3.6. Updates food segment end
-	#
+    #
+    # 3.6. Updates food segment end
+    #
     0
     smol
     lmol          @mol
@@ -394,7 +394,7 @@ loop
       0           @mol
       smol
       lmol
-	  catab       @mol
+      catab       @mol
       #
       # Cut this molecule to outside world
       #
