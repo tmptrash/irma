@@ -444,25 +444,20 @@ describe('src/irma/VM', () => {
             it('call13', () => run([CA,IN,FU,IN,FU], 2, 0, false, 5));
         });
 
-        // describe('re tests', () => {
-        //     it('re0',   () => run([RE], 0, 0, 0, false, 1));
-        //     it('re1',   () => run([FU,RE,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('re2',   () => run([FU,RE,RE,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('re3',   () => run([FU,IN,RE,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('re4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 0, 0, false, 7));
-        //     it('re5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, 0, false, 5));
-        //     it('re6',   () => run([FU,FG,RE,EN,EN,CA,IN], 1, 0, 0, false, 5));
-        //     it('re7',   () => run([FU,FG,FL,RE,EN,EN,EN,CA,IN], 1, 0, 0, false, 6));
-        //     it('re8',   () => run([FU,FG,FL,IN,RE,EN,EN,EN,CA], 0, 0, 0, false, 6));
-        //     it('re9',   () => run([NO,NO,RE,IN,IN], 0, 0, 0, false, 5));
-        //     it('re10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, 0, false, 5));
-        //     it('re11',  () => run([RE], 0, 0, 0, false, 10));
-        // });
-
-        // describe('retax tests', () => {
-        //     it('reax0', () => run([RX]));
-        //     xit('reax1', () => run([2,AR,1,RX], 2, 0, 2));
-        // });
+        describe('ret tests', () => {
+            it('ret0',   () => run([RE], 0, 0, false, 1));
+            it('ret1',   () => run([FU,RE,EN,CA,IN], 1, 0, false, 5));
+            it('ret2',   () => run([FU,RE,RE,EN,CA,IN], 1, 0, false, 5));
+            it('ret3',   () => run([FU,IN,RE,EN,CA,IN], 2, 0, false, 5));
+            it('ret4',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 2, 1, false, 7));
+            it('ret5',   () => run([FU,IN,TG,IN,RE,EN,CA,IN], 1, 1, false, 5));
+            it('ret6',   () => run([FU,FG,RE,EN,EN,CA,IN], 1, 0, false, 5));
+            it('ret7',   () => run([FU,FG,FL,RE,EN,EN,EN,CA,IN], 1, 0, false, 6));
+            it('ret8',   () => run([FU,FG,FL,IN,RE,EN,EN,EN,CA], 0, 0, false, 6));
+            it('ret9',   () => run([NO,NO,RE,IN,IN], 0, 0, false, 5));
+            it('ret10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, false, 5));
+            it('ret11',  () => run([RE], 0, 0, false, 10));
+        });
 
         // describe('and tests', () => {
         //     it('and0',   () => run([AN]));
