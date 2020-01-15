@@ -508,11 +508,11 @@ describe('src/irma/VM', () => {
             it('line3',   () => run([2,2,LP,LI,EN], 3, 0, false, 9));
         });
 
-        // describe('len tests', () => {
-        //     it('len0',    () => run([LE], 1));
-        //     it('len1',    () => run([1,LE], 2));
-        //     it('len2',    () => run([LE,1,LE], 3));
-        // });
+        describe('len tests', () => {
+            it('len0',    () => run([LE], 1));
+            it('len1',    () => run([1,LE], 2));
+            it('len2',    () => run([LE,1,LE], 3));
+        });
 
         // describe('left and right tests', () => {
         //     it('left0',    () => run([LF]));
