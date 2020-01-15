@@ -35,7 +35,6 @@ describe('src/irma/VM', () => {
     const FU        = Config.CODE_CMDS.FUNC;
     const RE        = Config.CODE_CMDS.RET;
     const EN        = Config.CODE_CMDS.END;
-    const RX        = Config.CODE_CMDS.REAX;
     const NA        = Config.CODE_CMDS.NAND;
     const AG        = Config.CODE_CMDS.AGE;
     const LI        = Config.CODE_CMDS.LINE;
@@ -457,6 +456,16 @@ describe('src/irma/VM', () => {
             it('ret9',   () => run([NO,NO,RE,IN,IN], 0, 0, false, 5));
             it('ret10',  () => run([IN,LP,RE,EN,IN,IN], 2, 0, false, 5));
             it('ret11',  () => run([RE], 0, 0, false, 10));
+        });
+
+        describe('nand tests', () => {
+            it('nand0', () => run([NA], -1));
+            it('nand1', () => run([1,NA], -1));
+            it('nand2', () => run([1,TG,2,NA], -1, 1));
+            it('nand3', () => run([1,TG,3,NA], -2, 1));
+            it('nand4', () => run([1,TG,EQ,NA], -2, 1));
+            it('nand5', () => run([DE,TG,EQ,NA], 0, -1));
+            it('nand6', () => run([10,TG,EQ,NA], -11, 10));
         });
 
         // describe('and tests', () => {
