@@ -573,6 +573,7 @@ describe('src/irma/VM', () => {
             it('savea0', () => run([SAA]));
             it('savea1', () => run([1,TG,2,SAA,RI,LO], 1, 1));
             it('savea2', () => run([1,TG,2,SAA,RI,LOA], 1, 0));
+            it('savea3', () => run([1,TG,2,SAA,LO,TG,RI,LO], 1, 2));
         });
 
         describe('read tests', () => {
