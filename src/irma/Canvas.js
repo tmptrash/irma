@@ -39,7 +39,7 @@ class Canvas {
         const parentNode = document.body;
 
         Config.WORLD_USE_ZOOM && this._panZoom.dispose();
-        parentNode.removeChild(this._canvasEl);
+        parentNode.querySelector(Config.WORLD_CANVAS_QUERY).removeChild(this._canvasEl);
         parentNode.removeChild(this._fullEl);
         parentNode.removeChild(this._visualizeEl);
         parentNode.removeChild(this._headerEl);

@@ -1,70 +1,71 @@
 /* eslint-disable global-require */
 describe('src/irma/VM', () => {
-    const Config    = require('./../Config');
-    const oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
-    const WIDTH     = 10;
-    const HEIGHT    = 10;
+    const Config     = require('./../Config');
+    const oldConfig  = JSON.parse(JSON.stringify(Config)); // Config copy
+    const WIDTH      = 10;
+    const HEIGHT     = 10;
     //
     // This call should be before require('./VM') to setup our 
     // configuration instead of default
     // eslint-disable-next-line no-use-before-define
     _setConfig();
-    const BioVM     = require('./BioVM');
+    const BioVM      = require('./BioVM');
+    const Bytes2Code = require('./Bytes2Code');
 
-    const MASK      = Config.CODE_8_BIT_MASK;
+    const MASK       = Config.CODE_8_BIT_MASK;
     
-    const TG        = Config.CODE_CMD_OFFS;
-    const EQ        = Config.CODE_CMD_OFFS+1;
-    const NO        = Config.CODE_CMD_OFFS+2;
-    const AD        = Config.CODE_CMD_OFFS+3;
-    const SU        = Config.CODE_CMD_OFFS+4;
-    const MU        = Config.CODE_CMD_OFFS+5;
-    const DI        = Config.CODE_CMD_OFFS+6;
-    const IN        = Config.CODE_CMD_OFFS+7;
-    const DE        = Config.CODE_CMD_OFFS+8;
-    const RS        = Config.CODE_CMD_OFFS+9;
-    const LS        = Config.CODE_CMD_OFFS+10;
-    const RA        = Config.CODE_CMD_OFFS+11;
-    const FP        = Config.CODE_CMD_OFFS+12;
-    const FN        = Config.CODE_CMD_OFFS+13;
-    const FZ        = Config.CODE_CMD_OFFS+14;
-    const FG        = Config.CODE_CMD_OFFS+15;
-    const FL        = Config.CODE_CMD_OFFS+16;
-    const FE        = Config.CODE_CMD_OFFS+17;
-    const FNE       = Config.CODE_CMD_OFFS+18;
-    const LP        = Config.CODE_CMD_OFFS+19;
-    const CA        = Config.CODE_CMD_OFFS+20;
-    const FU        = Config.CODE_CMD_OFFS+21;
-    const RE        = Config.CODE_CMD_OFFS+22;
-    const EN        = Config.CODE_CMD_OFFS+23;
-    const RX        = Config.CODE_CMD_OFFS+24;
-    const AR        = Config.CODE_CMD_OFFS+25;
-    const AN        = Config.CODE_CMD_OFFS+26;
-    const OR        = Config.CODE_CMD_OFFS+27;
-    const XO        = Config.CODE_CMD_OFFS+28;
-    const NT        = Config.CODE_CMD_OFFS+29;
-    const AG        = Config.CODE_CMD_OFFS+30;
-    const LI        = Config.CODE_CMD_OFFS+31;
-    const LE        = Config.CODE_CMD_OFFS+32;
-    const LF        = Config.CODE_CMD_OFFS+33;
-    const RI        = Config.CODE_CMD_OFFS+34;
-    const SA        = Config.CODE_CMD_OFFS+35;
-    const LO        = Config.CODE_CMD_OFFS+36;
+    const TG         = Config.CODE_CMD_OFFS;
+    const EQ         = Config.CODE_CMD_OFFS+1;
+    const NO         = Config.CODE_CMD_OFFS+2;
+    const AD         = Config.CODE_CMD_OFFS+3;
+    const SU         = Config.CODE_CMD_OFFS+4;
+    const MU         = Config.CODE_CMD_OFFS+5;
+    const DI         = Config.CODE_CMD_OFFS+6;
+    const IN         = Config.CODE_CMD_OFFS+7;
+    const DE         = Config.CODE_CMD_OFFS+8;
+    const RS         = Config.CODE_CMD_OFFS+9;
+    const LS         = Config.CODE_CMD_OFFS+10;
+    const RA         = Config.CODE_CMD_OFFS+11;
+    const FP         = Config.CODE_CMD_OFFS+12;
+    const FN         = Config.CODE_CMD_OFFS+13;
+    const FZ         = Config.CODE_CMD_OFFS+14;
+    const FG         = Config.CODE_CMD_OFFS+15;
+    const FL         = Config.CODE_CMD_OFFS+16;
+    const FE         = Config.CODE_CMD_OFFS+17;
+    const FNE        = Config.CODE_CMD_OFFS+18;
+    const LP         = Config.CODE_CMD_OFFS+19;
+    const CA         = Config.CODE_CMD_OFFS+20;
+    const FU         = Config.CODE_CMD_OFFS+21;
+    const RE         = Config.CODE_CMD_OFFS+22;
+    const EN         = Config.CODE_CMD_OFFS+23;
+    const RX         = Config.CODE_CMD_OFFS+24;
+    const AR         = Config.CODE_CMD_OFFS+25;
+    const AN         = Config.CODE_CMD_OFFS+26;
+    const OR         = Config.CODE_CMD_OFFS+27;
+    const XO         = Config.CODE_CMD_OFFS+28;
+    const NT         = Config.CODE_CMD_OFFS+29;
+    const AG         = Config.CODE_CMD_OFFS+30;
+    const LI         = Config.CODE_CMD_OFFS+31;
+    const LE         = Config.CODE_CMD_OFFS+32;
+    const LF         = Config.CODE_CMD_OFFS+33;
+    const RI         = Config.CODE_CMD_OFFS+34;
+    const SA         = Config.CODE_CMD_OFFS+35;
+    const LO         = Config.CODE_CMD_OFFS+36;
 
-    const JO        = Config.CODE_CMD_OFFS+37;
-    const SP        = Config.CODE_CMD_OFFS+38;
-    const ST        = Config.CODE_CMD_OFFS+39;
-    const SE        = Config.CODE_CMD_OFFS+40;
+    const JO         = Config.CODE_CMD_OFFS+37;
+    const SP         = Config.CODE_CMD_OFFS+38;
+    const ST         = Config.CODE_CMD_OFFS+39;
+    const SE         = Config.CODE_CMD_OFFS+40;
 
-    const OF        = Config.CODE_CMD_OFFS+47;
-    const CO        = Config.CODE_CMD_OFFS+48;
-    const AB        = Config.CODE_CMD_OFFS+49;
-    const CB        = Config.CODE_CMD_OFFS+50;
-    const FI        = Config.CODE_CMD_OFFS+51;
-    const MO        = Config.CODE_CMD_OFFS+52;
-    const ML        = Config.CODE_CMD_OFFS+53;
+    const OF         = Config.CODE_CMD_OFFS+47;
+    const CO         = Config.CODE_CMD_OFFS+48;
+    const AB         = Config.CODE_CMD_OFFS+49;
+    const CB         = Config.CODE_CMD_OFFS+50;
+    const FI         = Config.CODE_CMD_OFFS+51;
+    const MO         = Config.CODE_CMD_OFFS+52;
+    const ML         = Config.CODE_CMD_OFFS+53;
 
-    let   vm        = null;
+    let   vm         = null;
 
     /**
      * Setup default config for tests
@@ -82,7 +83,7 @@ describe('src/irma/VM', () => {
             codeRepeatsPerRun          : 1,
             codeMutateEveryClone       : 1000,
             codeMutateMutations        : false,
-            LUCAS                      : [{code: [], offs: 0, energy: 10000}],
+            LUCAS                      : [{code: '', offs: 0, energy: 600000}],
             worldZoomSpeed             : 0.1,
             worldFrequency             : 10,
             molAmount                  : 1,
@@ -154,6 +155,9 @@ describe('src/irma/VM', () => {
 
     beforeEach(() => {
         _setConfig();
+        const div = document.createElement('DIV');
+        div.id = 'world';
+        document.body.appendChild(div);
         vm = new BioVM();
     });
 
@@ -161,15 +165,17 @@ describe('src/irma/VM', () => {
         Object.assign(Config, oldConfig);
         vm.destroy();
         vm = null;
+        document.body.removeChild(document.body.querySelector('#world'));
     });
 
     describe('BioVM creation', () => {
         it('Checks BioVM creation', () => {
-            const vm1 = new BioVM();
-            const cfg = Config;
+            const vm1   = new BioVM();
+            const cfg   = Config;
+            const bCode = Bytes2Code.toByteCode(Config.LUCAS[0].code);
 
-            expect(vm1.orgs.size).toBe(Math.round(cfg.molAmount * cfg.molCodeSize / (cfg.LUCAS[0].code.length || 1)) + cfg.orgAmount + 1);
-            expect(vm1.orgsMols.size).toBe(cfg.orgAmount + cfg.molAmount + 1);
+            expect(vm1.orgs.size).toBe(Math.round(cfg.molAmount * cfg.molCodeSize / (bCode.length || 1)) + cfg.LUCAS.length + 1);
+            //expect(vm1.orgsMols.size).toBe(cfg.orgAmount + cfg.molAmount + 1);
             vm1.destroy();
         });
     });
