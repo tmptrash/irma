@@ -14,56 +14,48 @@ describe('src/irma/VM', () => {
 
     const MASK       = Config.CODE_8_BIT_MASK;
     
-    const TG         = Config.CODE_CMD_OFFS;
-    const EQ         = Config.CODE_CMD_OFFS+1;
-    const NO         = Config.CODE_CMD_OFFS+2;
-    const AD         = Config.CODE_CMD_OFFS+3;
-    const SU         = Config.CODE_CMD_OFFS+4;
-    const MU         = Config.CODE_CMD_OFFS+5;
-    const DI         = Config.CODE_CMD_OFFS+6;
-    const IN         = Config.CODE_CMD_OFFS+7;
-    const DE         = Config.CODE_CMD_OFFS+8;
-    const RS         = Config.CODE_CMD_OFFS+9;
-    const LS         = Config.CODE_CMD_OFFS+10;
-    const RA         = Config.CODE_CMD_OFFS+11;
-    const FP         = Config.CODE_CMD_OFFS+12;
-    const FN         = Config.CODE_CMD_OFFS+13;
-    const FZ         = Config.CODE_CMD_OFFS+14;
-    const FG         = Config.CODE_CMD_OFFS+15;
-    const FL         = Config.CODE_CMD_OFFS+16;
-    const FE         = Config.CODE_CMD_OFFS+17;
-    const FNE        = Config.CODE_CMD_OFFS+18;
-    const LP         = Config.CODE_CMD_OFFS+19;
-    const CA         = Config.CODE_CMD_OFFS+20;
-    const FU         = Config.CODE_CMD_OFFS+21;
-    const RE         = Config.CODE_CMD_OFFS+22;
-    const EN         = Config.CODE_CMD_OFFS+23;
-    const RX         = Config.CODE_CMD_OFFS+24;
-    const AR         = Config.CODE_CMD_OFFS+25;
-    const AN         = Config.CODE_CMD_OFFS+26;
-    const OR         = Config.CODE_CMD_OFFS+27;
-    const XO         = Config.CODE_CMD_OFFS+28;
-    const NT         = Config.CODE_CMD_OFFS+29;
-    const AG         = Config.CODE_CMD_OFFS+30;
-    const LI         = Config.CODE_CMD_OFFS+31;
-    const LE         = Config.CODE_CMD_OFFS+32;
-    const LF         = Config.CODE_CMD_OFFS+33;
-    const RI         = Config.CODE_CMD_OFFS+34;
-    const SA         = Config.CODE_CMD_OFFS+35;
-    const LO         = Config.CODE_CMD_OFFS+36;
+    const TG        = Config.CODE_CMDS.TOGGLE;
+    const EQ        = Config.CODE_CMDS.EQ;
+    const NO        = Config.CODE_CMDS.NOP;
+    const AD        = Config.CODE_CMDS.ADD;
+    const SU        = Config.CODE_CMDS.SUB;
+    const MU        = Config.CODE_CMDS.MUL;
+    const DI        = Config.CODE_CMDS.DIV;
+    const IN        = Config.CODE_CMDS.INC;
+    const DE        = Config.CODE_CMDS.DEC;
+    const RS        = Config.CODE_CMDS.RSHIFT;
+    const LS        = Config.CODE_CMDS.LSHIFT;
+    const RA        = Config.CODE_CMDS.RAND;
+    const FP        = Config.CODE_CMDS.IFP;
+    const FN        = Config.CODE_CMDS.IFN;
+    const FZ        = Config.CODE_CMDS.IFZ;
+    const FG        = Config.CODE_CMDS.IFG;
+    const FL        = Config.CODE_CMDS.IFL;
+    const FE        = Config.CODE_CMDS.IFE;
+    const FNE       = Config.CODE_CMDS.IFNE;
+    const LP        = Config.CODE_CMDS.LOOP;
+    const CA        = Config.CODE_CMDS.CALL;
+    const FU        = Config.CODE_CMDS.FUNC;
+    const RE        = Config.CODE_CMDS.RET;
+    const EN        = Config.CODE_CMDS.END;
+    const NA        = Config.CODE_CMDS.NAND;
+    const AG        = Config.CODE_CMDS.AGE;
+    const LI        = Config.CODE_CMDS.LINE;
+    const LE        = Config.CODE_CMDS.LEN;
+    const LF        = Config.CODE_CMDS.LEFT;
+    const RI        = Config.CODE_CMDS.RIGHT;
+    const SA        = Config.CODE_CMDS.SAVE;
+    const LO        = Config.CODE_CMDS.LOAD;
+    const SAA       = Config.CODE_CMDS.SAVEA;
+    const LOA       = Config.CODE_CMDS.LOADA;
+    const RD        = Config.CODE_CMDS.READ;
+    const BR        = Config.CODE_CMDS.BREAK;
 
-    const JO         = Config.CODE_CMD_OFFS+37;
-    const SP         = Config.CODE_CMD_OFFS+38;
-    const ST         = Config.CODE_CMD_OFFS+39;
-    const SE         = Config.CODE_CMD_OFFS+40;
-
-    const OF         = Config.CODE_CMD_OFFS+47;
-    const CO         = Config.CODE_CMD_OFFS+48;
-    const AB         = Config.CODE_CMD_OFFS+49;
-    const CB         = Config.CODE_CMD_OFFS+50;
-    const FI         = Config.CODE_CMD_OFFS+51;
-    const MO         = Config.CODE_CMD_OFFS+52;
-    const ML         = Config.CODE_CMD_OFFS+53;
+    const JO         = Config.CODE_CMDS.JOIN;
+    const SP         = Config.CODE_CMDS.SPLIT;
+    const ST         = Config.CODE_CMDS.STEP;
+    const SE         = Config.CODE_CMDS.SEE;
+    const SY         = Config.CODE_CMDS.SAY;
 
     let   vm         = null;
 
@@ -110,10 +102,10 @@ describe('src/irma/VM', () => {
     function run(code, cfg, move) {
         Config.codeLinesPerIteration = code[0].length;
         Object.assign(Config, cfg);
-        Object.assign(Config, {LUCAS: [{code: Uint8Array.from([0])}]});
+        Object.assign(Config, {LUCAS: (new Array(code.length).fill(0).map(() => {return {code: ''}}))});
         vm  = new BioVM();
         for (let i = 0; i < move.length; i++) {
-            vm.orgsMols.get(i).code = vm.split2Mols(Uint8Array.from(code[i]).slice());
+            vm.orgsMols.get(i).code = Uint8Array.from(code[i]);
             vm.world.moveOrg(vm.orgsMols.get(i), move[i]);
             vm.orgsMols.get(i).hasOwnProperty('energy') && vm.orgsMols.get(i).compile();
         }
@@ -187,52 +179,51 @@ describe('src/irma/VM', () => {
     });
 
     describe('Scripts run', () => {
-        xdescribe('join tests', () => {
+        describe('join tests', () => {
             it('Checks joining right organism',  () => {
                 run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 2}, [1,0]);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK,2,JO|MASK]));
-                expect(vm.orgs.get(0).energy).toEqual(2 * Config.energyMetabolismCoef - 2);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO,2,JO]));
             });
-            it('Checks joining empty cell',  () => {
-                run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 1}, [0]);
+            // it('Checks joining empty cell',  () => {
+            //     run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 1}, [0]);
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK]));
-            });
-            it('Checks joining if organism is at the edge of the world',  () => {
-                run([[2,JO]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK]));
+            // });
+            // it('Checks joining if organism is at the edge of the world',  () => {
+            //     run([[2,JO]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK]));
-            });
-            it('Checks joining right molecule',  () => {
-                Config.molAmount   = 1;
-                Config.orgAmount   = 1;
-                Config.LUCAS[0].code = Uint8Array.from([2,JO]);
-                Config.molCodeSize = 2;
-                Config.codeLinesPerIteration = 2;
-                const vm1  = new BioVM();
-                const org1 = vm1.orgs.get(0);
-                const mol1 = vm1.orgsMols.get(1);
-                const mol1Copy = mol1.code.slice();
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK]));
+            // });
+            // it('Checks joining right molecule',  () => {
+            //     Config.molAmount   = 1;
+            //     Config.orgAmount   = 1;
+            //     Config.LUCAS[0].code = Uint8Array.from([2,JO]);
+            //     Config.molCodeSize = 2;
+            //     Config.codeLinesPerIteration = 2;
+            //     const vm1  = new BioVM();
+            //     const org1 = vm1.orgs.get(0);
+            //     const mol1 = vm1.orgsMols.get(1);
+            //     const mol1Copy = mol1.code.slice();
 
-                vm1.world.moveOrg(org1, 0);
-                vm1.world.moveOrg(mol1, 1);
+            //     vm1.world.moveOrg(org1, 0);
+            //     vm1.world.moveOrg(mol1, 1);
 
-                expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(2);
-                vm1.run();
+            //     expect(vm1.orgs.items).toBe(1);
+            //     expect(vm1.orgsMols.items).toBe(2);
+            //     vm1.run();
 
-                expect(vm1.orgs.items).toBe(1);
-                expect(vm1.orgsMols.items).toBe(1);
-                expect(org1.code).toEqual(Uint8Array.from([2,JO|MASK]).push(mol1Copy));
-                vm1.destroy();
-            });
+            //     expect(vm1.orgs.items).toBe(1);
+            //     expect(vm1.orgsMols.items).toBe(1);
+            //     expect(org1.code).toEqual(Uint8Array.from([2,JO|MASK]).push(mol1Copy));
+            //     vm1.destroy();
+            // });
         })
 
         xdescribe('split tests', () => {
