@@ -175,8 +175,14 @@ describe('src/irma/VM', () => {
             const bCode = Bytes2Code.toByteCode(Config.LUCAS[0].code);
 
             expect(vm1.orgs.size).toBe(Math.round(cfg.molAmount * cfg.molCodeSize / (bCode.length || 1)) + cfg.LUCAS.length + 1);
-            //expect(vm1.orgsMols.size).toBe(cfg.orgAmount + cfg.molAmount + 1);
+            expect(vm1.orgsMols.size).toBe(cfg.molAmount + cfg.LUCAS.length + 2);
             vm1.destroy();
+        });
+        it('Checks BioVM creation with huge amount of molecules', () => {
+            const cfg     = Config;
+            cfg.molAmount = cfg.WORLD_HEIGHT * cfg.WORLD_WIDTH + 10;
+
+            expect(() => new BioVM()).toThrow();
         });
     });
 
