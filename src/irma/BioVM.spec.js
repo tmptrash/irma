@@ -203,36 +203,13 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO,2,JO]));
             });
-            // it('Checks joining if organism is at the edge of the world',  () => {
-            //     run([[2,JO]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
+            it('Checks joining if organism is at the edge of the world',  () => {
+                run([[2,JO]], {molAmount: 0}, [WIDTH-1]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK]));
-            // });
-            // it('Checks joining right molecule',  () => {
-            //     Config.molAmount   = 1;
-            //     Config.orgAmount   = 1;
-            //     Config.LUCAS[0].code = Uint8Array.from([2,JO]);
-            //     Config.molCodeSize = 2;
-            //     Config.codeLinesPerIteration = 2;
-            //     const vm1  = new BioVM();
-            //     const org1 = vm1.orgs.get(0);
-            //     const mol1 = vm1.orgsMols.get(1);
-            //     const mol1Copy = mol1.code.slice();
-
-            //     vm1.world.moveOrg(org1, 0);
-            //     vm1.world.moveOrg(mol1, 1);
-
-            //     expect(vm1.orgs.items).toBe(1);
-            //     expect(vm1.orgsMols.items).toBe(2);
-            //     vm1.run();
-
-            //     expect(vm1.orgs.items).toBe(1);
-            //     expect(vm1.orgsMols.items).toBe(1);
-            //     expect(org1.code).toEqual(Uint8Array.from([2,JO|MASK]).push(mol1Copy));
-            //     vm1.destroy();
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO]));
+            });
         })
 
         xdescribe('split tests', () => {
