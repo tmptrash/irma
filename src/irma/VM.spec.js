@@ -43,6 +43,8 @@ describe('src/irma/VM', () => {
     const RI        = Config.CODE_CMDS.RIGHT;
     const SA        = Config.CODE_CMDS.SAVE;
     const LO        = Config.CODE_CMDS.LOAD;
+    const SAA       = Config.CODE_CMDS.SAVEA;
+    const LOA       = Config.CODE_CMDS.LOADA;
     const RD        = Config.CODE_CMDS.READ;
     const CM        = Config.CODE_CMDS.MCMP;
     const BR        = Config.CODE_CMDS.BREAK;
@@ -549,7 +551,6 @@ describe('src/irma/VM', () => {
             it('load1',    () => run([1,LO]));
             it('save and load', () => {
                 const code = [1,SA,LO,RI,SA,RI,2,SA];
-                Config.ORG_MAX_MEM_SIZE = 2;
                 Config.codeLinesPerIteration = code.length;
                 const vm1 = new VM(1);
                 const org = vm1.addOrg(0, code);
@@ -568,14 +569,20 @@ describe('src/irma/VM', () => {
             });
         });
 
-        // describe('read tests', () => {
-        //     it('read0', () => run([RD], RD));
-        //     it('read1', () => run([0,RD]));
-        //     it('read2', () => run([1,RD], RD));
-        //     it('read3', () => run([1,NT,RD], 1));
-        //     it('read4', () => run([10,RD], RD));
-        //     it('read5', () => run([0,1,2,7,4,3,RD], 7));
-        // });
+        describe('savea tests', () => {
+            it('savea0', () => run([SAA]));
+            it('savea1', () => run([1,TG,2,SAA,RI,LO], 1, 1));
+            it('savea2', () => run([1,TG,2,SAA,RI,LOA], 1, 0));
+        });
+
+        describe('read tests', () => {
+            it('read0', () => run([RD], RD));
+            it('read1', () => run([0,RD]));
+            it('read2', () => run([1,RD], RD));
+            it('read3', () => run([1,DE,DE,RD], 1));
+            it('read4', () => run([10,RD], RD));
+            it('read5', () => run([0,1,2,7,4,3,RD], 7));
+        });
 
         // describe('mcmp tests', () => {
         //     it('compare two commands', () => {

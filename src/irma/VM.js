@@ -370,7 +370,7 @@ class VM {
                             line++;
                             let mPos = org.mPos;
                             ax = org.mem[mPos++];
-                            ax = org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos];
+                            bx = org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos];
                             continue;
                         }
 
