@@ -569,11 +569,16 @@ describe('src/irma/VM', () => {
             });
         });
 
-        describe('savea tests', () => {
+        describe('savea, loada tests', () => {
             it('savea0', () => run([SAA]));
             it('savea1', () => run([1,TG,2,SAA,RI,LO], 1, 1));
             it('savea2', () => run([1,TG,2,SAA,RI,LOA], 1, 0));
             it('savea3', () => run([1,TG,2,SAA,LO,TG,RI,LO], 1, 2));
+            it('savea4', () => run([1,TG,2,SAA,0,TG,0,LOA], 2, 1));
+            it('loada0', () => run([LOA]));
+            it('loada1', () => run([1,SA,LOA], 1));
+            it('loada2', () => run([1,SA,RI,2,SA,LOA], 2));
+            it('loada3', () => run([1,SA,RI,2,SA,LF,LOA], 1, 2));
         });
 
         describe('read tests', () => {
