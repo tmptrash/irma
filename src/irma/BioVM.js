@@ -80,12 +80,12 @@ class BioVM extends VM {
      */
     static _orgsMolsAmount() {return Config.molAmount + Config.LUCAS.length + 1}
 
-    constructor() {
+    constructor(options) {
         super(BioVM._orgsAmount() + 1);
 
-        this.orgsMols   = new FastArray(BioVM._orgsMolsAmount() + 1);
-        this.world      = new World({scroll: this._onScroll.bind(this)});
-        this.freq       = new Int32Array(Config.worldFrequency);
+        this.orgsMols = new FastArray(BioVM._orgsMolsAmount() + 1);
+        this.world    = new World({...options, scroll: this._onScroll.bind(this)});
+        this.freq     = new Int32Array(Config.worldFrequency);
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
