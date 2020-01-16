@@ -18,7 +18,7 @@ class Canvas {
         this._imgData       = this._ctx.createImageData(this._width, this._height);
         this._data          = this._imgData.data;
         this._animate       = this._onAnimate.bind(this);
-        this._visualize     = options.animate || true;
+        this._visualize     = options.animate === undefined ? true : options.animate;
         this._panZoom       = null;
         this._zoomObserver  = null;
         this._fullEl        = Config.worldCanvasButtons ? this._createFullScreenBtn() : null;
