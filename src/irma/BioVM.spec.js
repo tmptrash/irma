@@ -101,13 +101,15 @@ describe('src/irma/VM', () => {
      */
     function run(code, cfg, move) {
         Config.codeLinesPerIteration = code[0].length;
-        Object.assign(Config, cfg);
         Object.assign(Config, {LUCAS: (new Array(code.length).fill(0).map(() => {return {code: ''}}))});
+        Object.assign(Config, cfg);
         vm  = new BioVM();
         for (let i = 0; i < move.length; i++) {
-            vm.orgsMols.get(i).code = Uint8Array.from(code[i]);
-            vm.world.moveOrg(vm.orgsMols.get(i), move[i]);
-            vm.orgsMols.get(i).hasOwnProperty('energy') && vm.orgsMols.get(i).compile();
+            const org  = vm.orgsMols.get(i);
+            org.code   = Uint8Array.from(code[i]);
+            org.offset = move[i];
+            org.hasOwnProperty('energy') ? vm.world.moveOrg(org, move[i]) : vm.world.mol(move[i], org, vm.molColor(org.code));
+            org.hasOwnProperty('energy') && org.compile();
         }
 
         expect(vm.orgs.items).toBe(Config.LUCAS.length);
@@ -181,19 +183,26 @@ describe('src/irma/VM', () => {
     describe('Scripts run', () => {
         describe('join tests', () => {
             it('Checks joining right organism',  () => {
-                run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 2}, [1,0]);
+                run([[2,JO],[2,JO]], {molAmount: 0}, [1,0]);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO,2,JO]));
             });
-            // it('Checks joining empty cell',  () => {
-            //     run([[2,JO],[2,JO]], {molAmount: 0, orgAmount: 1}, [0]);
+            it('Checks joining empty cell',  () => {
+                run([[2,JO],[2,JO]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 2]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO|MASK]));
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO]));
+            });
+            it('Checks joining molecule',  () => {
+                run([[2,JO],[2,JO]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO,2,JO]));
+            });
             // it('Checks joining if organism is at the edge of the world',  () => {
             //     run([[2,JO]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
 

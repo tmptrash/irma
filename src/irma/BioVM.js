@@ -203,7 +203,7 @@ class BioVM extends VM {
                 if (offset < 0 || offset > MAX_OFFS) {org.ax = 0; return}
                 const dot = this.world.index(offset);
                 const mol = this.orgsMols.get(dot);
-                org.ax = (dot < 0 ? 0 : mol.color || this._molColor(mol.code));
+                org.ax = (dot < 0 ? 0 : mol.color || this.molColor(mol.code));
                 return;
             }
 
@@ -578,7 +578,7 @@ class BioVM extends VM {
         const mol      = new Molecule(offset, orgsMols.freeIndex, code);
 
         orgsMols.add(mol);
-        this.world.mol(offset, mol, this._molColor(mol.code));
+        this.world.mol(offset, mol, this.molColor(mol.code));
 
         return mol;
     }
@@ -631,25 +631,11 @@ class BioVM extends VM {
     }
 
     /**
-     * Removes organism or molecule from organisms and molecules array
-     * @param {Number} index Organism or molecule index
-     */
-    _delFromOrgsMolsArr(index) {
-        const org      = this.orgsMols.get(index);
-        const movedOrg = this.orgsMols.del(index);
-        if (movedOrg) {
-            movedOrg.hasOwnProperty('energy') ? movedOrg.molIndex = index : movedOrg.index = index;
-            this.world.setItem(movedOrg.offset, index);
-        }
-        this.world.empty(org.offset);
-    }
-
-    /**
      * Returns color of molecule by it's atoms
      * @param {Uint8Array} code Code
      * @return {Number} color Color in 0xRRGGBB format
      */
-    _molColor(code) {
+    molColor(code) {
         const len   = code.length;
         const bits  = len > 3 ? Math.floor(21 / len) || Config.molColor : 8;
         const left  = 8 - bits;
@@ -662,6 +648,20 @@ class BioVM extends VM {
         }
 
         return color;
+    }
+
+    /**
+     * Removes organism or molecule from organisms and molecules array
+     * @param {Number} index Organism or molecule index
+     */
+    _delFromOrgsMolsArr(index) {
+        const org      = this.orgsMols.get(index);
+        const movedOrg = this.orgsMols.del(index);
+        if (movedOrg) {
+            movedOrg.hasOwnProperty('energy') ? movedOrg.molIndex = index : movedOrg.index = index;
+            this.world.setItem(movedOrg.offset, index);
+        }
+        this.world.empty(org.offset);
     }
 
     /**
@@ -769,7 +769,7 @@ class BioVM extends VM {
             const yOffs = y * width;
             for (let x = 0; x < width; x++) {
                 const org = world.index(offs++);
-                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgMol[org].color || this._molColor(orgMol[org].code));
+                canvas.dot(yOffs + x, org === -1 ? 0x000000 : orgMol[org].color || this.molColor(orgMol[org].code));
             }
             offs += row;
         }
