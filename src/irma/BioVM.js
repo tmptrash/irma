@@ -162,7 +162,7 @@ class BioVM extends VM {
             case SPLIT: {
                 ++org.line;
                 if (this.orgsMols.full || org.mem[org.mPos] === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
-                const offset  = org.offset + DIR[Math.abs(org.re) % 8];
+                const offset  = org.offset + DIR[Math.abs(org.bx) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
                 const dot     = this.world.index(offset);
                 if (dot > -1) {org.re = RE_ERR; return} // something on the way
