@@ -247,22 +247,24 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
                 expect(vm.orgs.get(0).re).toBe(RE_ERR);
             });
-            // it('Checks basic organism splitting fail, because out of the world',  () => {
-            //     run([[0,AR,1,TG,0,SP]], {molAmount: 0, orgAmount: 1}, [0]);
+            it('Checks basic organism splitting fail, because out of the world',  () => {
+                run([[1,2,2|M,SP|M]], {molAmount: 0}, [0]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.world.index(1)).toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,AR|MASK,1,TG|MASK,0,SP|MASK]));
-            // });
-            // it('Checks basic organism splitting not fail, because ax < 0',  () => {
-            //     run([[2,AR,1,TG,0,NT,SP]], {molAmount: 0, orgAmount: 1}, [0]);
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_ERR);
+            });
+            it('Checks basic organism splitting not fail, because ax < 0',  () => {
+                run([[1,2,0,DE|M,SP|M]], {molAmount: 0}, [12]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(2);
-            //     expect(vm.world.index(1)).not.toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,TG|MASK,0,NT|MASK,SP|MASK]));
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(2)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
+                expect(vm.orgs.get(0).re).toEqual(1);
+            });
             // it('Checks basic organism splitting not fail, because bx > molAmount',  () => {
             //     run([[2,AR,10,TG,1,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 
