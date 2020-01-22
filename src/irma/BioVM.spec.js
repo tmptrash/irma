@@ -274,14 +274,17 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).not.toEqual(Uint8Array.from([1,2,10|M,SP|M]));
                 expect(vm.orgsMols.get(0).energy).toEqual(undefined);
             });
-            // it('Checks basic organism splitting not fail, because ax > codeLen', () => {
-            //     run([[2,AR,20,TG,0,SP]], {molAmount: 0, orgAmount: 1}, [0]);
+            it('Checks basic organism splitting right, because bx === 2', () => {
+                run([[1,2,TG,2|M,SP|M]], {molAmount: 0}, [12]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(2);
-            //     expect(vm.world.index(1)).not.toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,SP|MASK]));
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(12)).not.toBe(-1);
+                expect(vm.world.index(13)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
+                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,TG,2|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            });
             // it('Checks basic organism splitting fail, because bx < ax',  () => {
             //     run([[2,AR,0,TG,1,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 
