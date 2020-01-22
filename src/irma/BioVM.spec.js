@@ -4,6 +4,8 @@ describe('src/irma/VM', () => {
     const oldConfig  = JSON.parse(JSON.stringify(Config)); // Config copy
     const WIDTH      = 10;
     const HEIGHT     = 10;
+    const RE_OK      = Config.CODE_RE_OK;
+    const RE_ERR     = Config.CODE_RE_ERR;
     //
     // This call should be before require('./VM') to setup our 
     // configuration instead of default
@@ -226,41 +228,25 @@ describe('src/irma/VM', () => {
                 run([[2],[1,2,2|M,SP|M]], {molAmount: 0}, [2,12]);
 
                 expect(vm.orgs.items).toBe(2);
-                // expect(vm.orgsMols.items).toBe(2); 
-                // expect(vm.world.index(1)).not.toBe(-1);
-                // expect(vm.orgs.get(0).offset).toBe(1);
-                // expect(vm.orgs.get(1).offset).toBe(0);
-                // expect(vm.orgs.get(1).code).toEqual(Uint8Array.from([2,AR|MASK,1,TG|MASK,0,SP|MASK]));
+                expect(vm.orgsMols.items).toBe(2); 
+                expect(vm.world.index(2)).not.toBe(-1);
+                expect(vm.orgs.get(0).offset).toBe(2);
+                expect(vm.orgs.get(1).offset).toBe(12);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2]));
+                expect(vm.orgs.get(1).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
             });
-            // it('Checks organism splitting fail, because orgsMols is full',  () => {
-            //     Config.molAmount = 0;
-            //     Config.LUCAS[0].code = Uint8Array.from([2,2,2,2,AR,1,TG,0,SP]);
-            //     const vm1  = new BioVM();
-            //     const org = vm1.orgs.get(0);
-            //     vm1.world.moveOrg(org, 0);
-            //     Config.codeLinesPerIteration = org.code.length;
+            it('Checks organism splitting fail, because orgsMols is full',  () => {
+                const _orgsMolsAmount = BioVM._orgsMolsAmount;
+                BioVM._orgsMolsAmount = () => 0;
+                run([[1,2,2|M,SP|M]], {molAmount: 0}, [12]);
+                BioVM._orgsMolsAmount = _orgsMolsAmount;
 
-            //     expect(vm1.world.index(1)).toBe(-1);
-            //     expect(vm1.orgsMols.items).toBe(1);
-            //     expect(vm1.orgs.items).toBe(1);
-            //     // split to the right
-            //     vm1.run();
-
-            //     expect(vm1.orgs.items).toBe(1);
-            //     expect(vm1.orgsMols.items).toBe(2); 
-            //     expect(vm1.world.index(1)).not.toBe(-1);
-            //     expect(org.code).toEqual(Uint8Array.from([2,2|MASK,AR,1|MASK,TG,0|MASK,SP|MASK]));
-            //     // split to the bottom
-            //     org.code[1] = 4|MASK;
-            //     vm1.run();
-
-            //     expect(vm1.orgs.items).toBe(1);
-            //     expect(vm1.orgsMols.items).toBe(2); // 2, not 3, because orgsMols is full
-            //     expect(vm1.world.index(10)).toBe(-1);
-            //     expect(org.code).toEqual(Uint8Array.from([2,4|MASK,AR,1|MASK,TG,0|MASK,SP|MASK]));
-
-            //     vm1.destroy();
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(12)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
+                expect(vm.orgs.get(0).re).toBe(RE_ERR);
+            });
             // it('Checks basic organism splitting fail, because out of the world',  () => {
             //     run([[0,AR,1,TG,0,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 

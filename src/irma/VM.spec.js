@@ -592,7 +592,7 @@ describe('src/irma/VM', () => {
         describe('break tests', () => {
             it('break0', () => run([BR]));
             it('break1', () => run([1,LP,BR,2,EN], 1, 0, false, 4));
-            it('break1', () => run([2,LP,4,LP,IN,BR,2,EN,EN], 5, 0, false, 13));
+            it('break2', () => run([2,LP,4,LP,IN,BR,2,EN,EN], 5, 0, false, 13));
         });
     });
 });
