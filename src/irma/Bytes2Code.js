@@ -172,8 +172,10 @@ class Bytes2Code {
      * @return {Boolean} valid status
      */
     static valid(line) {
-        const isMol = line.indexOf(MOL_STR) !== -1;
-        const ln    = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
+        const comment = line.indexOf(COMMENT);
+        const molIdx  = line.indexOf(MOL_STR);
+        const isMol   = molIdx !== -1 && comment > molIdx;
+        const ln      = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
         return ln === '' || (this._isNumeric(ln) ? true : !!this.CMD_MAP[ln]);
     }
 
