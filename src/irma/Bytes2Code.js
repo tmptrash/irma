@@ -174,7 +174,7 @@ class Bytes2Code {
     static valid(line) {
         const comment = line.indexOf(COMMENT);
         const molIdx  = line.indexOf(MOL_STR);
-        const isMol   = molIdx !== -1 && comment > molIdx;
+        const isMol   = molIdx !== -1 && comment > -1 && comment > molIdx || comment === -1;
         const ln      = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
         return ln === '' || (this._isNumeric(ln) ? true : !!this.CMD_MAP[ln]);
     }
