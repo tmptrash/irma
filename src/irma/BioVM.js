@@ -309,8 +309,9 @@ class BioVM extends VM {
                 code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
                 org.re          = RE_OK;
+                const len       = m2EndIdx + 1 - m2Idx;
                 org.compile(m2Idx, m2EndIdx + 1, -1);
-                org.updateMetadata(insIdx, insIdx + cutCode.length, 1);
+                org.updateMetadata(insIdx - len, insIdx + cutCode.length - len, 1);
                 return;
             }
 
@@ -375,7 +376,7 @@ class BioVM extends VM {
                 org.energy    -= Config.energyMove;
                 org.re         = RE_OK;
                 org.compile(m2Idx, m2EndIdx + 1, -1);
-                org.updateMetadata(insIdx, insIdx + moveCode.length, 1);
+                org.updateMetadata(insIdx - len, insIdx + moveCode.length - len, 1);
                 return;
             }
 
