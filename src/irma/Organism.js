@@ -172,6 +172,23 @@ class Organism {
         }
         this.loops = newLoop;
     }
+
+    /**
+     * Does a compilation and calls updateMetadata(). This is usefull for cases of
+     * dynamic code change, when one block is moved inside the code. e.g. molecule
+     * moving or anabolism. First indexes are for compile() method, second for 
+     * updateMetadata()
+     * @param {*} index11 
+     * @param {*} index12 
+     * @param {*} dir1 
+     * @param {*} index21 
+     * @param {*} index22 
+     * @param {*} dir2 
+     */
+    compileMove(index11 = 0, index12 = 0, dir1 = 1, index21 = 0, index22 = 0, dir2 = 1) {
+        this.compile(index11, index12, dir1);
+        this.updateMetadata(index21, index22, dir2);
+    }
 }
 
 module.exports = Organism;
