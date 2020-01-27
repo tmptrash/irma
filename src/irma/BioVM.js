@@ -309,7 +309,7 @@ class BioVM extends VM {
                 code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
                 org.code        = code;
                 org.re          = RE_OK;
-                org.recompile(m2Idx, m2EndIdx + 1, -1, insIdx, insIdx + cutCode.length, 1);
+                org.compileMove(m2Idx, m2EndIdx + 1, -1, insIdx, insIdx + cutCode.length, 1);
                 return;
             }
 
@@ -373,7 +373,7 @@ class BioVM extends VM {
                 org.code       = code.splice(insIdx, 0, moveCode);
                 org.energy    -= Config.energyMove;
                 org.re         = RE_OK;
-                org.recompile(m2Idx, m2EndIdx + 1, -1, insIdx, insIdx + moveCode.length, 1);
+                org.compileMove(m2Idx, m2EndIdx + 1, -1, insIdx, insIdx + moveCode.length, 1);
                 return; 
             }
 
