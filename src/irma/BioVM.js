@@ -151,7 +151,9 @@ class BioVM extends VM {
                 org.code      = org.code.push(nearOrg.code);
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
                 org.re        = RE_OK;
-                org.compile(oldLen, oldLen + nearOrg.code.length, 1);
+                const fCount  = org.fCount;
+                org.compile(false);                     // Safe recompilation without loosing metadata
+                org.updateMetadata(oldLen, oldLen + nearOrg.code.length, 1, fCount);
                 return;
             }
 
@@ -181,7 +183,9 @@ class BioVM extends VM {
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
                 if (org.code.length < 1) {this.delOrg(org)}
                 org.re        = RE_OK;
-                org.compile(idx0, idx1 + 1, -1);
+                const fCount  = org.fCount;
+                org.compile(false);                     // Safe recompilation without loosing metadata
+                org.updateMetadata(idx0, idx1 + 1, -1, fCount);
                 return;
             }
 

@@ -55,16 +55,20 @@ class Mutations {
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
     
     static _onChange (code, org) {
-        const idx = rand(code.length);
-        code[idx] = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
-        org.compile(idx, idx, 1);
+        const idx    = rand(code.length);
+        code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
+        const fCount = org.fCount;
+        org.compile(false);                     // Safe recompilation without loosing metadata
+        org.updateMetadata(idx, idx, 1, fCount);
     }
 
     static _onDel    (code, org) {
-        const idx = rand(code.length);
-        code[idx] = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
-        org.code  = code.splice(idx, 1);
-        org.compile(idx, idx + 1, -1);
+        const idx    = rand(code.length);
+        code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
+        org.code     = code.splice(idx, 1);
+        const fCount = org.fCount;
+        org.compile(false);                     // Safe recompilation without loosing metadata
+        org.updateMetadata(idx, idx + 1, -1, fCount);
     }
 
     static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
@@ -75,9 +79,11 @@ class Mutations {
     
     static _onInsert (code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
-        const idx = rand(code.length);
-        org.code  = code.splice(idx, 0, Uint8Array.from([Mutations.randCmd()]));
-        org.compile(idx, idx + 1, 1);
+        const idx    = rand(code.length);
+        org.code     = code.splice(idx, 0, Uint8Array.from([Mutations.randCmd()]));
+        const fCount = org.fCount;
+        org.compile(false);                     // Safe recompilation without loosing metadata
+        org.updateMetadata(idx, idx + 1, 1, fCount);
     }
 
     /**
@@ -105,14 +111,18 @@ class Mutations {
             const idx = rand(start);
             const insCode = code.slice(start, end);
             org.code      = code.splice(idx, 0, insCode);
-            org.compile(idx, idx + insCode.length, 1);
+            const fCount = org.fCount;
+            org.compile(false);                     // Safe recompilation without loosing metadata
+            org.updateMetadata(idx, idx + insCode.length, 1, fCount);
             return end - start;
         }
 
         const idx     = end + rand(codeLen - end + 1);
         const insCode = code.slice(start, end);
         org.code      = code.splice(idx, 0, insCode);
-        org.compile(idx, idx + insCode.length, 1);
+        const fCount = org.fCount;
+        org.compile(false);                     // Safe recompilation without loosing metadata
+        org.updateMetadata(idx, idx + insCode.length, 1, fCount);
 
         return end - start;
     }
@@ -121,13 +131,17 @@ class Mutations {
         const start = rand(code.length);
         const end   = rand(code.length - start);
         org.code    = code.splice(start, end);
-        org.compile(start, start + end, -1);
+        const fCount = org.fCount;
+        org.compile(false);                     // Safe recompilation without loosing metadata
+        org.updateMetadata(start, start + end, -1, fCount);
     }
 
     static _onOff    (code, org) {
         const idx = rand(code.length);
         code[idx] = (code[idx] & CODE_8_BIT_MASK) ? NOP_MOL : NOP;
-        org.compile(idx, idx, 1);
+        const fCount = org.fCount;
+        org.compile(false);                     // Safe recompilation without loosing metadata
+        org.updateMetadata(idx, idx, 1, fCount);
     }
 }
 

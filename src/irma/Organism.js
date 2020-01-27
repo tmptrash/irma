@@ -58,14 +58,11 @@ class Organism {
     /**
      * Compiles code before run it. Compilation means to find pairs of block
      * operations. Fro example: ifxx..end, loop..end, func..end, call..ret
-     * and so on. We store this metadata in Organism.offs|funcs|stack. After
-     * every code change (mutation) we have to compile it again to update 
-     * this metadata.
-     * @param {Number} index1 Start index in a code, where change was occure
-     * @param {Number} index2 End index in a code where changed were occure
-     * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
+     * and so on. We store this metadata in Organism.offs|funcs|stack. 
+     * Compilation means recalculation of all block pairs.
+     * @param {Boolean} reset Resets org.line,stackIndex,fCount
      */
-    compile(index1 = 0, index2 = 0, dir = 1) {
+    compile(reset = true) {
         const code   = this.code;
         const offs   = this.offs  = {};
         const funcs  = this.funcs = {};
@@ -114,16 +111,11 @@ class Organism {
             }
         }
 
-        if (index2 === 0) {                                             // This is first time we compile the code. We don't need to update 
+        this.fCount = fCount;                                           // Functions amount must be updated in any case
+        if (reset) {                                                    // This is first time we compile the code. We don't need to update 
             this.line       = 0;                                        // stack and current line. Just set default values.
             this.stackIndex = -1;
-            this.fCount     = fCount;
-            return;
         }
-        
-        this.updateMetadata(index1, index2, dir, fCount);
-
-        this.fCount = fCount;                                           // Functions amount must be updated in any case
     }
 
     /**
@@ -171,23 +163,6 @@ class Organism {
             }
         }
         this.loops = newLoop;
-    }
-
-    /**
-     * Does a compilation and calls updateMetadata(). This is usefull for cases of
-     * dynamic code change, when one block is moved inside the code. e.g. molecule
-     * moving or anabolism. First indexes are for compile() method, second for 
-     * updateMetadata()
-     * @param {*} index11 
-     * @param {*} index12 
-     * @param {*} dir1 
-     * @param {*} index21 
-     * @param {*} index22 
-     * @param {*} dir2 
-     */
-    compileMove(index11 = 0, index12 = 0, dir1 = 1, index21 = 0, index22 = 0, dir2 = 1) {
-        this.compile(index11, index12, dir1);
-        this.updateMetadata(index21, index22, dir2);
     }
 }
 
