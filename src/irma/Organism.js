@@ -131,7 +131,7 @@ class Organism {
         // Updates current line
         //
         const line   = this.line;
-        if (line > index2) {this.line += amount}
+        if (line >= index1) {this.line += amount}
         else if (line >= index1 && line <= index2) {this.line = index1}
         //
         // Updates function metadata (indexes in a code). If amount of functions
