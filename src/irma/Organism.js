@@ -146,8 +146,10 @@ class Organism {
             const stk = this.stack;
             for (let i = 0, len = this.stackIndex + 1; i <= len; i++) {
                 const ln = stk[i];                                      // Updates back line
-                if (ln > index2) {stk[i] += amount}
-                else if (ln >= index1 && ln <= index2) {stk[i] = index1}
+                if (dir < 0) {
+                    if (ln >= index2) {stk[i] += amount}
+                    else if (ln >= index1 && ln <= index2) {stk[i] = index1}
+                } else if (ln >= index1) {stk[i] += amount}
             }
         }
         //
@@ -159,8 +161,11 @@ class Organism {
             if (loops.hasOwnProperty(l)) {
                 l = +l;
                 const iterations = loops[l];
-                if (l > index2) {newLoop[l + amount] = iterations}
-                else if (l >= index1 && l <= index2) {newLoop[index1] = iterations}
+                if (dir < 0) {
+                    if (l > index2) {newLoop[l + amount] = iterations}
+                    else if (l >= index1 && l <= index2) {newLoop[index1] = iterations}
+                    else {newLoop[l] = iterations}
+                } else if (l >= index1) {newLoop[l + amount] = iterations}
                 else {newLoop[l] = iterations}
             }
         }
