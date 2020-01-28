@@ -131,8 +131,8 @@ class Organism {
         // Updates current line
         //
         const line   = this.line;
-        if (line >= index1) {this.line += amount}
-        else if (line >= index1 && line <= index2) {this.line = index1}
+        if (line >= index2) {this.line += amount}
+        else if (line >= index1 && line < index2) {this.line = index1}
         //
         // Updates function metadata (indexes in a code). If amount of functions
         // were changed we have to remove call stack. In other case we have to 
