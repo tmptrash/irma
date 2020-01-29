@@ -426,13 +426,14 @@ class BioVM extends VM {
                 const code = org.code;
                 let   mol  = org.mol;
                 let   ret  = RE_OK;
-                
+
                 for (let i = mol - 1;; i--) {
-                    if (i < 0) {ret = RE_SPECIAL; mol = code.length - 1; break}
+                    if (i < 0) {ret = RE_SPECIAL; mol = 0; break}
                     if ((code[i] & MASK8) > 0) {mol = i + 1; break}
                 }
+                mol--;
                 for (let i = mol - 1;; i--) {
-                    if (i < 0) {ret = RE_SPECIAL; mol = code.length - 1; break}
+                    if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue}
                     if ((code[i] & MASK8) > 0) {mol = i + 1; break}
                 }
                 org.mol = mol;
