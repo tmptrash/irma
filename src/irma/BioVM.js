@@ -424,18 +424,19 @@ class BioVM extends VM {
             case LMOL: {
                 ++org.line;
                 const code = org.code;
-                const mol  = org.mol;
-                if ((code[mol - 1] & MASK8) > 0 && (code[mol - 2] & MASK8) > 0) { // molecule == 1 atom
-                    org.mol = mol - 1;
-                    org.re  = RE_OK;
-                    return;
-                }
+                let   mol  = org.mol;
                 let   ret  = RE_OK;
-                for (let i = mol - 2;; i--) {
-                    if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue} // molecule === many atoms
-                    if ((code[i] & MASK8) > 0) {org.mol = i + 1; break}
+                
+                for (let i = mol - 1;; i--) {
+                    if (i < 0) {ret = RE_SPECIAL; mol = code.length - 1; break}
+                    if ((code[i] & MASK8) > 0) {mol = i + 1; break}
                 }
-                org.re = ret;
+                for (let i = mol - 1;; i--) {
+                    if (i < 0) {ret = RE_SPECIAL; mol = code.length - 1; break}
+                    if ((code[i] & MASK8) > 0) {mol = i + 1; break}
+                }
+                org.mol = mol;
+                org.re  = ret;
                 return;
             }
 
