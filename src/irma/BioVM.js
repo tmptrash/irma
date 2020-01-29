@@ -29,8 +29,8 @@ const HEIGHT1               = HEIGHT + 1;
 const LINE_OFFS             = HEIGHT * WIDTH1;
 const MAX_OFFS              = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent using offset >= MAX_OFFS ... instead offset > MAX_OFFS
 const ORG_MIN_COLOR         = Config.ORG_MIN_COLOR;
-const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
-const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
+const MASK8                 = Config.CODE_8_BIT_MASK;
+const MASK8R                = Config.CODE_8_BIT_RESET_MASK;
 //
 // Biological commands
 //
@@ -235,12 +235,12 @@ class BioVM extends VM {
                 let   bx       = org.bx;
                 if (bx < 0) {bx = 0}
                 if (bx >= nearCode.length) {bx = nearCode.length - 1}
-                for (let i = bx - 1;; i--) {if ((nearCode[i] & CODE_8_BIT_MASK) > 0 || i < 0) {bx = i + 1; break}} // find first atom of molecule
+                for (let i = bx - 1;; i--) {if ((nearCode[i] & MASK8) > 0 || i < 0) {bx = i + 1; break}} // find first atom of molecule
                 const mem  = org.mem;
                 const mLen = mem.length - 1;
                 for (let i = bx, m = org.mPos;; i++, m++) {
                     mem[m] = nearCode[i];
-                    if ((nearCode[i] & CODE_8_BIT_MASK) > 0) {break}
+                    if ((nearCode[i] & MASK8) > 0) {break}
                     if (m > mLen) {m = -1}
                 }
                 org.re = RE_OK;
@@ -293,7 +293,7 @@ class BioVM extends VM {
                     const m2Idx     = m1EndIdx + 1;
                     const m2EndIdx  = this._molLastOffs(code, m2Idx);
                     org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
-                    code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
+                    code[m1EndIdx] &= MASK8R;
                     org.re          = RE_OK;
                     return;
                 }
@@ -301,7 +301,7 @@ class BioVM extends VM {
                 // Join current and molecule in ax
                 //
                 let   m2Idx     = 0;
-                for (let i = org.ax - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
+                for (let i = org.ax - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
                 if (m1Idx === m2Idx) {org.re = RE_ERR; return}
                 const m1EndIdx  = this._molLastOffs(code, m1Idx);
                 const m2EndIdx  = this._molLastOffs(code, m2Idx);
@@ -310,7 +310,7 @@ class BioVM extends VM {
                 const insIdx    = m1EndIdx + 1;
                 code            = code.splice(insIdx, 0, cutCode);
                 org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
-                code[m1EndIdx] &= CODE_8_BIT_RESET_MASK;
+                code[m1EndIdx] &= MASK8R;
                 org.code        = code;
                 org.re          = RE_OK;
                 const fCount    = org.fCount; 
@@ -331,12 +331,12 @@ class BioVM extends VM {
                     let bx = org.bx;
                     if (bx < 0) {bx = 0}
                     if (bx >= code.length) {bx = code.length - 1}
-                    for (let i = bx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
-                    if (code[bx] & CODE_8_BIT_MASK) {
+                    for (let i = bx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
+                    if (code[bx] & MASK8) {
                         org.re = RE_ERR;
                         return;
                     }
-                    code[bx] |= CODE_8_BIT_MASK;
+                    code[bx] |= MASK8;
                     const idxEnd = this._molLastOffs(code, bx);
                     org.energy += ((idxEnd - idx + 1) * Config.energyMetabolismCoef);
                     org.re = RE_OK;
@@ -351,7 +351,7 @@ class BioVM extends VM {
                 let   cutPos  = org.ax;
                 const molSize = molEnd - mol + 1;
                 if (mol + cutPos > molEnd) {cutPos = mol + Math.floor(molSize / 2) - 1}
-                code[mol + cutPos] |= CODE_8_BIT_MASK;
+                code[mol + cutPos] |= MASK8;
                 org.energy += (molSize * Config.energyMetabolismCoef);
                 org.re = RE_OK;
                 return;
@@ -366,7 +366,7 @@ class BioVM extends VM {
                 let   m2Idx    = org.mol;
                 if (m2Idx < 0) {m2Idx = 0}
                 if (m2Idx >= code.length) {m2Idx = code.length - 1}
-                for (let i = m2Idx - 1;; i--) {if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
+                for (let i = m2Idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
                 if (m2Idx === org.molWrite) {org.re = RE_OK; return} // src and dest molecules are the same
                 const m2EndIdx = this._molLastOffs(code, m2Idx);
                 const moveCode = code.slice(m2Idx, m2EndIdx + 1);
@@ -400,7 +400,7 @@ class BioVM extends VM {
                 if (org.ax < 0) {org.mol = org.ax = 0; org.re = RE_OK; return}
                 if (org.ax >= code.length) {org.ax = code.length - 1}
                 for (let i = org.ax - 1;; i--) {
-                    if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
+                    if ((code[i] & MASK8) > 0 || i < 0) {
                         org.mol = i + 1;
                         break;
                     }
@@ -424,13 +424,16 @@ class BioVM extends VM {
             case LMOL: {
                 ++org.line;
                 const code = org.code;
+                const mol  = org.mol;
+                if ((code[mol - 1] & MASK8) > 0 && (code[mol - 2] & MASK8) > 0) { // molecule == 1 atom
+                    org.mol = mol - 1;
+                    org.re  = RE_OK;
+                    return;
+                }
                 let   ret  = RE_OK;
-                for (let i = org.mol - 2;; i--) {
-                    if ((code[i] & CODE_8_BIT_MASK) > 0 || i < 0) {
-                        if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue}
-                        org.mol = i + 1;
-                        break;
-                    }
+                for (let i = mol - 2;; i--) {
+                    if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue} // molecule === many atoms
+                    if ((code[i] & MASK8) > 0) {org.mol = i + 1; break}
                 }
                 org.re = ret;
                 return;
@@ -444,7 +447,7 @@ class BioVM extends VM {
                 const mLen = mem.length - 1;
                 for (let i = org.mol, m = org.mPos; i < len; i++, m++) {
                     mem[m] = code[i];
-                    if ((code[i] & CODE_8_BIT_MASK) > 0) {break}
+                    if ((code[i] & MASK8) > 0) {break}
                     if (m > mLen) {m = -1}
                 }
                 return;
@@ -486,7 +489,7 @@ class BioVM extends VM {
 
                 loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1) - molLen; i <= till; i++) {
                     for (let j = mol, l = mol + molLen; j <= l; j++) {
-                        if ((code[i + j - mol] & CODE_8_BIT_RESET_MASK) !== (code[j] & CODE_8_BIT_RESET_MASK)) {continue loop}
+                        if ((code[i + j - mol] & MASK8R) !== (code[j] & MASK8R)) {continue loop}
                     }
                     org.ax  = i;
                     org.ret = RE_OK;
@@ -651,7 +654,7 @@ class BioVM extends VM {
         let   color = 0;
 
         for (let i = 0; i < len; i++) {
-            color |= ((((code[i] & CODE_8_BIT_RESET_MASK) << left) >>> left) << cBits);
+            color |= ((((code[i] & MASK8R) << left) >>> left) << cBits);
             cBits += bits;
         }
 
@@ -685,7 +688,7 @@ class BioVM extends VM {
             //
             // Sets last atom bit on
             //
-            code[size - 1] |= Config.CODE_8_BIT_MASK;
+            code[size - 1] |= MASK8;
             return code;
         }
         const luca  = Config.LUCAS[0];
@@ -695,7 +698,7 @@ class BioVM extends VM {
         //
         // Sets start to the first atom in a molecule
         //
-        for (let i = start - 1;; i--) {if ((bCode[i] & CODE_8_BIT_MASK) > 0 || i < 0) {start = i + 1; break}}
+        for (let i = start - 1;; i--) {if ((bCode[i] & MASK8) > 0 || i < 0) {start = i + 1; break}}
         return bCode.slice(start, this._molLastOffs(bCode, start) + 1);
     }
 
@@ -708,7 +711,7 @@ class BioVM extends VM {
     _mol2Offs(code, molIndex) {
         let index = 0;
         for (let i = 0, len = code.length; i < len; i++) {
-            if ((code[i] & CODE_8_BIT_MASK)) {
+            if ((code[i] & MASK8)) {
                 if (molIndex-- < 1) {return index}
                 index = i + 1;
             }
@@ -725,7 +728,7 @@ class BioVM extends VM {
     _molLastOffs(code, index) {
         const len = code.length;
         // eslint-disable-next-line no-empty
-        while ((code[index] & CODE_8_BIT_MASK) === 0 && index < len) {index++}
+        while ((code[index] & MASK8) === 0 && index < len) {index++}
         return index;
     }
     
