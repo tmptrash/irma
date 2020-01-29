@@ -428,10 +428,10 @@ class BioVM extends VM {
                 let   ret  = RE_OK;
 
                 for (let i = mol - 1;; i--) {
-                    if (i < 0) {ret = RE_SPECIAL; mol = 0; break}
+                    if (i < 0) {mol = 0; break}
                     if ((code[i] & MASK8) > 0) {mol = i + 1; break}
                 }
-                if (--mol < 0) {ret = RE_SPECIAL; mol = code.length - 1}
+                if (--mol < 0) {org.mol = 0; org.re  = RE_OK; return}
                 for (let i = mol - 1;; i--) {
                     if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue}
                     if ((code[i] & MASK8) > 0) {mol = i + 1; break}
