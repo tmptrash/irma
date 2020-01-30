@@ -81,7 +81,8 @@ class BioVM extends VM {
     static _orgsMolsAmount() {return Config.molAmount + Config.LUCAS.length + 1}
 
     /**
-     * Is called when atom stay molecule separator or not
+     * Is called when atom stay molecule-separator or was a separator
+     * @param {Number} index Index of atom, which was changed
      * @abstract
      */
     changeAtom() {}
