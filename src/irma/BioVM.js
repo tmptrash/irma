@@ -86,7 +86,7 @@ class BioVM extends VM {
      * @param {Boolean} isLast true if current atom is the last atom in molecule
      * @abstract
      */
-    changeAtom() {}
+    updateAtom() {}
 
     constructor(options) {
         super(BioVM._orgsAmount() + 1);
@@ -302,7 +302,7 @@ class BioVM extends VM {
                     const m2EndIdx  = this._molLastOffs(code, m2Idx);
                     org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                     code[m1EndIdx] &= MASK8R;
-                    this.changeAtom(m1EndIdx, false);
+                    this.updateAtom(m1EndIdx, false);
                     org.re          = RE_OK;
                     return;
                 }
@@ -320,7 +320,7 @@ class BioVM extends VM {
                 code            = code.splice(insIdx, 0, cutCode);
                 org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                 code[m1EndIdx] &= MASK8R;
-                this.changeAtom(m1EndIdx, false);
+                this.updateAtom(m1EndIdx, false);
                 org.code        = code;
                 org.re          = RE_OK;
                 const fCount    = org.fCount; 
@@ -347,7 +347,7 @@ class BioVM extends VM {
                         return;
                     }
                     code[bx] |= MASK8;
-                    this.changeAtom(bx, true);
+                    this.updateAtom(bx, true);
                     const idxEnd = this._molLastOffs(code, bx);
                     org.energy += ((idxEnd - idx + 1) * Config.energyMetabolismCoef);
                     org.re = RE_OK;
@@ -363,7 +363,7 @@ class BioVM extends VM {
                 const molSize = molEnd - mol + 1;
                 if (mol + cutPos > molEnd) {cutPos = mol + Math.floor(molSize / 2) - 1}
                 code[mol + cutPos] |= MASK8;
-                this.changeAtom(mol + cutPos, true);
+                this.updateAtom(mol + cutPos, true);
                 org.energy += (molSize * Config.energyMetabolismCoef);
                 org.re = RE_OK;
                 return;
