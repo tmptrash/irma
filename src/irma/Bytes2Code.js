@@ -105,7 +105,7 @@ class Bytes2Code {
 
         for (let b = 0; b < bytes.length; b++) {
             const isMol   = bytes[b] & CODE_8_BIT_MASK;
-            const molStr  = isMol ? '@mol ' : '     ';
+            const molStr  = isMol ? `${this.MOL} ` : '     ';
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
             const molIdx  = lines ? (isMol ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
@@ -239,8 +239,14 @@ class Bytes2Code {
 }
 
 /**
+ * Last atom in molecule patterns in a sctring code representation
+ * @consttant
+ */
+Bytes2Code.MOL = '@mol';
+/**
  * {Object} Map of all available commands. Is used during byte
  * code to human readable code convertion
+ * @constant
  */
 Bytes2Code.MAP = {
     //
@@ -314,6 +320,7 @@ Bytes2Code.MAP = {
 /**
  * {Object} Commands map. Inverted map, where keys are string 
  * commands and values are their numeric codes
+ * @constant
  */
 Bytes2Code.CMD_MAP = Bytes2Code._getCmdMap();
 
