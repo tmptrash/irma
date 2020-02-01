@@ -189,8 +189,8 @@ class BioVM extends VM {
                 const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(org, offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
-                if (org.code.length < 1) {this.delOrg(org)}
                 org.re        = RE_OK;
+                if (org.code.length < 1) {this.delOrg(org); return}
                 const fCount  = org.fCount;
                 org.compile(false);                     // Safe recompilation without loosing metadata
                 org.updateMetadata(idx0, idx1 + 1, -1, fCount);
