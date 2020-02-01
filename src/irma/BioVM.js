@@ -201,7 +201,7 @@ class BioVM extends VM {
                 ++org.line;
                 org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
-                if (offset < -1) {offset = LINE_OFFS + org.offset}
+                if (offset < 0) {offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
                 if (this.world.index(offset) > -1) {org.re = RE_ERR; return}
                 this.world.moveOrg(org, offset);
