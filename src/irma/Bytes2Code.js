@@ -310,7 +310,7 @@ Bytes2Code.MAP = {
     [RMOL  ]: ['rmol',   'mol=rmol():re'],
     [LMOL  ]: ['lmol',   'mol=lmol():re'],
     [CMOL  ]: ['cmol',   'cmol():re'],
-    [MCMP  ]: ['mcmp',    'mcmp():re'],
+    [MCMP  ]: ['mcmp',   'mcmp():re'],
     [W2MOL ]: ['w2mol',  'molWrite=mol'],
     [MOL2W ]: ['mol2w',  'mol=molWrite'],
     [FIND  ]: ['find',   'ax=find(ax=fromIdx,bx=toIdx):re'],
