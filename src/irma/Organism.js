@@ -115,6 +115,7 @@ class Organism {
         if (reset) {                                                    // This is first time we compile the code. We don't need to update 
             this.line       = 0;                                        // stack and current line. Just set default values.
             this.stackIndex = -1;
+            this.mPos       = 0;
         }
     }
 
