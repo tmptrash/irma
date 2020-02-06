@@ -325,8 +325,13 @@ class BioVM extends VM {
                 org.re          = RE_OK;
                 const fCount    = org.fCount; 
                 org.compile(false);
-                org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
-                org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount, -(m2EndIdx + 1 - m2Idx));
+                if (m2Idx > insIdx) {
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount, true);
+                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
+                } else {
+                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount, true);
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                }
                 return;
             }
 
@@ -394,8 +399,16 @@ class BioVM extends VM {
                 org.re         = RE_OK;
                 const fCount   = org.fCount; 
                 org.compile(false);
-                org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
-                org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount, -(m2EndIdx + 1 - m2Idx));
+                //
+                // further changed code should be called first
+                //
+                if (m2Idx > insIdx) {
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount, true);
+                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount);
+                } else {
+                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount, true);
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                }
                 return; 
             }
 
