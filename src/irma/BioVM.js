@@ -326,10 +326,10 @@ class BioVM extends VM {
                 const fCount    = org.fCount; 
                 org.compile(false);
                 if (m2Idx > insIdx) {
-                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount, true);
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
                     org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
                 } else {
-                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount, true);
+                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
                     org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
                 }
                 return;
@@ -403,10 +403,10 @@ class BioVM extends VM {
                 // further changed code should be called first
                 //
                 if (m2Idx > insIdx) {
-                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount, true);
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
                     org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount);
                 } else {
-                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount, true);
+                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount);
                     org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
                 }
                 return; 
