@@ -239,10 +239,17 @@ class Bytes2Code {
 }
 
 /**
- * Last atom in molecule patterns in a sctring code representation
+ * {String} Last atom in molecule patterns in a sctring code representation
  * @consttant
  */
 Bytes2Code.MOL = '@mol';
+
+/**
+ * {String} Line comment symbol
+ * @constant
+ */
+Bytes2Code.COMMENT = '#';
+
 /**
  * {Object} Map of all available commands. Is used during byte
  * code to human readable code convertion
