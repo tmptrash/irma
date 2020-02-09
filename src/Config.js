@@ -470,9 +470,9 @@ module.exports = {
             lmol
             mol
             save          @mol  # m2=foodEnd-1
-          #
-          # 3.6. Updates food segment end
-          #
+            #
+            # 3.6. Updates food segment end
+            #
             0
             smol
             lmol          @mol
@@ -541,7 +541,7 @@ module.exports = {
               0           @mol
               smol
               lmol
-            catab       @mol
+              catab       @mol
               #
               # Cut this molecule to outside world
               #
@@ -562,7 +562,7 @@ module.exports = {
         #
         # here is test food section. This part---------------------
         # should be removed after tests----------------------------
-        #               
+        #
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 

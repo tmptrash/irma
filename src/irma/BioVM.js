@@ -640,8 +640,8 @@ class BioVM extends VM {
         let orgs    = lucas.length;
         while (orgs-- > 0) {
             const luca   = lucas[orgs];
-            const code   = luca.code;
-            const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(code);
+            const sCode  = luca.code;
+            const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(sCode);
             const offset = luca.offs || rand(MAX_OFFS);
             const energy = luca.energy ? luca.energy : Config.energyOrg;
             if (world.index(offset) > -1) {orgs++; continue}
