@@ -97,7 +97,7 @@ module.exports = {
     /**
      * {String} Line comment symbol
      */
-    CODE_COMMENT_SYMBOL        : '#',
+    CODE_COMMENT_STR           : '#',
     /**
      * {String} Annotation for last atom in a molecule. Should be before comment
      */
@@ -572,7 +572,7 @@ module.exports = {
         /**
          * {Number} Start amount of evergy. If undefined, then will be generated automatically
          */
-        energy: 600 * 1000 // 600 sec * 1000 commands
+        energy: 6000 * 1000 + (6000 * 1000) / 3 // 6000 sec * 1000 commands + 30%
     }],
     codeLinesPerIteration      : 10,
     codeRepeatsPerRun          : 20,
