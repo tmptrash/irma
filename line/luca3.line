@@ -189,10 +189,10 @@ end               @mol
 #       food section and move them in a same way 
 #       like in replicator section
 # in  : nothing
-# info: m-1  - food section start
-#       m0   - i (current repl molecule)
-#       m1   - food section end
-#       m2.. - molecule
+# info: m0   - i (current repl molecule)
+#       m1   - food section start
+#       m2   - food section end
+#       m3.. - molecule
 #
 func                    # func2
   #
