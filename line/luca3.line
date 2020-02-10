@@ -290,6 +290,10 @@ func                    # func2
     right               # m2
     0             @mol
     call                # ax=molIdx
+    #
+    # If current molecule was not found, then we have to 
+    # create it using anabolism process
+    #
     ifn
       left        @mol  # m1
       left              # m0
