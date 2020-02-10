@@ -11,7 +11,7 @@ const Organism              = require('./Organism');
 const CODE_PAD_SIZE         = 30;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
-const COMMENT               = Config.CODE_COMMENT_SYMBOL;
+const COMMENT_STR           = Config.CODE_COMMENT_STR;
 const MOL_STR               = Config.CODE_MOL_STR;
 //
 // Basic commands
@@ -105,7 +105,7 @@ class Bytes2Code {
 
         for (let b = 0; b < bytes.length; b++) {
             const isMol   = bytes[b] & CODE_8_BIT_MASK;
-            const molStr  = isMol ? `${this.MOL} ` : '     ';
+            const molStr  = isMol ? `${MOL_STR} ` : '     ';
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
             const molIdx  = lines ? (isMol ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
             const line    = Bytes2Code.MAP[cmd];
@@ -160,7 +160,7 @@ class Bytes2Code {
      */
     static byte(line) {
         const isMol = line.indexOf(MOL_STR) !== -1;
-        const ln    = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
+        const ln    = line.split(isMol ? MOL_STR : COMMENT_STR)[0].trim();
         const byte  = this._isNumeric(ln) ? +ln : this.CMD_MAP[ln];
         if (byte === undefined) {return null}
         return isMol ? byte | CODE_8_BIT_MASK : byte;
@@ -172,10 +172,10 @@ class Bytes2Code {
      * @return {Boolean} valid status
      */
     static valid(line) {
-        const comment = line.indexOf(COMMENT);
+        const comment = line.indexOf(COMMENT_STR);
         const molIdx  = line.indexOf(MOL_STR);
         const isMol   = molIdx !== -1 && comment > -1 && comment > molIdx || comment === -1;
-        const ln      = line.split(isMol ? MOL_STR : COMMENT)[0].trim();
+        const ln      = line.split(isMol ? MOL_STR : COMMENT_STR)[0].trim();
         return ln === '' || (this._isNumeric(ln) ? true : !!this.CMD_MAP[ln]);
     }
 
@@ -238,11 +238,6 @@ class Bytes2Code {
     }
 }
 
-/**
- * Last atom in molecule patterns in a sctring code representation
- * @consttant
- */
-Bytes2Code.MOL = '@mol';
 /**
  * {Object} Map of all available commands. Is used during byte
  * code to human readable code convertion

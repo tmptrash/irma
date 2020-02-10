@@ -58,6 +58,7 @@ describe('src/irma/VM', () => {
     const ST         = Config.CODE_CMDS.STEP;
     const SE         = Config.CODE_CMDS.SEE;
     const SY         = Config.CODE_CMDS.SAY;
+    const RM         = Config.CODE_CMDS.RMOL;
 
     let   vm         = null;
 
@@ -283,6 +284,17 @@ describe('src/irma/VM', () => {
                 expect(vm.world.index(13)).not.toBe(-1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
                 expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,TG,2|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            });
+            it('Checks basic organism splitting right, if ax < mol', () => {
+                run([[RM|M,1,0|M,SP|M]], {molAmount: 0}, [12]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(12)).not.toBe(-1);
+                expect(vm.world.index(2)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([RM|M,SP|M]));
+                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,0|M]));
                 expect(vm.orgs.get(0).re).toEqual(RE_OK);
             });
             // it('Checks basic organism splitting fail, because bx < ax',  () => {

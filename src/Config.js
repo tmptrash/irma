@@ -97,7 +97,7 @@ module.exports = {
     /**
      * {String} Line comment symbol
      */
-    CODE_COMMENT_SYMBOL        : '#',
+    CODE_COMMENT_STR           : '#',
     /**
      * {String} Annotation for last atom in a molecule. Should be before comment
      */
@@ -470,9 +470,9 @@ module.exports = {
             lmol
             mol
             save          @mol  # m2=foodEnd-1
-          #
-          # 3.6. Updates food segment end
-          #
+            #
+            # 3.6. Updates food segment end
+            #
             0
             smol
             lmol          @mol
@@ -541,7 +541,7 @@ module.exports = {
               0           @mol
               smol
               lmol
-            catab       @mol
+              catab       @mol
               #
               # Cut this molecule to outside world
               #
@@ -562,7 +562,7 @@ module.exports = {
         #
         # here is test food section. This part---------------------
         # should be removed after tests----------------------------
-        #               
+        #
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
@@ -572,7 +572,7 @@ module.exports = {
         /**
          * {Number} Start amount of evergy. If undefined, then will be generated automatically
          */
-        energy: 600 * 1000 // 600 sec * 1000 commands
+        energy: 6000 * 1000 + (6000 * 1000) / 3 // 6000 sec * 1000 commands + 30%
     }],
     codeLinesPerIteration      : 10,
     codeRepeatsPerRun          : 20,

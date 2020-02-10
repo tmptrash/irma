@@ -326,8 +326,13 @@ class BioVM extends VM {
                 org.re          = RE_OK;
                 const fCount    = org.fCount; 
                 org.compile(false);
-                org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
-                org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount, -(m2EndIdx + 1 - m2Idx));
+                if (m2Idx > insIdx) {
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
+                } else {
+                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                }
                 return;
             }
 
@@ -395,8 +400,16 @@ class BioVM extends VM {
                 org.re         = RE_OK;
                 const fCount   = org.fCount; 
                 org.compile(false);
-                org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
-                org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount, -(m2EndIdx + 1 - m2Idx));
+                //
+                // further changed code should be called first
+                //
+                if (m2Idx > insIdx) {
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount);
+                } else {
+                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount);
+                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                }
                 return; 
             }
 
@@ -628,8 +641,8 @@ class BioVM extends VM {
         let orgs    = lucas.length;
         while (orgs-- > 0) {
             const luca   = lucas[orgs];
-            const code   = luca.code;
-            const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(code);
+            const sCode  = luca.code;
+            const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(sCode);
             const offset = luca.offs || rand(MAX_OFFS);
             const energy = luca.energy ? luca.energy : Config.energyOrg;
             if (world.index(offset) > -1) {orgs++; continue}
