@@ -112,9 +112,10 @@ func                    # func1
   save                  # m2=idx-1
   toggle
   reax            @mol
-  ifn
+  ifz
     left                # m3
-    left                # m2
+    left          @mol  # m2
+    dec
     ret
   end             @mol
   toggle                # ax=idx

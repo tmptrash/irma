@@ -259,9 +259,10 @@ module.exports = {
           save                  # m2=idx-1
           toggle
           reax            @mol
-          ifn
+          ifz
             left                # m3
-            left                # m2
+            left          @mol  # m2
+            dec
             ret
           end             @mol
           toggle                # ax=idx
@@ -336,10 +337,10 @@ module.exports = {
         #       food section and move them in a same way 
         #       like in replicator section
         # in  : nothing
-        # info: m-1  - food section start
-        #       m0   - i (current repl molecule)
-        #       m1   - food section end
-        #       m2.. - molecule
+        # info: m0   - i (current repl molecule)
+        #       m1   - food section start
+        #       m2   - food section end
+        #       m3.. - molecule
         #
         func                    # func2
           #
@@ -437,6 +438,10 @@ module.exports = {
             right               # m2
             0             @mol
             call                # ax=molIdx
+            #
+            # If current molecule was not found, then we have to 
+            # create it using anabolism process
+            #
             ifn
               left        @mol  # m1
               left              # m0
@@ -562,7 +567,7 @@ module.exports = {
         #
         # here is test food section. This part---------------------
         # should be removed after tests----------------------------
-        #
+        #        
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
