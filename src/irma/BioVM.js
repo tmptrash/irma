@@ -521,10 +521,10 @@ class BioVM extends VM {
                         if ((code[i + j] & MASK8R) !== (code[j + mol] & MASK8R)) {continue loop}
                     }
                     org.ax  = i;
-                    org.ret = RE_OK;
+                    org.re  = RE_OK;
                     return;
                 }
-                org.ret = RE_ERR;
+                org.re = RE_ERR;
                 return;
             }
 
