@@ -171,6 +171,7 @@ class BioVM extends VM {
             //
             case SPLIT: {
                 ++org.line;
+                // TODO: these checks may be removed if we don't change amount of atoms in a world
                 if (this.orgsMols.full || org.mem[org.mPos] === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
                 const offset  = org.offset + DIR[Math.abs(org.bx) % 8];
                 if (offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
