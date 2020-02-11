@@ -205,6 +205,9 @@ module.exports = {
           63
           lshift          @mol
           lshift                # 252 molecules/iterations
+          lshift
+          lshift          @mol
+          lshift
           loop
             right         @mol  # m1
             mcmp                # re=0|1
@@ -425,6 +428,9 @@ module.exports = {
           63
           lshift          @mol
           lshift
+          lshift
+          lshift          @mol
+          lshift
           loop
             #
             # 3.3. copy current replicator molecule to m3...mX,
@@ -452,13 +458,24 @@ module.exports = {
               call        @mol
               ifn
                 #
-                # We have to cut food section, because it's
-                # impossible to assemble a copy
+                # We have to check if food section is big to cut it
                 #
-                load            # ax=foodStart
-                smol      @mol
-                len
-                split
+                60
+                lshift    @mol
+                lshift
+                lshift
+                lshift    @mol  # ax=960
+                toggle          # bx=960
+                len             # ax=len      bx=960
+                ifg       @mol
+                  # We have to cut food section, because it's
+                  # impossible to assemble a copy
+                  #
+                  load          # ax=foodStart
+                  smol
+                  len     @mol
+                  split
+                end
               end         @mol
               ret
             end
@@ -567,7 +584,7 @@ module.exports = {
         #
         # here is test food section. This part---------------------
         # should be removed after tests----------------------------
-        #        
+        #
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
