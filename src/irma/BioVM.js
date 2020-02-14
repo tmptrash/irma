@@ -348,10 +348,7 @@ class BioVM extends VM {
                     if (bx < 0) {bx = 0}
                     if (bx >= code.length) {bx = code.length - 1}
                     for (let i = bx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
-                    if (code[bx] & MASK8) {
-                        org.re = RE_ERR;
-                        return;
-                    }
+                    if (code[bx] & MASK8) {org.re = RE_ERR; return}
                     code[bx] |= MASK8;
                     this.updateAtom(bx, true);
                     const idxEnd = this._molLastOffs(code, bx);
