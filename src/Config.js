@@ -283,56 +283,50 @@ module.exports = {
           mol
           toggle
           sub             @mol
-          inc
           toggle                # bx=molLen
           #
           # Separate next and current molecules
           #
-          load            @mol  # ax=molIdx-1
-          add                   # ax=molEndIdx
+          load                  # ax=molIdx-1
+          add             @mol  # ax=molEndIdx
           toggle                # bx=molEndIdx+1
-          0               @mol
-          dec                   # ax-1         bx=molEndIdx+1
+          0
+          dec             @mol  # ax-1         bx=molEndIdx+1
           catab
           #
           # Joins near molecules if needed until we 
           # obtain molecule, which we search
           #
-          load            @mol  # ax=molIdx
-          toggle
-          dec
-          toggle          @mol
-          savea                 # m4=molIdx    m5=molEndIdx
+          load                  # ax=molIdx
+          savea           @mol  # m4=molIdx    m5=molEndIdx
           smol
           #
           # Updates write head position
           #
-          0               @mol
-          smol
+          0
+          smol            @mol
           lmol
-          w2mol           @mol
+          w2mol
           #
           # Sets mol head to current molecule
           #
-          load
+          load            @mol
           smol
-          right           @mol
+          right
           #
           # Join molecules
           #
-          10
+          10              @mol
           loop
-            mol           @mol
-            load                # ax=molEnd1   bx=molEnd2
+            mol
+            load          @mol  # ax=molEnd1   bx=molEnd2
             ife
-              break       @mol
-            end
+              break
+            end           @mol
             0
-            dec           @mol
-            anab
+            dec
+            anab          @mol
           end
-          left
-          left
           left
         end               @mol
         #
@@ -476,8 +470,8 @@ module.exports = {
                   len     @mol
                   split
                 end
-              end         @mol
-              ret
+                ret       @mol
+              end
             end
             #
             # 3.4. Move found molecule to write head
