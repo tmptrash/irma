@@ -301,6 +301,7 @@ class BioVM extends VM {
                     const m1EndIdx  = this._molLastOffs(code, m1Idx);
                     const m2Idx     = m1EndIdx + 1;
                     const m2EndIdx  = this._molLastOffs(code, m2Idx);
+                    if ((code[m1EndIdx] & MASK8) === 0) {org.re = RE_OK; return}
                     org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                     code[m1EndIdx] &= MASK8R;
                     this.updateAtom(m1EndIdx, false);
@@ -319,6 +320,7 @@ class BioVM extends VM {
                 code            = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
                 const insIdx    = m1EndIdx + 1;
                 code            = code.splice(insIdx, 0, cutCode);
+                if ((code[m1EndIdx] & MASK8) === 0) {org.re = RE_OK; return}
                 org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                 code[m1EndIdx] &= MASK8R;
                 this.updateAtom(m1EndIdx, false);
@@ -348,7 +350,7 @@ class BioVM extends VM {
                     if (bx < 0) {bx = 0}
                     if (bx >= code.length) {bx = code.length - 1}
                     for (let i = bx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
-                    if (code[bx] & MASK8) {org.re = RE_ERR; return}
+                    if (code[bx] & MASK8) {org.re = RE_OK; return}
                     code[bx] |= MASK8;
                     this.updateAtom(bx, true);
                     const idxEnd = this._molLastOffs(code, bx);
@@ -357,7 +359,7 @@ class BioVM extends VM {
                     return;
                 }
                 //
-                // Cuts molecule by mol gead and ax
+                // Cuts molecule by mol head and ax
                 //
                 const mol     = org.mol;
                 const molEnd  = this._molLastOffs(code, mol);
@@ -365,6 +367,7 @@ class BioVM extends VM {
                 let   cutPos  = org.ax;
                 const molSize = molEnd - mol + 1;
                 if (mol + cutPos > molEnd) {cutPos = mol + Math.floor(molSize / 2) - 1}
+                if (code[mol + cutPos] & MASK8) {org.re = RE_OK; return}
                 code[mol + cutPos] |= MASK8;
                 this.updateAtom(mol + cutPos, true);
                 org.energy += (molSize * Config.energyMetabolismCoef);
