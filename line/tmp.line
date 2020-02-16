@@ -1,0 +1,234 @@
+nop      
+nop      
+nop @mol 
+func      
+  63      
+  lshift @mol 
+  lshift      
+  lshift      
+  lshift @mol 
+  lshift      
+  loop      
+    right @mol 
+    mcmp      
+    reax      
+    ifp @mol 
+      mol      
+      ret      
+    end @mol 
+    rmol      
+    reax      
+    ifn @mol 
+      0      
+      dec      
+      ret @mol 
+    end      
+    mol      
+    inc @mol 
+    toggle      
+    left      
+    load @mol 
+    ifl      
+      0      
+      dec @mol 
+      ret      
+    end      
+  end @mol 
+end      
+func      
+  load @mol 
+  right      
+  toggle      
+  load @mol 
+  toggle      
+  find      
+  right @mol 
+  save      
+  toggle      
+  reax @mol 
+  ifz      
+    left      
+    left @mol 
+    dec      
+    ret      
+  end @mol 
+  toggle      
+  dec      
+  toggle @mol 
+  0      
+  dec      
+  catab @mol 
+  mol      
+  toggle      
+  sub @mol 
+  toggle      
+  load      
+  add @mol 
+  toggle      
+  0      
+  dec @mol 
+  catab      
+  load      
+  savea @mol 
+  smol      
+  0      
+  smol @mol 
+  lmol      
+  w2mol      
+  load @mol 
+  smol      
+  right      
+  10 @mol 
+  loop      
+    mol      
+    load @mol 
+    ife      
+      break      
+    end @mol 
+    0      
+    dec      
+    anab @mol 
+  end      
+  left      
+end @mol 
+func      
+  0      
+  smol @mol 
+  lmol      
+  w2mol      
+  mol @mol 
+  save      
+  right      
+  0 @mol 
+  smol      
+  cmol      
+  rmol @mol 
+  left      
+  call      
+  ifn @mol 
+    ret      
+  end      
+  toggle @mol 
+  left      
+  0      
+  smol @mol 
+  save      
+  toggle      
+  smol @mol 
+  rmol      
+  reax      
+  ifn @mol 
+    ret      
+  end      
+  mol @mol 
+  right      
+  save      
+  mol2w @mol 
+  mol      
+  right      
+  save @mol 
+  left      
+  left      
+  load @mol 
+  smol      
+  right      
+  right @mol 
+  right      
+  63      
+  lshift @mol 
+  lshift      
+  lshift      
+  lshift @mol 
+  lshift      
+  loop      
+    cmol @mol 
+    left      
+    left      
+    load @mol 
+    smol      
+    right      
+    0 @mol 
+    call      
+    ifn      
+      left @mol 
+      left      
+      load      
+      smol @mol 
+      right      
+      1      
+      call @mol 
+      ifn      
+        60      
+        lshift @mol 
+        lshift      
+        lshift      
+        lshift @mol 
+        toggle      
+        len      
+        ifg @mol 
+          load      
+          smol      
+          len @mol 
+          split      
+        end      
+        ret @mol 
+      end      
+    end      
+    mmol @mol 
+    left      
+    load      
+    smol @mol 
+    lmol      
+    mol      
+    save @mol 
+    0      
+    smol      
+    lmol @mol 
+    w2mol      
+    left      
+    left @mol 
+    load      
+    smol      
+    rmol @mol 
+    mol      
+    save      
+    toggle @mol 
+    right      
+    load      
+    ife @mol 
+      break      
+    end      
+    right @mol 
+    right      
+  end      
+  17 @mol 
+  save      
+  len      
+  split @mol 
+end      
+2      
+call @mol 
+5      
+toggle      
+30 @mol 
+loop      
+  8      
+  rand @mol 
+  step      
+  join      
+  ifl @mol 
+    reax      
+    ifp      
+      0 @mol 
+      smol      
+      lmol      
+      catab @mol 
+      len      
+      split      
+    end @mol 
+  end      
+end      
+ret @mol 
+nop      
+nop      
+nop @mol 

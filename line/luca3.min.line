@@ -5,6 +5,9 @@ func                    # func0
   63
   lshift          @mol
   lshift                # 252 molecules/iterations
+  lshift
+  lshift          @mol
+  lshift
   loop
     right         @mol  # m1
     mcmp                # re=0|1
@@ -14,6 +17,12 @@ func                    # func0
       ret
     end           @mol
     rmol
+    reax
+    ifn           @mol
+      0
+      dec
+      ret         @mol
+    end
     mol
     inc           @mol  # ax=start+1
     toggle              # ax=end       bx=start+1
@@ -28,16 +37,19 @@ func                    # func0
 end
 func                    # func1
   load            @mol  # ax=start
-  right                 # m1
+  right                 # m3
   toggle
   load            @mol  # ax=end       bx=start
   toggle                # ax=start     bx=end
   find
-  right           @mol  # m2
+  right           @mol  # m4
   save                  # m2=idx-1
   toggle
   reax            @mol
-  ifn
+  ifz
+    left                # m3
+    left          @mol  # m2
+    dec
     ret
   end             @mol
   toggle                # ax=idx
@@ -49,38 +61,35 @@ func                    # func1
   mol
   toggle
   sub             @mol
-  inc
   toggle                # bx=molLen
-  load            @mol  # ax=molIdx-1
-  add                   # ax=molEndIdx
+  load                  # ax=molIdx-1
+  add             @mol  # ax=molEndIdx
   toggle                # bx=molEndIdx+1
-  0               @mol
-  dec                   # ax-1         bx=molEndIdx+1
+  0
+  dec             @mol  # ax-1         bx=molEndIdx+1
   catab
-  load            @mol  # ax=molIdx
-  toggle
-  dec
-  toggle          @mol
-  savea                 # m2=molIdx    m3=molEndIdx
+  load                  # ax=molIdx
+  savea           @mol  # m4=molIdx    m5=molEndIdx
   smol
-  0               @mol
-  smol
+  0
+  smol            @mol
   lmol
-  w2mol           @mol
-  load
+  w2mol
+  load            @mol
   smol
-  right           @mol
-  10
+  right
+  10              @mol
   loop
-    mol           @mol
-    load                # ax=molEnd1   bx=molEnd2
+    mol
+    load          @mol  # ax=molEnd1   bx=molEnd2
     ife
-      break       @mol
-    end
+      break
+    end           @mol
     0
-    dec           @mol
-    anab
+    dec
+    anab          @mol
   end
+  left
 end               @mol
 func                    # func2
   0
@@ -128,6 +137,9 @@ func                    # func2
   63
   lshift          @mol
   lshift
+  lshift
+  lshift          @mol
+  lshift
   loop
     cmol          @mol  # m3[nop,nop,nop]
     left                # m2
@@ -145,7 +157,22 @@ func                    # func2
       right             # m1
       1
       call        @mol
-      ret
+      ifn
+        60
+        lshift    @mol
+        lshift
+        lshift
+        lshift    @mol  # ax=960
+        toggle          # bx=960
+        len             # ax=len      bx=960
+        ifg       @mol
+          load          # ax=foodStart
+          smol
+          len     @mol
+          split
+        end
+        ret       @mol
+      end
     end
     mmol          @mol
     left                # m2=foodEnd
@@ -178,30 +205,30 @@ func                    # func2
   save
   len
   split           @mol
-end
+end 
 2
 call              @mol
 5
 toggle                  # bx=5
-30
+30                @mol
 loop
   8
   rand            @mol
   step
   join
-  ifl                   # ax=rnd       bx=5
+  ifl             @mol  # ax=rnd       bx=5
     reax
     ifp
-      0
+      0           @mol
       smol
       lmol
-	  catab
-    end
+      catab       @mol
+      len
+      split
+    end           @mol
   end
-end               @mol
-ret
-nop
-nop               @mol
+end
+ret               @mol
 nop
 nop
 nop               @mol

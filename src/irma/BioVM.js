@@ -31,6 +31,7 @@ const MAX_OFFS              = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent
 const ORG_MIN_COLOR         = Config.ORG_MIN_COLOR;
 const MASK8                 = Config.CODE_8_BIT_MASK;
 const MASK8R                = Config.CODE_8_BIT_RESET_MASK;
+const ORG_MAX_MEM_SIZE      = Config.ORG_MAX_MEM_SIZE;
 //
 // Biological commands
 //
@@ -246,11 +247,10 @@ class BioVM extends VM {
                 if (bx >= nearCode.length) {bx = nearCode.length - 1}
                 for (let i = bx - 1;; i--) {if ((nearCode[i] & MASK8) > 0 || i < 0) {bx = i + 1; break}} // find first atom of molecule
                 const mem  = org.mem;
-                const mLen = mem.length - 1;
                 for (let i = bx, m = org.mPos;; i++, m++) {
+                    if (m >= ORG_MAX_MEM_SIZE) {m = 0}
                     mem[m] = nearCode[i];
                     if ((nearCode[i] & MASK8) > 0) {break}
-                    if (m > mLen) {m = -1}
                 }
                 org.re = RE_OK;
                 return;
@@ -473,11 +473,10 @@ class BioVM extends VM {
                 const code = org.code;
                 const len  = code.length;
                 const mem  = org.mem;
-                const mLen = mem.length - 1;
                 for (let i = org.mol, m = org.mPos; i < len; i++, m++) {
+                    if (m >= ORG_MAX_MEM_SIZE) {m = 0}
                     mem[m] = code[i];
                     if ((code[i] & MASK8) > 0) {break}
-                    if (m > mLen) {m = -1}
                 }
                 return;
             }
@@ -490,6 +489,7 @@ class BioVM extends VM {
                 const idx1 = this._molLastOffs(code, idx0);
 
                 for (let i = idx0, m = org.mPos; i <= idx1; i++, m++) {
+                    if (m >= ORG_MAX_MEM_SIZE) {m = 0}
                     if (mem[m] !== code[i]) {org.re = RE_ERR; return}
                 }
                 org.re = RE_OK;

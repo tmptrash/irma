@@ -592,7 +592,7 @@ module.exports = {
     }],
     codeLinesPerIteration      : 10,
     codeRepeatsPerRun          : 20,
-    codeMutateEveryClone       : 10,
+    codeMutateEveryClone       : 0,
     codeMutateMutations        : false,
 
     /**
@@ -650,7 +650,7 @@ module.exports = {
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 1200001,
+    orgMutationPeriod          : 0, // 1200001,
     orgMaxCodeSize             : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
