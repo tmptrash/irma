@@ -459,10 +459,10 @@ module.exports = {
                 lshift
                 lshift    @mol
                 lshift
-                lshift          # ax=960
+                lshift          # ax=1920
                 lshift
-                toggle    @mol  # bx=960
-                len             # ax=len      bx=960
+                toggle    @mol  # bx=1920
+                len             # ax=len      bx=1920
                 ifg
                   # We have to cut food section, because it's
                   # impossible to assemble a copy
@@ -472,60 +472,61 @@ module.exports = {
                   len
                   split
                 end
-                ret       @mol
+                left      @mol
+                ret
               end
             end
             #
             # 3.4. Move found molecule to write head
             #
-            mmol
+            mmol          @mol
             #
             # 3.5. Updates limit value (memory)
             #
-            left          @mol  # m2=foodEnd
+            left                # m2=foodEnd
             load
             smol
-            lmol
-            mol           @mol
+            lmol          @mol
+            mol
             save                # m2=foodEnd-1
             #
             # 3.6. Updates food segment end
             #
             0
-            smol
-            lmol          @mol
+            smol          @mol
+            lmol
             w2mol
             #
             # 3.6. Updates i
             #
             left                # m1
-            left                # m0
-            load          @mol
+            left          @mol  # m0
+            load
             smol
             rmol
-            mol
-            save          @mol  # m0=i++
+            mol           @mol
+            save                # m0=i++
             #
             # 3.7. checks if copy has done
             #
             toggle              # bx=i
             right               # m1=foodStart
-            load                # ax=foodStart bx=i
-            ife           @mol
+            load          @mol  # ax=foodStart bx=i
+            ife
               break
             end
             #
             # 3.8. Sets mem back to m3
             #
-            right               # m2
-            right         @mol  # m3
+            right         @mol  # m2
+            right               # m3
           end
           #
           # 6. cut the tail with copied organism
           #
           17
-          save
-          len             @mol
+          save            @mol
+          len
           split
         end
         #
@@ -533,48 +534,47 @@ module.exports = {
         # inside like anabolism, catabolism molecules 
         # search in food section and so on...
         # 
-        2
-        call              @mol
+        2                 @mol
+        call
         #
         # Random walk and eating
         #
         5
         toggle                  # bx=5
-        30
-        loop              @mol
+        30                @mol
+        loop
           8
           rand
-          step
-          join            @mol
+          step            @mol
+          join
           #
           # Half of molecules should be used for getting energy
           # or catabolism
           #
           ifl                   # ax=rnd       bx=5
             reax
-            ifp
+            ifp           @mol
               #
               # Obtain energy using catabolism
               #
-              0           @mol
+              0
               smol
               lmol
-              catab
+              catab       @mol
               #
               # Cut this molecule to outside world
               #
-              len         @mol
+              len
               split
             end
-          end
-        end               @mol
+          end             @mol
+        end
         #
         # This command should be last before final 
         # molecule-separator to do the infinite loop
         # of replicator code
         #
         ret
-        nop
         nop
         nop               @mol
         nop
