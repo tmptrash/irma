@@ -187,6 +187,7 @@ module.exports = {
         #
         nop
         nop
+        nop
         nop               @mol
         #
         # desc: Search for molecule in a code and returns it's index or -1.
@@ -203,13 +204,13 @@ module.exports = {
           # then amount of molecules insize the organism
           #
           63
-          lshift          @mol
-          lshift                # 252 molecules/iterations
           lshift
-          lshift          @mol
+          lshift          @mol  # 252 molecules/iterations
           lshift
-          loop
-            right         @mol  # m1
+          lshift
+          lshift
+          loop            @mol
+            right               # m1
             mcmp                # re=0|1
             reax                # ax=0|1
             #
@@ -218,13 +219,13 @@ module.exports = {
             ifp           @mol
               mol               # ax=mol
               ret
-            end           @mol
-            rmol
+            end
+            rmol          @mol
             reax
-            ifn           @mol
+            ifn
               0
-              dec
-              ret         @mol
+              dec         @mol
+              ret
             end
             #
             # Checks search limit
@@ -233,13 +234,13 @@ module.exports = {
             inc           @mol  # ax=start+1
             toggle              # ax=end       bx=start+1
             left                # m0
-            load          @mol  # ax=limit     bx=start+1
-            ifl
+            load                # ax=limit     bx=start+1
+            ifl           @mol
               0
-              dec         @mol
+              dec
               ret
-            end
-          end             @mol
+            end           @mol
+          end
         end
         #
         # desc: Try to use catabolism and anabolism to assemble
@@ -255,28 +256,28 @@ module.exports = {
           load            @mol  # ax=start
           right                 # m3
           toggle
-          load            @mol  # ax=end       bx=start
-          toggle                # ax=start     bx=end
+          load                  # ax=end       bx=start
+          toggle          @mol  # ax=start     bx=end
           find
-          right           @mol  # m4
+          right                 # m4
           save                  # m2=idx-1
-          toggle
-          reax            @mol
+          toggle          @mol
+          reax
           ifz
             left                # m3
             left          @mol  # m2
             dec
             ret
-          end             @mol
-          toggle                # ax=idx
+          end
+          toggle          @mol  # ax=idx
           #
           # Separate previous molecule and new one
           #
           dec
-          toggle          @mol  # bx=idx-1
+          toggle                # bx=idx-1
           0
-          dec                   # ax=-1        bx=idx-1
-          catab           @mol
+          dec             @mol  # ax=-1        bx=idx-1
+          catab
           #
           # Gets molecule len
           #
@@ -288,17 +289,17 @@ module.exports = {
           # Separate next and current molecules
           #
           load                  # ax=molIdx-1
-          add             @mol  # ax=molEndIdx
-          toggle                # bx=molEndIdx+1
+          add                   # ax=molEndIdx
+          toggle          @mol  # bx=molEndIdx+1
           0
-          dec             @mol  # ax-1         bx=molEndIdx+1
+          dec                   # ax-1         bx=molEndIdx+1
           catab
           #
           # Joins near molecules if needed until we 
           # obtain molecule, which we search
           #
-          load                  # ax=molIdx
-          savea           @mol  # m4=molIdx    m5=molEndIdx
+          load            @mol  # ax=molIdx
+          savea                 # m4=molIdx    m5=molEndIdx
           smol
           #
           # Updates write head position
@@ -310,25 +311,25 @@ module.exports = {
           #
           # Sets mol head to current molecule
           #
-          load            @mol
-          smol
+          load
+          smol            @mol
           right
           #
           # Join molecules
           #
-          10              @mol
+          10
           loop
-            mol
-            load          @mol  # ax=molEnd1   bx=molEnd2
+            mol           @mol
+            load                # ax=molEnd1   bx=molEnd2
             ife
               break
             end           @mol
             0
             dec
-            anab          @mol
-          end
+            anab
+          end             @mol
           left
-        end               @mol
+        end
         #
         # desc: Try to make clone getting molecules form
         #       food section and move them in a same way 
@@ -345,8 +346,8 @@ module.exports = {
           #
           # 1.1. Sets write head to the last molecule.
           #
-          0
-          smol            @mol
+          0               @mol
+          smol
           lmol
           w2mol
           #
@@ -360,13 +361,13 @@ module.exports = {
           # 1.3. Sets 0 molecule as separator
           #
           right                 # m1
-          0               @mol
-          smol
+          0
+          smol            @mol
           cmol                  # m1-m3[nop,nop,nop]
-          rmol            @mol
+          rmol
           left                  # m0
-          call                  # ax=sep1Idx
-          ifn             @mol
+          call            @mol  # ax=sep1Idx
+          ifn
             ret
           end
           toggle          @mol  # bx=sep1Idx
@@ -379,16 +380,16 @@ module.exports = {
           #
           left                  # m0
           0
-          smol            @mol
-          save                  # m0=i
+          smol
+          save            @mol  # m0=i
           #
           # 2.1. m1 - food segment start
           #
           toggle                # ax=sep1Idx
-          smol            @mol
+          smol
           rmol
-          reax
-          ifn             @mol
+          reax            @mol
+          ifn
             ret
           end
           mol             @mol
@@ -397,10 +398,10 @@ module.exports = {
           #
           # 2.2. m2 - food segment end
           #
-          mol2w           @mol
-          mol
+          mol2w
+          mol             @mol
           right                 # m2
-          save            @mol  # m2=foodEnd
+          save                  # m2=foodEnd
           #
           # 3. Here starts main loop, where organism
           # walk through it's replicator section and
@@ -410,8 +411,8 @@ module.exports = {
           # 3.1. Sets mol head to first repl molecule
           #
           left                  # m1
-          left                  # m0
-          load            @mol
+          left            @mol  # m0
+          load
           smol
           right
           right           @mol
@@ -420,33 +421,33 @@ module.exports = {
           # 3.2 Sets big number for loop
           #
           63
-          lshift          @mol
-          lshift
           lshift
           lshift          @mol
           lshift
-          loop
+          lshift
+          lshift
+          loop            @mol
             #
             # 3.3. copy current replicator molecule to m3...mX,
             # sets search limit and call search function
             #
-            cmol          @mol  # m3[nop,nop,nop]
+            cmol                # m3[nop,nop,nop]
             left                # m2
             left                # m1=foodStart
             load          @mol
             smol
             right               # m2
-            0             @mol
-            call                # ax=molIdx
+            0
+            call          @mol  # ax=molIdx
             #
             # If current molecule was not found, then we have to 
             # create it using anabolism process
             #
             ifn
-              left        @mol  # m1
+              left              # m1
               left              # m0
-              load
-              smol        @mol  # mol=molIdx
+              load        @mol
+              smol              # mol=molIdx
               right             # m1
               1
               call        @mol
@@ -455,19 +456,20 @@ module.exports = {
                 # We have to check if food section is big to cut it
                 #
                 60
+                lshift
                 lshift    @mol
                 lshift
+                lshift          # ax=960
                 lshift
-                lshift    @mol  # ax=960
-                toggle          # bx=960
+                toggle    @mol  # bx=960
                 len             # ax=len      bx=960
-                ifg       @mol
+                ifg
                   # We have to cut food section, because it's
                   # impossible to assemble a copy
                   #
                   load          # ax=foodStart
-                  smol
-                  len     @mol
+                  smol    @mol
+                  len
                   split
                 end
                 ret       @mol
@@ -476,16 +478,16 @@ module.exports = {
             #
             # 3.4. Move found molecule to write head
             #
-            mmol          @mol
+            mmol
             #
             # 3.5. Updates limit value (memory)
             #
-            left                # m2=foodEnd
+            left          @mol  # m2=foodEnd
             load
-            smol          @mol
+            smol
             lmol
-            mol
-            save          @mol  # m2=foodEnd-1
+            mol           @mol
+            save                # m2=foodEnd-1
             #
             # 3.6. Updates food segment end
             #
@@ -497,16 +499,16 @@ module.exports = {
             # 3.6. Updates i
             #
             left                # m1
-            left          @mol  # m0
-            load
+            left                # m0
+            load          @mol
             smol
-            rmol          @mol
+            rmol
             mol
-            save                # m0=i++
+            save          @mol  # m0=i++
             #
             # 3.7. checks if copy has done
             #
-            toggle        @mol  # bx=i
+            toggle              # bx=i
             right               # m1=foodStart
             load                # ax=foodStart bx=i
             ife           @mol
@@ -515,16 +517,16 @@ module.exports = {
             #
             # 3.8. Sets mem back to m3
             #
-            right         @mol  # m2
-            right               # m3
+            right               # m2
+            right         @mol  # m3
           end
           #
           # 6. cut the tail with copied organism
           #
-          17              @mol
+          17
           save
-          len
-          split           @mol
+          len             @mol
+          split
         end
         #
         # Try to make clone with all complicated stuff
@@ -538,17 +540,17 @@ module.exports = {
         #
         5
         toggle                  # bx=5
-        30                @mol
-        loop
+        30
+        loop              @mol
           8
-          rand            @mol
+          rand
           step
-          join
+          join            @mol
           #
           # Half of molecules should be used for getting energy
           # or catabolism
           #
-          ifl             @mol  # ax=rnd       bx=5
+          ifl                   # ax=rnd       bx=5
             reax
             ifp
               #
@@ -557,21 +559,25 @@ module.exports = {
               0           @mol
               smol
               lmol
-              catab       @mol
+              catab
               #
               # Cut this molecule to outside world
               #
-              len
+              len         @mol
               split
-            end           @mol
+            end
           end
-        end
+        end               @mol
         #
         # This command should be last before final 
         # molecule-separator to do the infinite loop
         # of replicator code
         #
-        ret               @mol
+        ret
+        nop
+        nop
+        nop               @mol
+        nop
         nop
         nop
         nop               @mol
@@ -651,7 +657,7 @@ module.exports = {
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 0, // 1200001,
-    orgMaxCodeSize             : 1024,
+    orgMaxCodeSize             : 1024 * 2,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
      * Is used for new created organisms. During cloning, all
@@ -664,7 +670,7 @@ module.exports = {
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
     molAmount                  : 120000,
-    molCodeSize                : 3,
+    molCodeSize                : 4,
     molRandomAtomPercent       : .3,
     molColor                   : 0xff0000,
     /**

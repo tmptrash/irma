@@ -602,7 +602,7 @@ class BioVM extends VM {
         while (packet) {
             const offset = rand(MAX_OFFS);
             if (world.index(offset) > -1) {continue}
-            packet.hasOwnProperty('energy') ? this.addOrg(offset, packet.code, packet.energy) : this.addMol(offset, packet.code);
+            packet.hasOwnProperty('energy') ? this.addOrg(null, offset, packet.code, packet.energy) : this.addMol(offset, packet.code);
             packet = packet.packet;
         }
     }
