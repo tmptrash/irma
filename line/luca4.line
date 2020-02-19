@@ -1,0 +1,94 @@
+#
+# m0    - i
+# m1..x - molecule
+#
+0
+save              # m0=i
+63           @mol
+lshift            # ax=126
+lshift            # ax=252
+lshift       @mol # ax=504
+lshift            # ax=1008
+lshift            # ax=2016
+lshift       @mol # ax=4032
+lshift            # ax=8064
+loop
+  #
+  # Copy current molecule into m1..x
+  #
+  load       @mol # ax=i
+  smol
+  right           # m1
+  cmol       @mol # m1..x - i molecule
+  left            # m0
+  #
+  # Step only 4 directions, eat and checks if needed molecule
+  #
+  4
+  rand       @mol
+  step
+  toggle          # bx=dir
+  eq         @mol
+  #
+  # We have to free space behind for wastes
+  #
+  reax
+  ifz
+    ret      @mol
+  end
+  eq
+  join       @mol
+  reax
+  ifp             # eated something
+    #
+    # Sets mol head to the end
+    #
+    len      @mol
+    smol
+    #
+    # Compares current molecule and eated
+    #
+    right
+    mcmp     @mol
+    left
+    reax
+    ifz      @mol # unneeded molecule. cut it
+      4
+      toggle
+      add    @mol
+      toggle      # bx=back dir
+      len
+      split  @mol
+      0
+    end
+    ifp      @mol # needed molecule
+      load
+      smol
+      rmol   @mol
+      save
+      #
+      # Checks if this is the end
+      #
+      17
+      toggle @mol # bx=17
+      line        # ax=line
+      read        # ax=[line]
+      ife    @mol
+        17
+        save
+        len  @mol
+        split
+        ret
+      end    @mol
+    end
+  end
+end          @mol
+nop
+nop
+nop          @mol
+17 
+nop
+nop          @mol
+#
+# Food section
+#
