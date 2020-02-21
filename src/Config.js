@@ -149,99 +149,105 @@ module.exports = {
         # m0    - i
         # m1..x - molecule
         #
-        0
-        save               # m0=i
-        63            @mol
-        lshift             # ax=126
-        lshift             # ax=252
-        lshift        @mol # ax=504
-        lshift             # ax=1008
-        lshift             # ax=2016
-        lshift        @mol # ax=4032
-        lshift             # ax=8064
-        loop
+        63
+        lshift               # ax=126
+        lshift         @mol  # ax=252
+        lshift               # ax=504
+        lshift               # ax=1008
+        lshift         @mol  # ax=2016
+        lshift               # ax=4032
+        lshift               # ax=8064
+        loop            @mol
           #
           # Copy current molecule into m1..x
           #
-          load        @mol # ax=i
+          load               # ax=i
           smol
-          right            # m1
-          cmol        @mol # m1..x - i molecule
-          left             # m0
+          right         @mol # m1
+          cmol               # m1..x - i molecule
+          left               # m0
           #
           # Step only 4 directions, eat and checks if needed molecule
           #
-          4
-          rand        @mol
+          4             @mol
+          rand
           step
-          toggle           # bx=dir
-          eq          @mol
+          toggle        @mol # bx=dir
+          eq
           #
           # We have to free space behind for wastes
           #
           reax
-          ifz
-            break     @mol
-          end
-          eq
-          join        @mol
-          reax
-          ifp              # eated something
-            #
-            # Sets mol head to the end
-            #
-            len       @mol
-            smol
-            #
-            # Compares current molecule and eated
-            #
-            right
-            mcmp      @mol
-            left
-            reax
-            ifz       @mol # unneeded molecule. cut it
-              4
-              toggle
-              add     @mol
-              toggle       # bx=back dir
+          ifp           @mol
+            eq
+            join
+            reax        @mol
+            ifp              # eated something
+              #
+              # Sets mol head to the end
+              #
               len
-              split   @mol
-              0
-            end
-            ifp       @mol # needed molecule
-              load
-              smol
-              rmol    @mol
-              mol
-              save
+              smol      @mol
               #
-              # Checks if this is the end
+              # Compares current molecule and eated
               #
-              33      @mol
-              lshift       # ax=66 - nop
-              toggle       # bx=66
-              right   @mol
-              load
-              left
-              ife     @mol
-                17
+              right
+              mcmp
+              left      @mol
+              reax
+              ifz            # unneeded molecule. cut it
+                4       @mol
+                toggle
+                add
+                toggle  @mol # bx=back dir
+                len
+                split
+                0       @mol
+              end
+              ifp            # needed molecule
+                #
+                # Increase i, in m0
+                #
+                load    @mol
+                smol
+                rmol
+                mol     @mol
                 save
-                break @mol
+                #
+                # Checks if this is the end (last replicator molecule)
+                #
+                33
+                lshift  @mol # ax=66 - nop
+                toggle       # bx=66
+                right
+                load    @mol
+                left
+                ife
+                  17    @mol
+                  save
+                  break
+                end     @mol
               end
             end
-          end         @mol
+          end           @mol
         end
+        #
+        # Reset i counter in m0
+        #
+        nop
+        0               @mol
+        save
         #
         # Cut wastes
         #
         line
-        smol          @mol
+        smol            @mol
         rmol
         rmol
-        rmol          @mol
-        nop                # separator id
+        rmol            @mol
+        nop                  # separator id
         len
-        split         @mol
+        split           @mol
         #
         # Food section
         #
@@ -329,7 +335,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 100000,
+    molAmount                  : 30000,
     molCodeSize                : 3,
     molRandomAtomPercent       : .3,
     molColor                   : 0xff0000,
