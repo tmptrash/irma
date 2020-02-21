@@ -62,13 +62,16 @@ loop
       0
     end
     ifp       @mol # needed molecule
+      #
+      # Increase i, in m0
+      #
       load
       smol
       rmol    @mol
       mol
       save
       #
-      # Checks if this is the end
+      # Checks if this is the end (last replicator molecule)
       #
       33      @mol
       lshift       # ax=66 - nop
