@@ -438,6 +438,7 @@ class BioVM extends VM {
             // TODO: what about case with zero length code?
             case RMOL: {
                 ++org.line;
+                if (org.code.length < 2) {org.re = RE_OK; return}
                 if ((org.mol = this._molLastOffs(org.code, org.mol) + 1) >= org.code.length) {
                     org.mol = 0;
                     org.re = RE_SPECIAL;
@@ -451,6 +452,7 @@ class BioVM extends VM {
             case LMOL: {
                 ++org.line;
                 const code = org.code;
+                if (code.length < 2) {org.re = RE_OK; return}
                 let   mol  = org.mol;
                 let   ret  = RE_OK;
 
@@ -460,10 +462,13 @@ class BioVM extends VM {
                 }
                 if (--mol < 0) {mol = code.length - 1; org.re = RE_SPECIAL}
                 if (mol === 0) {org.mol = 0; org.re = RE_OK; return}
-                const oldMol = mol;
-                // eslint-disable-next-line for-direction
-                for (let i = mol - 1; i < oldMol; i--) {
-                    if (i < 0) {ret = RE_SPECIAL; i = code.length - 1; continue}
+                for (let i = mol - 1, loop = 0;; i--) {
+                    if (i < 0) {
+                        ret = RE_SPECIAL;
+                        i = code.length - 1;
+                        if (++loop > 1) {org.mol = 0; org.re  = RE_OK; return}
+                        continue;
+                    }
                     if ((code[i] & MASK8) > 0) {mol = i + 1; break}
                 }
                 org.mol = mol;
