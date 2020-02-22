@@ -172,10 +172,12 @@ class BioVM extends VM {
             //
             case SPLIT: {
                 ++org.line;
+                org.re        = RE_OK;
                 // TODO: these checks may be removed if we don't change amount of atoms in a world
                 if (this.orgsMols.full || org.mem[org.mPos] === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
                 let offset    = org.offset + DIR[Math.abs(org.bx) % 8];
-                if (offset < 0) {offset = LINE_OFFS + org.offset}
+                if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
+                else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
                 const dot     = this.world.index(offset);
                 if (dot > -1) {org.re = RE_ERR; return} // something on the way
                 const code    = org.code;
@@ -191,7 +193,6 @@ class BioVM extends VM {
                 const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(org, offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
-                org.re        = RE_OK;
                 if (org.code.length < 1) {this.delOrg(org); return}
                 const fCount  = org.fCount;
                 org.compile(false);                     // Safe recompilation without loosing metadata
@@ -201,13 +202,13 @@ class BioVM extends VM {
 
             case STEP: {
                 ++org.line;
+                org.re = RE_OK;
                 org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
                 let offset = org.offset + DIR[Math.abs(org.ax) % 8];
-                if (offset < 0) {offset = LINE_OFFS + org.offset}
-                else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
+                if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
+                else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
                 if (this.world.index(offset) > -1) {org.re = RE_ERR; return}
                 this.world.moveOrg(org, offset);
-                org.re = RE_OK;
                 return;
             }
 
