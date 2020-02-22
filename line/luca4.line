@@ -60,45 +60,39 @@ loop
         toggle       # bx=back dir
         len     @mol
         split
-        #
-        # Can't cut wastes
-        #
-        reax
-        ifz     @mol
-          break
-        end
-        0       @mol
-      end
+        0
+      end       @mol
       ifp            # needed molecule
         #
         # Increase i, in m0
         #
-        load    @mol
-        smol
+        load
+        smol    @mol
         rmol
-        mol     @mol
-        save
+        mol
+        save    @mol
         #
         # Checks if this is the end (last replicator molecule)
         #
         33
-        lshift  @mol # ax=66 - nop
-        toggle       # bx=66
+        lshift       # ax=66 - nop
+        toggle  @mol # bx=66
         right
-        load    @mol
-        left
+        load
+        left    @mol
         ife
-          17    @mol
-          save
+          17
+          save  @mol
           break
-        end     @mol
-      end
+        end
+      end       @mol
     end
-  end           @mol
-end
+  end
+end             @mol
 #
 # Cut wastes
 #
+nop
 line
 smol            @mol
 rmol
