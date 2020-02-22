@@ -2,59 +2,71 @@
 # m0    - i
 # m1..x - molecule
 #
-63
+#
+# Reset i counter in m0
+#
+0
+save
+63              @mol
 lshift               # ax=126
-lshift         @mol  # ax=252
-lshift               # ax=504
+lshift               # ax=252
+lshift          @mol # ax=504
 lshift               # ax=1008
-lshift         @mol  # ax=2016
-lshift               # ax=4032
+lshift               # ax=2016
+lshift          @mol # ax=4032
 lshift               # ax=8064
-loop            @mol
+loop
   #
   # Copy current molecule into m1..x
   #
-  load               # ax=i
+  load          @mol # ax=i
   smol
-  right         @mol # m1
-  cmol               # m1..x - i molecule
+  right              # m1
+  cmol          @mol # m1..x - i molecule
   left               # m0
   #
   # Step only 4 directions, eat and checks if needed molecule
   #
-  4             @mol
-  rand
+  4
+  rand          @mol
   step
-  toggle        @mol # bx=dir
-  eq
+  toggle             # bx=dir
+  eq            @mol
   #
   # We have to free space behind for wastes
   #
   reax
-  ifp           @mol
-    eq
+  ifp           
+    eq          @mol
     join
-    reax        @mol
-    ifp              # eated something
+    reax
+    ifp         @mol # eated something
       #
       # Sets mol head to the end
       #
       len
-      smol      @mol
+      smol
       #
       # Compares current molecule and eated
       #
-      right
+      right     @mol
       mcmp
-      left      @mol
-      reax
+      left
+      reax      @mol
       ifz            # unneeded molecule. cut it
-        4       @mol
-        toggle
+        4
+        toggle  @mol
         add
-        toggle  @mol # bx=back dir
-        len
+        toggle       # bx=back dir
+        len     @mol
         split
+        #
+        # Can't cut wastes
+        #
+        reax
+        ifz     @mol
+          break
+        end
         0       @mol
       end
       ifp            # needed molecule
@@ -84,12 +96,6 @@ loop            @mol
     end
   end           @mol
 end
-#
-# Reset i counter in m0
-#
-nop
-0               @mol
-save
 #
 # Cut wastes
 #
