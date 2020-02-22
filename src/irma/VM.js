@@ -149,6 +149,9 @@ class VM {
                 //
                 for (let l = 0; l < lines; l++) {
                     const cmd = code[line] & CODE_8_BIT_RESET_MASK;
+                    if (line === 59) {
+                        debugger;
+                    }
 
                     // eslint-disable-next-line default-case
                     switch (cmd) {

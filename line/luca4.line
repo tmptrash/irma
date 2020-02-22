@@ -7,100 +7,115 @@
 #
 0
 save
-63              @mol
-lshift               # ax=126
-lshift               # ax=252
-lshift          @mol # ax=504
-lshift               # ax=1008
-lshift               # ax=2016
-lshift          @mol # ax=4032
-lshift               # ax=8064
+63                  @mol
+lshift                   # ax=126
+lshift                   # ax=252
+lshift              @mol # ax=504
+lshift                   # ax=1008
+lshift                   # ax=2016
+lshift              @mol # ax=4032
+lshift                   # ax=8064
 loop
   #
   # Copy current molecule into m1..x
   #
-  load          @mol # ax=i
+  load              @mol # ax=i
   smol
-  right              # m1
-  cmol          @mol # m1..x - i molecule
-  left               # m0
+  right                  # m1
+  cmol              @mol # m1..x - i molecule
+  left                   # m0
   #
-  # Step only 4 directions, eat and checks if needed molecule
+  # Step any direction, eat and checks if needed molecule
   #
   8
-  rand          @mol
+  rand              @mol
   step
-  toggle             # bx=dir
-  eq            @mol
+  #
+  # Store back dir in m-1
+  #
+  left                   # m-1
+  toggle            @mol # bx=dir
+  4
+  add                    # ax=back dir
+  save              @mol
+  right                  # m0
   #
   # We have to free space behind for wastes
   #
   reax
-  ifp           
-    eq          @mol
+  ifp               @mol
+    eq                   # ax=dir
     join
-    reax
-    ifp         @mol # eated something
+    reax            @mol
+    ifp                  # eated something
       #
       # Sets mol head to the end
       #
       len
-      smol
+      smol          @mol
       #
       # Compares current molecule and eated
       #
-      right     @mol
+      right
       mcmp
-      left
-      reax      @mol
-      ifz            # unneeded molecule. cut it
-        4
-        toggle  @mol
-        add
-        toggle       # bx=back dir
-        len     @mol
-        split
-        0
-      end       @mol
-      ifp            # needed molecule
+      left          @mol
+      reax
+      ifz                # unneeded molecule. cut it
+        left        @mol
+        load
+        right
+        toggle      @mol # bx=back dir
+        len
+        split            # bx=back dir
+        0           @mol
+      end
+      ifp                # needed molecule
         #
         # Increase i, in m0
         #
-        load
-        smol    @mol
+        load        @mol
+        smol
         rmol
-        mol
-        save    @mol
+        mol         @mol
+        save
         #
         # Checks if this is the end (last replicator molecule)
         #
         33
-        lshift       # ax=66 - nop
-        toggle  @mol # bx=66
+        lshift      @mol # ax=66 - nop
+        toggle           # bx=66
         right
-        load
-        left    @mol
+        load        @mol
+        left
         ife
+          #
+          # Loads back dir from m-1
+          #
+          left      @mol # m-1
+          load
+          right
+          toggle    @mol # bx=back dir
           17
-          save  @mol
-          break
+          save
+          break     @mol
         end
-      end       @mol
-    end
+      end
+    end             @mol
   end
-end             @mol
+end
 #
 # Cut wastes
 #
+line                @mol
 line
 line
-smol            @mol
+smol                @mol
 rmol
 rmol
-rmol            @mol
-nop                  # separator id
+rmol                @mol
+nop                      # separator id
 len
-split           @mol
+split               @mol
 #
 # Food section
 #
