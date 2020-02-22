@@ -174,7 +174,7 @@ module.exports = {
           #
           # Step only 4 directions, eat and checks if needed molecule
           #
-          4
+          8
           rand          @mol
           step
           toggle             # bx=dir
@@ -239,7 +239,7 @@ module.exports = {
         #
         # Cut wastes
         #
-        nop
+        line
         line
         smol            @mol
         rmol
