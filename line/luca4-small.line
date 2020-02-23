@@ -1,6 +1,6 @@
 #
 # m0    - i
-# m1..x - molecule
+# m1..x - mol
 #
 #
 # Reset i counter in m0
@@ -16,15 +16,15 @@ eq
 mul 
 loop
   #
-  # Copy current molecule into m1..x
+  # Copy current mol into m1..x
   #
   load              @mol # ax=i
   smol
   right                  # m1
-  cmol              @mol # m1..x - i molecule
+  cmol              @mol # m1..x - i mol
   left                   # m0
   #
-  # Step any direction, eat and checks if needed molecule
+  # Step any direction, eat and checks if needed mol
   #
   8
   rand              @mol
@@ -32,34 +32,59 @@ loop
   #
   # Store back dir in m-1
   #
-  left                   # m-1
   toggle            @mol # bx=dir
   4
   add                    # ax=back dir
+  left                   # m-1
   save              @mol
   right                  # m0
   #
-  # We have to free space behind for wastes
+  # We should have free space behind for wastes
   #
-  reax
-  ifp               @mol
+  see
+  ifz               @mol
     eq                   # ax=dir
     join
     reax            @mol
-    ifp                  # eated something
+    ifp                  # ate something
+      #
+      # Checks ate mol len
+	  #
+      load               # ax=cur mol idx
+      smol
+      mol
+      toggle             # ax=molIdx1  bx=molIdx0
+      sub                # ax=cur mol len
+      toggle             # bx=cur mol len
+      reax               # ax=ate mol len
+	  #
+	  # Cut bad mol
+	  #
+      ifne               # bad ate mol len
+        toggle           # bx=ate mol len
+        len
+        sub              # ax=old code len
+        smol
+        left
+		load
+		right
+		toggle           # bx=back dir
+		len
+		split
+      end
       #
       # Sets mol head to the end
       #
       len
       smol          @mol
       #
-      # Compares current molecule and eated
+      # Compares current mol and eated
       #
       right
       mcmp
       left          @mol
       reax
-      ifz                # unneeded molecule. cut it
+      ifz                # unneeded mol. cut it
         left        @mol
         load
         right
@@ -68,7 +93,7 @@ loop
         split            # bx=back dir
         0           @mol
       end
-      ifp                # needed molecule
+      ifp                # needed mol
         #
         # Increase i, in m0
         #
@@ -78,7 +103,7 @@ loop
         mol         @mol
         save
         #
-        # Checks if this is the end (last replicator molecule)
+        # Checks if this is the end (last replicator mol)
         #
         33
         lshift      @mol # ax=66 - nop

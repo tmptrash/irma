@@ -155,14 +155,15 @@ class BioVM extends VM {
                 const dot     = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
-                if (nearOrg.code.length + org.code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
+                const nearLen = nearOrg.code.length;
+                if (nearLen + org.code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
                 const oldLen  = org.code.length;
                 org.code      = org.code.push(nearOrg.code);
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
-                org.re        = RE_OK;
+                org.re        = nearLen;
                 const fCount  = org.fCount;
                 org.compile(false);                     // Safe recompilation without loosing metadata
-                org.updateMetadata(oldLen, oldLen + nearOrg.code.length, 1, fCount);
+                org.updateMetadata(oldLen, oldLen + nearLen, 1, fCount);
                 return;
             }
 
@@ -424,7 +425,7 @@ class BioVM extends VM {
             case SMOL: {
                 ++org.line;
                 const code = org.code;
-                if (org.ax < 0) {org.mol = org.ax = 0; org.re = RE_OK; return}
+                if (org.ax < 0) {org.mol = org.ax = 0; return}
                 if (org.ax >= code.length) {org.ax = code.length - 1}
                 for (let i = org.ax - 1;; i--) {
                     if ((code[i] & MASK8) > 0 || i < 0) {
