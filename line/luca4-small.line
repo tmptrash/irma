@@ -1,0 +1,120 @@
+#
+# m0    - i
+# m1..x - molecule
+#
+#
+# Reset i counter in m0
+#
+0
+save
+#
+# Create big loop
+#
+len                 @mol # ~70
+toggle
+eq
+mul 
+loop
+  #
+  # Copy current molecule into m1..x
+  #
+  load              @mol # ax=i
+  smol
+  right                  # m1
+  cmol              @mol # m1..x - i molecule
+  left                   # m0
+  #
+  # Step any direction, eat and checks if needed molecule
+  #
+  8
+  rand              @mol
+  step
+  #
+  # Store back dir in m-1
+  #
+  left                   # m-1
+  toggle            @mol # bx=dir
+  4
+  add                    # ax=back dir
+  save              @mol
+  right                  # m0
+  #
+  # We have to free space behind for wastes
+  #
+  reax
+  ifp               @mol
+    eq                   # ax=dir
+    join
+    reax            @mol
+    ifp                  # eated something
+      #
+      # Sets mol head to the end
+      #
+      len
+      smol          @mol
+      #
+      # Compares current molecule and eated
+      #
+      right
+      mcmp
+      left          @mol
+      reax
+      ifz                # unneeded molecule. cut it
+        left        @mol
+        load
+        right
+        toggle      @mol # bx=back dir
+        len
+        split            # bx=back dir
+        0           @mol
+      end
+      ifp                # needed molecule
+        #
+        # Increase i, in m0
+        #
+        load        @mol
+        smol
+        rmol
+        mol         @mol
+        save
+        #
+        # Checks if this is the end (last replicator molecule)
+        #
+        33
+        lshift      @mol # ax=66 - nop
+        toggle           # bx=66
+        right
+        load        @mol
+        left
+        ife
+          #
+          # Loads back dir from m-1
+          #
+          left      @mol # m-1
+          load
+          right
+          toggle    @mol # bx=back dir
+          17
+          save
+          break     @mol
+        end
+      end
+    end             @mol
+  end
+end
+#
+# Cut wastes
+#
+line                @mol
+line
+line
+smol                @mol
+rmol
+rmol
+rmol                @mol
+nop                      # separator id
+len
+split               @mol
+#
+# Food section
+#

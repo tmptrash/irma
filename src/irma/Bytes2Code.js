@@ -287,7 +287,7 @@ Bytes2Code.MAP = {
     // Biological stuff
     //
     [JOIN  ]: ['join',   'join(ax=dir):re'],
-    [SPLIT ]: ['split',  'plit(ax=fromIdx,bx=toIdx,re=dir):re'],
+    [SPLIT ]: ['split',  'split(ax=fromIdx,bx=toIdx,re=dir):re'],
     [STEP  ]: ['step',   'step(ax=dir):re'],
     [SEE   ]: ['see',    'ax=see(offs+ax)'],
     [SAY   ]: ['say',    'ax=say(ax=val,bx=freq)'],
