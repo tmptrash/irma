@@ -142,7 +142,8 @@ class Organism {
         // update all call stack indexes
         //
         if (fCount === -1) {fCount = this.fCount}
-        if (this.fCount !== fCount) {this.stackIndex = -1}
+        // TODO: What should we do in case of new or removed functions?
+        // if (this.fCount < fCount) {this.stackIndex = -1}
         else {
             const stk = this.stack;
             for (let i = 0, len = this.stackIndex + 1; i <= len; i++) {
