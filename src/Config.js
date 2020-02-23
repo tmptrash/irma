@@ -147,122 +147,149 @@ module.exports = {
         code: `
         #
         # m0    - i
-        # m1..x - molecule
+        # m1..x - mol
         #
+        #
+        # func0. Cuts the tail
+        #
+        func
+          left
+          load                 @mol
+          right
+          toggle                      # bx=back dir
+          len                  @mol
+          split                       # bx=back dir
+        end
         #
         # Reset i counter in m0
         #
-        0
+        0                      @mol
         save
-        63                  @mol
-        lshift                   # ax=126
-        lshift                   # ax=252
-        lshift              @mol # ax=504
-        lshift                   # ax=1008
-        lshift                   # ax=2016
-        lshift              @mol # ax=4032
-        lshift                   # ax=8064
-        loop
+        #
+        # Create big loop
+        #
+        len                           # ~70
+        toggle                 @mol
+        eq
+        mul
+        loop                   @mol
           #
-          # Copy current molecule into m1..x
+          # Copy current mol into m1..x
           #
-          load              @mol # ax=i
+          load                        # ax=i
           smol
-          right                  # m1
-          cmol              @mol # m1..x - i molecule
-          left                   # m0
+          right                @mol   # m1
+          cmol                        # m1..x - i mol
+          left                        # m0
           #
-          # Step any direction, eat and checks if needed molecule
+          # Step any direction, eat and checks if needed mol
           #
-          8
-          rand              @mol
+          8                    @mol
+          rand
           step
           #
           # Store back dir in m-1
           #
-          left                   # m-1
-          toggle            @mol # bx=dir
+          toggle               @mol   # bx=dir
           4
-          add                    # ax=back dir
-          save              @mol
-          right                  # m0
+          add                         # ax=back dir
+          left                 @mol   # m-1
+          save
+          right                       # m0
           #
-          # We have to free space behind for wastes
+          # We should have free space behind for wastes
           #
-          reax
-          ifp               @mol
-            eq                   # ax=dir
-            join
-            reax            @mol
-            ifp                  # eated something
+          reax                 @mol
+          ifp
+            eq                        # ax=dir
+            join               @mol
+            reax
+            ifp                       # ate something
+              #
+              # Checks ate mol len
+              #
+              load             @mol   # ax=cur mol idx
+              smol
+              mol
+              toggle           @mol   # ax=molIdx1  bx=molIdx0
+              sub                     # ax=cur mol len
+              inc
+              toggle           @mol   # bx=cur mol len
+              reax                    # ax=ate mol len
+              #
+              # Cut bad mol
+              #
+              ifne                    # bad ate mol len
+                toggle         @mol   # bx=ate mol len
+                len
+                sub                   # ax=old code len
+                smol           @mol
+                0
+                call
+              end              @mol
               #
               # Sets mol head to the end
               #
               len
-              smol          @mol
+              smol
               #
-              # Compares current molecule and eated
+              # Compares current mol and eated
               #
-              right
+              right            @mol
               mcmp
-              left          @mol
-              reax
-              ifz                # unneeded molecule. cut it
-                left        @mol
-                load
-                right
-                toggle      @mol # bx=back dir
-                len
-                split            # bx=back dir
-                0           @mol
+              left
+              reax             @mol
+              ifz                     # unneeded mol cut it
+                0
+                call           @mol
+                0
               end
-              ifp                # needed molecule
+              ifp              @mol   # needed mol
                 #
                 # Increase i, in m0
                 #
-                load        @mol
+                load
                 smol
-                rmol
-                mol         @mol
+                rmol           @mol
+                mol
                 save
                 #
-                # Checks if this is the end (last replicator molecule)
+                # Checks if this is the end (last replicator mol)
                 #
-                33
-                lshift      @mol # ax=66 - nop
-                toggle           # bx=66
-                right
-                load        @mol
+                33             @mol
+                lshift                # ax=66 - nop
+                toggle                # bx=66
+                right          @mol
+                load
                 left
-                ife
+                ife            @mol
                   #
                   # Loads back dir from m-1
                   #
-                  left      @mol # m-1
+                  left                # m-1
                   load
-                  right
-                  toggle    @mol # bx=back dir
+                  right        @mol
+                  toggle              # bx=back dir
                   17
-                  save
-                  break     @mol
+                  save         @mol
+                  break
                 end
-              end
-            end             @mol
+              end              @mol
+            end
           end
-        end
+        end                    @mol
         #
         # Cut wastes
         #
-        line                @mol
         line
         line
-        smol                @mol
+        smol                   @mol
         rmol
         rmol
-        rmol                @mol
-        nop                      # separator id
+        rmol                   @mol
+        nop                           # separator id
         len
-        split               @mol
+        split                  @mol
         #
         # Food section
         #
