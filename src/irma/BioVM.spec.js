@@ -6,6 +6,7 @@ describe('src/irma/VM', () => {
     const HEIGHT     = 10;
     const RE_OK      = Config.CODE_RE_OK;
     const RE_ERR     = Config.CODE_RE_ERR;
+    const RE_SPECIAL = Config.CODE_RE_SPECIAL;
     //
     // This call should be before require('./VM') to setup our 
     // configuration instead of default
@@ -248,14 +249,16 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
                 expect(vm.orgs.get(0).re).toBe(RE_ERR);
             });
-            it('Checks basic organism splitting fail, because out of the world',  () => {
+            it('Checks basic organism splitting out of the world (cyclical mode)',  () => {
                 run([[1,2,2|M,SP|M]], {molAmount: 0}, [0]);
 
                 expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(90)).not.toBe(-1);
                 expect(vm.world.index(0)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
-                expect(vm.orgs.get(0).re).toEqual(RE_ERR);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
+                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,2|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_SPECIAL);
             });
             it('Checks basic organism splitting not fail, because ax < 0',  () => {
                 run([[1,2,0,DE|M,SP|M]], {molAmount: 0}, [12]);
