@@ -86,10 +86,10 @@ class WebGl {
         transparent: true,
         vertexColors: true
       });
-      geometry = new THREE.BufferGeometry();
+      geometry = new THREE.BufferGeometry(); // plane
 
       var positions = [];
-      var colors = [];
+      var colors = []; // possible, we don't need this array
       var sizes = [];
       var textureIndexes = [];
       //---
@@ -99,17 +99,18 @@ class WebGl {
 
       size = window.devicePixelRatio  * (height / 218);
       //---
+      // TODO: two fors should be used here
       var color = new THREE.Color();
       var j = 0,
         ln = 0;
       for (i = 0; i < PARTICLES_COUNT; i++) {
-        positions.push(j);
-        positions.push(ln);
-        positions.push(0);
-        textureIndexes.push(2);
+        positions.push(j);      // y
+        positions.push(ln);     // x
+        positions.push(0);      // z
+        textureIndexes.push(2); // no texture
         //color.setHSL( i / PARTICLES_COUNT, 1.0, 0.5 );
         colors.push(color.r, color.g, color.b);
-        sizes.push(size);
+        sizes.push(size);       // dot size. TODO: optimize this
 
         if ((j + 1) % maxWeight == 0) {
           ln++;
@@ -155,7 +156,7 @@ class WebGl {
     addMicrobe(x, y) {
       let position = maxWeight * y + x;
       const texIndex = geometry.attributes.texIndex;
-      texIndex.array[position] = 0;
+      texIndex.array[position] = 0; // 0 - microbe
       texIndex.needsUpdate = true;
     }
 
@@ -165,13 +166,13 @@ class WebGl {
       }
       let position = maxWeight * y + x;
       // TODO: optimize properties
-      geometry.attributes.texIndex.array[position] = 1;
+      geometry.attributes.texIndex.array[position] = 1; // 1 - food
       geometry.attributes.texIndex.needsUpdate = true;
     }
 
     remove(x, y) {
       let position = maxWeight * y + x;
-      geometry.attributes.texIndex.array[position] = 2;
+      geometry.attributes.texIndex.array[position] = 2; // 2 - empty
       geometry.attributes.texIndex.needsUpdate = true;
     }
 
