@@ -43,46 +43,47 @@ const NOP_MOL              = NOP | CODE_8_BIT_MASK;
 class Mutations {
     /**
      * Apply mutations to specified organism
+     * @param {VM} vm
      * @param {Organism} org
      */
-    static mutate(org) {
+    static mutate(vm, org) {
         const mutCbs    = Mutations._MUTATION_CBS;
         const mutations = ((org.code.length * org.percent) << 0) || 1;
         const prob      = Helper.probIndex;
-        for (let m = 0; m < mutations; m++) {mutCbs[prob(org.probs)](org.code, org)}
+        for (let m = 0; m < mutations; m++) {mutCbs[prob(org.probs)](vm, org.code, org)}
     }
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
     
-    static _onChange (code, org) {
+    static _onChange (vm, code, org) {
         const idx    = rand(code.length);
         code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
         const fCount = org.fCount;
-        org.compile(false);                     // Safe recompilation without loosing metadata
+        vm.compile(org, false);                     // Safe recompilation without loosing metadata
         org.updateMetadata(idx, idx, 1, fCount);
     }
 
-    static _onDel    (code, org) {
+    static _onDel    (vm, code, org) {
         const idx    = rand(code.length);
         code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
         org.code     = code.splice(idx, 1);
         const fCount = org.fCount;
-        org.compile(false);                     // Safe recompilation without loosing metadata
+        vm.compile(org, false);                     // Safe recompilation without loosing metadata
         org.updateMetadata(idx, idx + 1, -1, fCount);
     }
 
-    static _onPeriod (code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
+    static _onPeriod (vm, code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
 
-    static _onPercent(code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT}
+    static _onPercent(vm, code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT}
 
-    static _onProbs  (code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
+    static _onProbs  (vm, code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
     
-    static _onInsert (code, org) {
+    static _onInsert (vm, code, org) {
         if (code.length >= Config.orgMaxCodeSize) {return}
         const idx    = rand(code.length);
         org.code     = code.splice(idx, 0, Uint8Array.from([Mutations.randCmd()]));
         const fCount = org.fCount;
-        org.compile(false);                     // Safe recompilation without loosing metadata
+        vm.compile(org, false);                     // Safe recompilation without loosing metadata
         org.updateMetadata(idx, idx + 1, 1, fCount);
     }
 
@@ -91,7 +92,7 @@ class Mutations {
      * part. All positions are random.
      * @return {Number} Amount of added/copied lines
      */
-    static _onCopy   (code, org)  {
+    static _onCopy   (vm, code, org)  {
         const codeLen = code.length;
         const start   = rand(codeLen);
         const end     = start + rand(codeLen - start);
@@ -112,7 +113,7 @@ class Mutations {
             const insCode = code.slice(start, end);
             org.code      = code.splice(idx, 0, insCode);
             const fCount = org.fCount;
-            org.compile(false);                     // Safe recompilation without loosing metadata
+            vm.compile(org, false);                     // Safe recompilation without loosing metadata
             org.updateMetadata(idx, idx + insCode.length, 1, fCount);
             return end - start;
         }
@@ -121,26 +122,26 @@ class Mutations {
         const insCode = code.slice(start, end);
         org.code      = code.splice(idx, 0, insCode);
         const fCount = org.fCount;
-        org.compile(false);                     // Safe recompilation without loosing metadata
+        vm.compile(org, false);                     // Safe recompilation without loosing metadata
         org.updateMetadata(idx, idx + insCode.length, 1, fCount);
 
         return end - start;
     }
 
-    static _onCut    (code, org)  {
+    static _onCut    (vm, code, org)  {
         const start = rand(code.length);
         const end   = rand(code.length - start);
         org.code    = code.splice(start, end);
         const fCount = org.fCount;
-        org.compile(false);                     // Safe recompilation without loosing metadata
+        vm.compile(org, false);                     // Safe recompilation without loosing metadata
         org.updateMetadata(start, start + end, -1, fCount);
     }
 
-    static _onOff    (code, org) {
+    static _onOff    (vm, code, org) {
         const idx = rand(code.length);
         code[idx] = (code[idx] & CODE_8_BIT_MASK) ? NOP_MOL : NOP;
         const fCount = org.fCount;
-        org.compile(false);                     // Safe recompilation without loosing metadata
+        vm.compile(org, false);                     // Safe recompilation without loosing metadata
         org.updateMetadata(idx, idx, 1, fCount);
     }
 }

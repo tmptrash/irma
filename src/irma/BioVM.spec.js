@@ -113,7 +113,7 @@ describe('src/irma/VM', () => {
             org.code   = Uint8Array.from(code[i]);
             org.offset = move[i];
             org.hasOwnProperty('energy') ? vm.world.moveOrg(org, move[i]) : vm.world.mol(move[i], org, vm.molColor(org.code));
-            org.hasOwnProperty('energy') && org.compile();
+            org.hasOwnProperty('energy') && this.compile(org);
         }
 
         expect(vm.orgs.items).toBe(Config.LUCAS.length);
@@ -136,7 +136,7 @@ describe('src/irma/VM', () => {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
-        org.compile();
+        this.compile(org);
 
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
@@ -512,7 +512,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -527,7 +527,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -543,7 +543,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -558,7 +558,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -573,7 +573,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
 
@@ -592,7 +592,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -608,7 +608,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -624,7 +624,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -640,7 +640,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = code.slice(); // code copy
-                org.compile();
+                this.compile(org);
                 org.energy = energy;
                 vm.run();
         
@@ -666,7 +666,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = vm.split2Mols(code);
-                org.compile();
+                this.compile(org);
                 vm.run();
         
                 expect(org.ax).toBe(0);
@@ -681,7 +681,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = vm.split2Mols(code);
-                org.compile();
+                this.compile(org);
                 vm.run();
         
                 expect(org.ax).toBe(0);
@@ -696,7 +696,7 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org = vm.orgs.get(0);
                 org.code  = vm.split2Mols(code);
-                org.compile();
+                this.compile(org);
                 vm.run();
         
                 expect(org.ax).toBe(-1);

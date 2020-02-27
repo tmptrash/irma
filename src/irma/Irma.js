@@ -8,8 +8,8 @@ const BioVM = require('./BioVM');
 
 class Irma {
     constructor() {
+        this.vm     = new BioVM();
         this._pause = false;
-        this._vm    = new BioVM();
         this._runCb = this.run.bind(this);
 
         this._initLoop();
@@ -17,7 +17,7 @@ class Irma {
 
     run() {
         if (this._pause) {return}
-        this._vm.run();
+        this.vm.run();
         this.zeroTimeout(this._runCb);
     }
 
@@ -31,13 +31,13 @@ class Irma {
     }
 
     get ready() {
-        return this._vm.ready;
+        return this.vm.ready;
     }
 
     destroy() {
-        this._vm.destroy();
-        this._vm       = null;
-        this._runCb    = null;
+        this.vm.destroy();
+        this.vm     = null;
+        this._runCb = null;
     }
 
     /**

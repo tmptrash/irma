@@ -162,7 +162,7 @@ class BioVM extends VM {
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
                 org.re        = nearLen;
                 const fCount  = org.fCount;
-                org.compile(false);                     // Safe recompilation without loosing metadata
+                this.compile(org, false);                 // Safe recompilation without loosing metadata
                 org.updateMetadata(oldLen, oldLen + nearLen, 1, fCount);
                 return;
             }
@@ -193,10 +193,10 @@ class BioVM extends VM {
                 org.code      = code.splice(idx0, idx1 - idx0 + 1);
                 const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(org, offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
-                if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(clone)}
+                if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(this, clone)}
                 if (org.code.length < 1) {this.delOrg(org); return}
                 const fCount  = org.fCount;
-                org.compile(false);                     // Safe recompilation without loosing metadata
+                this.compile(org, false);               // Safe recompilation without loosing metadata
                 org.updateMetadata(idx0, idx1 + 1, -1, fCount);
                 return;
             }
@@ -329,7 +329,7 @@ class BioVM extends VM {
                 org.code        = code;
                 org.re          = RE_OK;
                 const fCount    = org.fCount; 
-                org.compile(false);
+                this.compile(org, false);
                 if (m2Idx > insIdx) {
                     org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
                     org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
@@ -401,7 +401,7 @@ class BioVM extends VM {
                 org.energy    -= Config.energyMove;
                 org.re         = RE_OK;
                 const fCount   = org.fCount; 
-                org.compile(false);
+                this.compile(org, false);
                 //
                 // further changed code should be called first
                 //
@@ -585,7 +585,7 @@ class BioVM extends VM {
             org.period  = parent.period;
             org.percent = parent.percent;
         }
-        org.compile();
+        this.compile(org);
 
         orgsMols.add(org);
         this.world.org(offset, org);

@@ -83,6 +83,7 @@ const REAX                  = Config.CODE_CMDS.REAX;
 class Bytes2Code {
     /**
      * Converts bytes array to array of asm like strings
+     * @param {VM} vm Instance of Virtual Machine to compile the code
      * @param {Array} bytes Array of numbers (bytes)
      * @param {Boolean} lines Show or hide lines and molecules
      * @param {Boolean} comment Show or not comments near every line
@@ -90,13 +91,13 @@ class Bytes2Code {
      * @param {Boolean} firstLineEmpty adds first empty line before script
      * @return {String} Array of asm like strings
      */
-    static toCode(bytes, lines = true, comments = true, info = false, firstLineEmpty = true) {
+    static toCode(vm, bytes, lines = true, comments = true, info = false, firstLineEmpty = true) {
         //
         // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
         //
         const org     = new Organism(-1, bytes);
-        org.compile();
+        vm.compile(org);
         const offs    = org.offs;
         const padSize = lines ? CODE_PAD_SIZE : 0;
         let code      = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;

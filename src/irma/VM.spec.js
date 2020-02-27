@@ -96,7 +96,7 @@ describe('src/irma/VM', () => {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
-        org.compile();
+        vm.compile(org);
 
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
