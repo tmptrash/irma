@@ -1,12 +1,11 @@
 /**
  * Virtual Machine (VM) class. Generally, runs "line" scripts, which are 
- * presented inside organisms (see Organism class). To simulate cuncurrency,
+ * stored inside organisms (see Organism class). To simulate cuncurrency,
  * switches between them (vurtual threads) by running few instructions for 
- * every thread. Works only with two registers ax, bx. Provides compilation
- * (see Compiler.compile()) of the code by setting special metadata (see 
- * Organism.loops,stack,offs,funcs proprties). Uses memory (see Organism.mem).
- * Understands only basic commands. Extended version of VM is implemented in
- * BioVM class.
+ * every thread. Works only with two registers ax, bx. Runs only compiled
+ * code (see Compiler.compile()). Uses code metadata (see Organism.loops,
+ * stack,offs,funcs proprties). Uses memory (see Organism.mem). Understands
+ * only basic commands. Extended version of VM is implemented in BioVM class.
  *
  * @author flatline
  */

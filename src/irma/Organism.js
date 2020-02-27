@@ -8,23 +8,8 @@
  */
 const Config                = require('./../Config');
 
-const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
 const ORG_MAX_MEM_SIZE      = Config.ORG_MAX_MEM_SIZE;
 const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
-//
-// Basic commands
-//
-const IFP                   = Config.CODE_CMDS.IFP;
-const IFN                   = Config.CODE_CMDS.IFN;
-const IFZ                   = Config.CODE_CMDS.IFZ;
-const IFG                   = Config.CODE_CMDS.IFG;
-const IFL                   = Config.CODE_CMDS.IFL;
-const IFE                   = Config.CODE_CMDS.IFE;
-const IFNE                  = Config.CODE_CMDS.IFNE;
-const LOOP                  = Config.CODE_CMDS.LOOP;
-const FUNC                  = Config.CODE_CMDS.FUNC;
-const END                   = Config.CODE_CMDS.END;
-const BREAK                 = Config.CODE_CMDS.BREAK;
 
 class Organism {
     /**
