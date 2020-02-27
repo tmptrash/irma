@@ -7,8 +7,10 @@
     "doc": "doc"
   },
   "dependencies": {
+    "d3": "^5.15.0",
     "dexie": "^2.0.4",
-    "panzoom": "^8.4.0"
+    "panzoom": "^8.4.0",
+    "three": "^0.113.2"
   },
   "scripts": {
     "test": "run-script-os",

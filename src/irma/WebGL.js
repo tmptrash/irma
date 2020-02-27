@@ -4,6 +4,9 @@
  * 
  * @author Taras Kohut
  */
+const D3    = require('d3');
+const THREE = require('three');
+
 class WebGl {
     renderer;
      scene;
@@ -30,15 +33,15 @@ class WebGl {
       
     constructor() {
       init();
-      let zoom = d3
+      D3
         .zoom()
         .scaleExtent([getScaleFromZ(far), getScaleFromZ(near)])
         .on("zoom", () => {
-          let d3_transform = d3.event.transform;
+          let d3_transform = D3.event.transform;
           zoomHandler(d3_transform);
         });
 
-      view = d3.select(renderer.domElement);
+      view = D3.select(renderer.domElement);
         setUpZoom();
         createWorld();
 
@@ -141,7 +144,7 @@ class WebGl {
 
     // TODO: implement animation frame and this._visualize logic (see Canvas.js)
     // TODO: use _prepareDom() for creating canvas element
-    destory() {
+    destroy() {
        // TODO: should remove canvas element, unbinds event listeners
     }
 
@@ -201,7 +204,7 @@ class WebGl {
     setUpZoom() {
       view.call(zoom);
       let initial_scale = getScaleFromZ(far);
-      var initial_transform = d3.zoomIdentity
+      var initial_transform = D3.zoomIdentity
         .translate(width / 2, height / 2)
         .scale(initial_scale);
       zoom.transform(view, initial_transform);
