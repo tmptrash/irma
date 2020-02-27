@@ -1,8 +1,9 @@
 /**
  * @author flatline
  */
-const Config = require('./../Config');
-const Helper = require('./../common/Helper');
+const Config   = require('./../Config');
+const Helper   = require('./../common/Helper');
+const Compiler = require('./Compiler');
 
 const rand                 = Helper.rand;
 /**
@@ -59,8 +60,8 @@ class Mutations {
         const idx    = rand(code.length);
         code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
         const fCount = org.fCount;
-        vm.compile(org, false);                     // Safe recompilation without loosing metadata
-        org.updateMetadata(idx, idx, 1, fCount);
+        Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
+        Compiler.updateMetadata(org, idx, idx, 1, fCount);
     }
 
     static _onDel    (vm, code, org) {
@@ -68,8 +69,8 @@ class Mutations {
         code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
         org.code     = code.splice(idx, 1);
         const fCount = org.fCount;
-        vm.compile(org, false);                     // Safe recompilation without loosing metadata
-        org.updateMetadata(idx, idx + 1, -1, fCount);
+        Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
+        Compiler.updateMetadata(org, idx, idx + 1, -1, fCount);
     }
 
     static _onPeriod (vm, code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
@@ -83,8 +84,8 @@ class Mutations {
         const idx    = rand(code.length);
         org.code     = code.splice(idx, 0, Uint8Array.from([Mutations.randCmd()]));
         const fCount = org.fCount;
-        vm.compile(org, false);                     // Safe recompilation without loosing metadata
-        org.updateMetadata(idx, idx + 1, 1, fCount);
+        Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
+        Compiler.updateMetadata(org, idx, idx + 1, 1, fCount);
     }
 
     /**
@@ -113,8 +114,8 @@ class Mutations {
             const insCode = code.slice(start, end);
             org.code      = code.splice(idx, 0, insCode);
             const fCount = org.fCount;
-            vm.compile(org, false);                     // Safe recompilation without loosing metadata
-            org.updateMetadata(idx, idx + insCode.length, 1, fCount);
+            Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
+            Compiler.updateMetadata(org, idx, idx + insCode.length, 1, fCount);
             return end - start;
         }
 
@@ -122,8 +123,8 @@ class Mutations {
         const insCode = code.slice(start, end);
         org.code      = code.splice(idx, 0, insCode);
         const fCount = org.fCount;
-        vm.compile(org, false);                     // Safe recompilation without loosing metadata
-        org.updateMetadata(idx, idx + insCode.length, 1, fCount);
+        Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
+        Compiler.updateMetadata(org, idx, idx + insCode.length, 1, fCount);
 
         return end - start;
     }
@@ -133,16 +134,16 @@ class Mutations {
         const end   = rand(code.length - start);
         org.code    = code.splice(start, end);
         const fCount = org.fCount;
-        vm.compile(org, false);                     // Safe recompilation without loosing metadata
-        org.updateMetadata(start, start + end, -1, fCount);
+        Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
+        Compiler.updateMetadata(org, start, start + end, -1, fCount);
     }
 
     static _onOff    (vm, code, org) {
         const idx = rand(code.length);
         code[idx] = (code[idx] & CODE_8_BIT_MASK) ? NOP_MOL : NOP;
         const fCount = org.fCount;
-        vm.compile(org, false);                     // Safe recompilation without loosing metadata
-        org.updateMetadata(idx, idx, 1, fCount);
+        Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
+        Compiler.updateMetadata(org, idx, idx, 1, fCount);
     }
 }
 

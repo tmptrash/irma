@@ -13,7 +13,7 @@ const VM                    = require('./VM');
 const Mutations             = require('./Mutations');
 const World                 = require('./World');
 const FastArray             = require('./../common/FastArray');
-const Bytes2Code            = require('./Bytes2Code');
+const Compiler              = require('./Compiler');
 
 const rand                  = Helper.rand;
 const RE_OK                 = Config.CODE_RE_OK;
@@ -71,7 +71,7 @@ class BioVM extends VM {
         // remove all comments. This is how we obtain real amount of
         // instructions in LUCA's code
         //
-        const bCode = Bytes2Code.toByteCode(Config.LUCAS[0].code);
+        const bCode = Compiler.toByteCode(Config.LUCAS[0].code);
         return Math.round(Config.molAmount * Config.molCodeSize / (bCode.length || 1)) + Config.LUCAS.length;
     }
 
@@ -162,8 +162,8 @@ class BioVM extends VM {
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
                 org.re        = nearLen;
                 const fCount  = org.fCount;
-                this.compile(org, false);                 // Safe recompilation without loosing metadata
-                org.updateMetadata(oldLen, oldLen + nearLen, 1, fCount);
+                Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
+                Compiler.updateMetadata(org, oldLen, oldLen + nearLen, 1, fCount);
                 return;
             }
 
@@ -196,8 +196,8 @@ class BioVM extends VM {
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(this, clone)}
                 if (org.code.length < 1) {this.delOrg(org); return}
                 const fCount  = org.fCount;
-                this.compile(org, false);               // Safe recompilation without loosing metadata
-                org.updateMetadata(idx0, idx1 + 1, -1, fCount);
+                Compiler.compile(org, false);               // Safe recompilation without loosing metadata
+                Compiler.updateMetadata(org, idx0, idx1 + 1, -1, fCount);
                 return;
             }
 
@@ -329,13 +329,13 @@ class BioVM extends VM {
                 org.code        = code;
                 org.re          = RE_OK;
                 const fCount    = org.fCount; 
-                this.compile(org, false);
+                Compiler.compile(org, false);
                 if (m2Idx > insIdx) {
-                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
-                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
+                    Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1, fCount);
+                    Compiler.updateMetadata(org, insIdx, insIdx + cutCode.length, 1, fCount);
                 } else {
-                    org.updateMetadata(insIdx, insIdx + cutCode.length, 1, fCount);
-                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                    Compiler.updateMetadata(org, insIdx, insIdx + cutCode.length, 1, fCount);
+                    Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1, fCount);
                 }
                 return;
             }
@@ -401,16 +401,16 @@ class BioVM extends VM {
                 org.energy    -= Config.energyMove;
                 org.re         = RE_OK;
                 const fCount   = org.fCount; 
-                this.compile(org, false);
+                Compiler.compile(org, false);
                 //
                 // further changed code should be called first
                 //
                 if (m2Idx > insIdx) {
-                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
-                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount);
+                    Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1, fCount);
+                    Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1, fCount);
                 } else {
-                    org.updateMetadata(insIdx, insIdx + moveCode.length, 1, fCount);
-                    org.updateMetadata(m2Idx, m2EndIdx + 1, -1, fCount);
+                    Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1, fCount);
+                    Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1, fCount);
                 }
                 return; 
             }
@@ -585,7 +585,7 @@ class BioVM extends VM {
             org.period  = parent.period;
             org.percent = parent.percent;
         }
-        this.compile(org);
+        Compiler.compile(org);
 
         orgsMols.add(org);
         this.world.org(offset, org);
@@ -651,7 +651,7 @@ class BioVM extends VM {
         while (orgs-- > 0) {
             const luca   = lucas[orgs];
             const sCode  = luca.code;
-            const bCode  = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(sCode);
+            const bCode  = luca.bCode ? luca.bCode : luca.bCode = Compiler.toByteCode(sCode);
             const offset = luca.offs || rand(MAX_OFFS);
             const energy = luca.energy ? luca.energy : Config.energyOrg;
             if (world.index(offset) > -1) {orgs++; continue}
@@ -730,7 +730,7 @@ class BioVM extends VM {
             return code;
         }
         const luca  = Config.LUCAS[0];
-        const bCode = luca.bCode ? luca.bCode : luca.bCode = Bytes2Code.toByteCode(luca.code);
+        const bCode = luca.bCode ? luca.bCode : luca.bCode = Compiler.toByteCode(luca.code);
         const len   = bCode.length;
         let   start = Math.floor(Math.random() * len);
         //

@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
 describe('src/irma/VM', () => {
     const Config    = require('./../Config');
+    const Compiler  = require('./Compiler');
     const oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
     const WIDTH     = 10;
     const HEIGHT    = 10;
@@ -96,7 +97,7 @@ describe('src/irma/VM', () => {
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
-        vm.compile(org);
+        Compiler.compile(org);
 
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);

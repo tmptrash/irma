@@ -3,7 +3,7 @@
  *
  * @author flatline
  */
-const Config                = require('./../Config');
+const Config                = require('../Config');
 const Organism              = require('./Organism');
 /**
  * {Number} Offset of the first command. Before it, just numbers
@@ -80,10 +80,130 @@ const MOL2W                 = Config.CODE_CMDS.MOL2W;
 const FIND                  = Config.CODE_CMDS.FIND;
 const REAX                  = Config.CODE_CMDS.REAX;
 
-class Bytes2Code {
+class Compiler {
+    /**
+     * Compiles code before run it. Compilation means to find pairs of block
+     * operations. Fro example: ifxx..end, loop..end, func..end, call..ret
+     * and so on. We store this metadata in Organism.offs|funcs|stack. 
+     * Compilation means recalculation of all block pairs.
+     * @param {Organism} org Organism we need to compile
+     * @param {Boolean} reset Resets org.line,stackIndex,fCount
+     */
+    static compile(org, reset = true) {
+        const code   = org.code;
+        const offs   = org.offs  = {};
+        const funcs  = org.funcs = {};
+        const stack  = new Int16Array(Config.orgMaxCodeSize);
+        const loops  = new Int16Array(Config.orgMaxCodeSize);
+        let   lCount = -1;
+        let   sCount = -1;
+        let   fCount = 0;
+
+        for (let i = 0, len = code.length; i < len; i++) {
+            // eslint-disable-next-line default-case
+            switch(code[i] & CODE_8_BIT_RESET_MASK) {
+                case FUNC:
+                    funcs[fCount++] = offs[i] = i + 1;
+                    stack[++sCount] = i;
+                    break;
+
+                case LOOP:
+                    loops[++lCount] = i;
+                    stack[++sCount] = i;
+                    offs[i] = i + 1;
+                    break;
+
+                case IFP:
+                case IFN:
+                case IFZ:
+                case IFG:
+                case IFL:
+                case IFE:
+                case IFNE:
+                    stack[++sCount] = i;
+                    offs[i] = i + 1;
+                    break;
+
+                case BREAK:
+                    if (sCount < 0) {break}
+                    offs[i] = loops[lCount]; // loop offs
+                    break;
+
+                case END:
+                    if (sCount < 0) {break}
+                    if ((code[stack[sCount]] & CODE_8_BIT_RESET_MASK) === LOOP) {lCount--}
+                    offs[i] = stack[sCount];
+                    offs[stack[sCount--]] = i + 1;
+                    break;
+            }
+        }
+
+        org.fCount = fCount;                                           // Functions amount must be updated in any case
+        if (reset) {                                                   // This is first time we compile the code. We don't need to update 
+            org.line       = 0;                                        // stack and current line. Just set default values.
+            org.stackIndex = -1;
+            org.mPos       = 0;
+        }
+    }
+
+    /**
+     * This method only updates metadata: Organism.offs|funcs|stack.
+     * @param {Organism} org Organism we need to compile
+     * @param {Number} index1 Start index in a code, where change was occure
+     * @param {Number} index2 End index in a code where changed were occure
+     * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
+     * @param {Number} fCount Previous amount of functions in a code
+     */
+    static updateMetadata(org, index1 = 0, index2 = 0, dir = 1, fCount = -1) {
+        const amount = (index2 - index1) * dir;
+        //
+        // Updates current line
+        //
+        const line   = org.line;
+        if (dir < 0) {
+            if (line >= index2) {org.line += amount}
+            else if (line >= index1 && line < index2) {org.line = index1}
+        } else if (line >= index1) {org.line += amount}
+        //
+        // Updates function metadata (indexes in a code). If amount of functions
+        // were changed we have to remove call stack. In other case we have to 
+        // update all call stack indexes
+        //
+        if (fCount === -1) {fCount = org.fCount}
+        // TODO: What should we do in case of new or removed functions?
+        // if (org.fCount < fCount) {org.stackIndex = -1}
+        else {
+            const stk = org.stack;
+            for (let i = 0, len = org.stackIndex + 1; i <= len; i++) {
+                const ln = stk[i];                                      // Updates back line
+                if (dir < 0) {
+                    if (ln >= index2) {stk[i] += amount}
+                    else if (ln >= index1 && ln <= index2) {stk[i] = index1}
+                } else if (ln >= index1) {stk[i] += amount}
+            }
+        }
+        //
+        // Updates loop metadata (after loop lines indexes)
+        //
+        const loops   = org.loops;
+        const newLoop = {};
+        for (let l in loops) {
+            if (loops.hasOwnProperty(l)) {
+                l = +l;
+                const iterations = loops[l];
+                if (dir < 0) {
+                    if (l > index2) {newLoop[l + amount] = iterations}
+                    else if (l >= index1 && l <= index2) {newLoop[index1] = iterations}
+                    else {newLoop[l] = iterations}
+                } else if (l >= index1) {newLoop[l + amount] = iterations}
+                else {newLoop[l] = iterations}
+            }
+        }
+        org.loops = newLoop;
+    }
+
     /**
      * Converts bytes array to array of asm like strings
-     * @param {VM} vm Instance of Virtual Machine to compile the code
      * @param {Array} bytes Array of numbers (bytes)
      * @param {Boolean} lines Show or hide lines and molecules
      * @param {Boolean} comment Show or not comments near every line
@@ -91,16 +211,16 @@ class Bytes2Code {
      * @param {Boolean} firstLineEmpty adds first empty line before script
      * @return {String} Array of asm like strings
      */
-    static toCode(vm, bytes, lines = true, comments = true, info = false, firstLineEmpty = true) {
+    static toCode(bytes, lines = true, comments = true, info = false, firstLineEmpty = true) {
         //
         // Create fake organism to compile his code to know where
         // blocks are located (func/ifxx/loop...end)
         //
         const org     = new Organism(-1, bytes);
-        vm.compile(org);
+        this.compile(org);
         const offs    = org.offs;
         const padSize = lines ? CODE_PAD_SIZE : 0;
-        let code      = `${firstLineEmpty ? '\n' : ''}${info ? Bytes2Code._info() : ''}`;
+        let code      = `${firstLineEmpty ? '\n' : ''}${info ? Compiler._info() : ''}`;
         let span      = '';
         let mol       = 0;
 
@@ -109,7 +229,7 @@ class Bytes2Code {
             const molStr  = isMol ? `${MOL_STR} ` : '     ';
             const cmd     = bytes[b] & CODE_8_BIT_RESET_MASK;
             const molIdx  = lines ? (isMol ? `${(mol++).toString().padEnd(3)} ` : `${mol.toString().padEnd(3)} `) : '';
-            const line    = Bytes2Code.MAP[cmd];
+            const line    = Compiler.MAP[cmd];
             const lineIdx = lines ? `${b ? '\n' : ''}${(b.toString()).padEnd(5)}` : (b ? '\n' : '');
             const comment = comments && line ? `// ${line[1]}` : '';
             if (cmd === FUNC ||
@@ -227,7 +347,7 @@ class Bytes2Code {
      * @return {Object} Commands map
      */
     static _getCmdMap() {
-        const map    = Bytes2Code.MAP;
+        const map    = Compiler.MAP;
         const cmdMap = {};
         const keys   = Object.keys(map);
 
@@ -244,7 +364,7 @@ class Bytes2Code {
  * code to human readable code convertion
  * @constant
  */
-Bytes2Code.MAP = {
+Compiler.MAP = {
     //
     // "line" language core operators
     //
@@ -318,6 +438,6 @@ Bytes2Code.MAP = {
  * commands and values are their numeric codes
  * @constant
  */
-Bytes2Code.CMD_MAP = Bytes2Code._getCmdMap();
+Compiler.CMD_MAP = Compiler._getCmdMap();
 
-module.exports = Bytes2Code;
+module.exports = Compiler;
