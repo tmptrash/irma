@@ -1,8 +1,6 @@
 /* eslint-disable global-require */
 describe('src/irma/VM', () => {
     const Config    = require('./../Config');
-    const Compiler  = require('./Compiler');
-    const oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
     const WIDTH     = 10;
     const HEIGHT    = 10;
     //
@@ -10,6 +8,9 @@ describe('src/irma/VM', () => {
     // configuration instead of default
     // eslint-disable-next-line no-use-before-define
     _setConfig();
+
+    const Compiler  = require('./Compiler');
+    const oldConfig = JSON.parse(JSON.stringify(Config)); // Config copy
     const VM        = require('./VM');
     
     const TG        = Config.CODE_CMDS.TOGGLE;
@@ -552,6 +553,7 @@ describe('src/irma/VM', () => {
             it('save and load', () => {
                 const code = [1,SA,LO,RI,SA,RI,2,SA];
                 Config.codeLinesPerIteration = code.length;
+                Config.ORG_MAX_MEM_SIZE = 16;
                 const vm1 = new VM(1);
                 const org = vm1.addOrg(0, code);
 
