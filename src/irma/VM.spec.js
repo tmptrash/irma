@@ -196,6 +196,21 @@ describe('src/irma/VM', () => {
             it('add4', () => run([1,TG,2,AD], 3, 1));
             it('add5', () => run([DE,TG,2,AD], 1, -1));
             it('add6', () => run([1,TG,1,AD,AD], 3, 1));
+            it('add7', () => {
+                const code = [EQ,AD];
+                Config.codeLinesPerIteration = code.length;
+                const org  = vm.orgs.get(0);
+                org.code   = code;
+                org.ax     = 2 ** 1023;
+
+                expect(org.bx).toBe(0);
+                vm.run();
+
+                expect(org.ax).toBe(Number.MAX_VALUE);
+                expect(org.bx).toBe(2 ** 1023);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            })
         });
 
         describe('sub tests', () => {
