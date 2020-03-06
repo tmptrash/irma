@@ -243,6 +243,21 @@ describe('src/irma/VM', () => {
             it('mul3', () => run([0,DE,TG,MU], 0, -1));
             it('mul4', () => run([DE,DE,TG,EQ,MU], 4, -2));
             it('mul5', () => run([1,TG,2,MU], 2, 1));
+            it('mul6', () => {
+                const code = [EQ,MU];
+                Config.codeLinesPerIteration = code.length;
+                const org  = vm.orgs.get(0);
+                org.code   = code;
+                org.bx     = 2 ** 1023;
+
+                expect(org.ax).toBe(0);
+                vm.run();
+
+                expect(org.ax).toBe(Number.MAX_VALUE);
+                expect(org.bx).toBe(2 ** 1023);
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            })
         });
 
         describe('div tests', () => {
