@@ -201,9 +201,9 @@ describe('src/irma/VM', () => {
                 Config.codeLinesPerIteration = code.length;
                 const org  = vm.orgs.get(0);
                 org.code   = code;
-                org.ax     = 2 ** 1023;
+                org.bx     = 2 ** 1023;
 
-                expect(org.bx).toBe(0);
+                expect(org.ax).toBe(0);
                 vm.run();
 
                 expect(org.ax).toBe(Number.MAX_VALUE);
@@ -219,6 +219,21 @@ describe('src/irma/VM', () => {
             it('sub2', () => run([1,TG,SU], -1, 1));
             it('sub3', () => run([0,DE,TG,EQ,SU], 0, -1));
             it('sub4', () => run([3,TG,1,SU], -2, 3));
+            it('sub5', () => {
+                const code = [SU];
+                Config.codeLinesPerIteration = code.length;
+                const org  = vm.orgs.get(0);
+                org.code   = code;
+                org.ax     = 2 ** 1023;
+                org.bx     = -(2 ** 1023);
+
+                vm.run();
+
+                expect(org.ax).toBe(-Number.MAX_VALUE);
+                expect(org.bx).toBe(-(2 ** 1023));
+                expect(org.code).toEqual(code);
+                expect(org.line).toEqual(code.length);
+            })
         });
 
         describe('mul tests', () => {
