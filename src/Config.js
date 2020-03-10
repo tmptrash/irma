@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 / 4;
-const HEIGHT      = 1080 / 4;
+const WIDTH       = 1920;
+const HEIGHT      = 1080;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -159,28 +159,29 @@ module.exports = {
           toggle               @mol   # bx=back dir
           len
           split                       # bx=back dir
+          reax
         end
         #
         # Reset i counter in m0
         #
-        0
-        save                   @mol
+        0                      @mol
+        save
         #
         # Create big loop
         #
         len                           # ~70
         toggle
         eq
-        mul
-        loop                   @mol
+        mul                    @mol
+        loop
           #
           # Copy current mol into m1..x
           #
           load                        # ax=i
           smol
           right                       # m1
-          cmol                        # m1..x - i mol
-          left                 @mol   # m0
+          cmol                 @mol   # m1..x - i mol
+          left                        # m0
           #
           # Step any direction, eat and checks if needed mol
           #
@@ -190,43 +191,46 @@ module.exports = {
           #
           # Store back dir in m-1
           #
-          toggle                      # bx=dir
-          4                    @mol
+          toggle               @mol   # bx=dir
+          4
           add                         # ax=back dir
           left                        # m-1
           save
-          right                       # m0
+          right                @mol   # m0
           #
           # We should have free space behind for wastes
           #
-          reax                 @mol
+          reax
           ifp
             eq                        # ax=dir
             join
-            reax
-            ifp                @mol   # ate something
+            reax               @mol
+            ifp                       # ate something
               #
               # Checks ate mol len
               #
               load                    # ax=cur mol idx
               smol
               mol
-              toggle                  # ax=molIdx1  bx=molIdx0
-              sub              @mol   # ax=cur mol len
+              toggle           @mol   # ax=molIdx1  bx=molIdx0
+              sub                     # ax=cur mol len
               inc
               toggle                  # bx=cur mol len
               reax                    # ax=ate mol len
               #
               # Cut bad mol
               #
-              ifne                    # bad ate mol len
-                toggle         @mol   # bx=ate mol len
+              ifne             @mol   # bad ate mol len
+                toggle                # bx=ate mol len
                 len
                 sub                   # ax=old code len
                 smol
-                0
-                call           @mol
-              end
+                0              @mol
+                call
+                ifz
+                  break
+                end
+              end              @mol
               #
               # Sets mol head to the end
               #
@@ -236,46 +240,49 @@ module.exports = {
               # Compares current mol and eated
               #
               right
-              mcmp             @mol
-              left
+              mcmp
+              left             @mol
               reax
               ifz                     # unneeded mol cut it
                 0
-                call           @mol
+                call
+                ifz            @mol
+                  break
+                end
                 0
               end
-              ifp                     # needed mol
+              ifp              @mol   # needed mol
                 #
                 # Increase i, in m0
                 #
                 load
-                smol           @mol
+                smol
                 rmol
                 mol
-                save
+                save           @mol
                 #
                 # Checks if this is the end (last replicator mol)
                 #
                 33
-                lshift         @mol   # ax=66 - nop
+                lshift                # ax=66 - nop
                 toggle                # bx=66
                 right
-                load
+                load           @mol
                 left
-                ife            @mol
+                ife
                   #
                   # Loads back dir from m-1
                   #
                   left                # m-1
                   load
-                  right
+                  right        @mol
                   toggle              # bx=back dir
-                  17           @mol
+                  17
                   save
                   break
-                end
+                end            @mol
               end
-            end                @mol
+            end
           end
         end
         #
@@ -283,19 +290,32 @@ module.exports = {
         # it, that nop atom should be the first atom in a last molecule.
         # Any other molecule must not have it on the beginning
         #
-        nop
-        nop
-        nop                    @mol
-        line
-        line
-        line
-        smol
-        rmol                   @mol
-        nop                           # separator id
-        rmol
-        len
-        len
-        split                  @mol
+        63                     @mol
+        loop
+          8
+          rand
+          step
+          line                 @mol
+          line
+          line
+          smol
+          rmol
+          rmol                 @mol
+          rmol
+          rmol
+          reax
+          ifn
+            break              @mol
+          end
+          len
+          split
+          reax
+          nop                  @mol
+          nop                         # separator. must be first atom  
+          ifp
+            break
+          end
+        end                    @mol
         #
         # Food section
         #
@@ -383,7 +403,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : WIDTH * HEIGHT * .7, // 70% of molecules
+    molAmount                  : WIDTH * HEIGHT * .3, // 30% of molecules
     molCodeSize                : 5,
     molRandomAtomPercent       : .3,
     molColor                   : 0xff0000,
