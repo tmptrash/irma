@@ -10,7 +10,7 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 /4;
+const WIDTH       = 1920 / 4;
 const HEIGHT      = 1080 / 4;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
@@ -154,22 +154,22 @@ module.exports = {
         #
         func
           left
-          load                 @mol
+          load
           right
-          toggle                      # bx=back dir
-          len                  @mol
+          toggle               @mol   # bx=back dir
+          len
           split                       # bx=back dir
         end
         #
         # Reset i counter in m0
         #
-        0                      @mol
-        save
+        0
+        save                   @mol
         #
         # Create big loop
         #
         len                           # ~70
-        toggle                 @mol
+        toggle
         eq
         mul
         loop                   @mol
@@ -178,22 +178,22 @@ module.exports = {
           #
           load                        # ax=i
           smol
-          right                @mol   # m1
+          right                       # m1
           cmol                        # m1..x - i mol
-          left                        # m0
+          left                 @mol   # m0
           #
           # Step any direction, eat and checks if needed mol
           #
-          8                    @mol
+          8
           rand
           step
           #
           # Store back dir in m-1
           #
-          toggle               @mol   # bx=dir
-          4
+          toggle                      # bx=dir
+          4                    @mol
           add                         # ax=back dir
-          left                 @mol   # m-1
+          left                        # m-1
           save
           right                       # m0
           #
@@ -202,19 +202,19 @@ module.exports = {
           reax                 @mol
           ifp
             eq                        # ax=dir
-            join               @mol
+            join
             reax
-            ifp                       # ate something
+            ifp                @mol   # ate something
               #
               # Checks ate mol len
               #
-              load             @mol   # ax=cur mol idx
+              load                    # ax=cur mol idx
               smol
               mol
-              toggle           @mol   # ax=molIdx1  bx=molIdx0
-              sub                     # ax=cur mol len
+              toggle                  # ax=molIdx1  bx=molIdx0
+              sub              @mol   # ax=cur mol len
               inc
-              toggle           @mol   # bx=cur mol len
+              toggle                  # bx=cur mol len
               reax                    # ax=ate mol len
               #
               # Cut bad mol
@@ -223,10 +223,10 @@ module.exports = {
                 toggle         @mol   # bx=ate mol len
                 len
                 sub                   # ax=old code len
-                smol           @mol
+                smol
                 0
-                call
-              end              @mol
+                call           @mol
+              end
               #
               # Sets mol head to the end
               #
@@ -235,31 +235,31 @@ module.exports = {
               #
               # Compares current mol and eated
               #
-              right            @mol
-              mcmp
+              right
+              mcmp             @mol
               left
-              reax             @mol
+              reax
               ifz                     # unneeded mol cut it
                 0
                 call           @mol
                 0
               end
-              ifp              @mol   # needed mol
+              ifp                     # needed mol
                 #
                 # Increase i, in m0
                 #
                 load
-                smol
-                rmol           @mol
+                smol           @mol
+                rmol
                 mol
                 save
                 #
                 # Checks if this is the end (last replicator mol)
                 #
-                33             @mol
-                lshift                # ax=66 - nop
+                33
+                lshift         @mol   # ax=66 - nop
                 toggle                # bx=66
-                right          @mol
+                right
                 load
                 left
                 ife            @mol
@@ -268,26 +268,32 @@ module.exports = {
                   #
                   left                # m-1
                   load
-                  right        @mol
+                  right
                   toggle              # bx=back dir
-                  17
-                  save         @mol
+                  17           @mol
+                  save
                   break
                 end
-              end              @mol
-            end
+              end
+            end                @mol
           end
-        end                    @mol
+        end
         #
-        # Cut wastes
+        # Cut wastes. The code below is not random. The reason behind
+        # it, that nop atom should be the first atom in a last molecule.
+        # Any other molecule must not have it on the beginning
         #
+        nop
+        nop
+        nop                    @mol
         line
         line
-        smol                   @mol
-        rmol
-        rmol
+        line
+        smol
         rmol                   @mol
         nop                           # separator id
+        rmol
+        len
         len
         split                  @mol
         #
@@ -377,8 +383,8 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : 80000,
-    molCodeSize                : 3,
+    molAmount                  : WIDTH * HEIGHT * .7, // 70% of molecules
+    molCodeSize                : 5,
     molRandomAtomPercent       : .3,
     molColor                   : 0xff0000,
     /**

@@ -217,7 +217,7 @@ class Compiler {
         // blocks are located (func/ifxx/loop...end)
         //
         const org     = new Organism(-1, bytes);
-        this.compile(org);
+        Compiler.compile(org);
         const offs    = org.offs;
         const padSize = lines ? CODE_PAD_SIZE : 0;
         let code      = `${firstLineEmpty ? '\n' : ''}${info ? Compiler._info() : ''}`;
