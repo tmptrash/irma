@@ -225,78 +225,95 @@ module.exports = {
                 len
                 sub                   # ax=old code len
                 smol
+                #
+                # Try to get energy by catabolism
+                #
                 0              @mol
+                catab
+                #
+                # Cut bad molecules
+                #
                 call
                 ifz
                   break
-                end
-              end              @mol
+                end            @mol
+              end
               #
               # Sets mol head to the end
               #
-              len
-              smol
-              #
-              # Compares current mol and eated
-              #
-              right
-              mcmp
-              left             @mol
-              reax
-              ifz                     # unneeded mol cut it
-                0
-                call
-                ifz            @mol
-                  break
-                end
-                0
-              end
-              ifp              @mol   # needed mol
-                #
-                # Increase i, in m0
-                #
-                load
+            ife
+                toggle                  # bx=ate mol len
+                len
+                sub              @mol
                 smol
-                rmol
-                mol
-                save           @mol
                 #
-                # Checks if this is the end (last replicator mol)
+                # Compares current mol and eated
                 #
-                33
-                lshift                # ax=66 - nop
-                toggle                # bx=66
                 right
-                load           @mol
+                mcmp
                 left
-                ife
+                reax             @mol
+                ifz                     # unneeded mol cut it
+                  0
                   #
-                  # Loads back dir from m-1
+                  # Try to get energy by catabolism
                   #
-                  left                # m-1
+                  catab
+                  call
+                  ifz            @mol
+                    break
+                  end
+                  0
+                end
+                ifp              @mol   # needed mol
+                  #
+                  # Increase i, in m0
+                  #
                   load
-                  right        @mol
-                  toggle              # bx=back dir
-                  17
-                  save
-                  break
-                end            @mol
+                  smol
+                  rmol
+                  mol
+                  save           @mol
+                  #
+                  # Checks if this is the end (last replicator mol)
+                  #
+                  33
+                  lshift                # ax=66 - nop
+                  toggle                # bx=66
+                  right
+                  load           @mol
+                  left
+                  ife
+                    #
+                    # Loads back dir from m-1
+                    #
+                    left                # m-1
+                    load
+                    right        @mol
+                    toggle              # bx=back dir
+                    17
+                    save
+                    break
+                  end            @mol
+                end
               end
             end
           end
-        end
+        end                      @mol
         #
         # Cut wastes. The code below is not random. The reason behind
         # it, that nop atom should be the first atom in a last molecule.
         # Any other molecule must not have it on the beginning
         #
-        63                     @mol
+        63
+        #
+        # We have to try cut wastes many times in different places
+        #
         loop
           8
-          rand
+          8
+          rand                 @mol
           step
-          line                 @mol
-          line
           line
           smol
           rmol
@@ -311,7 +328,7 @@ module.exports = {
           split
           reax
           nop                  @mol
-          nop                         # separator. must be first atom  
+          nop                         # separator. must be first atom of last mol 
           ifp
             break
           end
