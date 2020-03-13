@@ -79,6 +79,7 @@ const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
 const FIND                  = Config.CODE_CMDS.FIND;
 const REAX                  = Config.CODE_CMDS.REAX;
+const DIR                   = Config.CODE_CMDS.DIR;
 
 class Compiler {
     /**
@@ -431,6 +432,7 @@ Compiler.MAP = {
     [MOL2W ]: ['mol2w',  'mol=molWrite'],
     [FIND  ]: ['find',   'ax=find(ax=fromIdx,bx=toIdx):re'],
     [REAX  ]: ['reax',   'ax=re'],
+    [DIR   ]: ['dir',    'dir(ax)']
 };
 
 /**

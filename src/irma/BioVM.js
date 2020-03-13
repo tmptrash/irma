@@ -21,7 +21,7 @@ const RE_ERR                = Config.CODE_RE_ERR;
 const RE_SPECIAL            = Config.CODE_RE_SPECIAL;
 const ORG_CODE_MAX_SIZE     = Config.orgMaxCodeSize;
 const IS_ORG_ID             = Config.CODE_ORG_ID;
-const DIR                   = Config.DIR;
+const DIRS                  = Config.DIRS;
 const WIDTH                 = Config.WORLD_WIDTH - 1;
 const HEIGHT                = Config.WORLD_HEIGHT - 1;
 const WIDTH1                = WIDTH + 1;
@@ -59,6 +59,7 @@ const W2MOL                 = Config.CODE_CMDS.W2MOL;
 const MOL2W                 = Config.CODE_CMDS.MOL2W;
 const FIND                  = Config.CODE_CMDS.FIND;
 const REAX                  = Config.CODE_CMDS.REAX;
+const DIR                   = Config.CODE_CMDS.DIR;
 
 class BioVM extends VM {
     /**
@@ -151,7 +152,7 @@ class BioVM extends VM {
         switch (cmd) {
             case JOIN: {
                 ++org.line;
-                const offset  = org.offset + DIR[Math.abs(org.ax) % 8];
+                const offset  = org.offset + org.dir;
                 const dot     = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
@@ -176,7 +177,7 @@ class BioVM extends VM {
                 org.re        = RE_OK;
                 // TODO: these checks may be removed if we don't change amount of atoms in a world
                 if (this.orgsMols.full || org.mem[org.mPos] === IS_ORG_ID && this.orgs.full) {org.re = RE_ERR; return} // mols and orgs maximum was reached
-                let offset    = org.offset + DIR[Math.abs(org.bx) % 8];
+                let offset    = org.offset + org.dir;
                 if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
                 const dot     = this.world.index(offset);
@@ -205,7 +206,7 @@ class BioVM extends VM {
                 ++org.line;
                 org.re = RE_OK;
                 org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
-                let offset = org.offset + DIR[Math.abs(org.ax) % 8];
+                let offset = org.offset + org.dir;
                 if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
                 if (this.world.index(offset) > -1) {org.re = RE_ERR; return}
@@ -239,7 +240,7 @@ class BioVM extends VM {
             // TODO: review this code
             case NREAD: {
                 ++org.line;
-                const offset = org.offset + DIR[Math.abs(org.ax) % 8];
+                const offset = org.offset + org.dir;
                 const dot = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg  = this.orgsMols.get(dot);
@@ -261,7 +262,7 @@ class BioVM extends VM {
             case GET: {
                 ++org.line;
                 if (org.packet) {org.re = RE_ERR; return}
-                const dot = this.world.index(org.offset + DIR[Math.abs(org.ax) % 8]);
+                const dot = this.world.index(org.offset + org.dir);
                 if (dot < 0) {org.re = RE_ERR; return}
                 (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
                 return;
@@ -271,7 +272,7 @@ class BioVM extends VM {
                 ++org.line;
                 if (!org.packet) {org.re = RE_ERR; return}
                 if (this.orgsMols.full) {org.re = RE_ERR; return}
-                const offset = org.offset + DIR[Math.abs(org.ax) % 8];
+                const offset = org.offset + org.dir;
                 const dot    = this.world.index(offset);
                 if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
                 org.packet.hasOwnProperty('energy') ? this.addOrg(org.packet, offset, org.packet.code, org.packet.energy) : this.addMol(offset, org.packet.code);
@@ -540,6 +541,11 @@ class BioVM extends VM {
             case REAX:
                 ++org.line;
                 org.ax = org.re;
+                return;
+
+            case DIR:
+                ++org.line;
+                org.dir = DIRS[Math.abs(org.ax) % 8];
                 // eslint-disable-next-line no-useless-return
                 return;
         }
@@ -575,6 +581,7 @@ class BioVM extends VM {
         org.color    = Config.orgColor;     // Current organism color
         org.packet   = null;                // Special place for storing atom, molecule or other organism
         org.energy   = energy;              // Orgainm's energy
+        org.dir      = 1;                   // Active direction offset
         org.mol      = 0;                   // Molecule head. Pointer to some code position
         org.molWrite = 0;                   // Write head. Pointer to write position. Used with mmol command
         org.re       = 0;                   // Register "re". Is used as result for command (mmol, step, see,...)
@@ -779,8 +786,8 @@ class BioVM extends VM {
         const world = this.world;
         
         for (let i = 0; i < 8; i++) {
-            if (world.index(offset + DIR[i++]) === -1) {
-                return offset + DIR[i++];
+            if (world.index(offset + DIRS[i++]) === -1) {
+                return offset + DIRS[i++];
             }
         }
 

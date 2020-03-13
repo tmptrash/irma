@@ -14,7 +14,7 @@ const Config            = require('../../Config');
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIR               = Config.DIR;
+const DIRS              = Config.DIRS;
 const WIDTH             = Config.WORLD_WIDTH - 1;
 const HEIGHT            = Config.WORLD_HEIGHT - 1;
 const WIDTH1            = WIDTH + 1;
@@ -71,11 +71,11 @@ class Decay {
     _getNearPos(org) {
         const startOffs = org.offset;
         const mol = org.code[0];
-        let offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+        let offset = startOffs + DIRS[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
         if (offset < 0 || offset > MAX_OFFS || this._vm.world.index(offset) > -1) {
-            offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+            offset = startOffs + DIRS[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
             if (offset < 0 || offset > MAX_OFFS || this._vm.world.index(offset) > -1) {
-                offset = startOffs + DIR[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
+                offset = startOffs + DIRS[Math.floor(mol % 8)] * Math.floor(Math.random() * Config.molDecayDistance);
             }
         }
 

@@ -58,7 +58,7 @@ describe('src/irma/VM', () => {
     function _setConfig() {
         Object.assign(Config, {
             // constants
-            DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
+            DIRS                       : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
             DB_ON                      : false,
             WORLD_WIDTH                : WIDTH,
             WORLD_HEIGHT               : HEIGHT,

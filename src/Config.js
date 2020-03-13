@@ -79,7 +79,8 @@ const COMMANDS    = {
     W2MOL   : CODE_OFFS + 56,
     MOL2W   : CODE_OFFS + 57,
     FIND    : CODE_OFFS + 58,
-    REAX    : CODE_OFFS + 59
+    REAX    : CODE_OFFS + 59,
+    DIR     : CODE_OFFS + 60
 };
 
 // TODO: rename all molecules related names to prefix "mol".
@@ -93,7 +94,7 @@ module.exports = {
      * right, right-down,...
      * @constant
      */
-    DIR                        : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
+    DIRS                       : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
     /**
      * {String} Line comment symbol
      */

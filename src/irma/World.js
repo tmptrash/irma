@@ -16,7 +16,7 @@ const WORLD_CANVAS_HEIGHT = Config.WORLD_CANVAS_HEIGHT;
  * point depending on one of 8 directions. We use these values in any command
  * related to sight, moving and so on
  */
-const DIR                 = Config.DIR;
+const DIRS                 = Config.DIRS;
 
 class World {
     constructor(options) {
@@ -137,7 +137,7 @@ class World {
         const distance2 = Math.floor(distance / 2);
 
         for (let i = 0; i < distance * distance; i++) {
-            const offs = offset + DIR[Math.floor(Math.random() * 8)] * distance + Math.floor(Math.random() * distance) - distance2;
+            const offs = offset + DIRS[Math.floor(Math.random() * 8)] * distance + Math.floor(Math.random() * distance) - distance2;
             if (this._data[offs] === 0) {return offs}
         }
 
