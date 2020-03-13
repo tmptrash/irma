@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920;
-const HEIGHT      = 1080;
+const WIDTH       = 1920 * 4;
+const HEIGHT      = 1080 * 4;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -347,9 +347,9 @@ module.exports = {
          */
         energy: 6000 * 1000 + (6000 * 1000) / 3 // 6000 sec * 1000 commands + 30%
     }],
-    codeLinesPerIteration      : 10,
+    codeLinesPerIteration      : 3,
     codeRepeatsPerRun          : 20,
-    codeMutateEveryClone       : 0,
+    codeMutateEveryClone       : 10,
     codeMutateMutations        : false,
 
     /**
@@ -366,8 +366,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH,
-    WORLD_CANVAS_HEIGHT        : HEIGHT,
+    WORLD_CANVAS_WIDTH         : WIDTH / 8,
+    WORLD_CANVAS_HEIGHT        : HEIGHT / 8,
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -407,7 +407,7 @@ module.exports = {
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 0, // 1200001,
+    orgMutationPeriod          : 0, //3000000,
     orgMaxCodeSize             : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
@@ -422,7 +422,7 @@ module.exports = {
     molDecayDistance           : 60,
     molAmount                  : WIDTH * HEIGHT * .3, // 30% of molecules
     molCodeSize                : 5,
-    molRandomAtomPercent       : .3,
+    molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
