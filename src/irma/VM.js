@@ -215,12 +215,12 @@ class VM {
 
                         case RSHIFT:
                             ++line;
-                            ax >>= 1;
+                            ax >>= bx;
                             continue;
 
                         case LSHIFT:
                             ++line;
-                            ax <<= 1;
+                            ax <<= bx;
                             continue;
 
                         case RAND:
