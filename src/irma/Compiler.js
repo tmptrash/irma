@@ -75,11 +75,10 @@ const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
 const MCMP                  = Config.CODE_CMDS.MCMP;
-const W2MOL                 = Config.CODE_CMDS.W2MOL;
-const MOL2W                 = Config.CODE_CMDS.MOL2W;
 const FIND                  = Config.CODE_CMDS.FIND;
 const REAX                  = Config.CODE_CMDS.REAX;
 const DIR                   = Config.CODE_CMDS.DIR;
+const HEAD                  = Config.CODE_CMDS.HEAD;
 
 class Compiler {
     /**
@@ -428,11 +427,10 @@ Compiler.MAP = {
     [LMOL  ]: ['lmol',   'mol=lmol():re'],
     [CMOL  ]: ['cmol',   'cmol():re'],
     [MCMP  ]: ['mcmp',   'mcmp():re'],
-    [W2MOL ]: ['w2mol',  'molWrite=mol'],
-    [MOL2W ]: ['mol2w',  'mol=molWrite'],
     [FIND  ]: ['find',   'ax=find(ax=fromIdx,bx=toIdx):re'],
     [REAX  ]: ['reax',   'ax=re'],
-    [DIR   ]: ['dir',    'dir(ax)']
+    [DIR   ]: ['dir',    'dir(ax)'],
+    [HEAD  ]: ['head',   'head']
 };
 
 /**

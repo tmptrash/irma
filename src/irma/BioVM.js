@@ -55,11 +55,10 @@ const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
 const MCMP                  = Config.CODE_CMDS.MCMP;
-const W2MOL                 = Config.CODE_CMDS.W2MOL;
-const MOL2W                 = Config.CODE_CMDS.MOL2W;
 const FIND                  = Config.CODE_CMDS.FIND;
 const REAX                  = Config.CODE_CMDS.REAX;
 const DIR                   = Config.CODE_CMDS.DIR;
+const HEAD                  = Config.CODE_CMDS.HEAD;
 
 class BioVM extends VM {
     /**
@@ -183,7 +182,7 @@ class BioVM extends VM {
                 const dot     = this.world.index(offset);
                 if (dot > -1) {org.re = RE_ERR; return} // something on the way
                 const code    = org.code;
-                let   idx0    = org.mol;
+                let   idx0    = org.heads[org.head];
                 let   idx1    = org.ax;
                 if (idx1 < 0) {idx1 = 0}
                 if (idx1 >= code.length) {idx1 = code.length - 1}
@@ -296,7 +295,7 @@ class BioVM extends VM {
             case ANAB: {
                 ++org.line;
                 let   code      = org.code;
-                const m1Idx     = org.mol;
+                const m1Idx     = org.heads[org.head];
                 //
                 // Join current and next molecules
                 //
@@ -364,7 +363,7 @@ class BioVM extends VM {
                 //
                 // Cuts molecule by mol head and ax
                 //
-                const mol     = org.mol;
+                const mol     = org.heads[org.head];
                 const molEnd  = this._molLastOffs(code, mol);
                 if (mol === molEnd) {org.re = RE_ERR; return}
                 let   cutPos  = org.ax;
@@ -380,15 +379,18 @@ class BioVM extends VM {
 
             case MMOL: {
                 ++org.line;
+                const heads    = org.heads;
+                const head     = org.head;
+                const nextHead = heads[head + 1 === heads.length ? 0 : head + 1];
                 //
                 // This code obtains source molecule
                 //
                 let    code    = org.code;
-                let   m2Idx    = org.mol;
+                let   m2Idx    = heads[head];
                 if (m2Idx < 0) {m2Idx = 0}
                 if (m2Idx >= code.length) {m2Idx = code.length - 1}
                 for (let i = m2Idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
-                if (m2Idx === org.molWrite) {org.re = RE_OK; return} // src and dest molecules are the same
+                if (m2Idx === nextHead) {org.re = RE_OK; return}    // src and dest molecules are the same
                 const m2EndIdx = this._molLastOffs(code, m2Idx);
                 const moveCode = code.slice(m2Idx, m2EndIdx + 1);
                 if (moveCode.length < 1) {org.re = RE_ERR; return}
@@ -397,7 +399,7 @@ class BioVM extends VM {
                 //
                 const len      = m2EndIdx - m2Idx + 1;
                 code           = code.splice(m2Idx, len);
-                const insIdx   = this._molLastOffs(code, org.molWrite + (m2Idx < org.molWrite ? -len : 0)) + 1;
+                const insIdx   = this._molLastOffs(code, nextHead + (m2Idx < (nextHead) ? -len : 0)) + 1;
                 org.code       = code.splice(insIdx, 0, moveCode);
                 org.energy    -= Config.energyMove;
                 org.re         = RE_OK;
@@ -418,19 +420,19 @@ class BioVM extends VM {
 
             case MOL: {
                 ++org.line;
-                org.ax    = org.mol;
-                org.bx    = this._molLastOffs(org.code, org.mol);
+                org.ax    = org.heads[org.head];
+                org.bx    = this._molLastOffs(org.code, org.ax);
                 return;
             }
 
             case SMOL: {
                 ++org.line;
                 const code = org.code;
-                if (org.ax < 0) {org.mol = org.ax = 0; return}
+                if (org.ax < 0) {org.heads[org.head] = org.ax = 0; return}
                 if (org.ax >= code.length) {org.ax = code.length - 1}
                 for (let i = org.ax - 1;; i--) {
                     if ((code[i] & MASK8) > 0 || i < 0) {
-                        org.mol = i + 1;
+                        org.heads[org.head] = i + 1;
                         break;
                     }
                 }
@@ -441,8 +443,8 @@ class BioVM extends VM {
             case RMOL: {
                 ++org.line;
                 if (org.code.length < 2) {org.re = RE_OK; return}
-                if ((org.mol = this._molLastOffs(org.code, org.mol) + 1) >= org.code.length) {
-                    org.mol = 0;
+                if ((org.heads[org.head] = this._molLastOffs(org.code, org.heads[org.head]) + 1) >= org.code.length) {
+                    org.heads[org.head] = 0;
                     org.re = RE_SPECIAL;
                 } else {
                     org.re = RE_OK;
@@ -455,7 +457,7 @@ class BioVM extends VM {
                 ++org.line;
                 const code = org.code;
                 if (code.length < 2) {org.re = RE_OK; return}
-                let   mol  = org.mol;
+                let   mol  = org.heads[org.head];
                 let   ret  = RE_OK;
 
                 for (let i = mol - 1;; i--) {
@@ -463,17 +465,17 @@ class BioVM extends VM {
                     if ((code[i] & MASK8) > 0) {mol = i + 1; break}
                 }
                 if (--mol < 0) {mol = code.length - 1; org.re = RE_SPECIAL}
-                if (mol === 0) {org.mol = 0; org.re = RE_OK; return}
+                if (mol === 0) {org.heads[org.head] = 0; org.re = RE_OK; return}
                 for (let i = mol - 1, loop = 0;; i--) {
                     if (i < 0) {
                         ret = RE_SPECIAL;
                         i = code.length - 1;
-                        if (++loop > 1) {org.mol = 0; org.re  = RE_OK; return}
+                        if (++loop > 1) {org.heads[org.head] = 0; org.re  = RE_OK; return}
                         continue;
                     }
                     if ((code[i] & MASK8) > 0) {mol = i + 1; break}
                 }
-                org.mol = mol;
+                org.heads[org.head] = mol;
                 org.re  = ret;
                 return;
             }
@@ -483,7 +485,7 @@ class BioVM extends VM {
                 const code = org.code;
                 const len  = code.length;
                 const mem  = org.mem;
-                for (let i = org.mol, m = org.mPos; i < len; i++, m++) {
+                for (let i = org.heads[org.head], m = org.mPos; i < len; i++, m++) {
                     if (m >= ORG_MAX_MEM_SIZE) {m = 0}
                     mem[m] = code[i];
                     if ((code[i] & MASK8) > 0) {break}
@@ -494,27 +496,24 @@ class BioVM extends VM {
             case MCMP: {
                 ++org.line;
                 const code = org.code;
-                const idx0 = org.mol;
-                const mem  = org.mem;
+                const idx0 = org.heads[org.head];
                 const idx1 = this._molLastOffs(code, idx0);
 
-                for (let i = idx0, m = org.mPos; i <= idx1; i++, m++) {
-                    if (m >= ORG_MAX_MEM_SIZE) {m = 0}
-                    if (mem[m] !== code[i]) {org.re = RE_ERR; return}
+                if (org.ax < 1) {  // compares memory and current mol head
+                    const mem  = org.mem;
+
+                    for (let i = idx0, m = org.mPos; i <= idx1; i++, m++) {
+                        if (m >= ORG_MAX_MEM_SIZE) {m = 0}
+                        if (mem[m] !== code[i]) {org.re = RE_ERR; return}
+                    }
+                } else {           // compares current and next mol heads
+                    let idx2 = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
+    
+                    for (let i = idx0; i <= idx1; i++, idx2++) {
+                        if (code[idx2] !== code[i]) {org.re = RE_ERR; return}
+                    }
                 }
                 org.re = RE_OK;
-                return;
-            }
-
-            case W2MOL: {
-                ++org.line;
-                org.molWrite = org.mol;
-                return;
-            }
-
-            case MOL2W: {
-                ++org.line;
-                org.mol = org.molWrite;
                 return;
             }
 
@@ -523,7 +522,7 @@ class BioVM extends VM {
                 const code   = org.code;
                 const idx0   = org.ax;
                 const idx1   = org.bx;
-                const mol    = org.mol;
+                const mol    = org.heads[org.head];
                 const molLen = this._molLastOffs(code, mol) - mol + 1;
 
                 loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1); i <= till; i++) {
@@ -546,6 +545,11 @@ class BioVM extends VM {
             case DIR:
                 ++org.line;
                 org.dir = DIRS[Math.abs(org.ax) % 8];
+                return;
+
+            case HEAD:
+                ++org.line;
+                if (++org.head === org.heads.length) {org.head = 0}
                 // eslint-disable-next-line no-useless-return
                 return;
         }
@@ -581,9 +585,9 @@ class BioVM extends VM {
         org.color    = Config.orgColor;     // Current organism color
         org.packet   = null;                // Special place for storing atom, molecule or other organism
         org.energy   = energy;              // Orgainm's energy
+        org.heads    = new Uint8Array(4);   // Organism's custom heads
+        org.head     = 0;                   // Pointer to current head
         org.dir      = 1;                   // Active direction offset
-        org.mol      = 0;                   // Molecule head. Pointer to some code position
-        org.molWrite = 0;                   // Write head. Pointer to write position. Used with mmol command
         org.re       = 0;                   // Register "re". Is used as result for command (mmol, step, see,...)
         if (parent) {
             org.mem     = parent.mem.slice();
