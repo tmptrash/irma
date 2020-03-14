@@ -79,7 +79,8 @@ const COMMANDS    = {
     FIND    : CODE_OFFS + 56,
     REAX    : CODE_OFFS + 57,
     DIR     : CODE_OFFS + 58,
-    HEAD    : CODE_OFFS + 59
+    LHEAD   : CODE_OFFS + 59,
+    RHEAD   : CODE_OFFS + 60
 };
 
 // TODO: rename all molecules related names to prefix "mol".

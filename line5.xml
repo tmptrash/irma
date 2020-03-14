@@ -1,5 +1,5 @@
 <NotepadPlus>
-    <UserLang name="line3" ext="s S" udlVersion="2.1">
+    <UserLang name="line5" ext="s S" udlVersion="2.1">
         <Settings>
             <Global caseIgnored="no" allowFoldOfComments="yes" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
             <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
@@ -15,7 +15,7 @@
             <Keywords name="Numbers, range"></Keywords>
             <Keywords name="Operators1">-</Keywords>
             <Keywords name="Operators2"></Keywords>
-            <Keywords name="Folders in code1, open">func ifdga ifdla ifdea loop ifg ifl ife ifne ifp ifn ifz</Keywords>
+            <Keywords name="Folders in code1, open">func loop ifg ifl ife ifne ifp ifn ifz</Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
             <Keywords name="Folders in code1, close">end</Keywords>
             <Keywords name="Folders in code2, open"></Keywords>
@@ -25,7 +25,7 @@
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
             <Keywords name="Keywords1">toggle eq nop add sub mul div inc dec rshift lshift rand ifp ifn ifz ifg ifl ife ifne loop call func ret end nand age line len left right save load savea loada read break</Keywords>
-            <Keywords name="Keywords2">join split step see say listen nread get put offs color anab catab mmol mol smol rmol lmol cmol mcmp w2mol mol2w find reax</Keywords>
+            <Keywords name="Keywords2">join split step see say listen nread get put offs color anab catab mol mmol smol rmol lmol cmol mcmp find reax dir lhead rhead</Keywords>
             <Keywords name="Keywords3">@mol</Keywords>
             <Keywords name="Keywords4"></Keywords>
             <Keywords name="Keywords5"></Keywords>

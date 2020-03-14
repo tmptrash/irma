@@ -78,7 +78,8 @@ const MCMP                  = Config.CODE_CMDS.MCMP;
 const FIND                  = Config.CODE_CMDS.FIND;
 const REAX                  = Config.CODE_CMDS.REAX;
 const DIR                   = Config.CODE_CMDS.DIR;
-const HEAD                  = Config.CODE_CMDS.HEAD;
+const LHEAD                 = Config.CODE_CMDS.LHEAD;
+const RHEAD                 = Config.CODE_CMDS.RHEAD;
 
 class Compiler {
     /**
@@ -430,7 +431,8 @@ Compiler.MAP = {
     [FIND  ]: ['find',   'ax=find(ax=fromIdx,bx=toIdx):re'],
     [REAX  ]: ['reax',   'ax=re'],
     [DIR   ]: ['dir',    'dir(ax)'],
-    [HEAD  ]: ['head',   'head']
+    [LHEAD ]: ['lhead',  'lhead'],
+    [RHEAD ]: ['rhead',  'rhead']
 };
 
 /**

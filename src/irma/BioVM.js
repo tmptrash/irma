@@ -58,7 +58,8 @@ const MCMP                  = Config.CODE_CMDS.MCMP;
 const FIND                  = Config.CODE_CMDS.FIND;
 const REAX                  = Config.CODE_CMDS.REAX;
 const DIR                   = Config.CODE_CMDS.DIR;
-const HEAD                  = Config.CODE_CMDS.HEAD;
+const LHEAD                 = Config.CODE_CMDS.LHEAD;
+const RHEAD                 = Config.CODE_CMDS.RHEAD;
 
 class BioVM extends VM {
     /**
@@ -547,11 +548,16 @@ class BioVM extends VM {
                 org.dir = DIRS[Math.abs(org.ax) % 8];
                 return;
 
-            case HEAD:
+            case LHEAD:
+                ++org.line;
+                if (--org.head < 0) {org.head = org.heads.length - 1}
+                return;
+
+            case RHEAD:
                 ++org.line;
                 if (++org.head === org.heads.length) {org.head = 0}
                 // eslint-disable-next-line no-useless-return
-                return;
+                return;    
         }
     }
 
@@ -576,7 +582,7 @@ class BioVM extends VM {
      */
     addOrg (parent, offset, code, energy) {
         const orgsMols = this.orgsMols;
-        const org = super.addOrg(this.orgs.freeIndex, code);
+        const org    = super.addOrg(this.orgs.freeIndex, code);
         //
         // Extends organism properties
         //
