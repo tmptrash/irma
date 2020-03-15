@@ -96,6 +96,10 @@ module.exports = {
      */
     DIRS                       : new Int32Array([-WIDTH, -WIDTH + 1, 1, WIDTH + 1, WIDTH, WIDTH - 1, -1, -WIDTH - 1]),
     /**
+     * {Array} Opposite array of directions
+     */
+    UNDIRS                     : {[-WIDTH]: 'u' , [-WIDTH + 1]: 'ur', 1: 'r', [WIDTH + 1]: 'rd', [WIDTH]: 'd', [WIDTH - 1]: 'ld', [-1]: 'l', [-WIDTH - 1]: 'lu'},
+    /**
      * {String} Line comment symbol
      */
     CODE_COMMENT_STR           : '#',
