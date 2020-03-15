@@ -39,32 +39,32 @@ loop
   # Store back dir in m0
   #
   toggle                      # bx=dir
-  4
-  add                  @mol   # ax=back dir
+  4                    @mol
+  add                         # ax=back dir
   save                        # m0=back dir
   #
   # We should have free space behind for wastes
   #
   reax
   ifp
-    eq                        # ax=dir
-    join               @mol
+    eq                 @mol   # ax=dir
+    join
     reax                      # ax=ate mol len
     ifp                       # ate something
       #
       # Checks ate mol len
       #
       mol
-      toggle                  # ax=molIdx1  bx=molIdx0
-      sub              @mol   # ax=cur mol len
+      toggle           @mol   # ax=molIdx1  bx=molIdx0
+      sub                     # ax=cur mol len
       inc
       toggle                  # bx=cur mol len
       #
       # Sets head1 to the last molecule
       #
       len
-      sub                     # ax=old code len
-      rhead            @mol   # h1
+      sub              @mol   # ax=old code len
+      rhead                   # h1
       smol
       reax                    # ax=ate mol len
       #
@@ -74,16 +74,16 @@ loop
         #
         # Try to get energy by catabolism
         #
-        0
-        catab          @mol
+        0              @mol
+        catab
         #
         # Cut bad molecules
         #
         call
         ifz
           break
-        end
-      end              @mol
+        end            @mol
+      end
       #
       # Correct len. Check if needed
       #
@@ -93,38 +93,38 @@ loop
         #
         mcmp
         reax
-        ifz                     # wrong mol cut it
-          0            @mol
+        ifz            @mol     # wrong mol cut it
+          0
           #
           # Try to get energy by catabolism
           #
           catab
           call
           ifz
-            break
-          end          @mol
+            break      @mol
+          end
           #
           # Try to assemble needed molecule with anabolism
           # TODO: review it
           10
           rand
           toggle
-          3
+          3            @mol
           #
           # In 20% of cases call anabolism based function
           #
-          ifl          @mol
+          ifl
             1
             call
             # check ax here to break the loop
             1
-          end
-          ifg          @mol
+          end          @mol
+          ifg
             0
           end
           ife
-            0
-          end          @mol
+            0          @mol
+          end
         end
         #
         # Needed mol
@@ -134,34 +134,34 @@ loop
           # Move h1 to the next mol
           #
           lhead
-          rmol
-          rhead        @mol
+          rmol         @mol
+          rhead
           #
           # Checks if this is the end (last replicator mol)
           #
           1
           toggle
           33
-          lshift                # ax=66 - nop
-          right        @mol     # m1
+          lshift       @mol     # ax=66 - nop
+          right                 # m1
           save                  # m1=66 - nop
           mol
           toggle                # bx=first atom
-          load
-          left         @mol     # m0
+          load         @mol
+          left                  # m0
           ife
             #
             # Loads back dir from m0
             #
             load
             toggle              # bx=back dir
-            17
-            save       @mol
+            17         @mol
+            save
             break
           end
         end
-      end
-      lhead            @mol     # h0
+      end              @mol
+      lhead                     # h0
     end
   end
 end
@@ -170,12 +170,11 @@ end
 # it, that nop atom should be the first atom in a last molecule.
 # Any other molecule must not have it on the beginning
 #
-63
+63                     @mol
 #
 # We have to try cut wastes many times in different places
 #
-loop                   @mol
-  8
+loop
   8
   8
   8
