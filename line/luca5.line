@@ -12,35 +12,35 @@ func
   load                        # ax=back dir
   dir
   len
-  split                       # bx=back dir
+  split                @mol   # bx=back dir
   reax
 end
 #
 # Sets head0 to the beginnig of replicator
 #
-0                      @mol
+0
 smol
 #
 # Create big loop
 #
-20
+20                     @mol
 toggle
 eq
-lshift                 @mol   # ax=20971520
+lshift                        # ax=20971520
 loop
   #
   # Step any direction, eat and checks if needed mol
   #
-  8
+  8                    @mol
   rand
   dir
   step
   #
   # Store back dir in m0
   #
-  toggle               @mol   # bx=dir
+  toggle                      # bx=dir
   4
-  add                         # ax=back dir
+  add                  @mol   # ax=back dir
   save                        # m0=back dir
   #
   # We should have free space behind for wastes
@@ -48,15 +48,15 @@ loop
   reax
   ifp
     eq                        # ax=dir
-    join
-    reax               @mol   # ax=ate mol len
+    join               @mol
+    reax                      # ax=ate mol len
     ifp                       # ate something
       #
       # Checks ate mol len
       #
       mol
-      toggle           @mol   # ax=molIdx1  bx=molIdx0
-      sub                     # ax=cur mol len
+      toggle                  # ax=molIdx1  bx=molIdx0
+      sub              @mol   # ax=cur mol len
       inc
       toggle                  # bx=cur mol len
       #
@@ -64,26 +64,26 @@ loop
       #
       len
       sub                     # ax=old code len
-      rhead                   # h1
+      rhead            @mol   # h1
       smol
       reax                    # ax=ate mol len
       #
       # Wrong length. Cut it
       #
-      ifne             @mol
+      ifne
         #
         # Try to get energy by catabolism
         #
-        0              @mol
-        catab
+        0
+        catab          @mol
         #
         # Cut bad molecules
         #
         call
         ifz
           break
-        end            @mol
-      end
+        end
+      end              @mol
       #
       # Correct len. Check if needed
       #
@@ -92,17 +92,17 @@ loop
         # Compares current mol and eated
         #
         mcmp
-        reax           @mol
+        reax
         ifz                     # wrong mol cut it
-          0
+          0            @mol
           #
           # Try to get energy by catabolism
           #
           catab
           call
-          ifz          @mol
+          ifz
             break
-          end
+          end          @mol
           #
           # Try to assemble needed molecule with anabolism
           # TODO: review it
@@ -113,29 +113,29 @@ loop
           #
           # In 20% of cases call anabolism based function
           #
-          ifl
+          ifl          @mol
             1
             call
             # check ax here to break the loop
             1
           end
-          ifg
+          ifg          @mol
             0
           end
           ife
             0
-          end
+          end          @mol
         end
         #
         # Needed mol
         #
-        ifp            @mol   # needed mol
+        ifp                   # needed mol
           #
           # Move h1 to the next mol
           #
           lhead
           rmol
-          rhead
+          rhead        @mol
           #
           # Checks if this is the end (last replicator mol)
           #
@@ -143,12 +143,12 @@ loop
           toggle
           33
           lshift                # ax=66 - nop
-          right                 # m1
+          right        @mol     # m1
           save                  # m1=66 - nop
           mol
           toggle                # bx=first atom
           load
-          left                  # m0
+          left         @mol     # m0
           ife
             #
             # Loads back dir from m0
@@ -156,15 +156,15 @@ loop
             load
             toggle              # bx=back dir
             17
-            save
+            save       @mol
             break
-          end            @mol
+          end
         end
       end
-      lhead                     # h0
+      lhead            @mol     # h0
     end
   end
-end                      @mol
+end
 # TODO: i'm here!!!!
 # Cut wastes. The code below is not random. The reason behind
 # it, that nop atom should be the first atom in a last molecule.
@@ -174,7 +174,9 @@ end                      @mol
 #
 # We have to try cut wastes many times in different places
 #
-loop
+loop                   @mol
+  8
+  8
   8
   8
   rand                 @mol

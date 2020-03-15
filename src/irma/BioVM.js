@@ -591,7 +591,7 @@ class BioVM extends VM {
         org.color    = Config.orgColor;     // Current organism color
         org.packet   = null;                // Special place for storing atom, molecule or other organism
         org.energy   = energy;              // Orgainm's energy
-        org.heads    = new Uint8Array(4);   // Organism's custom heads
+        org.heads    = new Uint16Array(4);  // Organism's custom heads
         org.head     = 0;                   // Pointer to current head
         org.dir      = 1;                   // Active direction offset
         org.re       = 0;                   // Register "re". Is used as result for command (mmol, step, see,...)
