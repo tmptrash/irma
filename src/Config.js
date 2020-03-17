@@ -151,85 +151,82 @@ module.exports = {
          */
         code: `
         #
-        # m0    - i
-        # m1..x - mol
-        #
+        # In:
+        #   m0    - back direction
+        # Out:
+        #   ax    - 1 - success
+        #           0 - fail
         #
         # func0. Cuts the tail
         #
         func
-          left
-          load
-          right
-          toggle               @mol   # bx=back dir
+          load                        # ax=back dir
+          dir
           len
-          split                       # bx=back dir
+          split                @mol   # bx=back dir
           reax
         end
+        func
+          nop
+          nop                  @mol
+          nop
+        end
         #
-        # Reset i counter in m0
+        # Sets head0 to the beginnig of replicator
         #
-        0                      @mol
-        save
+        0
+        smol
         #
         # Create big loop
         #
-        len                           # ~70
+        20                     @mol
         toggle
         eq
-        mul                    @mol
+        lshift                        # ax=20971520
         loop
-          #
-          # Copy current mol into m1..x
-          #
-          load                        # ax=i
-          smol
-          right                       # m1
-          cmol                 @mol   # m1..x - i mol
-          left                        # m0
           #
           # Step any direction, eat and checks if needed mol
           #
-          8
+          8                    @mol
           rand
+          dir
           step
           #
-          # Store back dir in m-1
+          # Store back dir in m0
           #
-          toggle               @mol   # bx=dir
-          4
+          toggle                      # bx=dir
+          4                    @mol
           add                         # ax=back dir
-          left                        # m-1
-          save
-          right                @mol   # m0
+          save                        # m0=back dir
           #
           # We should have free space behind for wastes
           #
           reax
           ifp
-            eq                        # ax=dir
+            eq                 @mol   # ax=dir
             join
-            reax               @mol
+            reax                      # ax=ate mol len
             ifp                       # ate something
               #
               # Checks ate mol len
               #
-              load                    # ax=cur mol idx
-              smol
               mol
               toggle           @mol   # ax=molIdx1  bx=molIdx0
               sub                     # ax=cur mol len
               inc
               toggle                  # bx=cur mol len
+              #
+              # Sets head1 to the last molecule
+              #
+              len
+              sub              @mol   # ax=old code len
+              rhead                   # h1
+              smol
               reax                    # ax=ate mol len
               #
-              # Cut bad mol
+              # Wrong length. Cut it
               #
-              ifne             @mol   # bad ate mol len
-                toggle                # bx=ate mol len
-                len
-                sub                   # ax=old code len
-                smol
+              ifne
                 #
                 # Try to get energy by catabolism
                 #
@@ -244,77 +241,97 @@ module.exports = {
                 end            @mol
               end
               #
-              # Sets mol head to the end
+              # Correct len. Check if needed
               #
-            ife
-                toggle                  # bx=ate mol len
-                len
-                sub              @mol
-                smol
+              ife
                 #
                 # Compares current mol and eated
                 #
-                right
                 mcmp
-                left
-                reax             @mol
-                ifz                     # unneeded mol cut it
+                reax
+                ifz            @mol     # wrong mol cut it
                   0
                   #
                   # Try to get energy by catabolism
                   #
                   catab
                   call
-                  ifz            @mol
-                    break
+                  ifz
+                    break      @mol
                   end
-                  0
+                  #
+                  # Try to assemble needed molecule with anabolism
+                  # TODO: review it
+                  10
+                  rand
+                  toggle
+                  3            @mol
+                  #
+                  # In 20% of cases call anabolism based function
+                  #
+                  ifg
+                    1
+                    call
+                    # check ax here to break the loop
+                    1
+                  end          @mol
+                  ifg
+                    0
+                  end
+                  ife
+                    0          @mol
+                  end
                 end
-                ifp              @mol   # needed mol
+                #
+                # Needed mol
+                #
+                ifp                   # needed mol
                   #
-                  # Increase i, in m0
+                  # Move h1 to the next mol
                   #
-                  load
-                  smol
-                  rmol
-                  mol
-                  save           @mol
+                  lhead
+                  rmol         @mol
+                  rhead
                   #
                   # Checks if this is the end (last replicator mol)
                   #
+                  1
+                  toggle
                   33
-                  lshift                # ax=66 - nop
-                  toggle                # bx=66
-                  right
-                  load           @mol
-                  left
+                  lshift       @mol     # ax=66 - nop
+                  right                 # m1
+                  save                  # m1=66 - nop
+                  mol
+                  toggle                # bx=first atom
+                  load         @mol
+                  left                  # m0
                   ife
                     #
-                    # Loads back dir from m-1
+                    # Loads back dir from m0
                     #
-                    left                # m-1
                     load
-                    right        @mol
                     toggle              # bx=back dir
-                    17
+                    17         @mol
                     save
                     break
-                  end            @mol
+                  end
                 end
-              end
+              end              @mol
+              lhead                     # h0
             end
           end
-        end                      @mol
-        #
+        end
+        # TODO: i'm here!!!!
         # Cut wastes. The code below is not random. The reason behind
         # it, that nop atom should be the first atom in a last molecule.
         # Any other molecule must not have it on the beginning
         #
-        63
+        63                     @mol
         #
         # We have to try cut wastes many times in different places
         #
         loop
+          8
           8
           8
           rand                 @mol
