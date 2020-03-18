@@ -249,39 +249,40 @@ module.exports = {
                 #
                 mcmp
                 reax
-                ifz            @mol     # wrong mol cut it
+                ifz            @mol
+                  #
+                  # Try to get energy by catabolism on every 10th molecule
+                  #
+                  10
+                  rand
+                  ifz
+                    catab
+                  end          @mol
+                  #
+                  # wrong mol cut it
+                  #
                   0
-                  #
-                  # Try to get energy by catabolism
-                  #
-                  catab
                   call
                   ifz
-                    break      @mol
-                  end
+                    break
+                  end          @mol
                   #
                   # Try to assemble needed molecule with anabolism
-                  # TODO: review it
+                  #
                   10
                   rand
                   toggle
-                  3            @mol
+                  3
                   #
                   # In 20% of cases call anabolism based function
                   #
-                  ifg
+                  ifg          @mol
                     1
                     call
                     # check ax here to break the loop
-                    1
-                  end          @mol
-                  ifg
-                    0
                   end
-                  ife
-                    0          @mol
-                  end
-                end
+                  0
+                end            @mol
                 #
                 # Needed mol
                 #
@@ -290,35 +291,35 @@ module.exports = {
                   # Move h1 to the next mol
                   #
                   lhead
-                  rmol         @mol
+                  rmol
                   rhead
                   #
                   # Checks if this is the end (last replicator mol)
                   #
-                  1
+                  1            @mol
                   toggle
                   33
-                  lshift       @mol     # ax=66 - nop
+                  lshift                # ax=66 - nop
                   right                 # m1
-                  save                  # m1=66 - nop
+                  save         @mol     # m1=66 - nop
                   mol
                   toggle                # bx=first atom
-                  load         @mol
+                  load
                   left                  # m0
-                  ife
+                  ife          @mol
                     #
                     # Loads back dir from m0
                     #
                     load
                     toggle              # bx=back dir
-                    17         @mol
+                    17
                     save
-                    break
+                    break      @mol
                   end
                 end
-              end              @mol
+              end
               lhead                     # h0
-            end
+            end                @mol
           end
         end
         # TODO: i'm here!!!!
@@ -326,11 +327,13 @@ module.exports = {
         # it, that nop atom should be the first atom in a last molecule.
         # Any other molecule must not have it on the beginning
         #
-        63                     @mol
+        63
         #
         # We have to try cut wastes many times in different places
         #
         loop
+          8                    @mol
+          8
           8
           8
           8
