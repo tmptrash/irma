@@ -234,9 +234,9 @@ module.exports = {
                 # Try to get energy by catabolism
                 #
                 0              @mol
-            rhead
+                rhead
                 catab
-            lhead
+                lhead
                 #
                 # Cut bad molecules
                 #
@@ -308,20 +308,21 @@ module.exports = {
                   right                 # m1
                   save         @mol     # m1=66 - nop
                   mol
+                  read
                   toggle                # bx=first atom
                   load
                   left                  # m0
-                  ife
+                  ife          @mol
                     #
                     # Loads back dir from m0
                     #
-                    load       @mol
+                    load
                     toggle              # bx=back dir
                     17
                     save
                     break
-                  end
-                end            @mol
+                  end          @mol
+                end
               end
             end
           end
@@ -331,12 +332,11 @@ module.exports = {
         # it, that nop atom should be the first atom in a last molecule.
         # Any other molecule must not have it on the beginning
         #
-        63
+        63                     @mol
         #
         # We have to try cut wastes many times in different places
         #
-        loop                   @mol
-          8
+        loop
           8
           8
           8
