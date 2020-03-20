@@ -234,15 +234,17 @@ module.exports = {
                 # Try to get energy by catabolism
                 #
                 0              @mol
+            rhead
                 catab
+            lhead
                 #
                 # Cut bad molecules
                 #
                 call
                 ifz
-                  break
+                  break        @mol
                 end
-              end              @mol
+              end
               #
               # Correct len. Check if needed
               #
@@ -252,40 +254,42 @@ module.exports = {
                 #
                 mcmp
                 reax
-                ifz
+                ifz            @mol
                   #
                   # Try to get energy by catabolism on every 10th molecule
                   #
                   10
-                  rand         @mol
+                  rand
                   ifz
+                    rhead
                     catab
+                    lhead      @mol
                   end
                   #
                   # wrong mol, cut it
                   #
                   0
                   call
-                  ifz          @mol
+                  ifz
                     break
-                  end
+                  end          @mol
                   #
                   # Try to assemble needed molecule with anabolism
                   #
                   10
                   rand
                   toggle
-                  3            @mol
+                  3
                   #
                   # In 20% of cases call anabolism based function
                   #
                   ifg
-                    1
+                    1          @mol
                     call
                     # check ax here to break the loop
                   end
                   0
-                end            @mol
+                end
                 #
                 # Needed mol, just leave it
                 #
@@ -293,35 +297,35 @@ module.exports = {
                   #
                   # Move h1 to the next mol
                   #
-                  rmol
+                  rmol         @mol
                   #
                   # Checks if this is the end (last replicator mol)
                   #
                   1
                   toggle
                   33
-                  lshift       @mol     # ax=66 - nop
+                  lshift                # ax=66 - nop
                   right                 # m1
-                  save                  # m1=66 - nop
+                  save         @mol     # m1=66 - nop
                   mol
                   toggle                # bx=first atom
                   load
-                  left         @mol     # m0
+                  left                  # m0
                   ife
                     #
                     # Loads back dir from m0
                     #
-                    load
+                    load       @mol
                     toggle              # bx=back dir
                     17
                     save
-                    break      @mol
+                    break
                   end
-                end
+                end            @mol
               end
             end
           end
-        end                    @mol
+        end
         # TODO: i'm here!!!!
         # Cut wastes. The code below is not random. The reason behind
         # it, that nop atom should be the first atom in a last molecule.
@@ -331,7 +335,9 @@ module.exports = {
         #
         # We have to try cut wastes many times in different places
         #
-        loop
+        loop                   @mol
+          8
+          8
           8
           8
           rand
