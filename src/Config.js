@@ -163,14 +163,16 @@ module.exports = {
           load                        # ax=back dir
           dir
           len
-          split                       # bx=back dir
-          reax                 @mol
+          rhead
+          split                @mol   # bx=back dir
+          lhead
+          reax
         end
         func
           nop
+          nop                  @mol
           nop
-          nop
-        end                    @mol
+        end
         #
         # Sets head0 to the beginnig of replicator
         #
@@ -180,48 +182,48 @@ module.exports = {
         # Create big loop
         #
         20
-        toggle
+        toggle                 @mol
         eq
-        lshift                 @mol   # ax=20971520
+        lshift                        # ax=20971520
         loop
           #
           # Step any direction, eat and checks if needed mol
           #
           8
           rand
-          dir
+          dir                  @mol
           step
           #
           # Store back dir in m0
           #
-          toggle               @mol   # bx=dir
+          toggle                      # bx=dir
           4
           add                         # ax=back dir
           save                        # m0=back dir
           #
           # We should have free space behind for wastes
           #
-          reax
+          reax                 @mol
           ifp
-            eq                 @mol   # ax=dir
+            eq                        # ax=dir
             join
             reax                      # ax=ate mol len
             ifp                       # ate something
               #
               # Checks ate mol len
               #
-              mol
+              mol              @mol
               toggle                  # ax=molIdx1  bx=molIdx0
-              sub              @mol   # ax=cur mol len
+              sub                     # ax=cur mol len
               inc
               toggle                  # bx=cur mol len
               #
               # Sets head1 to the last molecule
               #
               len
-              sub                     # ax=old code len
+              sub              @mol   # ax=old code len
               rhead                   # h1
-              smol             @mol
+              smol
               lhead
               reax                    # ax=ate mol len
               #
@@ -231,16 +233,16 @@ module.exports = {
                 #
                 # Try to get energy by catabolism
                 #
-                0
+                0              @mol
                 catab
                 #
                 # Cut bad molecules
                 #
-                call           @mol
+                call
                 ifz
                   break
                 end
-              end
+              end              @mol
               #
               # Correct len. Check if needed
               #
@@ -248,42 +250,42 @@ module.exports = {
                 #
                 # Compares current mol and eated
                 #
-                mcmp           @mol
+                mcmp
                 reax
                 ifz
                   #
                   # Try to get energy by catabolism on every 10th molecule
                   #
                   10
-                  rand
+                  rand         @mol
                   ifz
-                    catab      @mol
+                    catab
                   end
                   #
                   # wrong mol, cut it
                   #
                   0
                   call
-                  ifz
+                  ifz          @mol
                     break
-                  end          @mol
+                  end
                   #
                   # Try to assemble needed molecule with anabolism
                   #
                   10
                   rand
                   toggle
-                  3
+                  3            @mol
                   #
                   # In 20% of cases call anabolism based function
                   #
                   ifg
-                    1          @mol
+                    1
                     call
                     # check ax here to break the loop
                   end
                   0
-                end
+                end            @mol
                 #
                 # Needed mol, just leave it
                 #
@@ -291,35 +293,35 @@ module.exports = {
                   #
                   # Move h1 to the next mol
                   #
-                  rmol         @mol
+                  rmol
                   #
                   # Checks if this is the end (last replicator mol)
                   #
                   1
                   toggle
                   33
-                  lshift                # ax=66 - nop
+                  lshift       @mol     # ax=66 - nop
                   right                 # m1
-                  save         @mol     # m1=66 - nop
+                  save                  # m1=66 - nop
                   mol
                   toggle                # bx=first atom
                   load
-                  left                  # m0
+                  left         @mol     # m0
                   ife
                     #
                     # Loads back dir from m0
                     #
-                    load       @mol
+                    load
                     toggle              # bx=back dir
                     17
                     save
-                    break
+                    break      @mol
                   end
-                end            @mol
+                end
               end
             end
           end
-        end
+        end                    @mol
         # TODO: i'm here!!!!
         # Cut wastes. The code below is not random. The reason behind
         # it, that nop atom should be the first atom in a last molecule.
@@ -329,9 +331,7 @@ module.exports = {
         #
         # We have to try cut wastes many times in different places
         #
-        loop                   @mol
-          8
-          8
+        loop
           8
           8
           rand
