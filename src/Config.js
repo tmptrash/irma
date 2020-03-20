@@ -169,9 +169,9 @@ module.exports = {
           reax
         end
         func
-          nop
-          nop                  @mol
-          nop
+          line
+          line                 @mol
+          line
         end
         #
         # Sets head0 to the beginnig of replicator
@@ -339,8 +339,8 @@ module.exports = {
         loop
           8
           8
-          8
           rand
+          dir
           step                 @mol
           line
           line
