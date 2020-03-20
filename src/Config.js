@@ -343,8 +343,8 @@ module.exports = {
           rand
           step                 @mol
           line
+          line
           smol
-          rmol
           rmol
           rmol
           rmol                 @mol
