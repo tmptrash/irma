@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 / 8;
-const HEIGHT      = 1080 / 8;
+const WIDTH       = 1920 * 4;
+const HEIGHT      = 1080 * 4;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -402,8 +402,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH,
-    WORLD_CANVAS_HEIGHT        : HEIGHT,
+    WORLD_CANVAS_WIDTH         : WIDTH / 4,
+    WORLD_CANVAS_HEIGHT        : HEIGHT / 4,
     /**
      * {String} This query is used to put canvas with world in it
      */
