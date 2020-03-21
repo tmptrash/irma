@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 / 4;
-const HEIGHT      = 1080 / 4;
+const WIDTH       = 1920 / 8;
+const HEIGHT      = 1080 / 8;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -304,33 +304,33 @@ module.exports = {
                 #
                 ifp                   # needed mol
                   #
-                  # Move h1 to the next mol
-                  #
-                  rmol         @mol
-                  #
                   # Checks if this is the end (last replicator mol)
                   #
-                  1
+                  1            @mol
                   toggle
                   33
                   lshift                # ax=66 - nop
                   right                 # m1
-                  save         @mol     # m1=66 - nop
-                  mol
+                  save                  # m1=66 - nop
+                  mol          @mol
                   read
                   toggle                # bx=first atom
                   load
                   left                  # m0
-                  ife          @mol
+                  ife
                     #
                     # Loads back dir from m0
                     #
-                    load
+                    load       @mol
                     toggle              # bx=back dir
                     17
                     save
                     break
-                  end          @mol
+                  end
+                  #
+                  # Move h0 to the next mol
+                  #
+                  rmol         @mol
                 end
               end
             end
@@ -402,8 +402,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH / 4,
-    WORLD_CANVAS_HEIGHT        : HEIGHT / 4,
+    WORLD_CANVAS_WIDTH         : WIDTH,
+    WORLD_CANVAS_HEIGHT        : HEIGHT,
     /**
      * {String} This query is used to put canvas with world in it
      */
