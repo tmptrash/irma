@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 4;
-const HEIGHT      = 1080 * 4;
+const WIDTH       = 1920 / 4;
+const HEIGHT      = 1080 / 4;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -210,21 +210,30 @@ module.exports = {
             reax                      # ax=ate mol len
             ifp                       # ate something
               #
-              # Checks ate mol len
+              # Checks cur mol len
               #
-              mol              @mol
+              mol              @mol   # h0
               toggle                  # ax=molIdx1  bx=molIdx0
-              sub                     # ax=cur mol len
-              inc
-              toggle                  # bx=cur mol len
+              sub
+              inc                     # ax=cur mol len
+              right                   # m1
+            save                    # m1=cur mol len
               #
-              # Sets head1 to the last molecule
+              # Sets head1 to ate molecule
               #
+              reax             @mol   # ax=ate mol len
+              toggle                  # bx=ate mol len
               len
-              sub              @mol   # ax=old code len
+              sub                     # ax=ate mol idx
               rhead                   # h1
               smol
-              lhead
+              lhead            @mol
+              #
+              # Loads cur mol len into ax
+              #
+              load
+              left                    # m0
+              toggle                  # bx=cur mol len
               reax                    # ax=ate mol len
               #
               # Wrong length. Cut it
@@ -393,8 +402,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH / 8,
-    WORLD_CANVAS_HEIGHT        : HEIGHT / 8,
+    WORLD_CANVAS_WIDTH         : WIDTH / 4,
+    WORLD_CANVAS_HEIGHT        : HEIGHT / 4,
     /**
      * {String} This query is used to put canvas with world in it
      */

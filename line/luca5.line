@@ -58,21 +58,30 @@ loop
     reax                      # ax=ate mol len
     ifp                       # ate something
       #
-      # Checks ate mol len
+      # Checks cur mol len
       #
-      mol              @mol
+      mol              @mol   # h0
       toggle                  # ax=molIdx1  bx=molIdx0
-      sub                     # ax=cur mol len
-      inc
-      toggle                  # bx=cur mol len
+      sub
+      inc                     # ax=cur mol len
+      right                   # m1
+	  save                    # m1=cur mol len
       #
-      # Sets head1 to the last molecule
+      # Sets head1 to ate molecule
       #
+      reax             @mol   # ax=ate mol len
+      toggle                  # bx=ate mol len
       len
-      sub              @mol   # ax=old code len
+      sub                     # ax=ate mol idx
       rhead                   # h1
       smol
-      lhead
+      lhead            @mol
+      #
+      # Loads cur mol len into ax
+      #
+      load
+      left                    # m0
+      toggle                  # bx=cur mol len
       reax                    # ax=ate mol len
       #
       # Wrong length. Cut it
