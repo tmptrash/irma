@@ -217,7 +217,7 @@ module.exports = {
               sub
               inc                     # ax=cur mol len
               right                   # m1
-            save                    # m1=cur mol len
+              save                    # m1=cur mol len
               #
               # Sets head1 to ate molecule
               #
