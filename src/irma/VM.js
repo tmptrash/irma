@@ -25,42 +25,43 @@ const ORG_MAX_MEM_SIZE      = Config.ORG_MAX_MEM_SIZE;
 //
 // Basic commands
 //
-const TOGGLE = Config.CODE_CMDS.TOGGLE;
-const EQ     = Config.CODE_CMDS.EQ;
-const NOP    = Config.CODE_CMDS.NOP;
-const ADD    = Config.CODE_CMDS.ADD;
-const SUB    = Config.CODE_CMDS.SUB;
-const MUL    = Config.CODE_CMDS.MUL;
-const DIV    = Config.CODE_CMDS.DIV;
-const INC    = Config.CODE_CMDS.INC;
-const DEC    = Config.CODE_CMDS.DEC;
-const RSHIFT = Config.CODE_CMDS.RSHIFT;
-const LSHIFT = Config.CODE_CMDS.LSHIFT;
-const RAND   = Config.CODE_CMDS.RAND;
-const IFP    = Config.CODE_CMDS.IFP;
-const IFN    = Config.CODE_CMDS.IFN;
-const IFZ    = Config.CODE_CMDS.IFZ;
-const IFG    = Config.CODE_CMDS.IFG;
-const IFL    = Config.CODE_CMDS.IFL;
-const IFE    = Config.CODE_CMDS.IFE;
-const IFNE   = Config.CODE_CMDS.IFNE;
-const LOOP   = Config.CODE_CMDS.LOOP;
-const CALL   = Config.CODE_CMDS.CALL;
-const FUNC   = Config.CODE_CMDS.FUNC;
-const RET    = Config.CODE_CMDS.RET;
-const END    = Config.CODE_CMDS.END;
-const NAND   = Config.CODE_CMDS.NAND;
-const AGE    = Config.CODE_CMDS.AGE;
-const LINE   = Config.CODE_CMDS.LINE;
-const LEN    = Config.CODE_CMDS.LEN;
-const LEFT   = Config.CODE_CMDS.LEFT;
-const RIGHT  = Config.CODE_CMDS.RIGHT;
-const SAVE   = Config.CODE_CMDS.SAVE;
-const LOAD   = Config.CODE_CMDS.LOAD;
-const SAVEA  = Config.CODE_CMDS.SAVEA;
-const LOADA  = Config.CODE_CMDS.LOADA;
-const READ   = Config.CODE_CMDS.READ;
-const BREAK  = Config.CODE_CMDS.BREAK;
+const TOGGLE   = Config.CODE_CMDS.TOGGLE;
+const EQ       = Config.CODE_CMDS.EQ;
+const NOP      = Config.CODE_CMDS.NOP;
+const ADD      = Config.CODE_CMDS.ADD;
+const SUB      = Config.CODE_CMDS.SUB;
+const MUL      = Config.CODE_CMDS.MUL;
+const DIV      = Config.CODE_CMDS.DIV;
+const INC      = Config.CODE_CMDS.INC;
+const DEC      = Config.CODE_CMDS.DEC;
+const RSHIFT   = Config.CODE_CMDS.RSHIFT;
+const LSHIFT   = Config.CODE_CMDS.LSHIFT;
+const RAND     = Config.CODE_CMDS.RAND;
+const IFP      = Config.CODE_CMDS.IFP;
+const IFN      = Config.CODE_CMDS.IFN;
+const IFZ      = Config.CODE_CMDS.IFZ;
+const IFG      = Config.CODE_CMDS.IFG;
+const IFL      = Config.CODE_CMDS.IFL;
+const IFE      = Config.CODE_CMDS.IFE;
+const IFNE     = Config.CODE_CMDS.IFNE;
+const LOOP     = Config.CODE_CMDS.LOOP;
+const CALL     = Config.CODE_CMDS.CALL;
+const FUNC     = Config.CODE_CMDS.FUNC;
+const RET      = Config.CODE_CMDS.RET;
+const END      = Config.CODE_CMDS.END;
+const NAND     = Config.CODE_CMDS.NAND;
+const AGE      = Config.CODE_CMDS.AGE;
+const LINE     = Config.CODE_CMDS.LINE;
+const LEN      = Config.CODE_CMDS.LEN;
+const LEFT     = Config.CODE_CMDS.LEFT;
+const RIGHT    = Config.CODE_CMDS.RIGHT;
+const SAVE     = Config.CODE_CMDS.SAVE;
+const LOAD     = Config.CODE_CMDS.LOAD;
+const SAVEA    = Config.CODE_CMDS.SAVEA;
+const LOADA    = Config.CODE_CMDS.LOADA;
+const READ     = Config.CODE_CMDS.READ;
+const BREAK    = Config.CODE_CMDS.BREAK;
+const CONTINUE = Config.CODE_CMDS.CONTINUE;
 
 class VM {
     /**
@@ -386,6 +387,13 @@ class VM {
                         case BREAK: {
                             const offs = org.offs[line] || 0;
                             if ((code[offs] & CODE_8_BIT_RESET_MASK) === LOOP) {line = org.offs[offs] || 0}
+                            else {++line}
+                            continue;
+                        }
+
+                        case CONTINUE: {
+                            const offs = org.offs[line] || 0;
+                            if ((code[offs] & CODE_8_BIT_RESET_MASK) === LOOP) {line = offs}
                             else {++line}
                             continue;
                         }

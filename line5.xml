@@ -24,10 +24,10 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">toggle eq nop add sub mul div inc dec rshift lshift rand ifp ifn ifz ifg ifl ife ifne loop call func ret end nand age line len left right save load savea loada read break</Keywords>
+            <Keywords name="Keywords1">toggle eq nop add sub mul div inc dec rshift lshift rand ifp ifn ifz ifg ifl ife ifne loop func end nand age line len left right save load savea loada read</Keywords>
             <Keywords name="Keywords2">join split step see say listen nread get put offs color anab catab mol mmol smol rmol lmol cmol mcmp find reax dir lhead rhead</Keywords>
             <Keywords name="Keywords3">@mol</Keywords>
-            <Keywords name="Keywords4"></Keywords>
+            <Keywords name="Keywords4">ret break cont call</Keywords>
             <Keywords name="Keywords5"></Keywords>
             <Keywords name="Keywords6"></Keywords>
             <Keywords name="Keywords7"></Keywords>
@@ -42,7 +42,7 @@
             <WordsStyle name="KEYWORDS1" fgColor="0080C0" bgColor="0C1021" fontName="no" fontStyle="0" nesting="0" />
             <WordsStyle name="KEYWORDS2" fgColor="004F00" bgColor="0C1021" fontName="&#xD3D8;&#x036F;" fontStyle="0" nesting="0" />
             <WordsStyle name="KEYWORDS3" fgColor="5E5E00" bgColor="0C1021" fontName="&#x9900;&#x02D9;" fontStyle="0" nesting="0" />
-            <WordsStyle name="KEYWORDS4" fgColor="000000" bgColor="FFFFFF" fontName="3" fontStyle="0" nesting="0" />
+            <WordsStyle name="KEYWORDS4" fgColor="FFA274" bgColor="0C1021" fontName="&#x9C70;&#x02D9;" fontStyle="0" nesting="0" />
             <WordsStyle name="KEYWORDS5" fgColor="000000" bgColor="FFFFFF" fontName="&#x9F40;&#x02D9;imesta&#x000C;" fontStyle="0" nesting="0" />
             <WordsStyle name="KEYWORDS6" fgColor="000000" bgColor="FFFFFF" fontName="&#x5A28;&#x02DB;" fontStyle="0" nesting="0" />
             <WordsStyle name="KEYWORDS7" fgColor="000000" bgColor="FFFFFF" fontName="yes" fontStyle="0" nesting="0" />
