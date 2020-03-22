@@ -393,7 +393,7 @@ class VM {
 
                         case CONTINUE: {
                             const offs = org.offs[line] || 0;
-                            if ((code[offs] & CODE_8_BIT_RESET_MASK) === LOOP) {line = offs}
+                            if ((code[offs] & CODE_8_BIT_RESET_MASK) === LOOP) {line = offs; org.isLoop = true}
                             else {++line}
                             continue;
                         }
