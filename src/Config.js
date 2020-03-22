@@ -303,13 +303,14 @@ module.exports = {
                 left           @mol
                 1
                 call
-            cont
+                left
+                cont
               end
               #
               # Checks cur mol len
               #
-              mol                     # h0
-              toggle           @mol   # ax=molIdx1  bx=molIdx0
+              mol              @mol   # h0
+              toggle                  # ax=molIdx1  bx=molIdx0
               sub
               inc                     # ax=cur mol len
               save                    # m1=cur mol len
@@ -317,8 +318,8 @@ module.exports = {
               # Sets head1 to ate molecule
               #
               reax                    # ax=ate mol len
-              toggle                  # bx=ate mol len
-              len              @mol
+              toggle           @mol   # bx=ate mol len
+              len
               sub                     # ax=ate mol idx
               rhead                   # h1
               smol
@@ -326,8 +327,8 @@ module.exports = {
               #
               # Loads cur mol len into ax
               #
-              load
-              left             @mol   # m0
+              load             @mol
+              left                    # m0
               toggle                  # bx=cur mol len
               reax                    # ax=ate mol len
               #
@@ -338,8 +339,8 @@ module.exports = {
                 # Try to get energy by catabolism
                 #
                 0
-                rhead
-                catab          @mol
+                rhead          @mol
+                catab
                 lhead
                 #
                 # Cut bad molecules
@@ -347,8 +348,8 @@ module.exports = {
                 call
                 ifz
                   break
-                end
-              end              @mol
+                end            @mol
+              end
               #
               # Correct len. Check if needed
               #
@@ -362,17 +363,17 @@ module.exports = {
                   #
                   # Try to get energy by catabolism on every 10th molecule
                   #
-                  10
-                  rand         @mol
+                  10           @mol
+                  rand
                   ifz
                     rhead
                     catab
                     lhead
-                  end
+                  end          @mol
                   #
                   # wrong mol, cut it
                   #
-                  0            @mol
+                  0
                   call
                   ifz
                     break
@@ -380,8 +381,8 @@ module.exports = {
                   #
                   # Try to assemble needed molecule with anabolism
                   #
-                  10
-                  rand         @mol
+                  10           @mol
+                  rand
                   toggle
                   3
                   #
@@ -389,43 +390,43 @@ module.exports = {
                   #
                   ifg
                     right
-                    0
-                    dec        @mol
+                    0          @mol
+                    dec
                     save
                     left
                     # check ax here to break the loop
                   end
                   cont
-                end
+                end            @mol
                 #
                 # Needed mol, just leave it. Checks if 
                 # this is the end (last replicator mol)
                 #
-                1              @mol
+                1
                 toggle
                 33
                 lshift                  # ax=66 - nop
                 right                   # m1
-                save                    # m1=66 - nop
-                mol            @mol
+                save           @mol     # m1=66 - nop
+                mol
                 read
                 toggle                  # bx=first atom
                 load
                 left                    # m0
-                ife
+                ife            @mol
                   #
                   # Loads back dir from m0
                   #
-                  load         @mol
+                  load
                   toggle                # bx=back dir
                   17
                   save
                   break
-                end
+                end            @mol
                 #
                 # Move h0 to the next mol
                 #
-                rmol           @mol
+                rmol
               end
             end
           end
@@ -435,12 +436,11 @@ module.exports = {
         # it, that nop atom should be the first atom in a last molecule.
         # Any other molecule must not have it on the beginning
         #
-        63
+        63                     @mol
         #
         # We have to try cut wastes many times in different places
         #
-        loop                   @mol
-          8
+        loop
           8
           8
           rand
