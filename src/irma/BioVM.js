@@ -304,6 +304,7 @@ class BioVM extends VM {
                     const m1EndIdx  = this._molLastOffs(code, m1Idx);
                     const m2Idx     = m1EndIdx + 1;
                     const m2EndIdx  = this._molLastOffs(code, m2Idx);
+                    if (m1EndIdx === m2EndIdx) {org.re = RE_SPECIAL; return}
                     if ((code[m1EndIdx] & MASK8) === 0) {org.re = RE_OK; return}
                     org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                     code[m1EndIdx] &= MASK8R;

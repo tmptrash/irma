@@ -240,25 +240,35 @@ module.exports = {
               #
               # Joins all atoms together
               #
-              mol              @mol
+              mol              @mol   # h0
               toggle
               sub  
               inc                     # ax=mol len
               toggle                  # bx=mol len
               len
-              toggle           @mol   # ax=mol len
-              dec
+              sub              @mol   # ax=first atom idx
+              rhead                   # h1
+              smol
+              lhead                   # h0
+            63
               loop
-                toggle                # ax=cur atom
+            0              @mol
                 dec
-                toggle
-              end              @mol
+                anab
+                reax
+                #
+                # Reach last atom
+                #
+                ifn
+                  break
+                end            @mol
+              end
               left                    # m1
               0
               save
               right                   # m2
-            end
-            rhead              @mol   # h1
+            end                @mol
+            rhead                     # h1
             left                      # m1
           end
           lhead                       # h0
@@ -266,8 +276,8 @@ module.exports = {
         #
         # Sets head0 to the beginnig of replicator
         #
-        0
-        smol                   @mol
+        0                      @mol
+        smol
         #
         # Create big loop
         #
@@ -275,11 +285,11 @@ module.exports = {
         toggle
         eq
         lshift                        # ax=20971520
-        loop
+        loop                   @mol
           #
           # Step any direction, eat and checks if needed mol
           #
-          8                    @mol
+          8
           rand
           dir
           step
@@ -287,8 +297,8 @@ module.exports = {
           # Store back dir in m0
           #
           toggle                      # bx=dir
-          4
-          add                  @mol   # ax=back dir
+          4                    @mol
+          add                         # ax=back dir
           save                        # m0=back dir
           #
           # We should have free space behind for wastes
@@ -296,8 +306,8 @@ module.exports = {
           reax
           ifp
             eq                        # ax=dir
-            join
-            reax               @mol   # ax=ate mol len
+            join               @mol
+            reax                      # ax=ate mol len
             ifp                       # ate something
               right                   # m1
               #
@@ -305,8 +315,8 @@ module.exports = {
               #
               load
               ifn
-                1
-                call           @mol
+                1              @mol
+                call
                 left
                 cont
               end
@@ -314,8 +324,8 @@ module.exports = {
               # Checks cur mol len
               #
               mol                     # h0
-              toggle                  # ax=molIdx1  bx=molIdx0
-              sub              @mol
+              toggle           @mol   # ax=molIdx1  bx=molIdx0
+              sub
               inc                     # ax=cur mol len
               save                    # m1=cur mol len
               #
@@ -323,8 +333,8 @@ module.exports = {
               #
               reax                    # ax=ate mol len
               toggle                  # bx=ate mol len
-              len
-              sub              @mol   # ax=ate mol idx
+              len              @mol
+              sub                     # ax=ate mol idx
               rhead                   # h1
               smol
               lhead                   # h0
@@ -332,8 +342,8 @@ module.exports = {
               # Loads cur mol len into ax
               #
               load
-              left                    # m0
-              toggle           @mol   # bx=cur mol len
+              left             @mol   # m0
+              toggle                  # bx=cur mol len
               reax                    # ax=ate mol len
               #
               # Wrong length. Cut it
@@ -344,8 +354,8 @@ module.exports = {
                 #
                 0
                 rhead                 # h1
-                catab
-                lhead          @mol   # h0
+                catab          @mol
+                lhead                 # h0
                 #
                 # Cut bad molecules
                 #
@@ -353,11 +363,11 @@ module.exports = {
                 ifz
                   break
                 end
-              end
+              end              @mol
               #
               # Correct len. Check if needed
               #
-              ife              @mol
+              ife
                 #
                 # Compares current mol and eated
                 #
@@ -368,8 +378,8 @@ module.exports = {
                   # Try to get energy by catabolism on every 10th molecule
                   #
                   10
-                  rand
-                  ifz          @mol
+                  rand         @mol
+                  ifz
                     rhead
                     catab
                     lhead
@@ -377,8 +387,8 @@ module.exports = {
                   #
                   # wrong mol, cut it
                   #
-                  0
-                  call         @mol
+                  0            @mol
+                  call
                   ifz
                     break
                   end
@@ -386,8 +396,8 @@ module.exports = {
                   # Try to assemble needed molecule with anabolism
                   #
                   10
-                  rand
-                  toggle       @mol
+                  rand         @mol
+                  toggle
                   3
                   #
                   # In 20% of cases sets anabolism regime
@@ -395,8 +405,8 @@ module.exports = {
                   ifg
                     right
                     0
-                    dec
-                    save       @mol
+                    dec        @mol
+                    save
                     #
                     # Sets cur atom idx
                     #
@@ -404,9 +414,9 @@ module.exports = {
                     right             # m2
                     save
                     left              # m1
-                    left              # m0
+                    left       @mol   # m0
                     # check ax here to break the loop
-                  end          @mol
+                  end
                   cont
                 end
                 #
@@ -415,14 +425,14 @@ module.exports = {
                 #
                 1
                 toggle
-                33
-                lshift         @mol     # ax=66 - nop
+                33             @mol
+                lshift                  # ax=66 - nop
                 right                   # m1
                 save                    # m1=66 - nop
                 mol
                 read
-                toggle                  # bx=first atom
-                load           @mol
+                toggle         @mol     # bx=first atom
+                load
                 left                    # m0
                 ife
                   #
@@ -430,8 +440,8 @@ module.exports = {
                   #
                   load
                   toggle                # bx=back dir
-                  17
-                  save         @mol
+                  17           @mol
+                  save
                   break
                 end
                 #
@@ -439,8 +449,8 @@ module.exports = {
                 #
                 rmol
               end
-            end
-          end                  @mol
+            end                @mol
+          end
         end
         #
         # Cut wastes. The code below is not random. The reason behind
@@ -452,7 +462,6 @@ module.exports = {
         # We have to try cut wastes many times in different places
         #
         loop
-          8
           8
           8                    @mol
           8
