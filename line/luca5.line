@@ -48,10 +48,10 @@ func
   #
   ifne
     left                      # m0
-	lhead                     # h0
+    lhead                     # h0
     0
-	call
-	right              @mol
+    call
+    right              @mol   # m1
     ret
   end
   #
@@ -100,10 +100,10 @@ func
         dec
         toggle
       end              @mol
-      left
+      left                    # m1
       0
       save
-      right
+      right                   # m2
     end
     rhead              @mol   # h1
     left                      # m1
@@ -152,106 +152,106 @@ loop
       #
       load
       ifn
-        #
-        # Sets cur atom idx
-        #
-        mol
-        right          @mol
-        save
-        left
         1
-        call
+        call           @mol
         left
-        cont           @mol
+        cont
       end
       #
       # Checks cur mol len
       #
       mol                     # h0
       toggle                  # ax=molIdx1  bx=molIdx0
-      sub
+      sub              @mol
       inc                     # ax=cur mol len
-      save             @mol   # m1=cur mol len
+      save                    # m1=cur mol len
       #
       # Sets head1 to ate molecule
       #
       reax                    # ax=ate mol len
       toggle                  # bx=ate mol len
       len
-      sub                     # ax=ate mol idx
+      sub              @mol   # ax=ate mol idx
       rhead                   # h1
-      smol             @mol
-      lhead
+      smol
+      lhead                   # h0
       #
       # Loads cur mol len into ax
       #
       load
       left                    # m0
-      toggle                  # bx=cur mol len
+      toggle           @mol   # bx=cur mol len
       reax                    # ax=ate mol len
       #
       # Wrong length. Cut it
       #
-      ifne             @mol
+      ifne
         #
         # Try to get energy by catabolism
         #
         0
-        rhead
+        rhead                 # h1
         catab
-        lhead
+        lhead          @mol   # h0
         #
         # Cut bad molecules
         #
         call
-        ifz            @mol
+        ifz
           break
         end
       end
       #
       # Correct len. Check if needed
       #
-      ife
+      ife              @mol
         #
         # Compares current mol and eated
         #
         mcmp
-        reax           @mol
+        reax
         ifz
           #
           # Try to get energy by catabolism on every 10th molecule
           #
           10
           rand
-          ifz
+          ifz          @mol
             rhead
-            catab      @mol
+            catab
             lhead
           end
           #
           # wrong mol, cut it
           #
           0
-          call
+          call         @mol
           ifz
-            break      @mol
+            break
           end
           #
           # Try to assemble needed molecule with anabolism
           #
           10
           rand
-          toggle
+          toggle       @mol
           3
           #
           # In 20% of cases sets anabolism regime
           #
-          ifg          @mol
+          ifg
             right
             0
             dec
+            save       @mol
+            #
+            # Sets cur atom idx
+            #
+            mol
+            right             # m2
             save
-            left
+            left              # m1
+            left              # m0
             # check ax here to break the loop
           end          @mol
           cont
