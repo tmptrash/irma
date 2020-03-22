@@ -407,7 +407,7 @@ Compiler.MAP = {
     [LOADA   ] : ['loada',   'ax,bx = org.mem[org.mPos]'],
     [READ    ]: ['read',     'ax = read(ax)'],
     [BREAK   ]: ['break',    'quit the loop'],
-    [CONTINUE]: ['continue', 'jumps to loop'],
+    [CONTINUE]: ['cont',     'jumps to loop'],
     //
     // Biological stuff
     //

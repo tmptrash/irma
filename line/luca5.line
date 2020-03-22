@@ -150,7 +150,7 @@ loop
         left           @mol
         1
         call
-		cont
+        cont
       end
       #
       # Checks cur mol len
