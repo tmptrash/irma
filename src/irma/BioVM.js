@@ -412,6 +412,7 @@ class BioVM extends VM {
                 if (m2Idx > insIdx) {
                     Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1, fCount);
                     Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1, fCount);
+                    Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1, fCount);
                 } else {
                     Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1, fCount);
                     Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1, fCount);
