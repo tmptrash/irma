@@ -153,7 +153,7 @@ module.exports = {
         #
         # In:
         #   m0    - back direction
-        #   m1    - anabolism regime (1|0)
+        #   m1    - anabolism regime (-1)
         # Out:
         #   ax    - 1 - success
         #           0 - fail
@@ -292,7 +292,7 @@ module.exports = {
               # Checks anabolism regime
               #
               load
-              ifp
+              ifn
                 1
                 call
               end
@@ -380,17 +380,18 @@ module.exports = {
                   #
                   ifg
                     right
-                    1          @mol
+                    0          @mol
+                    dec
                     save
                     left
                     # check ax here to break the loop
                   end
                   0
-                end
+                end            @mol
                 #
                 # Needed mol, just leave it
                 #
-                ifp            @mol   # needed mol
+                ifp                   # needed mol
                   #
                   # Checks if this is the end (last replicator mol)
                   #
@@ -398,14 +399,14 @@ module.exports = {
                   toggle
                   33
                   lshift                # ax=66 - nop
-                  right                 # m1
-                  save         @mol     # m1=66 - nop
+                  right        @mol     # m1
+                  save                  # m1=66 - nop
                   mol
                   read
                   toggle                # bx=first atom
                   load
-                  left                  # m0
-                  ife          @mol
+                  left         @mol     # m0
+                  ife
                     #
                     # Loads back dir from m0
                     #
@@ -413,8 +414,8 @@ module.exports = {
                     toggle              # bx=back dir
                     17
                     save
-                    break
-                  end          @mol
+                    break      @mol
+                  end
                   #
                   # Move h0 to the next mol
                   #
@@ -422,8 +423,8 @@ module.exports = {
                 end
               end
             end
-          end
-        end                    @mol
+          end                  @mol
+        end
         # TODO: i'm here!!!!
         # Cut wastes. The code below is not random. The reason behind
         # it, that nop atom should be the first atom in a last molecule.
@@ -434,6 +435,11 @@ module.exports = {
         # We have to try cut wastes many times in different places
         #
         loop
+          8
+          8
+          8                    @mol
+          8
+          8
           8
           rand
           dir
