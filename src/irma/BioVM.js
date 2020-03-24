@@ -559,7 +559,7 @@ class BioVM extends VM {
                 ++org.line;
                 if (++org.head === org.heads.length) {org.head = 0}
                 // eslint-disable-next-line no-useless-return
-                return;    
+                return;
         }
     }
 
