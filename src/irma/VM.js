@@ -381,7 +381,7 @@ class VM {
                             ++line;
                             if (ax < 0) {ax = 0}
                             if (ax >= code.length) {ax = code.length - 1}
-                            ax = code[ax];
+                            ax = code[ax] & CODE_8_BIT_RESET_MASK;
                             continue;
 
                         case BREAK: {

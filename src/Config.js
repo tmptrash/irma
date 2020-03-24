@@ -174,9 +174,10 @@ module.exports = {
         # Checks ate molecule and cut first atom if needed.
         # Turns off anabolism regime if last atom found.
         # Stores index of current atom in m2
-        # In: 
+        # In:
         #   mPos - 1
-        #   head - 0 
+        #   head - 0
+        #   m2   - cur atom idx
         #
         func
           right                       # m2
@@ -253,10 +254,9 @@ module.exports = {
             sub                       # ax=first atom idx
             rhead                     # h1
             smol
-            lhead                     # h0
             63
-            loop               @mol
-              0
+            loop
+              0                @mol
               dec
               anab
               reax
@@ -264,9 +264,10 @@ module.exports = {
               # Reaches last atom
               #
               ifn
-                break          @mol
-              end
+                break
+              end              @mol
             end
+            lhead                     # h0
             left                      # m1
             0
             save

@@ -101,10 +101,9 @@ func
     sub                       # ax=first atom idx
     rhead                     # h1
     smol
-    lhead                     # h0
     63
-    loop               @mol
-      0
+    loop
+      0                @mol
       dec
       anab
       reax
@@ -112,9 +111,10 @@ func
       # Reaches last atom
       #
       ifn
-        break          @mol
-      end
+        break
+      end              @mol
     end
+    lhead                     # h0
     left                      # m1
     0
     save
@@ -322,8 +322,8 @@ func
   loop
     8
     8
-	8                  @mol
-	8
+    8                  @mol
+    8
     8
     8
     rand
