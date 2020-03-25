@@ -357,7 +357,6 @@ class VM {
                             continue;
 
                         case LOAD:
-                            if (line === 180) debugger;
                             line++;
                             ax = org.mem[org.mPos];
                             continue;
