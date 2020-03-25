@@ -402,12 +402,12 @@ module.exports = {
                   #
                   # Try to assemble needed molecule with anabolism
                   #
-                  10
+                  20
                   rand
                   toggle
-                  3
+                  1
                   #
-                  # In 20% of cases sets anabolism regime
+                  # In 5% of cases sets anabolism regime
                   #
                   ifg          @mol
                     right
