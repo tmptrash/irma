@@ -227,9 +227,9 @@ loop
         reax
         ifz
           #
-          # Try to get energy by catabolism on every 10th molecule
+          # Try to get energy by catabolism on every 3th molecule
           #
-          10           @mol
+          3           @mol
           rand
           ifz
             rhead
@@ -249,12 +249,12 @@ loop
           #
           # Try to assemble needed molecule with anabolism
           #
-          20
+          33
           rand
           toggle
           1
           #
-          # In 5% of cases sets anabolism regime
+          # In 3% of cases sets anabolism regime
           #
           ifg          @mol
             right

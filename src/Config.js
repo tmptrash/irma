@@ -380,9 +380,9 @@ module.exports = {
                 reax
                 ifz
                   #
-                  # Try to get energy by catabolism on every 10th molecule
+                  # Try to get energy by catabolism on every 3th molecule
                   #
-                  10           @mol
+                  3           @mol
                   rand
                   ifz
                     rhead
@@ -402,12 +402,12 @@ module.exports = {
                   #
                   # Try to assemble needed molecule with anabolism
                   #
-                  20
+                  33
                   rand
                   toggle
                   1
                   #
-                  # In 5% of cases sets anabolism regime
+                  # In 3% of cases sets anabolism regime
                   #
                   ifg          @mol
                     right
@@ -587,7 +587,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : WIDTH * HEIGHT * .3, // 30% of molecules
+    molAmount                  : WIDTH * HEIGHT * .6, // 30% of molecules
     molCodeSize                : 5,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
