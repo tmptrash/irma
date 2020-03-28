@@ -152,6 +152,7 @@ module.exports = {
          */
         code: `
         #
+        # func0
         # In:
         #   m-1   - wrong molecules amount
         #   m0    - back direction
@@ -172,6 +173,7 @@ module.exports = {
           reax
         end
         #
+        # func1
         # Checks ate molecule and cut first atom if needed.
         # Turns off anabolism regime if last atom found.
         # Stores index of current atom in m2
@@ -409,13 +411,13 @@ module.exports = {
                     ret
                   end          @mol
                   #
-                  # Generate big number: 63 << 4 === 1008
+                  # Generate big number: 63 << 5 === 2016
                   #
-                  4
+                  5
                   toggle
                   63
                   lshift
-                  toggle              # bx=1008
+                  toggle              # bx=2016
                   #
                   # Inc wrong molecules counter
                   #
@@ -488,6 +490,7 @@ module.exports = {
           end
         end
         #
+        # func2
         # Cut wastes. The code below is not random. The reason behind
         # it, that nop atom should be the first atom in a last molecule.
         # Any other molecule must not have it on the beginning
@@ -604,7 +607,7 @@ module.exports = {
      * Is used for new created organisms. During cloning, all
      * organism properties will be inherited.
      */
-    orgProbs                   : Uint8Array.from([10,1,1,1,1,1,1,1,3]),
+    orgProbs                   : Uint8Array.from([10,1,2,1,1,1]),
     /**
      * Molecules related configs
      */

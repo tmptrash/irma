@@ -258,13 +258,13 @@ loop
             ret
           end          @mol
           #
-          # Generate big number: 63 << 4 === 1008
+          # Generate big number: 63 << 5 === 2016
           #
-          4
+          5
           toggle
           63
           lshift
-          toggle              # bx=1008
+          toggle              # bx=2016
           #
           # Inc wrong molecules counter
           #
