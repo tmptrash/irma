@@ -601,7 +601,7 @@ module.exports = {
     orgMaxAge                  : 0, // 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 0, // 3000000,
-    orgMaxCodeSize             : 1024,
+    ORG_MAX_CODE_SIZE          : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
      * Is used for new created organisms. During cloning, all

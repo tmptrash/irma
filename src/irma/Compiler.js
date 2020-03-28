@@ -82,6 +82,9 @@ const DIR                   = Config.CODE_CMDS.DIR;
 const LHEAD                 = Config.CODE_CMDS.LHEAD;
 const RHEAD                 = Config.CODE_CMDS.RHEAD;
 
+const STACK                 = new Int16Array(Config.ORG_MAX_CODE_SIZE);
+const LOOPS                 = new Int16Array(Config.ORG_MAX_CODE_SIZE);
+
 class Compiler {
     /**
      * Compiles code before run it. Compilation means to find pairs of block
@@ -95,8 +98,8 @@ class Compiler {
         const code   = org.code;
         const offs   = org.offs  = {};
         const funcs  = org.funcs = {};
-        const stack  = new Int16Array(Config.orgMaxCodeSize);
-        const loops  = new Int16Array(Config.orgMaxCodeSize);
+        const stack  = STACK;
+        const loops  = LOOPS;
         let   lCount = -1;
         let   sCount = -1;
         let   fCount = 0;
