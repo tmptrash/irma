@@ -590,7 +590,6 @@ class BioVM extends VM {
         //
         org.offset   = offset;              // Absolute position of organism in a world
         org.molIndex = orgsMols.freeIndex;  // Index of organism in orgsMols array
-        org.color    = Config.orgColor;     // Current organism color
         org.packet   = null;                // Special place for storing atom, molecule or other organism
         org.energy   = energy;              // Orgainm's energy
         org.heads    = new Uint16Array(4);  // Organism's custom heads
@@ -598,11 +597,12 @@ class BioVM extends VM {
         org.dir      = 1;                   // Active direction offset
         org.re       = 0;                   // Register "re". Is used as result for command (mmol, step, see,...)
         if (parent) {
-            org.mem     = parent.mem.slice();
-            org.mPos    = parent.mPos;
             org.probs   = parent.probs.slice();
             org.period  = parent.period;
             org.percent = parent.percent;
+            org.color   = parent.color;     // Current organism color
+        } else {
+            org.color   = Config.orgColor;  // Current organism color
         }
         Compiler.compile(org);
 
