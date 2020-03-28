@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920;
-const HEIGHT      = 1080;
+const WIDTH       = 1920 * 3;
+const HEIGHT      = 1080 * 3;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -389,9 +389,9 @@ module.exports = {
                 reax
                 ifz
                   #
-                  # Try to get energy by catabolism on every 3th molecule
+                  # Try to get energy by catabolism on every second molecule
                   #
-                  3
+                  2
                   rand         @mol
                   ifz
                     rhead
@@ -556,8 +556,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH / 2,
-    WORLD_CANVAS_HEIGHT        : HEIGHT / 2,
+    WORLD_CANVAS_WIDTH         : WIDTH / 8,
+    WORLD_CANVAS_HEIGHT        : HEIGHT / 8,
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -595,7 +595,7 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
-    orgMaxAge                  : 5000000,
+    orgMaxAge                  : 0, // 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 0, // 3000000,
     orgMaxCodeSize             : 1024,
@@ -611,15 +611,15 @@ module.exports = {
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
     molAmount                  : WIDTH * HEIGHT * .6, // 30% of molecules
-    molCodeSize                : 5,
+    molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
      */
     energyStepCoef             : .015,
-    energyMove                 : 3,
-    energyMetabolismCoef       : 100,
+    energyMolMoveCoef          : .015,
+    energyMetabolismCoef       : 150,
     /**
      * {Number} This value will be used for every LUCA on system start if
      * there is no property "energy" in LUCAS config was specified

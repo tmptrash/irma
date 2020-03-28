@@ -1,4 +1,5 @@
 #
+# func0
 # In:
 #   m-1   - wrong molecules amount
 #   m0    - back direction
@@ -19,6 +20,7 @@ func
   reax
 end
 #
+# func1
 # Checks ate molecule and cut first atom if needed.
 # Turns off anabolism regime if last atom found.
 # Stores index of current atom in m2
@@ -236,9 +238,9 @@ loop
         reax
         ifz
           #
-          # Try to get energy by catabolism on every 3th molecule
+          # Try to get energy by catabolism on every second molecule
           #
-          3
+          2
           rand         @mol
           ifz
             rhead
@@ -335,6 +337,7 @@ loop
   end
 end
 #
+# func2
 # Cut wastes. The code below is not random. The reason behind
 # it, that nop atom should be the first atom in a last molecule.
 # Any other molecule must not have it on the beginning

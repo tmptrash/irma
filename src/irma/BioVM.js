@@ -133,7 +133,7 @@ class BioVM extends VM {
      * @override
      */
     afterIteration(org) {
-        if (org.energy < 0 || org.age > Config.orgMaxAge) {
+        if (org.energy < 0 || (Config.orgMaxAge > 0 && org.age > Config.orgMaxAge)) {
             this.delOrg(org);
             this.addMol(org.offset, org.code);
         }
@@ -403,7 +403,7 @@ class BioVM extends VM {
                 code           = code.splice(m2Idx, len);
                 const insIdx   = this._molLastOffs(code, nextHead + (m2Idx < (nextHead) ? -len : 0)) + 1;
                 org.code       = code.splice(insIdx, 0, moveCode);
-                org.energy    -= Config.energyMove;
+                org.energy    -= (moveCode.length * Config.energyMolMoveCoef);
                 org.re         = RE_OK;
                 const fCount   = org.fCount; 
                 Compiler.compile(org, false);

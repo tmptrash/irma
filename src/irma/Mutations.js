@@ -4,6 +4,7 @@
 const Config   = require('./../Config');
 const Helper   = require('./../common/Helper');
 const Compiler = require('./Compiler');
+const Molecule = require('./Molecule');
 
 const rand                 = Helper.rand;
 /**
@@ -35,6 +36,12 @@ const CODE_MUTATION_AMOUNT = .02;
  * {Number} Last atom in molecule bit mask
  */
 const CODE_8_BIT_MASK      = Config.CODE_8_BIT_MASK;
+const WIDTH                = Config.WORLD_WIDTH - 1;
+const HEIGHT               = Config.WORLD_HEIGHT - 1;
+const WIDTH1               = WIDTH + 1;
+const HEIGHT1              = HEIGHT + 1;
+const LINE_OFFS            = HEIGHT * WIDTH1;
+const MAX_OFFS             = WIDTH1 * HEIGHT1 - 1;     // We need -1 to prevent using offset >= MAX_OFFS ... instead offset > MAX_OFFS
 /**
  * {Number} nop command index
  */
@@ -56,19 +63,43 @@ class Mutations {
 
     static randCmd() {return rand(CODE_COMMANDS) === 0 ? rand(CODE_CMD_OFFS) : rand(CODE_COMMANDS) + CODE_CMD_OFFS}
     
+    /**
+     * Takes random atom from random molecule in a world and switch it by random one
+     * from organism. Keeps @mol separator during switch.
+     */
     static _onChange (vm, code, org) {
-        const idx    = rand(code.length);
-        code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
-        const fCount = org.fCount;
+        const oMols     = vm.orgsMols;
+        const items     = oMols.items;
+        let srcMol;
+        if (!((srcMol   = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items)) instanceof Molecule))) {return}
+        if (srcMol.code.length < 2) {return}
+        const srcCode   = srcMol.code;
+        const dstIdx    = rand(code.length);
+        const srcIdx    = rand(srcCode.length);
+        const srcCmd    = srcCode[srcIdx];
+        const dstCmd    = code[dstIdx];
+        srcCode[srcIdx] = (srcCmd & CODE_8_BIT_MASK) ? dstCmd | CODE_8_BIT_MASK : dstCmd;
+        code[dstIdx]    = (dstCmd & CODE_8_BIT_MASK) ? srcCmd | CODE_8_BIT_MASK : srcCmd;
+        const fCount    = org.fCount;
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-        Compiler.updateMetadata(org, idx, idx, 1, fCount);
+        Compiler.updateMetadata(org, dstIdx, dstIdx, 1, fCount);
     }
 
     static _onDel    (vm, code, org) {
-        const idx    = rand(code.length);
-        code[idx]    = (code[idx] & CODE_8_BIT_MASK) ? Mutations.randCmd() | CODE_8_BIT_MASK : Mutations.randCmd();
-        org.code     = code.splice(idx, 1);
-        const fCount = org.fCount;
+        if (vm.orgsMols.full) {return}
+        let offset      = org.offset + org.dir;
+        if (offset < 0) {offset = LINE_OFFS + org.offset}
+        else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
+        const dot       = this.world.index(offset);
+        if (dot > -1) {return} // something on the way
+        const idx       = rand(code.length);
+        const dstCmd    = code[idx];
+        const isMol     = (dstCmd & CODE_8_BIT_MASK) > 0;
+        org.code        = code.splice(idx, 1);
+        if (isMol) {org.code[idx] |= CODE_8_BIT_MASK}
+        this.addMol(offset, new Uint8Array([dstCmd | CODE_8_BIT_MASK])); // one atom always final
+        if (org.code.length < 1) {this.delOrg(org); return}
+        const fCount    = org.fCount;
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
         Compiler.updateMetadata(org, idx, idx + 1, -1, fCount);
     }
