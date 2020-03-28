@@ -153,6 +153,7 @@ module.exports = {
         code: `
         #
         # In:
+        #   m-1   - wrong molecules amount
         #   m0    - back direction
         #   m1    - anabolism regime (-1)
         # Out:
@@ -353,22 +354,30 @@ module.exports = {
               #
               ifne
                 #
+                # Inc wrong molecules counter
+                #
+                left                  # m-1
+                load
+                inc
+                save           @mol
+                right                 # m0
+                #
                 # Try to get energy by catabolism
                 #
                 0
                 rhead                 # h1
                 catab
-                lhead          @mol   # h0
+                lhead                 # h0
                 #
                 # Cut bad molecules
                 #
-                call
+                call           @mol
                 ifz
                   2
                   call
                   ret
-                end            @mol
-              end
+                end
+              end              @mol
               #
               # Correct len. Check if needed
               #
@@ -382,35 +391,45 @@ module.exports = {
                   #
                   # Try to get energy by catabolism on every 3th molecule
                   #
-                  3           @mol
-                  rand
+                  3
+                  rand         @mol
                   ifz
                     rhead
                     catab
                     lhead
-                  end          @mol
+                  end
                   #
                   # wrong mol, cut it
                   #
-                  0
+                  0            @mol
                   call
                   ifz
                     2
                     call
-                    ret        @mol
-                  end
+                    ret
+                  end          @mol
                   #
-                  # Try to assemble needed molecule with anabolism
+                  # Generate big number: 63 << 4 === 1008
                   #
-                  63
-                  rand
+                  4
                   toggle
-                  0
+                  63
+                  lshift
+                  toggle              # bx=1008
                   #
-                  # In 2% of cases sets anabolism regime
+                  # Inc wrong molecules counter
                   #
-                  ife          @mol
-                    right
+                  left         @mol   # m-1
+                  load
+                  inc
+                  save                # ax=wrong mol amount
+                  right               # m0
+                  #
+                  # Try to assemble needed molecule with anabolism. 
+                  # If 63 molecules were wrong, then set anabolism regime
+                  #
+                  ifg
+                    right      @mol   # m1
                     0
                     dec
                     save
@@ -418,48 +437,55 @@ module.exports = {
                     # Sets cur atom idx
                     #
                     mol
-                    right      @mol   # m2
-                    save
+                    right             # m2
+                    save       @mol
                     left              # m1
                     left              # m0
                     # check ax here to break the loop
                   end
                   cont
-                end            @mol
+                end
                 #
                 # Needed mol, just leave it. Checks if 
                 # this is the end (last replicator mol)
                 #
-                1
+                1              @mol
                 toggle
                 33
                 lshift                # ax=66 - nop
                 right                 # m1
-                save           @mol   # m1=66 - nop
-                mol
+                save                  # m1=66 - nop
+                mol            @mol
                 read
                 toggle                # bx=first atom
                 load
                 left                  # m0
-                ife            @mol
+                ife
                   #
                   # Loads back dir from m0
                   #
-                  load
+                  load         @mol
                   toggle              # bx=back dir
                   17
                   save
                   2
-                  call         @mol
-                  ret
+                  call
+                  ret          @mol
                 end
+                #
+                # Resets wrong molecules counter 
+                #
+                left                  # m-1
+                0
+                save
+                right                 # m0
                 #
                 # Move h0 to the next mol
                 #
-                rmol
+                rmol           @mol
               end
             end
-          end                  @mol
+          end
         end
         #
         # Cut wastes. The code below is not random. The reason behind
@@ -469,14 +495,11 @@ module.exports = {
         #   h0   - last mol
         #
         func
-          63
+          63                   @mol
           #
           # We have to try cut wastes many times in different places
           #
           loop
-            8
-            8                  @mol
-            8
             8
             8
             rand
