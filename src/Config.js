@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 2;
-const HEIGHT      = 1080 * 2;
+const WIDTH       = 1920 * 3;
+const HEIGHT      = 1080 * 3;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -542,7 +542,7 @@ module.exports = {
     }],
     codeLinesPerIteration      : 3,
     codeRepeatsPerRun          : 20,
-    codeMutateEveryClone       : 10,
+    codeMutateEveryClone       : 5,
     codeMutateMutations        : false,
 
     /**
@@ -613,7 +613,7 @@ module.exports = {
      */
     molDecayPeriod             : 1,
     molDecayDistance           : 60,
-    molAmount                  : WIDTH * HEIGHT * .6, // 30% of molecules
+    molAmount                  : WIDTH * HEIGHT * .2, // 20% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
