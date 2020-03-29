@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 3;
-const HEIGHT      = 1080 * 3;
+const WIDTH       = 1920 * 2;
+const HEIGHT      = 1080 * 2;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
