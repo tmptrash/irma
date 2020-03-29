@@ -598,7 +598,7 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
-    orgMaxAge                  : 0, // 5000000,
+    orgMaxAge                  : 5000000,
     orgMutationPercent         : .01,
     orgMutationPeriod          : 0, // 3000000,
     ORG_MAX_CODE_SIZE          : 1024,
