@@ -48,8 +48,6 @@ const LEFT                  = Config.CODE_CMDS.LEFT;
 const RIGHT                 = Config.CODE_CMDS.RIGHT;
 const SAVE                  = Config.CODE_CMDS.SAVE;
 const LOAD                  = Config.CODE_CMDS.LOAD;
-const SAVEA                 = Config.CODE_CMDS.SAVEA;
-const LOADA                 = Config.CODE_CMDS.LOADA;
 const READ                  = Config.CODE_CMDS.READ;
 const BREAK                 = Config.CODE_CMDS.BREAK;
 const CONTINUE              = Config.CODE_CMDS.CONTINUE;
@@ -158,9 +156,8 @@ class Compiler {
      * @param {Number} index1 Start index in a code, where change was occure
      * @param {Number} index2 End index in a code where changed were occure
      * @param {Number} dir Direction. 1 - inserted code, -1 - removed code
-     * @param {Number} fCount Previous amount of functions in a code
      */
-    static updateMetadata(org, index1 = 0, index2 = 0, dir = 1, fCount = -1) {
+    static updateMetadata(org, index1 = 0, index2 = 0, dir = 1) {
         const amount = (index2 - index1) * dir;
         //
         // Updates current line
@@ -175,18 +172,13 @@ class Compiler {
         // were changed we have to remove call stack. In other case we have to 
         // update all call stack indexes
         //
-        if (fCount === -1) {fCount = org.fCount}
-        // TODO: What should we do in case of new or removed functions?
-        // if (org.fCount < fCount) {org.stackIndex = -1}
-        else {
-            const stk = org.stack;
-            for (let i = 0, len = org.stackIndex + 1; i <= len; i++) {
-                const ln = stk[i];                                      // Updates back line
-                if (dir < 0) {
-                    if (ln >= index2) {stk[i] += amount}
-                    else if (ln >= index1 && ln <= index2) {stk[i] = index1}
-                } else if (ln >= index1) {stk[i] += amount}
-            }
+        const stk = org.stack;
+        for (let i = 0, len = org.stackIndex + 1; i <= len; i++) {
+            const ln = stk[i];                                      // Updates back line
+            if (dir < 0) {
+                if (ln >= index2) {stk[i] += amount}
+                else if (ln >= index1 && ln <= index2) {stk[i] = index1}
+            } else if (ln >= index1) {stk[i] += amount}
         }
         //
         // Updates loop metadata (after loop lines indexes)
@@ -406,8 +398,6 @@ Compiler.MAP = {
     [RIGHT   ]: ['right',    'org.mPos++'],
     [SAVE    ]: ['save',     'org.mem[org.mPos] = ax'],
     [LOAD    ]: ['load',     'ax = org.mem[org.mPos]'],
-    [SAVEA   ]: ['savea',    'org.mem[org.mPos]=ax,bx'],
-    [LOADA   ] : ['loada',   'ax,bx = org.mem[org.mPos]'],
     [READ    ]: ['read',     'ax = read(ax)'],
     [BREAK   ]: ['break',    'quit the loop'],
     [CONTINUE]: ['cont',     'jumps to loop'],

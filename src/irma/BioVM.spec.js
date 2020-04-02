@@ -49,8 +49,6 @@ describe('src/irma/VM', () => {
     const RI        = Config.CODE_CMDS.RIGHT;
     const SA        = Config.CODE_CMDS.SAVE;
     const LO        = Config.CODE_CMDS.LOAD;
-    const SAA       = Config.CODE_CMDS.SAVEA;
-    const LOA       = Config.CODE_CMDS.LOADA;
     const RD        = Config.CODE_CMDS.READ;
     const BR        = Config.CODE_CMDS.BREAK;
 

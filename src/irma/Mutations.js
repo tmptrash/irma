@@ -80,9 +80,8 @@ class Mutations {
         const dstCmd    = code[dstIdx];
         srcCode[srcIdx] = (srcCmd & CODE_8_BIT_MASK) ? dstCmd | CODE_8_BIT_MASK : dstCmd;
         code[dstIdx]    = (dstCmd & CODE_8_BIT_MASK) ? srcCmd | CODE_8_BIT_MASK : srcCmd;
-        const fCount    = org.fCount;
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-        Compiler.updateMetadata(org, dstIdx, dstIdx, 1, fCount);
+        Compiler.updateMetadata(org, dstIdx, dstIdx, 1);
     }
 
     /**
@@ -102,9 +101,8 @@ class Mutations {
         if (isMol) {org.code[idx] |= CODE_8_BIT_MASK}
         vm.addMol(offset, new Uint8Array([dstCmd | CODE_8_BIT_MASK])); // one atom always final
         if (org.code.length < 1) {vm.delOrg(org); return}
-        const fCount    = org.fCount;
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-        Compiler.updateMetadata(org, idx, idx + 1, -1, fCount);
+        Compiler.updateMetadata(org, idx, idx + 1, -1);
     }
 
     /**
@@ -125,9 +123,8 @@ class Mutations {
         org.code        = code.splice(dstIdx, 0, new Uint8Array([srcCmd]));
         srcMol.code     = srcMol.code.splice(srcIdx, 1);
         if (isMol) {srcMol.code[srcIdx] |= CODE_8_BIT_MASK}
-        const fCount    = org.fCount;
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-        Compiler.updateMetadata(org, dstIdx, dstIdx, 1, fCount);
+        Compiler.updateMetadata(org, dstIdx, dstIdx, 1);
     }
 
     static _onPeriod (vm, code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
@@ -140,9 +137,8 @@ class Mutations {
     //     if (code.length >= Config.orgMaxCodeSize) {return}
     //     const idx    = rand(code.length);
     //     org.code     = code.splice(idx, 0, Uint8Array.from([Mutations.randCmd()]));
-    //     const fCount = org.fCount;
     //     Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-    //     Compiler.updateMetadata(org, idx, idx + 1, 1, fCount);
+    //     Compiler.updateMetadata(org, idx, idx + 1, 1);
     // }
 
     // /**
@@ -170,18 +166,16 @@ class Mutations {
     //         const idx = rand(start);
     //         const insCode = code.slice(start, end);
     //         org.code      = code.splice(idx, 0, insCode);
-    //         const fCount = org.fCount;
     //         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-    //         Compiler.updateMetadata(org, idx, idx + insCode.length, 1, fCount);
+    //         Compiler.updateMetadata(org, idx, idx + insCode.length, 1);
     //         return end - start;
     //     }
 
     //     const idx     = end + rand(codeLen - end + 1);
     //     const insCode = code.slice(start, end);
     //     org.code      = code.splice(idx, 0, insCode);
-    //     const fCount = org.fCount;
     //     Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-    //     Compiler.updateMetadata(org, idx, idx + insCode.length, 1, fCount);
+    //     Compiler.updateMetadata(org, idx, idx + insCode.length, 1);
 
     //     return end - start;
     // }
@@ -190,17 +184,15 @@ class Mutations {
     //     const start = rand(code.length);
     //     const end   = rand(code.length - start);
     //     org.code    = code.splice(start, end);
-    //     const fCount = org.fCount;
     //     Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-    //     Compiler.updateMetadata(org, start, start + end, -1, fCount);
+    //     Compiler.updateMetadata(org, start, start + end, -1);
     // }
 
     // static _onOff    (vm, code, org) {
     //     const idx = rand(code.length);
     //     code[idx] = (code[idx] & CODE_8_BIT_MASK) ? NOP_MOL : NOP;
-    //     const fCount = org.fCount;
     //     Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
-    //     Compiler.updateMetadata(org, idx, idx, 1, fCount);
+    //     Compiler.updateMetadata(org, idx, idx, 1);
     // }
 }
 

@@ -57,8 +57,6 @@ const LEFT     = Config.CODE_CMDS.LEFT;
 const RIGHT    = Config.CODE_CMDS.RIGHT;
 const SAVE     = Config.CODE_CMDS.SAVE;
 const LOAD     = Config.CODE_CMDS.LOAD;
-const SAVEA    = Config.CODE_CMDS.SAVEA;
-const LOADA    = Config.CODE_CMDS.LOADA;
 const READ     = Config.CODE_CMDS.READ;
 const BREAK    = Config.CODE_CMDS.BREAK;
 const CONTINUE = Config.CODE_CMDS.CONTINUE;
@@ -360,22 +358,6 @@ class VM {
                             line++;
                             ax = org.mem[org.mPos];
                             continue;
-
-                        case SAVEA: {
-                            line++;
-                            let mPos = org.mPos;
-                            org.mem[mPos++] = ax;
-                            org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos] = bx;
-                            continue;
-                        }
-
-                        case LOADA: {
-                            line++;
-                            let mPos = org.mPos;
-                            ax = org.mem[mPos++];
-                            bx = org.mem[mPos >= ORG_MAX_MEM_SIZE ? 0 : mPos];
-                            continue;
-                        }
 
                         case READ:
                             ++line;
