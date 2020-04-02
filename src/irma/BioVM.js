@@ -55,7 +55,7 @@ const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
 const MCMP                  = Config.CODE_CMDS.MCMP;
-const FIND                  = Config.CODE_CMDS.FIND;
+const ASM                   = Config.CODE_CMDS.ASM;
 const REAX                  = Config.CODE_CMDS.REAX;
 const DIR                   = Config.CODE_CMDS.DIR;
 const LHEAD                 = Config.CODE_CMDS.LHEAD;
@@ -516,20 +516,35 @@ class BioVM extends VM {
                 return;
             }
 
-            case FIND: {
+            /**
+             * In:
+             *   h0 - mol
+             *   h1 - search start idx
+             *   h2 - search end idx
+             *   ax - insertion idx
+             * Out:
+             *   re - RE_OK|RE_ERR
+             */
+            case ASM: {
                 ++org.line;
+                const heads  = org.heads.length;
+                const head   = org.head;
                 const code   = org.code;
-                const idx0   = org.ax;
-                const idx1   = org.bx;
+                const idx0   = org.heads[head + 1 === heads ? 0 : head + 1];
+                const idx1   = org.heads[head + 2 >=  heads ? head + 2 - heads : head + 2];
                 const mol    = org.heads[org.head];
                 const molLen = this._molLastOffs(code, mol) - mol + 1;
+                const ax     = this._molLastOffs(code, org.ax) + 1;
 
                 loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1); i <= till; i++) {
                     for (let j = 0; j < molLen; j++) {
                         if ((code[i + j] & MASK8R) !== (code[j + mol] & MASK8R)) {continue loop}
                     }
-                    org.ax  = i;
-                    org.re  = RE_OK;
+                    // we found the index of needed atoms in "i"
+                    const atoms = code.slice(i, i + molLen);
+                    org.code    = code.splice(i, i + molLen);
+                    org.code    = org.code.splice(ax < i ? ax : ax - molLen, 0, atoms);
+                    org.re      = RE_OK;
                     return;
                 }
                 org.re = RE_ERR;

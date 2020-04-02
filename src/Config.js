@@ -75,7 +75,7 @@ const COMMANDS    = {
     LMOL    : CODE_OFFS + 52,
     CMOL    : CODE_OFFS + 53,
     MCMP    : CODE_OFFS + 54,
-    FIND    : CODE_OFFS + 55,
+    ASM     : CODE_OFFS + 55,
     REAX    : CODE_OFFS + 56,
     DIR     : CODE_OFFS + 57,
     LHEAD   : CODE_OFFS + 58,

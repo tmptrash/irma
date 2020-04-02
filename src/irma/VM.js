@@ -21,7 +21,6 @@ const rand                  = Helper.rand;
 const CODE_CMD_OFFS         = Config.CODE_CMD_OFFS;
 const CODE_STACK_SIZE       = Config.CODE_STACK_SIZE;
 const CODE_8_BIT_RESET_MASK = Config.CODE_8_BIT_RESET_MASK;
-const ORG_MAX_MEM_SIZE      = Config.ORG_MAX_MEM_SIZE;
 //
 // Basic commands
 //

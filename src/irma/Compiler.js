@@ -74,7 +74,7 @@ const RMOL                  = Config.CODE_CMDS.RMOL;
 const LMOL                  = Config.CODE_CMDS.LMOL;
 const CMOL                  = Config.CODE_CMDS.CMOL;
 const MCMP                  = Config.CODE_CMDS.MCMP;
-const FIND                  = Config.CODE_CMDS.FIND;
+const ASM                   = Config.CODE_CMDS.ASM;
 const REAX                  = Config.CODE_CMDS.REAX;
 const DIR                   = Config.CODE_CMDS.DIR;
 const LHEAD                 = Config.CODE_CMDS.LHEAD;
@@ -424,7 +424,7 @@ Compiler.MAP = {
     [LMOL    ]: ['lmol',     'mol=lmol():re'],
     [CMOL    ]: ['cmol',     'cmol():re'],
     [MCMP    ]: ['mcmp',     'mcmp():re'],
-    [FIND    ]: ['find',     'ax=find(ax=fromIdx,bx=toIdx):re'],
+    [ASM     ]: ['asm',      'ax=asm(ax=fromIdx,bx=toIdx):re'],
     [REAX    ]: ['reax',     'ax=re'],
     [DIR     ]: ['dir',      'dir(ax)'],
     [LHEAD   ]: ['lhead',    'lhead'],
