@@ -571,7 +571,7 @@ class BioVM extends VM {
                     org.code    = code.splice(i, molLen);
                     org.code    = org.code.splice(ax < i ? ax : ax - molLen, 0, atoms);
                     Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
-                    if (ax < i) {
+                    if (ax > i) {
                         Compiler.updateMetadata(org, ax, ax + atoms.length, -1);
                         Compiler.updateMetadata(org, i, i + molLen, 1);
                     } else {
