@@ -1,5 +1,5 @@
 <NotepadPlus>
-    <UserLang name="line5" ext="s S" udlVersion="2.1">
+    <UserLang name="line6" ext="s S" udlVersion="2.1">
         <Settings>
             <Global caseIgnored="no" allowFoldOfComments="yes" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
             <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
@@ -25,7 +25,7 @@
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
             <Keywords name="Keywords1">toggle eq nop add sub mul div inc dec rshift lshift rand ifp ifn ifz ifg ifl ife ifne loop func end nand age line len left right save load savea loada read</Keywords>
-            <Keywords name="Keywords2">join split step see say listen nread get put offs color anab catab mol mmol smol rmol lmol cmol mcmp find reax dir lhead rhead</Keywords>
+            <Keywords name="Keywords2">join split step see say listen nread get put offs color anab catab mol mmol smol rmol lmol cmol mcmp asm reax dir lhead rhead</Keywords>
             <Keywords name="Keywords3">@mol</Keywords>
             <Keywords name="Keywords4">ret break cont call</Keywords>
             <Keywords name="Keywords5"></Keywords>

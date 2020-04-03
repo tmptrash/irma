@@ -365,7 +365,7 @@ class Compiler {
 Compiler.MAP = {
     //
     // "line" language core operators
-    //
+    // TODO: update descriptions
     [TOGGLE  ]: ['toggle',   'swap ax,bx'],
     [EQ      ]: ['eq',       'ax=bx'],
     [NOP     ]: ['nop',      'no operation'],
@@ -411,12 +411,12 @@ Compiler.MAP = {
     [SAY     ]: ['say',      'ax=say(ax=val,bx=freq)'],
     [LISTEN  ]: ['listen',   'ax=listen(bx=freq)'],
     [NREAD   ]: ['nread',    'ax=nread(ax=dir,bx=offs):re'],
-    [GET     ]: ['get',      'get(ax:dir)'],
-    [PUT     ]: ['put',      'put(ax:dir)'],
+    [GET     ]: ['get',      'get(ax=dir)'],
+    [PUT     ]: ['put',      'put(ax=dir)'],
     [OFFS    ]: ['offs',     'ax=org.offset'],
     [COLOR   ]: ['color',    'org.color=ax % 0xffffff'],
-    [ANAB    ]: ['anab',     'anab(ax:fromIdx, bx:toIdx):re'],
-    [CATAB   ]: ['catab',    'catab(ax:offs):re'],
+    [ANAB    ]: ['anab',     'anab(ax=fromIdx, bx=toIdx):re'],
+    [CATAB   ]: ['catab',    'catab(ax=offs):re'],
     [MOL     ]: ['mol',      'ax,bx=mol()'],
     [MMOL    ]: ['mmol',     'mmol(ax=fromIdx):re'],
     [SMOL    ]: ['smol',     'mol=smol(ax)'],
@@ -424,11 +424,11 @@ Compiler.MAP = {
     [LMOL    ]: ['lmol',     'mol=lmol():re'],
     [CMOL    ]: ['cmol',     'cmol():re'],
     [MCMP    ]: ['mcmp',     'mcmp():re'],
-    [ASM     ]: ['asm',      'ax=asm(ax=fromIdx,bx=toIdx):re'],
+    [ASM     ]: ['asm',      'ax=asm(ax=dstIdx,h0=molIdx,h1=fromIdx,h2=toIdx):re'],
     [REAX    ]: ['reax',     'ax=re'],
     [DIR     ]: ['dir',      'dir(ax)'],
-    [LHEAD   ]: ['lhead',    'lhead'],
-    [RHEAD   ]: ['rhead',    'rhead']
+    [LHEAD   ]: ['lhead',    'set prev head'],
+    [RHEAD   ]: ['rhead',    'set next head']
 };
 
 /**

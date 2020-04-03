@@ -157,13 +157,14 @@ class BioVM extends VM {
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
                 const nearLen = nearOrg.code.length;
-                if (nearLen + org.code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
-                const oldLen  = org.code.length;
-                org.code      = org.code.push(nearOrg.code);
+                const code    = org.code;
+                if (nearLen + code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
+                const idx     = this._molLastOffs(code, org.heads[org.head]) + 1;
+                org.code      = code.splice(idx, 0, nearOrg.code);
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
                 org.re        = nearLen;
                 Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
-                Compiler.updateMetadata(org, oldLen, oldLen + nearLen, 1);
+                Compiler.updateMetadata(org, idx, idx + nearLen, 1);
                 return;
             }
 
@@ -183,10 +184,10 @@ class BioVM extends VM {
                 if (dot > -1) {org.re = RE_ERR; return} // something on the way
                 const code    = org.code;
                 let   idx0    = org.heads[org.head];
-                let   idx1    = org.ax;
+                let   idx1    = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
+                if (idx0 > idx1) {const tmp = idx0; idx1 = idx0; idx0 = tmp}
                 if (idx1 < 0) {idx1 = 0}
                 if (idx1 >= code.length) {idx1 = code.length - 1}
-                if (idx0 > idx1) {const tmp = idx0; idx1 = idx0; idx0 = tmp}
                 idx1 = this._molLastOffs(code, idx1);
                 const newCode = code.subarray(idx0, idx1 + 1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
@@ -296,7 +297,7 @@ class BioVM extends VM {
                 let   code      = org.code;
                 const m1Idx     = org.heads[org.head];
                 //
-                // Join current and next molecules
+                // Join current and next molecules into one
                 //
                 if (org.ax < 0) {
                     const m1EndIdx  = this._molLastOffs(code, m1Idx);
@@ -311,7 +312,7 @@ class BioVM extends VM {
                     return;
                 }
                 //
-                // Join current and molecule in ax
+                // Join current and molecule in ax into one
                 //
                 let   m2Idx     = 0;
                 for (let i = org.ax - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
@@ -535,16 +536,56 @@ class BioVM extends VM {
                 const mol    = org.heads[org.head];
                 const molLen = this._molLastOffs(code, mol) - mol + 1;
                 const ax     = this._molLastOffs(code, org.ax) + 1;
-
+                //
+                // We search needed atoms without checking of separator atoms
+                //
                 loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1); i <= till; i++) {
                     for (let j = 0; j < molLen; j++) {
                         if ((code[i + j] & MASK8R) !== (code[j + mol] & MASK8R)) {continue loop}
                     }
-                    // we found the index of needed atoms in "i"
+                    //
+                    // Index of needed atoms in "i". Search for right mol len
+                    //
+                    const idx01 = i + molLen - 1;
+                    let len;
+                    for (let j = idx01;; j--) {
+                        if (j < 0) {len = idx01 + 1; break}
+                        if ((code[j] & MASK8) > 0) {len = idx01 - j + 1; break}
+                    }
+                    len += this._molLastOffs(code, idx01) - idx01;
+                    code[idx01] |= MASK8;
+                    //
+                    // Search for left mol len
+                    //
+                    for (let j = i - 1;; j--) {
+                        if (j < 0) {len += i; break}
+                        if ((code[j] & MASK8) > 0) {len += (idx01 - i); break}
+                    }
+                    len += this._molLastOffs(code, i - 1) - i - 1;
+                    i > 0 && (code[i - 1] |= MASK8);
+                    //
+                    // Cuts found atoms
+                    //
                     const atoms = code.slice(i, i + molLen);
                     org.code    = code.splice(i, i + molLen);
                     org.code    = org.code.splice(ax < i ? ax : ax - molLen, 0, atoms);
-                    org.re      = RE_OK;
+                    //
+                    // join atoms together to needed molecule
+                    //
+                    if (molLen > 1) {
+                        for (let j = 1, prev = 0; j < molLen; j++) {
+                        for (let j = 1, prev = 0; j < molLen; j++) {
+                            if ((atoms[j] & MASK8) > 0) {
+                                len -= (j = prev);
+                                prev = j;
+                            }
+                        }
+                    }
+                    //
+                    // Calc energy
+                    //
+                    org.energy += (len * Config.energyMetabolismCoef);
+                    org.re = RE_OK;
                     return;
                 }
                 org.re = RE_ERR;

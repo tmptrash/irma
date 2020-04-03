@@ -1,0 +1,79 @@
+#
+# LUCA v6
+# This is Last Universal Common Ancestor - first leaving 
+# replicator in irma simulation. He is written by developer.
+# He may eat, move around the world randomly, make his clone
+# and gather energy by doing catabolism. He uses three heads
+# to do clone:
+#   h0 - current clonning molecule
+#   h1 - cur clone mol
+#   h2 - food
+#
+# @author flatline
+#
+#
+# Reset 0 head
+#
+0
+smol                          # h0=cur mol
+#
+# Sets heads 1,2 to the end
+#
+rhead                         # h1=cur clone mol
+len
+smol
+rhead                         # h2=food
+smol
+#
+# Global big loop
+#
+20
+toggle
+eq
+lshift                        # ax=20971520
+loop
+  #
+  # 30 random steps & eat
+  #
+  30
+  loop
+    rand
+    step
+    join
+    len
+    smol                      # h2=food
+  end
+  #
+  # Do one step of clonning
+  #
+  lhead                       # h1=cur clone mol
+  mol                         # ax=cur clone mol
+  lhead                       # h0=cur mol
+  asm
+  reax
+  ifp
+    rmol                      # h0++
+    rhead                     # h1=cur clone mol
+	rmol
+    #
+	# Last atom
+	#
+    1
+    toggle
+    33
+    lshift                    # ax=66 - nop
+    toggle                    # bx=66 - nop
+    read
+    ife
+      17
+      save
+      lhead
+      split
+      ret
+    end
+    lhead                     # h0=cur mol
+  end
+  rhead
+  rhead                       # h2=food
+end
+nop                           # last atom
