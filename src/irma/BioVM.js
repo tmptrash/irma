@@ -569,7 +569,7 @@ class BioVM extends VM {
                     // Cuts found atoms
                     //
                     const atoms = code.slice(i, i + molLen);
-                    org.code    = code.splice(i, i + molLen);
+                    org.code    = code.splice(i, molLen);
                     org.code    = org.code.splice(ax < i ? ax : ax - molLen, 0, atoms);
                     //
                     // Found entire molecule
