@@ -189,9 +189,10 @@ module.exports = {
           30
           loop
             rand
+            dir
             step
-            join
-            len              @mol
+            join             @mol
+            len
             smol                      # h2=food
           end
           #
@@ -199,36 +200,35 @@ module.exports = {
           #
           lhead                       # h1=cur clone mol
           mol                         # ax=cur clone mol
-          lhead                       # h0=cur mol
-          asm                @mol
+          lhead              @mol     # h0=cur mol
+          asm
           reax
           ifp
             rmol                      # h0++
             rhead                     # h1=cur clone mol
-            rmol
+            rmol             @mol
             #
             # Last atom
             #
-            1                @mol
+            1
             toggle
             33
             lshift                    # ax=66 - nop
             toggle                    # bx=66 - nop
-            read
-            ife              @mol
+            read             @mol
+            ife
               17
               save
               lhead
               split
-              ret
-            end              @mol
+              ret            @mol
+            end
             lhead                     # h0=cur mol
           end
           rhead
           rhead                       # h2=food
-        end
-        nop                  @mol     # last atom
-        nop
+        end                  @mol
+        nop                           # last atom
         nop
         nop
         nop
