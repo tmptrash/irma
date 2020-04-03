@@ -548,7 +548,7 @@ class BioVM extends VM {
                     //
                     const idx01 = i + molLen - 1;
                     let len;
-                    for (let j = idx01;; j--) {
+                    for (let j = idx01 - 1;; j--) {
                         if (j < 0) {len = idx01 + 1; break}
                         if ((code[j] & MASK8) > 0) {len = idx01 - j + 1; break}
                     }
