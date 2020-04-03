@@ -581,7 +581,7 @@ class BioVM extends VM {
                     //
                     // Found entire molecule
                     //
-                    if (i === lIdx && idx01 === rIdx) {len = molLen}
+                    if (i === lIdx && idx01 === rIdx) {len = 0}
                     //
                     // join atoms together to needed molecule
                     //
