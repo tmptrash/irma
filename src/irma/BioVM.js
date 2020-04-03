@@ -559,7 +559,7 @@ class BioVM extends VM {
                     //
                     for (let j = i - 1;; j--) {
                         if (j < 0) {len += i; break}
-                        if ((code[j] & MASK8) > 0) {len += (i - j); break}
+                        if ((code[j] & MASK8) > 0) {len += (i - j - 1); break}
                     }
                     len += this._molLastOffs(code, i - 1) - i - 1;
                     i > 0 && (code[i - 1] |= MASK8);
