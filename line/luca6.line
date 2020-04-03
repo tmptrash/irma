@@ -22,7 +22,7 @@ smol                          # h0=cur mol
 rhead                         # h1=cur clone mol
 len
 smol
-rhead                         # h2=food
+rhead               @mol      # h2=food
 smol
 #
 # Global big loop
@@ -31,7 +31,7 @@ smol
 toggle
 eq
 lshift                        # ax=20971520
-loop
+loop                 @mol
   #
   # 30 random steps & eat
   #
@@ -40,7 +40,7 @@ loop
     rand
     step
     join
-    len
+    len              @mol
     smol                      # h2=food
   end
   #
@@ -49,7 +49,7 @@ loop
   lhead                       # h1=cur clone mol
   mol                         # ax=cur clone mol
   lhead                       # h0=cur mol
-  asm
+  asm                @mol
   reax
   ifp
     rmol                      # h0++
@@ -58,22 +58,28 @@ loop
     #
 	# Last atom
 	#
-    1
+    1                @mol
     toggle
     33
     lshift                    # ax=66 - nop
     toggle                    # bx=66 - nop
     read
-    ife
+    ife              @mol
       17
       save
       lhead
       split
       ret
-    end
+    end              @mol
     lhead                     # h0=cur mol
   end
   rhead
   rhead                       # h2=food
 end
-nop                           # last atom
+nop                  @mol     # last atom
+nop
+nop
+nop
+nop
+nop
+nop                  @mol
