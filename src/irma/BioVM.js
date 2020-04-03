@@ -581,7 +581,7 @@ class BioVM extends VM {
                     if (molLen > 1) {
                         for (let j = 1, prev = 0; j < molLen; j++) {
                             if ((atoms[j] & MASK8) > 0) {
-                                len -= (j = prev);
+                                len -= (j - prev + 1);
                                 prev = j;
                             }
                         }
