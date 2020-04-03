@@ -204,31 +204,37 @@ module.exports = {
           asm
           reax
           ifp
-            rmol                      # h0++
-            rhead                     # h1=cur clone mol
-            rmol             @mol
             #
             # Last atom
             #
             1
             toggle
-            33
+            33               @mol
             lshift                    # ax=66 - nop
-            toggle                    # bx=66 - nop
-            read             @mol
-            ife
+            save                      # m0=66 - nop
+            mol
+            toggle
+            load
+            ife              @mol
+              rhead                   # h1=cur clone mol
+              rmol
               17
               save
-              lhead
-              split
-              ret            @mol
+              lhead                   # h0=cur mol
+              split          @mol
+              ret
             end
-            lhead                     # h0=cur mol
+            rmol                      # h0++
+            rhead                     # h1=cur clone mol
+            rmol
+            lhead            @mol     # h0=cur mol
           end
           rhead
           rhead                       # h2=food
-        end                  @mol
+        end
         nop                           # last atom
+        nop                  @mol
+        nop
         nop
         nop
         nop
