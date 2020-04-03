@@ -99,7 +99,7 @@ class BioVM extends VM {
         //
         // Amount of molecules + organisms should not be greater then amount of dots in a world
         //
-        if (BioVM._orgsAmount() + BioVM._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "LUCAS.length" configs')}
+        if (Config.LUCAS.length + 1 + BioVM._orgsMolsAmount() > WIDTH * HEIGHT - 1) {throw Error('Amount of molecules and organisms is greater then amount of dots in a world. Decrease "molAmount" and "LUCAS.length" configs')}
         this.addOrgs();
         this.addMols();
     }
