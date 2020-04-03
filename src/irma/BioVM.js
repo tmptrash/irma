@@ -552,7 +552,7 @@ class BioVM extends VM {
                         if (j < 0) {len = idx01 + 1; break}
                         if ((code[j] & MASK8) > 0) {len = idx01 - j; break}
                     }
-                    len += this._molLastOffs(code, idx01) - idx01;
+                    len += (this._molLastOffs(code, idx01) - idx01);
                     code[idx01] |= MASK8;
                     //
                     // Search for left mol len
@@ -561,7 +561,7 @@ class BioVM extends VM {
                         if (j < 0) {len += i; break}
                         if ((code[j] & MASK8) > 0) {len += (i - j - 1); break}
                     }
-                    len += this._molLastOffs(code, i - 1) - i - 1;
+                    len += (this._molLastOffs(code, i) - i + 1);
                     i > 0 && (code[i - 1] |= MASK8);
                     //
                     // Cuts found atoms
