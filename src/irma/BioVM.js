@@ -552,14 +552,16 @@ class BioVM extends VM {
                         if (j < 0) {len = idx01 + 1; break}
                         if ((code[j] & MASK8) > 0) {len = idx01 - j; break}
                     }
-                    (code[idx01] & MASK8) === 0 && (len += (this._molLastOffs(code, idx01) - idx01));
+                    let rIdx;
+                    len += ((rIdx = this._molLastOffs(code, idx01)) - idx01);
                     code[idx01] |= MASK8;
                     //
                     // Search for left mol len
                     //
+                    let lIdx;
                     for (let j = i - 1;; j--) {
-                        if (j < 0) {len += i; break}
-                        if ((code[j] & MASK8) > 0) {len += (i - j - 1); break}
+                        if (j < 0) {len += (lIdx = i); break}
+                        if ((code[j] & MASK8) > 0) {len += (i - j - 1); lIdx = j + 1; break}
                     }
                     len += (this._molLastOffs(code, i) - i + 1);
                     i > 0 && (code[i - 1] |= MASK8);
@@ -569,6 +571,10 @@ class BioVM extends VM {
                     const atoms = code.slice(i, i + molLen);
                     org.code    = code.splice(i, i + molLen);
                     org.code    = org.code.splice(ax < i ? ax : ax - molLen, 0, atoms);
+                    //
+                    // Found entire molecule
+                    //
+                    if (i === lIdx && idx01 === rIdx) {len = molLen}
                     //
                     // join atoms together to needed molecule
                     //
