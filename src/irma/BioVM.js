@@ -533,7 +533,7 @@ class BioVM extends VM {
                 const code   = org.code;
                 const idx0   = org.heads[head + 1 === heads ? 0 : head + 1];
                 const idx1   = org.heads[head + 2 >=  heads ? head + 2 - heads : head + 2];
-                const mol    = org.heads[org.head];
+                const mol    = org.heads[head];
                 const molLen = this._molLastOffs(code, mol) - mol + 1;
                 const ax     = this._molLastOffs(code, org.ax) + 1;
                 //
