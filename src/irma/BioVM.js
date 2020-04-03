@@ -410,7 +410,6 @@ class BioVM extends VM {
                 if (m2Idx > insIdx) {
                     Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1);
                     Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1);
-                    Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1);
                 } else {
                     Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1);
                     Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1);
@@ -571,6 +570,14 @@ class BioVM extends VM {
                     const atoms = code.slice(i, i + molLen);
                     org.code    = code.splice(i, molLen);
                     org.code    = org.code.splice(ax < i ? ax : ax - molLen, 0, atoms);
+                    Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
+                    if (ax < i) {
+                        Compiler.updateMetadata(org, ax, ax + atoms.length, -1);
+                        Compiler.updateMetadata(org, i, i + molLen, 1);
+                    } else {
+                        Compiler.updateMetadata(org, i, i + molLen, 1);
+                        Compiler.updateMetadata(org, ax, ax + atoms.length, -1);
+                    }
                     //
                     // Found entire molecule
                     //
@@ -579,8 +586,9 @@ class BioVM extends VM {
                     // join atoms together to needed molecule
                     //
                     if (molLen > 1) {
-                        for (let j = 1, prev = 0; j < molLen; j++) {
+                        for (let j = 0, prev = -1; j < molLen; j++) {
                             if ((atoms[j] & MASK8) > 0) {
+                                if (prev === -1) {prev = j; continue}
                                 len -= (j - prev + 1);
                                 prev = j;
                             }
