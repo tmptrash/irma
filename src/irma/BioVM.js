@@ -569,7 +569,7 @@ class BioVM extends VM {
                     //
                     const atoms = code.slice(i, i + molLen);
                     org.code    = code.splice(i, molLen);
-                    org.code    = org.code.splice(ax < i ? ax : ax - molLen, 0, atoms);
+                    org.code    = org.code.splice(ax <= i ? ax : ax - molLen, 0, atoms);
                     Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
                     if (ax > i) {
                         Compiler.updateMetadata(org, i, i + molLen, -1);
