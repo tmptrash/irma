@@ -227,13 +227,23 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([JO|M,JO|M]));
             });
-            it('Checks joining molecule on the right and script should work correct',  () => {
+            it('Checks joining molecule on the right and script should work correct (line: left)',  () => {
                 run([[1|M,JO|M,IN|M],[IN|M]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 1]);
                 const org = vm.orgs.get(0);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(org.code).toEqual(Uint8Array.from([1|M,IN|M,JO|M,IN|M]));
+                expect(org.ax).toBe(2);
+                expect(org.bx).toBe(0);
+            });
+            it('Checks joining molecule on the right and script should work correct (line: right)',  () => {
+                run([[JO,IN|M,IN|M],[IN|M]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 1]);
+                const org = vm.orgs.get(0);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(org.code).toEqual(Uint8Array.from([JO,IN|M,IN|M,IN|M]));
                 expect(org.ax).toBe(2);
                 expect(org.bx).toBe(0);
             });
