@@ -173,7 +173,7 @@ module.exports = {
         rhead                         # h1=cur clone mol
         len
         smol
-        rhead               @mol      # h2=food
+        rhead                @mol     # h2=food
         smol
         #
         # Global big loop
@@ -223,7 +223,28 @@ module.exports = {
               17
               save           @mol
               lhead                   # h0=cur mol
-              split
+              loop
+                split
+                reax
+                ifp
+                  break      @mol
+                end
+              end
+              #
+              # Cut wastes
+              #
+              rhead                   # h1
+              len
+              smol
+              lhead          @mol     # h0
+              20
+              loop
+                split
+                reax
+                ifp
+                  break      @mol
+                end
+              end
               ret
             end
             rmol                      # h0++
