@@ -229,21 +229,27 @@ module.exports = {
                 ifp
                   break      @mol
                 end
+                8
+                rand
+                step
               end
               #
               # Cut wastes
               #
-              rhead                   # h1
+              rhead          @mol     # h1
               len
               smol
-              lhead          @mol     # h0
+              lhead                   # h0
               20
               loop
-                split
+                split        @mol
                 reax
                 ifp
-                  break      @mol
+                  break     
                 end
+                8
+                rand         @mol
+                step
               end
               ret
             end

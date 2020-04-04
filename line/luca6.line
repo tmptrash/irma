@@ -74,25 +74,31 @@ loop                 @mol
       lhead                   # h0=cur mol
       loop
         split
-		reax
-        ifp
-          break      @mol
-        end
-      end
-      #
-      # Cut wastes
-      #
-      rhead                   # h1
-      len
-      smol
-      lhead          @mol     # h0
-      20
-      loop
-        split
         reax
         ifp
           break      @mol
         end
+        8
+        rand
+        step
+      end
+      #
+      # Cut wastes
+      #
+      rhead          @mol     # h1
+      len
+      smol
+      lhead                   # h0
+      20
+      loop
+        split        @mol
+        reax
+        ifp
+          break     
+        end
+        8
+        rand         @mol
+        step
       end
       ret
     end
