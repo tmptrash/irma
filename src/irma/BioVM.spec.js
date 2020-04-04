@@ -103,7 +103,7 @@ describe('src/irma/VM', () => {
      * @param {Array} move Array of offsets of organisms and molecules
      */
     function run(code, cfg, move) {
-        Config.codeLinesPerIteration = code[0].length;
+        Config.codeLinesPerIteration = Math.max(...code.map(c => c.length));
         Object.assign(Config, {LUCAS: (new Array(code.length).fill(0).map(() => {return {code: ''}}))});
         Object.assign(Config, cfg);
         vm  = new BioVM({animate: false});
@@ -192,27 +192,58 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([JO|M,JO|M]));
             });
-            // it('Checks joining empty cell',  () => {
-            //     run([[2,JO],[2,JO]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 2]);
+            it('Checks joining right organism at the end of the code',  () => {
+                run([[0|M],[1,JO|M]], {molAmount: 0}, [1,0]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(2);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO]));
-            // });
-            // it('Checks joining molecule',  () => {
-            //     run([[2,JO],[2,JO]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 1]);
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,JO|M,0|M]));
+            });
+            it('Checks joining right organism at the center of the code',  () => {
+                run([[0|M],[1|M,2|M,RM,JO|M]], {molAmount: 0}, [1,0]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO,2,JO]));
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|M,2|M,0|M,RM,JO|M]));
+            });
+            it('Checks joining right organism after first molecule in the code',  () => {
+                run([[0|M],[1|M,JO|M]], {molAmount: 0}, [1,0]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|M,0|M,JO|M]));
+            });
+            it('Checks joining empty cell on the right',  () => {
+                run([[JO|M],[JO|M]], {molAmount: 0}, [0, 2]);
+
+                expect(vm.orgs.items).toBe(2);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([JO|M]));
+            });
+            it('Checks joining molecule on the right',  () => {
+                run([[JO|M],[JO|M]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([JO|M,JO|M]));
+            });
+            it('Checks joining molecule on the right and script should work correct',  () => {
+                run([[1|M,JO|M,IN|M],[IN|M]], {molAmount: 1, LUCAS: [{code: ''}]}, [0, 1]);
+                const org = vm.orgs.get(0);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(org.code).toEqual(Uint8Array.from([1|M,IN|M,JO|M,IN|M]));
+                expect(org.ax).toBe(2);
+                expect(org.bx).toBe(0);
+            });
             // it('Checks joining if organism is at the edge of the world',  () => {
             //     run([[2,JO]], {molAmount: 0}, [WIDTH-1]);
 
             //     expect(vm.orgs.items).toBe(1);
             //     expect(vm.orgsMols.items).toBe(1);
             //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO]));
-            // });
+            // });s
         })
 
         xdescribe('split tests', () => {

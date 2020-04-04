@@ -136,7 +136,7 @@ class VM {
             let o = orgs.items;
             while (--o > -1) {
                 const org  = orgsRef[o];
-                const code = org.code;
+                let   code = org.code;
                 let   ax   = org.ax;
                 let   bx   = org.bx;
                 let   line = org.line;
@@ -407,6 +407,7 @@ class VM {
                         line     = org.line;
                         ax       = org.ax;
                         bx       = org.bx;
+                        code     = org.code;
                     }
                 }
                 org.line = line;
