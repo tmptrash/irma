@@ -213,28 +213,28 @@ module.exports = {
             lshift                    # ax=66 - nop
             save                      # m0=66 - nop
             mol
+            read
             toggle
-            load
-            ife              @mol
+            load             @mol
+            ife
               rhead                   # h1=cur clone mol
               rmol
               17
               save
-              lhead                   # h0=cur mol
-              split          @mol
+              lhead          @mol     # h0=cur mol
+              split
               ret
             end
             rmol                      # h0++
             rhead                     # h1=cur clone mol
-            rmol
-            lhead            @mol     # h0=cur mol
+            rmol             @mol
+            lhead                     # h0=cur mol
           end
           rhead
           rhead                       # h2=food
         end
-        nop                           # last atom
         nop                  @mol
-        nop
+        nop                           # separator atom
         nop
         nop
         nop
