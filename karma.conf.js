@@ -33,8 +33,7 @@ module.exports = function (config) {
         exclude: [
             'src/common/Helper.spec.js',
             'src/irma/Compiler.spec.js',
-            'src/irma/Mutations.spec.js',
-            'src/irma/BioVM.spec.js'
+            'src/irma/Mutations.spec.js'
         ],
         //
         // preprocess matching files before serving them to the browser

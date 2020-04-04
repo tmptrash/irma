@@ -150,6 +150,13 @@ class BioVM extends VM {
     runCmd(org, cmd) {
         // eslint-disable-next-line default-case
         switch (cmd) {
+            /**
+             * In:
+             *   dir - join direction
+             *   h0  - insertion index (after this molecule)
+             * Out:
+             *   re  - joined-atoms-amount|RE_ERR
+             */
             case JOIN: {
                 ++org.line;
                 const offset  = org.offset + org.dir;
