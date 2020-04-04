@@ -47,6 +47,7 @@ describe('src/irma/VM', () => {
     const LO        = Config.CODE_CMDS.LOAD;
     const RD        = Config.CODE_CMDS.READ;
     const BR        = Config.CODE_CMDS.BREAK;
+    const CO        = Config.CODE_CMDS.CONTINUE;
 
     let   vm        = null;
 
@@ -291,24 +292,30 @@ describe('src/irma/VM', () => {
 
         describe('rshift tests', () => {
             it('rshift0', () => run([RS]));
-            it('rshift1', () => run([1,RS]));
-            it('rshift2', () => run([2,RS], 1));
-            it('rshift3', () => run([8,RS], 4));
-            it('rshift4', () => run([8,RS,RS], 2));
-            it('rshift5', () => run([3,RS], 1));
-            it('rshift6', () => run([DE,DE,DE,RS], -2));
-            it('rshift7', () => run([4,RS], 2));
+            it('rshift1', () => run([1,RS], 1));
+            it('rshift2', () => run([2,RS], 2));
+            it('rshift3', () => run([2,TG,8,RS], 2, 2));
+            it('rshift4', () => run([1,TG,8,RS,RS], 2, 1));
+            it('rshift5', () => run([1,TG,3,RS], 1, 1));
+            it('rshift6', () => run([1,TG,DE,DE,DE,RS], -2, 1));
+            it('rshift7', () => run([4,TG,2,RS], 0, 4));
+            it('rshift8', () => run([4,TG,DE,DE,DE,RS], -1, 4));
+            it('rshift9', () => run([33,TG,32,RS], 16, 33));
         });
 
         describe('lshift tests', () => {
             it('lshift0', () => run([LS]));
-            it('lshift1', () => run([1,LS], 2));
-            it('lshift2', () => run([2,LS], 4));
-            it('lshift3', () => run([8,LS], 16));
-            it('lshift4', () => run([8,LS,LS], 32));
-            it('lshift5', () => run([3,LS], 6));
-            it('lshift6', () => run([DE,DE,DE,LS], -6));
-            it('lshift7', () => run([DE,DE,DE,DE,LS], -8));
+            it('lshift1', () => run([1,TG,1,LS], 2, 1));
+            it('lshift2', () => run([2,TG,2,LS], 8, 2));
+            it('lshift3', () => run([8,TG,1,LS], 256, 8));
+            it('lshift4', () => run([1,TG,8,LS,LS], 32, 1));
+            it('lshift5', () => run([2,TG,3,LS], 12, 2));
+            it('lshift6', () => run([1,TG,DE,DE,DE,LS], -6, 1));
+            it('lshift7', () => run([DE,DE,DE,DE,LS], -4));
+            it('lshift8', () => run([20,TG,3,LS], 3145728, 20));
+            it('lshift9', () => run([30,TG,1,LS], 1073741824, 30));
+            it('lshift10',() => run([31,TG,1,LS], -2147483648, 31));
+            it('lshift11',() => run([32,TG,1,LS], 1, 32));
         });
 
         describe('rand tests', () => {
