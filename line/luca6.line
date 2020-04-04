@@ -66,23 +66,23 @@ loop                 @mol
     toggle
     load             @mol
     ife
+      rmol                    # h0++
       rhead                   # h1=cur clone mol
       rmol
       17
-      save
-      lhead          @mol     # h0=cur mol
+      save           @mol
+      lhead                   # h0=cur mol
       split
       ret
     end
     rmol                      # h0++
-    rhead                     # h1=cur clone mol
-    rmol             @mol
+    rhead            @mol     # h1=cur clone mol
+    rmol
     lhead                     # h0=cur mol
   end
   rhead
   rhead                       # h2=food
-end
-nop                  @mol
+end                  @mol
 nop                           # separator atom
 nop
 nop
