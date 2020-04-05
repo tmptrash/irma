@@ -498,20 +498,20 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(2);
                 expect(vm.orgs.get(0).ax).toEqual(2); 
             })
-            // it('see right on empty cell', () => {
-            //     run([[1,SE]], {molAmount: 0, orgAmount: 1}, [0]);
+            it('see right on empty cell', () => {
+                run([[1,SE]], {molAmount: 0}, [0]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.orgs.get(0).ax).toEqual(0);
-            // })
-            // it('see left out of the world', () => {
-            //     run([[0,NT,SE]], {molAmount: 0, orgAmount: 1}, [0]);
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(0);
+            })
+            it('see left out of the world', () => {
+                run([[0,DE,SE]], {molAmount: 0}, [0]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.orgs.get(0).ax).toEqual(0);
-            // })
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(0);
+            })
             // it('see up on molecule', () => {
             //     run([[WIDTH-1,NT,SE],[3]], {molAmount: 1, orgAmount: 1}, [WIDTH,0]);
 
