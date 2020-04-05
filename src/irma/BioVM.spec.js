@@ -59,6 +59,7 @@ describe('src/irma/VM', () => {
     const SY         = Config.CODE_CMDS.SAY;
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
+    const RH         = Config.CODE_CMDS.RHEAD;
 
     let   vm         = null;
 
@@ -265,6 +266,17 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(2);
                 expect(vm.world.index(1)).not.toBe(-1);
                 expect(org.code).toEqual(Uint8Array.from([2,SP|M]));
+                expect(org.re).toEqual(RE_OK);
+            });
+            it('Checks basic organism splitting (two molecules)',  () => {
+                run([[RH|M,RM|M,SP|M]], {molAmount: 0}, [0]);
+                const org = vm.orgs.get(0);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([SP|M]));
+                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([RH|M,RM|M]));
                 expect(org.re).toEqual(RE_OK);
             });
             it('Checks organism splitting fail, because position is not free',  () => {

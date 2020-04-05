@@ -201,7 +201,7 @@ class BioVM extends VM {
                 const code    = org.code;
                 let   idx0    = org.heads[org.head];
                 let   idx1    = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
-                if (idx0 > idx1) {const tmp = idx0; idx1 = idx0; idx0 = tmp}
+                if (idx0 > idx1) {const tmp = idx0; idx0 = idx1; idx1 = tmp}
                 if (idx1 < 0) {idx1 = 0}
                 if (idx1 >= code.length) {idx1 = code.length - 1}
                 idx1 = this._molLastOffs(code, idx1);
