@@ -106,7 +106,7 @@ describe('src/irma/VM', () => {
      */
     function run(code, cfg, move) {
         Config.codeLinesPerIteration = Math.max(...code.map(c => c.length));
-        Object.assign(Config, {LUCAS: (new Array(code.length).fill(0).map(() => {return {code: ''}}))});
+        Object.assign(Config, {LUCAS: (new Array(code.length - cfg.molAmount).fill(0).map(() => {return {code: ''}}))});
         Object.assign(Config, cfg);
         vm  = new BioVM({animate: false});
         for (let i = 0; i < move.length; i++) {
@@ -490,13 +490,13 @@ describe('src/irma/VM', () => {
             });
         });
 
-        xdescribe('see tests', () => {
+        describe('see tests', () => {
             it('see right on other organism', () => {
-                run([[1,SE],[2]], {molAmount: 1, orgAmount: 1}, [0,1]);
+                run([[1,SE],[2]], {molAmount: 1}, [0,1]);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(2);
-                expect(vm.orgs.get(0).ax).toEqual(2);
+                expect(vm.orgs.get(0).ax).toEqual(2); 
             })
             // it('see right on empty cell', () => {
             //     run([[1,SE]], {molAmount: 0, orgAmount: 1}, [0]);

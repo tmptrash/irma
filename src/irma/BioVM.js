@@ -233,7 +233,10 @@ class BioVM extends VM {
                 return;
             }
             /**
-             * 
+             * In:
+             *   ax - offset to see
+             * Out:
+             *   ax - 0|org-color|mol-color
              */
             case SEE: {
                 ++org.line;
