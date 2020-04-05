@@ -173,7 +173,7 @@ class Compiler {
         // update all call stack indexes
         //
         const stk = org.stack;
-        for (let i = 0, len = org.stackIndex + 1; i <= len; i++) {
+        for (let i = 0, len = org.stackIndex; i <= len; i++) {
             const ln = stk[i];                                      // Updates back line
             if (dir < 0) {
                 if (ln >= index2) {stk[i] += amount}
