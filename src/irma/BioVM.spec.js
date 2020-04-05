@@ -157,31 +157,30 @@ describe('src/irma/VM', () => {
         const div = document.createElement('DIV');
         div.id = 'world';
         document.body.appendChild(div);
-        vm = new BioVM({animate: false});
     });
 
     afterEach(() => {
         Object.assign(Config, oldConfig);
-        vm.destroy();
+        vm && vm.destroy();
         vm = null;
         document.body.removeChild(document.body.querySelector('#world'));
     });
 
     describe('BioVM creation', () => {
         it('Checks BioVM creation', () => {
-            const vm1   = new BioVM({animate: false});
+            vm = new BioVM({animate: false});
             const cfg   = Config;
             const bCode = Compiler.toByteCode(Config.LUCAS[0].code);
 
-            expect(vm1.orgs.size).toBe(Math.round(cfg.molAmount * cfg.molCodeSize / (bCode.length || 1)) + cfg.LUCAS.length + 1);
-            expect(vm1.orgsMols.size).toBe(cfg.molAmount + cfg.LUCAS.length + 2);
-            vm1.destroy();
+            expect(vm.orgs.size).toBe(Math.round(cfg.molAmount * cfg.molCodeSize / (bCode.length || 1)) + cfg.LUCAS.length + 1);
+            expect(vm.orgsMols.size).toBe(cfg.molAmount + cfg.LUCAS.length + 2);
         });
         it('Checks BioVM creation with huge amount of molecules', () => {
             const cfg     = Config;
             cfg.molAmount = cfg.WORLD_HEIGHT * cfg.WORLD_WIDTH + 10;
+            vm = new BioVM({animate: false});
 
-            expect(() => new BioVM({animate: false})).toThrow();
+            expect(vm.orgs.items).toBe(0);
         });
     });
 
