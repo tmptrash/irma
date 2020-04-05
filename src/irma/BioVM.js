@@ -232,7 +232,9 @@ class BioVM extends VM {
                 this.world.moveOrg(org, offset);
                 return;
             }
-
+            /**
+             * 
+             */
             case SEE: {
                 ++org.line;
                 const offset = org.offset + org.ax;
