@@ -204,16 +204,16 @@ class BioVM extends VM {
                 if (idx0 > idx1) {const tmp = idx0; idx0 = idx1; idx1 = tmp}
                 if (idx1 < 0) {idx1 = 0}
                 if (idx1 >= code.length) {idx1 = code.length - 1}
-                idx1 = this._molLastOffs(code, idx1);
-                const newCode = code.subarray(idx0, idx1 + 1);
+                idx1 = this._molLastOffs(code, idx1) + 1;
+                const newCode = code.subarray(idx0, idx1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
-                org.code      = code.splice(idx0, idx1 - idx0 + 1);
+                org.code      = code.splice(idx0, idx1 - idx0);
                 const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(org, offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(this, clone)}
                 if (org.code.length < 1) {this.delOrg(org); return}
                 Compiler.compile(org, false);               // Safe recompilation without loosing metadata
-                Compiler.updateMetadata(org, idx0, idx1 + 1, -1);
+                Compiler.updateMetadata(org, idx0, idx1, -1);
                 return;
             }
 

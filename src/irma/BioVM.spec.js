@@ -305,6 +305,18 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|M,SP|M]));
                 expect(vm.orgs.get(0).re).toBe(RE_ERR);
             });
+            it('Checks basic organism splitting by clonning himself',  () => {
+                const ar = BioVM.prototype.afterRun;
+                BioVM.prototype.afterRun = () => {};
+                run([[SP|M]], {molAmount: 0}, [0]);
+                BioVM.prototype.afterRun = ar;
+                const mol = vm.orgsMols.get(0);
+
+                expect(vm.orgs.items).toBe(0);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(mol.code).toEqual(Uint8Array.from([SP|M]));
+            });
             // it('Checks basic organism splitting out of the world (cyclical mode)',  () => {
             //     run([[1,2,2|M,SP|M]], {molAmount: 0}, [0]);
 
