@@ -267,29 +267,32 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(Uint8Array.from([2,SP|M]));
                 expect(org.re).toEqual(RE_OK);
             });
-            // it('Checks organism splitting fail, because position is not free',  () => {
-            //     run([[2],[1,2,2|M,SP|M]], {molAmount: 0}, [2,12]);
+            it('Checks organism splitting fail, because position is not free',  () => {
+                run([[2|M],[SP|M]], {molAmount: 0}, [1,0]);
+                const org = vm.orgs.get(1);
 
-            //     expect(vm.orgs.items).toBe(2);
-            //     expect(vm.orgsMols.items).toBe(2); 
-            //     expect(vm.world.index(2)).not.toBe(-1);
-            //     expect(vm.orgs.get(0).offset).toBe(2);
-            //     expect(vm.orgs.get(1).offset).toBe(12);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2]));
-            //     expect(vm.orgs.get(1).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
-            // });
-            // it('Checks organism splitting fail, because orgsMols is full',  () => {
-            //     const _orgsMolsAmount = BioVM._orgsMolsAmount;
-            //     BioVM._orgsMolsAmount = () => 0;
-            //     run([[1,2,2|M,SP|M]], {molAmount: 0}, [12]);
-            //     BioVM._orgsMolsAmount = _orgsMolsAmount;
+                expect(vm.orgs.items).toBe(2);
+                expect(vm.orgsMols.items).toBe(2); 
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).offset).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2|M]));
+                expect(org.offset).toBe(0);
+                expect(org.code).toEqual(Uint8Array.from([SP|M]));
+                expect(org.re).toEqual(RE_ERR);
+            });
+            it('Checks organism splitting fail, because orgsMols is full',  () => {
+                const _orgsMolsAmount = BioVM._orgsMolsAmount;
+                BioVM._orgsMolsAmount = () => 0;
+                run([[1|M,SP|M]], {molAmount: 0}, [0]);
+                BioVM._orgsMolsAmount = _orgsMolsAmount;
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.world.index(12)).not.toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
-            //     expect(vm.orgs.get(0).re).toBe(RE_ERR);
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|M,SP|M]));
+                expect(vm.orgs.get(0).re).toBe(RE_ERR);
+            });
             // it('Checks basic organism splitting out of the world (cyclical mode)',  () => {
             //     run([[1,2,2|M,SP|M]], {molAmount: 0}, [0]);
 
