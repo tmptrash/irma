@@ -363,6 +363,16 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(2);
                 expect(vm.orgs.get(0).ax).toEqual(1);
             });
+            it('Checks correct running after cloning 1',  () => {
+                run([[RM|M,RH|M,RM,RM,LH,SP,1|M]], {molAmount: 0}, [0]);
+                const org = vm.orgs.get(0);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([RM|M]));
+                expect(org.re).toEqual(RE_OK);
+            });
         });
 
         describe('step tests', () => {
