@@ -174,7 +174,6 @@ class BioVM extends VM {
                 Compiler.updateMetadata(org, idx, idx + nearLen, 1);
                 return;
             }
-
             //
             // TODO: This is bad idea to hardcode IS_ORG_ID into language. Because this mechanism
             // TODO: should be supported by organism from parent to child
@@ -216,7 +215,12 @@ class BioVM extends VM {
                 Compiler.updateMetadata(org, idx0, idx1, -1);
                 return;
             }
-
+            /**
+             * In:
+             *   dir - step direction
+             * Out:
+             *   re  - RE_OK|RE_ERR|RE_SPECIAL
+             */
             case STEP: {
                 ++org.line;
                 org.re = RE_OK;
