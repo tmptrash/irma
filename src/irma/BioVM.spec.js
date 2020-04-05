@@ -458,36 +458,36 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([DR,ST|M]));
                 expect(vm.orgs.get(0).re).toEqual(RE_SPECIAL);
             });
-            // it('Checks step outside down (cyclical world)', () => {
-            //     run([[4,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH * HEIGHT - WIDTH]);
+            it('Checks step outside down (cyclical world)', () => {
+                run([[4,DR,ST|M]], {molAmount: 0}, [WIDTH * HEIGHT - WIDTH]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.world.index(0)).not.toBe(-1);
-            //     expect(vm.world.index(WIDTH * HEIGHT - WIDTH)).toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,ST|M]));
-            //     expect(vm.orgs.get(0).re).toEqual(1);
-            // });
-            // it('Checks step outside left (cyclical world)', () => {
-            //     run([[6,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH]);
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(WIDTH * HEIGHT - WIDTH)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,DR,ST|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_SPECIAL);
+            });
+            it('Checks step outside left (cyclical world)', () => {
+                run([[6,DR,ST|M]], {molAmount: 0}, [WIDTH]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.world.index(WIDTH)).toBe(-1);
-            //     expect(vm.world.index(WIDTH-1)).not.toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,ST|M]));
-            //     expect(vm.orgs.get(0).re).toEqual(1);
-            // });
-            // it('Checks step outside right (cyclical world)', () => {
-            //     run([[2,ST]], {molAmount: 0, orgAmount: 1}, [WIDTH-1]);
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(WIDTH)).toBe(-1);
+                expect(vm.world.index(WIDTH-1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([6,DR,ST|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            });
+            it('Checks step outside right (cyclical world)', () => {
+                run([[2,DR,ST|M]], {molAmount: 0}, [WIDTH-1]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.world.index(WIDTH)).not.toBe(-1);
-            //     expect(vm.world.index(WIDTH-1)).toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,ST|M]));
-            //     expect(vm.orgs.get(0).re).toEqual(1);
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(WIDTH)).not.toBe(-1);
+                expect(vm.world.index(WIDTH-1)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,DR,ST|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            });
         });
 
         xdescribe('see tests', () => {
