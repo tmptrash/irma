@@ -153,7 +153,7 @@ class BioVM extends VM {
             /**
              * In:
              *   dir - join direction
-             *   h0  - insertion index (after this molecule)
+             *   h0  - insertion index (after this mol)
              * Out:
              *   re  - joined-atoms-amount|RE_ERR
              */
@@ -179,6 +179,15 @@ class BioVM extends VM {
             // TODO: This is bad idea to hardcode IS_ORG_ID into language. Because this mechanism
             // TODO: should be supported by organism from parent to child
             //
+            /**
+             * In:
+             *   [m0] - IS_ORG_ID - unique identifier of organism (difference between org and mol)
+             *   dir  - split direction
+             *   h0   - start split idx
+             *   h1   - end split idx (after this mol)
+             * Out:
+             *   re   - RE_OK|RE_ERR
+             */
             case SPLIT: {
                 ++org.line;
                 org.re        = RE_OK;

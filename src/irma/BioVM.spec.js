@@ -139,7 +139,7 @@ describe('src/irma/VM', () => {
 
         expect(org.ax).toBe(0);
         expect(org.bx).toBe(0);
-        expect(org.re).toBe(0);
+        expect(org.re).toBe(RE_ERR);
         expect(org.line).toBe(0);
         vm.run();
 
@@ -256,90 +256,91 @@ describe('src/irma/VM', () => {
             });
         })
 
-        xdescribe('split tests', () => {
+        describe('split tests', () => {
             it('Checks basic organism splitting',  () => {
-                run([[1,2,2|M,SP|M]], {molAmount: 0}, [12]);
+                run([[1|M,2,SP|M]], {molAmount: 0}, [0]);
+                const org = vm.orgs.get(0);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(2);
-                expect(vm.world.index(2)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
-                expect(vm.orgs.get(0).re).toEqual(1);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(org.code).toEqual(Uint8Array.from([2,SP|M]));
+                expect(org.re).toEqual(RE_OK);
             });
-            it('Checks organism splitting fail, because position is not free',  () => {
-                run([[2],[1,2,2|M,SP|M]], {molAmount: 0}, [2,12]);
+            // it('Checks organism splitting fail, because position is not free',  () => {
+            //     run([[2],[1,2,2|M,SP|M]], {molAmount: 0}, [2,12]);
 
-                expect(vm.orgs.items).toBe(2);
-                expect(vm.orgsMols.items).toBe(2); 
-                expect(vm.world.index(2)).not.toBe(-1);
-                expect(vm.orgs.get(0).offset).toBe(2);
-                expect(vm.orgs.get(1).offset).toBe(12);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2]));
-                expect(vm.orgs.get(1).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
-            });
-            it('Checks organism splitting fail, because orgsMols is full',  () => {
-                const _orgsMolsAmount = BioVM._orgsMolsAmount;
-                BioVM._orgsMolsAmount = () => 0;
-                run([[1,2,2|M,SP|M]], {molAmount: 0}, [12]);
-                BioVM._orgsMolsAmount = _orgsMolsAmount;
+            //     expect(vm.orgs.items).toBe(2);
+            //     expect(vm.orgsMols.items).toBe(2); 
+            //     expect(vm.world.index(2)).not.toBe(-1);
+            //     expect(vm.orgs.get(0).offset).toBe(2);
+            //     expect(vm.orgs.get(1).offset).toBe(12);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2]));
+            //     expect(vm.orgs.get(1).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
+            // });
+            // it('Checks organism splitting fail, because orgsMols is full',  () => {
+            //     const _orgsMolsAmount = BioVM._orgsMolsAmount;
+            //     BioVM._orgsMolsAmount = () => 0;
+            //     run([[1,2,2|M,SP|M]], {molAmount: 0}, [12]);
+            //     BioVM._orgsMolsAmount = _orgsMolsAmount;
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(1);
-                expect(vm.world.index(12)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
-                expect(vm.orgs.get(0).re).toBe(RE_ERR);
-            });
-            it('Checks basic organism splitting out of the world (cyclical mode)',  () => {
-                run([[1,2,2|M,SP|M]], {molAmount: 0}, [0]);
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(1);
+            //     expect(vm.world.index(12)).not.toBe(-1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1,2,2|M,SP|M]));
+            //     expect(vm.orgs.get(0).re).toBe(RE_ERR);
+            // });
+            // it('Checks basic organism splitting out of the world (cyclical mode)',  () => {
+            //     run([[1,2,2|M,SP|M]], {molAmount: 0}, [0]);
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(2);
-                expect(vm.world.index(90)).not.toBe(-1);
-                expect(vm.world.index(0)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
-                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,2|M]));
-                expect(vm.orgs.get(0).re).toEqual(RE_SPECIAL);
-            });
-            it('Checks basic organism splitting not fail, because ax < 0',  () => {
-                run([[1,2,0,DE|M,SP|M]], {molAmount: 0}, [12]);
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(2);
+            //     expect(vm.world.index(90)).not.toBe(-1);
+            //     expect(vm.world.index(0)).not.toBe(-1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
+            //     expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,2|M]));
+            //     expect(vm.orgs.get(0).re).toEqual(RE_SPECIAL);
+            // });
+            // it('Checks basic organism splitting not fail, because ax < 0',  () => {
+            //     run([[1,2,0,DE|M,SP|M]], {molAmount: 0}, [12]);
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(2);
-                expect(vm.world.index(2)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
-                expect(vm.orgs.get(0).re).toEqual(1);
-            });
-            it('Checks basic organism splitting not fail, because ax > codeLen',  () => {
-                run([[1,2,10|M,SP|M]], {molAmount: 0}, [12]);
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(2);
+            //     expect(vm.world.index(2)).not.toBe(-1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
+            //     expect(vm.orgs.get(0).re).toEqual(1);
+            // });
+            // it('Checks basic organism splitting not fail, because ax > codeLen',  () => {
+            //     run([[1,2,10|M,SP|M]], {molAmount: 0}, [12]);
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(2);
-                expect(vm.world.index(2)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).not.toEqual(Uint8Array.from([1,2,10|M,SP|M]));
-                expect(vm.orgsMols.get(0).energy).toEqual(undefined);
-            });
-            it('Checks basic organism splitting right, because bx === 2', () => {
-                run([[1,2,TG,2|M,SP|M]], {molAmount: 0}, [12]);
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(2);
+            //     expect(vm.world.index(2)).not.toBe(-1);
+            //     expect(vm.orgs.get(0).code).not.toEqual(Uint8Array.from([1,2,10|M,SP|M]));
+            //     expect(vm.orgsMols.get(0).energy).toEqual(undefined);
+            // });
+            // it('Checks basic organism splitting right, because bx === 2', () => {
+            //     run([[1,2,TG,2|M,SP|M]], {molAmount: 0}, [12]);
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(2);
-                expect(vm.world.index(12)).not.toBe(-1);
-                expect(vm.world.index(13)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
-                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,TG,2|M]));
-                expect(vm.orgs.get(0).re).toEqual(RE_OK);
-            });
-            it('Checks basic organism splitting right, if ax < mol', () => {
-                run([[RM|M,1,0|M,SP|M]], {molAmount: 0}, [12]);
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(2);
+            //     expect(vm.world.index(12)).not.toBe(-1);
+            //     expect(vm.world.index(13)).not.toBe(-1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([SP|M]));
+            //     expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,TG,2|M]));
+            //     expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            // });
+            // it('Checks basic organism splitting right, if ax < mol', () => {
+            //     run([[RM|M,1,0|M,SP|M]], {molAmount: 0}, [12]);
 
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(2);
-                expect(vm.world.index(12)).not.toBe(-1);
-                expect(vm.world.index(2)).not.toBe(-1);
-                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([RM|M,SP|M]));
-                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,0|M]));
-                expect(vm.orgs.get(0).re).toEqual(RE_OK);
-            });
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(2);
+            //     expect(vm.world.index(12)).not.toBe(-1);
+            //     expect(vm.world.index(2)).not.toBe(-1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([RM|M,SP|M]));
+            //     expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,0|M]));
+            //     expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            // });
             // it('Checks basic organism splitting fail, because bx < ax',  () => {
             //     run([[2,AR,0,TG,1,SP]], {molAmount: 0, orgAmount: 1}, [0]);
 
