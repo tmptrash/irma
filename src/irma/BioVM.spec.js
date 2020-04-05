@@ -247,13 +247,13 @@ describe('src/irma/VM', () => {
                 expect(org.ax).toBe(2);
                 expect(org.bx).toBe(0);
             });
-            // it('Checks joining if organism is at the edge of the world',  () => {
-            //     run([[2,JO]], {molAmount: 0}, [WIDTH-1]);
+            it('Checks joining if organism is at the edge of the world',  () => {
+                run([[JO|M]], {molAmount: 0}, [WIDTH-1]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,JO]));
-            // });s
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([JO|M]));
+            });
         })
 
         xdescribe('split tests', () => {
