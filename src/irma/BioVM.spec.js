@@ -112,8 +112,12 @@ describe('src/irma/VM', () => {
         for (let i = 0; i < move.length; i++) {
             const org  = vm.orgsMols.get(i);
             org.code   = Uint8Array.from(code[i]);
-            org.offset = move[i];
-            org.hasOwnProperty('energy') ? vm.world.moveOrg(org, move[i]) : vm.world.mol(move[i], org, vm.molColor(org.code));
+            if (org.hasOwnProperty('energy')) {
+                vm.world.moveOrg(org, move[i]);
+            } else {
+                vm.world.empty(org.offset);
+                vm.world.mol(move[i], org, vm.molColor(org.code));
+            }
             org.hasOwnProperty('energy') && Compiler.compile(org);
         }
 

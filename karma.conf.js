@@ -85,6 +85,14 @@ module.exports = function (config) {
         // Concurrency level
         // how many browser should be started simultaneous
         //
-        concurrency: Infinity
+        concurrency: Infinity,
+        //
+        // This options turns on/off random test running mode
+        //
+        client: {
+            jasmine: {
+                random: true
+            }
+        }
     })
 }

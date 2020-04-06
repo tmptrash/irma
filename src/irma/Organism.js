@@ -18,6 +18,8 @@ class Organism {
      * @param {Uint8Array} code Code of organism we need to set
      */
     constructor(index, code) {
+        Organism.id = (Organism.id || 0) + 1;
+        this.id         = Organism.id;
         this.index      = index;                                       // Index in population list
         this.code       = code;                                        // Organism's code on "line" language
         this.mem        = new Int32Array(ORG_MAX_MEM_SIZE);            // Organism's memory
