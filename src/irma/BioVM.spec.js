@@ -491,6 +491,28 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,DR,ST|M]));
                 expect(vm.orgs.get(0).re).toEqual(RE_OK);
             });
+            it('Checks step impossible because another organism is there', () => {
+                run([[0|M], [ST|M]], {molAmount: 0}, [1, 0]);
+
+                expect(vm.orgs.items).toBe(2);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0|M]));
+                expect(vm.orgs.get(1).code).toEqual(Uint8Array.from([ST|M]));
+                expect(vm.orgs.get(1).re).toEqual(RE_ERR);
+            });
+            it('Checks step impossible because molecule is there', () => {
+                run([[ST|M], [0|M]], {molAmount: 1}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([ST|M]));
+                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([0|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_ERR);
+            });
         });
 
         describe('see tests', () => {
