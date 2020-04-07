@@ -315,7 +315,7 @@ module.exports = {
     /**
      * {Number} Amount of frequencies in a world. It uses with say/listen commands
      */
-    worldFrequency             : 10,
+    worldFrequency             : 1024,
     /**
      * {Boolean} Turns on\off usage of IndexedDB for storing organisms population
      * @constant

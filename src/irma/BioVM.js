@@ -126,16 +126,6 @@ class BioVM extends VM {
     /**
      * @override
      */
-    beforeIteration(org) {
-        //
-        // Resets value of 'say' command
-        //
-        if (org.freq) {org.freq = this.freq[org.freq] = 0}
-    }
-
-    /**
-     * @override
-     */
     afterIteration(org) {
         if (org.energy < 0 || (Config.orgMaxAge > 0 && org.age > Config.orgMaxAge)) {
             this.delOrg(org);
@@ -251,15 +241,23 @@ class BioVM extends VM {
                 org.ax = (dot < 0 ? 0 : mol.color || this.molColor(mol.code));
                 return;
             }
-
+            /**
+             * In:
+             *   ax - value to say
+             *   bx - frequency of saying
+             */
             case SAY: {
                 ++org.line;
                 const freq = Math.abs(org.bx) % Config.worldFrequency;
                 this.freq[freq] = org.ax;
-                org.freq = freq;
                 return;
             }
-
+            /**
+             * In:
+             *   bx - frequency to listen
+             * Out:
+             *   ax - listened value
+             */
             case LISTEN:
                 ++org.line;
                 org.ax = this.freq[Math.abs(org.bx) % Config.worldFrequency];
@@ -685,7 +683,7 @@ class BioVM extends VM {
         org.offset   = offset;              // Absolute position of organism in a world
         org.molIndex = orgsMols.freeIndex;  // Index of organism in orgsMols array
         org.packet   = null;                // Special place for storing atom, molecule or other organism
-        org.energy   = energy;              // Orgainm's energy
+        org.energy   = energy;              // Organism's energy
         org.heads    = new Uint16Array(4);  // Organism's custom heads
         org.head     = 0;                   // Pointer to current head
         org.dir      = 1;                   // Active direction offset

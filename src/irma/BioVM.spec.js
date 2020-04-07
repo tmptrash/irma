@@ -140,6 +140,7 @@ describe('src/irma/VM', () => {
         Config.molAmount = 0;
         Config.orgAmount = 1;
         Config.codeLinesPerIteration = lines === null ? code.length : lines;
+        vm = new BioVM({animate: false});
         const org = vm.orgs.get(0);
         org.code  = Uint8Array.from(code).slice(); // code copy
         Compiler.compile(org);
@@ -546,6 +547,21 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).ax).toEqual(0);
             })
         });
+
+        describe('say tests', () => {
+            it('Checks say with 1 on frequency 1', () => {
+                run2([1,TG,1,SY|M], 1, 1);
+
+                expect(vm.freq[1]).toEqual(1);
+            })
+            it('Checks say with 1 on frequency 0', () => {
+                run2([TG,1,SY|M], 1);
+
+                expect(vm.freq[1]).toEqual(0);
+                expect(vm.freq[0]).toEqual(1);
+            })
+        });
+
 
         xdescribe('offs tests', () => {
             it('Simple offset test', () => {
