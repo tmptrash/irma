@@ -57,6 +57,7 @@ describe('src/irma/VM', () => {
     const ST         = Config.CODE_CMDS.STEP;
     const SE         = Config.CODE_CMDS.SEE;
     const SY         = Config.CODE_CMDS.SAY;
+    const LN         = Config.CODE_CMDS.LISTEN;
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -559,6 +560,19 @@ describe('src/irma/VM', () => {
 
                 expect(vm.freq[1]).toEqual(0);
                 expect(vm.freq[0]).toEqual(1);
+            })
+        });
+
+        describe('listen tests', () => {
+            it('Checks listen on frequency 1', () => {
+                run2([1,TG,1,SY,0,LN|M], 1, 1);
+
+                expect(vm.orgs.get(0).ax).toEqual(1);
+            })
+            it('Checks listen on frequency 0', () => {
+                run2([1,SY,0,LN|M], 1);
+
+                expect(vm.orgs.get(0).ax).toEqual(1);
             })
         });
 
