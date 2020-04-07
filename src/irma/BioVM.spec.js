@@ -117,6 +117,7 @@ describe('src/irma/VM', () => {
             } else {
                 vm.world.empty(org.offset);
                 vm.world.mol(move[i], org, vm.molColor(org.code));
+                org.offset = move[i];
             }
             org.hasOwnProperty('energy') && Compiler.compile(org);
         }
@@ -516,12 +517,19 @@ describe('src/irma/VM', () => {
         });
 
         describe('see tests', () => {
-            it('see right on other organism', () => {
-                run([[1,SE],[2]], {molAmount: 1}, [0,1]);
+            it('see right on molecule', () => {
+                run([[1,SE|M],[2|M]], {molAmount: 1}, [0,1]);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(2);
-                expect(vm.orgs.get(0).ax).toEqual(2); 
+                expect(vm.orgs.get(0).ax).toEqual(2);
+            })
+            it('see right on other organism', () => {
+                run([[1,SE|M],[3|M]], {molAmount: 0}, [0,1]);
+
+                expect(vm.orgs.items).toBe(2);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.orgs.get(0).ax).toEqual(0xFF0000);
             })
             it('see right on empty cell', () => {
                 run([[1,SE]], {molAmount: 0}, [0]);
@@ -537,13 +545,6 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).ax).toEqual(0);
             })
-            // it('see up on molecule', () => {
-            //     run([[WIDTH-1,NT,SE],[3]], {molAmount: 1, orgAmount: 1}, [WIDTH,0]);
-
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(2);
-            //     expect(vm.orgs.get(0).ax).toEqual(3);
-            // })
         });
 
         xdescribe('offs tests', () => {
