@@ -266,7 +266,7 @@ class BioVM extends VM {
                 return;
             /**
              * In:
-             *   bx - Idx in near org or mol
+             *   ax - Idx in near org or mol
              * Out:
              *   ax - read command
              *   re - RE_OK|RE_ERR|RE_SPECIAL
@@ -280,10 +280,10 @@ class BioVM extends VM {
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg  = this.orgsMols.get(dot);
                 const nearCode = nearOrg.code;
-                let   bx       = org.bx;
-                if (bx < 0) {bx = 0}
-                if (bx >= nearCode.length) {bx = nearCode.length - 1}
-                org.ax         = nearCode[bx];
+                let   ax       = org.ax;
+                if (ax < 0) {ax = 0}
+                if (ax >= nearCode.length) {ax = nearCode.length - 1}
+                org.ax         = nearCode[ax];
                 org.re         = RE_OK;
                 return;
             }
