@@ -293,28 +293,39 @@ class BioVM extends VM {
              * In:
              *   dir - direction, where to get org|mol
              * Out:
-             *   re  - RE_OK|RE_ERR
+             *   re  - RE_OK|RE_ERR|RE_SPECIAL
              */
             case GET: {
                 ++org.line;
                 if (org.packet) {org.re = RE_ERR; return}
-                const dot = this.world.index(org.offset + org.dir);
+                let offset = org.offset + org.dir;
+                if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
+                else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
+                const dot = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
                 org.re = RE_OK;
                 return;
             }
-
+            /**
+             * In:
+             *   dir - put direction
+             * Out:
+             *   re  - RE_OK|RE_ERR|RE_SPECIAL
+             */
             case PUT: {
                 ++org.line;
                 if (!org.packet) {org.re = RE_ERR; return}
                 if (this.orgsMols.full) {org.re = RE_ERR; return}
-                const offset = org.offset + org.dir;
-                const dot    = this.world.index(offset);
-                if (dot > -1 || offset < 0 || offset > MAX_OFFS) {org.re = RE_ERR; return}
+                let offset = org.offset + org.dir;
+                if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
+                else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
+                const dot = this.world.index(offset);
+                if (dot > -1) {org.re = RE_ERR; return}
                 org.packet.hasOwnProperty('energy') ? this.addOrg(org.packet, offset, org.packet.code, org.packet.energy) : this.addMol(offset, org.packet.code);
                 // this.db && this.db.put(org.packet);
                 org.packet = null;
+                org.re = RE_OK;
                 return;
             }
 

@@ -60,6 +60,7 @@ describe('src/irma/VM', () => {
     const LN         = Config.CODE_CMDS.LISTEN;
     const NR         = Config.CODE_CMDS.NREAD;
     const GE         = Config.CODE_CMDS.GET;
+    const PU         = Config.CODE_CMDS.PUT;
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -115,13 +116,11 @@ describe('src/irma/VM', () => {
         for (let i = 0; i < move.length; i++) {
             const org  = vm.orgsMols.get(i);
             org.code   = Uint8Array.from(code[i]);
-            if (org.hasOwnProperty('energy')) {
-                vm.world.moveOrg(org, move[i]);
-            } else {
-                vm.world.empty(org.offset);
-                vm.world.mol(move[i], org, vm.molColor(org.code));
-                org.offset = move[i];
-            }
+            vm.world.empty(org.offset);
+        }
+        for (let i = 0; i < move.length; i++) {
+            const org = vm.orgsMols.get(i);
+            vm.world.dot(org.offset = move[i], (org.molIndex ? org.molIndex : org.index) + 1);
             org.hasOwnProperty('energy') && Compiler.compile(org);
         }
 
@@ -657,6 +656,32 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,DR,GE|M]));
                 expect(vm.orgs.get(0).re).toEqual(RE_ERR);
             });
+        });
+
+        describe('put tests', () => {
+            it('Puts organism on the right',  () => {
+                run([[GE,4,DR,PU|M], [1|M]], {molAmount: 0}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(2);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).toBe(-1);
+                expect(vm.world.index(WIDTH)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([GE,4,DR,PU|M]));
+                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            });
+            // it('Gets nothing',  () => {
+            //     run([[4,DR,GE|M], [1|M]], {molAmount: 1}, [0, 1]);
+
+            //     expect(vm.orgs.items).toBe(1);
+            //     expect(vm.orgsMols.items).toBe(2);
+            //     expect(vm.world.index(0)).not.toBe(-1);
+            //     expect(vm.world.index(1)).not.toBe(-1);
+            //     expect(vm.world.index(WIDTH)).toBe(-1);
+            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,DR,GE|M]));
+            //     expect(vm.orgs.get(0).re).toEqual(RE_ERR);
+            // });
         });
 
         xdescribe('offs tests', () => {
