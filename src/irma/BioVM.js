@@ -153,7 +153,9 @@ class BioVM extends VM {
              */
             case JOIN: {
                 ++org.line;
-                const offset  = org.offset + org.dir;
+                let offset    = org.offset + org.dir;
+                if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
+                else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
                 const dot     = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
@@ -262,26 +264,27 @@ class BioVM extends VM {
                 ++org.line;
                 org.ax = this.freq[Math.abs(org.bx) % Config.worldFrequency];
                 return;
-
-            // TODO: review this code
+            /**
+             * In:
+             *   bx - Idx in near org or mol
+             * Out:
+             *   ax - read command
+             *   re - RE_OK|RE_ERR|RE_SPECIAL
+             */
             case NREAD: {
                 ++org.line;
-                const offset = org.offset + org.dir;
-                const dot = this.world.index(offset);
+                let offset     = org.offset + org.dir;
+                if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
+                else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
+                const dot      = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg  = this.orgsMols.get(dot);
                 const nearCode = nearOrg.code;
                 let   bx       = org.bx;
                 if (bx < 0) {bx = 0}
                 if (bx >= nearCode.length) {bx = nearCode.length - 1}
-                for (let i = bx - 1;; i--) {if ((nearCode[i] & MASK8) > 0 || i < 0) {bx = i + 1; break}} // find first atom of molecule
-                const mem  = org.mem;
-                for (let i = bx, m = org.mPos;; i++, m++) {
-                    if (m >= ORG_MAX_MEM_SIZE) {m = 0}
-                    mem[m] = nearCode[i];
-                    if ((nearCode[i] & MASK8) > 0) {break}
-                }
-                org.re = RE_OK;
+                org.ax         = nearCode[bx];
+                org.re         = RE_OK;
                 return;
             }
 

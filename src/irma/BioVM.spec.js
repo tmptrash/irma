@@ -58,6 +58,7 @@ describe('src/irma/VM', () => {
     const SE         = Config.CODE_CMDS.SEE;
     const SY         = Config.CODE_CMDS.SAY;
     const LN         = Config.CODE_CMDS.LISTEN;
+    const NR         = Config.CODE_CMDS.NREAD;
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -564,18 +565,26 @@ describe('src/irma/VM', () => {
         });
 
         describe('listen tests', () => {
-            it('Checks listen on frequency 1', () => {
-                run2([1,TG,1,SY,0,LN|M], 1, 1);
-
-                expect(vm.orgs.get(0).ax).toEqual(1);
-            })
-            it('Checks listen on frequency 0', () => {
-                run2([1,SY,0,LN|M], 1);
-
-                expect(vm.orgs.get(0).ax).toEqual(1);
-            })
+            it('Checks listen on frequency 1', () => run2([1,TG,1,SY,0,LN|M], 1, 1));
+            it('Checks listen on frequency 0', () => run2([1,SY,0,LN|M], 1));
         });
 
+        describe('nread tests', () => {
+            it('Reads empty dot', () => run2([NR|M]));
+            it('Reads empty dot out of the world', () => run2([DR,NR|M]));
+            it('Reads near organism',  () => {
+                run([[NR|M], [1|M]], {molAmount: 0}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(2);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([NR|M]));
+                expect(vm.orgs.get(1).code).toEqual(Uint8Array.from([1|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+                expect(vm.orgs.get(0).ax).toEqual(1|M);
+            });
+        });
 
         xdescribe('offs tests', () => {
             it('Simple offset test', () => {
