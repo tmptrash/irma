@@ -671,17 +671,17 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1|M]));
                 expect(vm.orgs.get(0).re).toEqual(RE_OK);
             });
-            // it('Gets nothing',  () => {
-            //     run([[4,DR,GE|M], [1|M]], {molAmount: 1}, [0, 1]);
+            it('Puts nothing',  () => {
+                run([[PU|M]], {molAmount: 0}, [0]);
 
-            //     expect(vm.orgs.items).toBe(1);
-            //     expect(vm.orgsMols.items).toBe(2);
-            //     expect(vm.world.index(0)).not.toBe(-1);
-            //     expect(vm.world.index(1)).not.toBe(-1);
-            //     expect(vm.world.index(WIDTH)).toBe(-1);
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,DR,GE|M]));
-            //     expect(vm.orgs.get(0).re).toEqual(RE_ERR);
-            // });
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).toBe(-1);
+                expect(vm.world.index(WIDTH)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([PU|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_ERR);
+            });
         });
 
         xdescribe('offs tests', () => {
