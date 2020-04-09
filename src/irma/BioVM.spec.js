@@ -596,6 +596,18 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.get(0).re).toEqual(RE_OK);
                 expect(vm.orgs.get(0).ax).toEqual(2);
             });
+            it('Reads near molecule',  () => {
+                run([[2,NR|M], [1,2,3|M]], {molAmount: 1}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,NR|M]));
+                expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,3|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+                expect(vm.orgs.get(0).ax).toEqual(3|M);
+            });
         });
 
         xdescribe('offs tests', () => {
