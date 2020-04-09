@@ -59,6 +59,7 @@ describe('src/irma/VM', () => {
     const SY         = Config.CODE_CMDS.SAY;
     const LN         = Config.CODE_CMDS.LISTEN;
     const NR         = Config.CODE_CMDS.NREAD;
+    const GE         = Config.CODE_CMDS.GET;
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -631,6 +632,30 @@ describe('src/irma/VM', () => {
                 expect(vm.orgsMols.get(1).code).toEqual(Uint8Array.from([1,2,3|M]));
                 expect(vm.orgs.get(0).re).toEqual(RE_OK);
                 expect(vm.orgs.get(0).ax).toEqual(1);
+            });
+        });
+
+        describe('get tests', () => {
+            it('Gets near organism',  () => {
+                run([[GE|M], [1|M]], {molAmount: 0}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([GE|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_OK);
+            });
+            it('Gets nothing',  () => {
+                run([[4,DR,GE|M], [1|M]], {molAmount: 1}, [0, 1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(2);
+                expect(vm.world.index(0)).not.toBe(-1);
+                expect(vm.world.index(1)).not.toBe(-1);
+                expect(vm.world.index(WIDTH)).toBe(-1);
+                expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([4,DR,GE|M]));
+                expect(vm.orgs.get(0).re).toEqual(RE_ERR);
             });
         });
 

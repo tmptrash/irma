@@ -159,6 +159,7 @@ class BioVM extends VM {
                 const dot     = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
+                if (nearOrg.packet) {org.re = RE_ERR; return}
                 const nearLen = nearOrg.code.length;
                 const code    = org.code;
                 if (nearLen + code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
@@ -266,10 +267,11 @@ class BioVM extends VM {
                 return;
             /**
              * In:
-             *   ax - Idx in near org or mol
+             *   ax  - Idx in near org or mol
+             *   dir - near org or mol direction
              * Out:
-             *   ax - read command
-             *   re - RE_OK|RE_ERR|RE_SPECIAL
+             *   ax  - read command
+             *   re  - RE_OK|RE_ERR|RE_SPECIAL
              */
             case NREAD: {
                 ++org.line;
@@ -287,13 +289,19 @@ class BioVM extends VM {
                 org.re         = RE_OK;
                 return;
             }
-
+            /**
+             * In:
+             *   dir - direction, where to get org|mol
+             * Out:
+             *   re  - RE_OK|RE_ERR
+             */
             case GET: {
                 ++org.line;
                 if (org.packet) {org.re = RE_ERR; return}
                 const dot = this.world.index(org.offset + org.dir);
                 if (dot < 0) {org.re = RE_ERR; return}
                 (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
+                org.re = RE_OK;
                 return;
             }
 
