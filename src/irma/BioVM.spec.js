@@ -62,6 +62,7 @@ describe('src/irma/VM', () => {
     const GE         = Config.CODE_CMDS.GET;
     const PU         = Config.CODE_CMDS.PUT;
     const OF         = Config.CODE_CMDS.OFFS;
+    const CO         = Config.CODE_CMDS.COLOR;
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -737,18 +738,22 @@ describe('src/irma/VM', () => {
             });
         });
 
-        xdescribe('color tests', () => {
+        describe('color tests', () => {
             it('organism color', () => {
-                expect(vm.orgs.get(0).color).toEqual(Config.orgColor);
-                run2([2,CO], 2);
+                run2([1,CO|M], 1);
 
                 expect(vm.orgs.get(0).color).toEqual(Config.ORG_MIN_COLOR);
             });
             it('organism negative color', () => {
-                expect(vm.orgs.get(0).color).toEqual(Config.orgColor);
-                run2([2,NT,CO], -3);
+                run2([0,DE,CO|M], -1);
 
                 expect(vm.orgs.get(0).color).toEqual(Config.ORG_MIN_COLOR);
+            });
+            it('organism norrmal color', () => {
+                const color = 0x20000;
+                run2([16,TG,2,LS,CO|M], color, 16);
+
+                expect(vm.orgs.get(0).color).toEqual(color);
             });
         });
 

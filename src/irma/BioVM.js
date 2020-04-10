@@ -328,12 +328,20 @@ class BioVM extends VM {
                 org.packet = null;
                 return;
             }
-
+            /**
+             * Out:
+             *   ax - current offset
+             */
             case OFFS:
                 ++org.line;
                 org.ax = org.offset;
                 return;
-
+            /**
+             * In:
+             *   ax    - new color
+             * Out:
+             *   color - new color|ORG_MIN_COLOR
+             */
             case COLOR: {
                 ++org.line;
                 const newAx = Math.abs(org.ax);
