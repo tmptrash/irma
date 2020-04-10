@@ -154,8 +154,8 @@ class BioVM extends VM {
             case JOIN: {
                 ++org.line;
                 let offset    = org.offset + org.dir;
-                if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
-                else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
+                if (offset < 0) {offset = LINE_OFFS + org.offset}
+                else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
                 const dot     = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 const nearOrg = this.orgsMols.get(dot);
@@ -275,6 +275,7 @@ class BioVM extends VM {
              */
             case NREAD: {
                 ++org.line;
+                org.re         = RE_OK;
                 let offset     = org.offset + org.dir;
                 if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
@@ -286,7 +287,6 @@ class BioVM extends VM {
                 if (ax < 0) {ax = 0}
                 if (ax >= nearCode.length) {ax = nearCode.length - 1}
                 org.ax         = nearCode[ax];
-                org.re         = RE_OK;
                 return;
             }
             /**
@@ -297,6 +297,7 @@ class BioVM extends VM {
              */
             case GET: {
                 ++org.line;
+                org.re = RE_OK;
                 if (org.packet) {org.re = RE_ERR; return}
                 let offset = org.offset + org.dir;
                 if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
@@ -304,7 +305,6 @@ class BioVM extends VM {
                 const dot = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
                 (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
-                org.re = RE_OK;
                 return;
             }
             /**
@@ -315,6 +315,7 @@ class BioVM extends VM {
              */
             case PUT: {
                 ++org.line;
+                org.re = RE_OK;
                 if (!org.packet) {org.re = RE_ERR; return}
                 if (this.orgsMols.full) {org.re = RE_ERR; return}
                 let offset = org.offset + org.dir;
@@ -325,7 +326,6 @@ class BioVM extends VM {
                 org.packet.hasOwnProperty('energy') ? this.addOrg(org.packet, offset, org.packet.code, org.packet.energy) : this.addMol(offset, org.packet.code);
                 // this.db && this.db.put(org.packet);
                 org.packet = null;
-                org.re = RE_OK;
                 return;
             }
 
