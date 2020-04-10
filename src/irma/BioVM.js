@@ -365,15 +365,16 @@ class BioVM extends VM {
             case ANAB: {
                 ++org.line;
                 let   code  = org.code;
-                const m1Idx = org.heads[org.head];
+                let   m1Idx = org.heads[org.head];
                 //
                 // Join current and next molecules into one
                 //
                 if (org.ax < 0) {
                     const m1EndIdx  = this._molLastOffs(code, m1Idx);
                     const m2Idx     = m1EndIdx + 1;
-                    const m2EndIdx  = this._molLastOffs(code, m2Idx);
-                    if (m1EndIdx === m2EndIdx || m2EndIdx >= code.length) {org.re = RE_SPECIAL; return}
+                    let   m2EndIdx  = this._molLastOffs(code, m2Idx);
+                    if (m2EndIdx >= code.length) {m2EndIdx = code.length - 1}
+                    if (m1EndIdx === m2EndIdx) {org.re = RE_OK; return}
                     if ((code[m1EndIdx] & MASK8) === 0) {org.re = RE_OK; return}
                     org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
                     code[m1EndIdx] &= MASK8R;
@@ -384,7 +385,8 @@ class BioVM extends VM {
                 //
                 // Join current and molecule in ax into one
                 //
-                const m2Idx     = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
+                let m2Idx       = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
+                if (m1Idx > m2Idx) {const tmp = m1Idx; m1Idx = m2Idx; m2Idx = tmp}
                 if (m1Idx === m2Idx) {org.re = RE_ERR; return}
                 const m1EndIdx  = this._molLastOffs(code, m1Idx);
                 const m2EndIdx  = this._molLastOffs(code, m2Idx);
