@@ -61,6 +61,7 @@ describe('src/irma/VM', () => {
     const NR         = Config.CODE_CMDS.NREAD;
     const GE         = Config.CODE_CMDS.GET;
     const PU         = Config.CODE_CMDS.PUT;
+    const OF         = Config.CODE_CMDS.OFFS;
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -709,27 +710,30 @@ describe('src/irma/VM', () => {
             });
         });
 
-        xdescribe('offs tests', () => {
+        describe('offs tests', () => {
             it('Simple offset test', () => {
-                run([[1,OF]], {molAmount: 0, orgAmount: 1}, [1]);
-
-                expect(vm.orgs.items).toBe(1);
-                expect(vm.orgsMols.items).toBe(1);
-                expect(vm.orgs.get(0).ax).toEqual(1);
-            });
-            it('Simple offset test2', () => {
-                run([[1,OF]], {molAmount: 0, orgAmount: 1}, [0]);
+                run([[1,OF|M]], {molAmount: 0}, [0]);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).ax).toEqual(0);
+                expect(vm.orgsMols.get(0).code).toEqual(Uint8Array.from([1,OF|M]));
             });
-            it('Simple offset test3', () => {
-                run([[1,OF]], {molAmount: 0, orgAmount: 1}, [WIDTH*HEIGHT-1]);
+            it('Simple offset test 1', () => {
+                run([[OF|M]], {molAmount: 0}, [1]);
 
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
-                expect(vm.orgs.get(0).ax).toEqual(WIDTH*HEIGHT-1);
+                expect(vm.orgs.get(0).ax).toEqual(1);
+                expect(vm.orgsMols.get(0).code).toEqual(Uint8Array.from([OF|M]));
+            });
+            it('Simple offset test 2', () => {
+                run([[OF|M]], {molAmount: 0}, [WIDTH - 1]);
+
+                expect(vm.orgs.items).toBe(1);
+                expect(vm.orgsMols.items).toBe(1);
+                expect(vm.orgs.get(0).ax).toEqual(WIDTH - 1);
+                expect(vm.orgsMols.get(0).code).toEqual(Uint8Array.from([OF|M]));
             });
         });
 
