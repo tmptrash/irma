@@ -351,8 +351,8 @@ class BioVM extends VM {
 
             case ANAB: {
                 ++org.line;
-                let   code      = org.code;
-                const m1Idx     = org.heads[org.head];
+                let   code  = org.code;
+                const m1Idx = org.heads[org.head];
                 //
                 // Join current and next molecules into one
                 //
