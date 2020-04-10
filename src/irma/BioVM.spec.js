@@ -796,12 +796,19 @@ describe('src/irma/VM', () => {
                 });
             });
             describe('anabolism of far mols', () => {
-                it('anabolism of mols 1 and 3', () => {
+                it('anabolism of mols 3 and 1', () => {
                     run2([RM,RM|M,1|M,AN|M], 1, 0, RE_OK);
                     const org = vm.orgs.get(0);
     
                     expect(org.code).toEqual(Uint8Array.from([1|M,AN,RM,RM|M]));
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (3 * Config.energyMetabolismCoef) - 1);
+                });
+                it('anabolism of mols 1 and 3', () => {
+                    run2([RH,RM,RM|M,LH|M,AN|M], 0, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,AN|M,LH|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (4 * Config.energyMetabolismCoef) - 1);
                 });
             });
         });
