@@ -831,6 +831,13 @@ describe('src/irma/VM', () => {
                     expect(org.code).toEqual(Uint8Array.from([RH|M,LH,RM,RM,RM|M,AN|M]));
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (4 * Config.energyMetabolismCoef) - 1);
                 });
+                it('Checks anabolism and metadata', () => {
+                    run2([RH,RM,RM,LH|M,AN|M,1|M], 0, 0, RE_OK, false);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,LH,1|M,AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (5 * Config.energyMetabolismCoef) - 1);
+                });
             });
         });
 
