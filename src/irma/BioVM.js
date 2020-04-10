@@ -348,7 +348,20 @@ class BioVM extends VM {
                 org.color   = (newAx < ORG_MIN_COLOR ? ORG_MIN_COLOR : newAx) % 0xffffff;
                 return;
             }
-
+            /**
+             * ax < 0: (joining nearest mols)
+             *   In:
+             *     h0 - first mol to join
+             *   Out:
+             *     re - RE_OK|RE_ERR|RE_SPECIAL
+             * 
+             * ax >= 0: (joining far located mols)
+             *   In:
+             *     h0 - first mol to join
+             *     h1 - second mol to join
+             *   Out:
+             *     re - RE_OK|RE_ERR
+             */
             case ANAB: {
                 ++org.line;
                 let   code  = org.code;
@@ -371,8 +384,7 @@ class BioVM extends VM {
                 //
                 // Join current and molecule in ax into one
                 //
-                let   m2Idx     = 0;
-                for (let i = org.ax - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
+                const m2Idx     = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
                 if (m1Idx === m2Idx) {org.re = RE_ERR; return}
                 const m1EndIdx  = this._molLastOffs(code, m1Idx);
                 const m2EndIdx  = this._molLastOffs(code, m2Idx);
