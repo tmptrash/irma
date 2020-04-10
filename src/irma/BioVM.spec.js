@@ -800,56 +800,10 @@ describe('src/irma/VM', () => {
                     run2([RM,RM|M,1|M,AN|M], 1, 0, RE_OK);
                     const org = vm.orgs.get(0);
     
-                    expect(org.code).toEqual(Uint8Array.from([RM,RM,AN|M,1|M]));
+                    expect(org.code).toEqual(Uint8Array.from([1|M,AN,RM,RM|M]));
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (3 * Config.energyMetabolismCoef) - 1);
                 });
             });
-            // it('joining two molecules from different places', () => {
-            //     const code   = vm.split2Mols(Uint8Array.from([2,TG,0,0,0,AB]));
-            //     const energy = Config.energyMetabolismCoef * 10;
-            //     Config.molAmount = 0;
-            //     Config.orgAmount = 1;
-            //     Config.codeLinesPerIteration = code.length;
-            //     const org = vm.orgs.get(0);
-            //     org.code  = code.slice(); // code copy
-            //     Compiler.compile(org);
-            //     org.energy = energy;
-            //     vm.run();
-        
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,TG,0,AB|M,0,0|M]));
-            //     expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMetabolismCoef) - 1);
-            // });
-            // it('joining two molecules when ax < 0', () => {
-            //     const code   = vm.split2Mols(Uint8Array.from([2,TG,0,0,0,NT,AB]));
-            //     const energy = Config.energyMetabolismCoef * 10;
-            //     Config.molAmount = 0;
-            //     Config.orgAmount = 1;
-            //     Config.codeLinesPerIteration = code.length;
-            //     const org = vm.orgs.get(0);
-            //     org.code  = code.slice(); // code copy
-            //     Compiler.compile(org);
-            //     org.energy = energy;
-            //     vm.run();
-        
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([2,TG,0,NT|M,0,0|M,AB|M]));
-            //     expect(vm.orgs.get(0).energy).toEqual(energy - (4 * Config.energyMetabolismCoef) - 1);
-            // });
-            // it('joining two molecules when bx > molAmount', () => {
-            //     const code   = vm.split2Mols(Uint8Array.from([20,TG,0,0,0,AB]));
-            //     const energy = Config.energyMetabolismCoef * 10;
-            //     Config.molAmount = 0;
-            //     Config.orgAmount = 1;
-            //     Config.codeLinesPerIteration = code.length;
-            //     const org = vm.orgs.get(0);
-            //     org.code  = code.slice(); // code copy
-            //     Compiler.compile(org);
-            //     org.energy = energy;
-            //     vm.run();
-
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([20,TG,0,AB|M,0,0|M]));
-            //     expect(vm.orgs.get(0).energy).toEqual(energy - 4 * Config.energyMetabolismCoef - 1);
-            //     expect(vm.orgs.get(0).re).toEqual(1);
-            // });
         });
 
         xdescribe('catab tests', () => {

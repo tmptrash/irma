@@ -365,7 +365,7 @@ class BioVM extends VM {
             case ANAB: {
                 ++org.line;
                 let   code  = org.code;
-                let   m1Idx = org.heads[org.head];
+                const m1Idx = org.heads[org.head];
                 //
                 // Join current and next molecules into one
                 //
@@ -385,19 +385,26 @@ class BioVM extends VM {
                 //
                 // Join current and molecule in ax into one
                 //
-                let m2Idx       = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
-                if (m1Idx > m2Idx) {const tmp = m1Idx; m1Idx = m2Idx; m2Idx = tmp}
+                const m2Idx     = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
                 if (m1Idx === m2Idx) {org.re = RE_ERR; return}
+                let   anabIdx;
                 const m1EndIdx  = this._molLastOffs(code, m1Idx);
                 const m2EndIdx  = this._molLastOffs(code, m2Idx);
                 const cutCode   = code.subarray(m2Idx, m2EndIdx + 1);
-                code            = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
                 const insIdx    = m1EndIdx + 1;
-                code            = code.splice(insIdx, 0, cutCode);
-                if ((code[m1EndIdx] & MASK8) === 0) {org.re = RE_OK; return}
+                if (m1Idx > m2Idx) {
+                    code    = code.splice(insIdx, 0, cutCode);
+                    code    = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
+                    anabIdx = m1EndIdx - (m2EndIdx - m2Idx + 1);
+                } else {
+                    code    = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
+                    code    = code.splice(insIdx, 0, cutCode);
+                    anabIdx = m1EndIdx;
+                }
+                if ((code[anabIdx] & MASK8) === 0) {org.re = RE_OK; return}
                 org.energy     -= ((m2EndIdx - m2Idx + m1EndIdx - m1Idx + 2) * Config.energyMetabolismCoef);
-                code[m1EndIdx] &= MASK8R;
-                this.updateAtom(m1EndIdx, false);
+                code[anabIdx] &= MASK8R;
+                this.updateAtom(anabIdx, false);
                 org.code        = code;
                 org.re          = RE_OK;
                 Compiler.compile(org, false);
