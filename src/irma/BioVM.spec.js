@@ -810,6 +810,13 @@ describe('src/irma/VM', () => {
                     expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,AN|M,LH|M]));
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (4 * Config.energyMetabolismCoef) - 1);
                 });
+                it('anabolism of one mol 1', () => {
+                    run2([AN|M], 0, 0, RE_ERR);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - 1);
+                });
             });
         });
 
