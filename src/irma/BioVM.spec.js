@@ -758,26 +758,42 @@ describe('src/irma/VM', () => {
         });
 
         describe('anab tests', () => {
-            it('simple anabolism of nearest molecules', () => {
-                run2([DE|M,AN|M], -1, 0, RE_OK);
-                const org = vm.orgs.get(0);
-
-                expect(org.code).toEqual(Uint8Array.from([DE,AN|M]));
-                expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (org.code.length * Config.energyMetabolismCoef) - 1);
-            });
-            it('simple anabolism of nearest molecules 1', () => {
-                run2([1,0,DE|M,AN|M], -1, 0, RE_OK);
-                const org = vm.orgs.get(0);
-
-                expect(org.code).toEqual(Uint8Array.from([1,0,DE,AN|M]));
-                expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (org.code.length * Config.energyMetabolismCoef) - 1);
-            });
-            it('simple anabolism of nearest molecules 2', () => {
-                run2([2|M,1,0,DE|M,AN|M], -1, 0, RE_OK);
-                const org = vm.orgs.get(0);
-
-                expect(org.code).toEqual(Uint8Array.from([2,1,0,DE|M,AN|M]));
-                expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - ((org.code.length - 1) * Config.energyMetabolismCoef) - 1);
+            describe('anabolism of near mols', () => {
+                it('simple anabolism of nearest molecules', () => {
+                    run2([DE|M,AN|M], -1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([DE,AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (org.code.length * Config.energyMetabolismCoef) - 1);
+                });
+                it('simple anabolism of nearest molecules 1', () => {
+                    run2([1,0,DE|M,AN|M], -1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([1,0,DE,AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (org.code.length * Config.energyMetabolismCoef) - 1);
+                });
+                it('simple anabolism of nearest molecules 2', () => {
+                    run2([2|M,1,0,DE|M,AN|M], -1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([2,1,0,DE|M,AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - ((org.code.length - 1) * Config.energyMetabolismCoef) - 1);
+                });
+                it('anabolism of one mol', () => {
+                    run2([DE,AN|M], -1, 0, RE_SPECIAL);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([DE,AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - 1);
+                });
+                it('anabolism of mols 2 and 3', () => {
+                    run2([RM|M,DE|M,AN|M], -1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([RM|M,DE,AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - ((org.code.length - 1) * Config.energyMetabolismCoef) - 1);
+                });
             });
             // it('anabolism of one molecule only', () => {
             //     const code   = vm.split2Mols(Uint8Array.from([AB]));
