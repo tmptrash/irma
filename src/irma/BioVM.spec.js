@@ -245,7 +245,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(org.code).toEqual(Uint8Array.from([1|M,IN|M,JO|M,IN|M]));
-                expect(org.ax).toBe(2);
+                expect(org.ax).toBe(1);
                 expect(org.bx).toBe(0);
             });
             it('Checks joining molecule on the right and script should work correct (line: right)',  () => {
@@ -797,14 +797,14 @@ describe('src/irma/VM', () => {
             });
             describe('anabolism of far mols', () => {
                 it('anabolism of mols 3 and 1', () => {
-                    run2([RM,RM|M,1|M,AN|M], 1, 0, RE_OK);
+                    run2([RM,RM|M,1|M,AN|M], 1, 0, RE_OK, false);
                     const org = vm.orgs.get(0);
     
                     expect(org.code).toEqual(Uint8Array.from([1|M,AN,RM,RM|M]));
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (3 * Config.energyMetabolismCoef) - 1);
                 });
                 it('anabolism of mols 1 and 3', () => {
-                    run2([RH,RM,RM|M,LH|M,AN|M], 0, 0, RE_OK);
+                    run2([RH,RM,RM|M,LH|M,AN|M], 0, 0, RE_OK, false);
                     const org = vm.orgs.get(0);
     
                     expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,AN|M,LH|M]));
@@ -818,14 +818,14 @@ describe('src/irma/VM', () => {
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - 1);
                 });
                 it('anabolism of mols 2 and 3 of 4', () => {
-                    run2([RH|M,RM,RM|M,LH,RM|M,AN|M], 0, 0, RE_OK);
+                    run2([RH|M,RM,RM|M,LH,RM|M,AN|M], 0, 0, RE_OK, false);
                     const org = vm.orgs.get(0);
     
                     expect(org.code).toEqual(Uint8Array.from([RH|M,RM,RM,LH,RM|M,AN|M]));
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (4 * Config.energyMetabolismCoef) - 1);
                 });
                 it('anabolism of mols 2 and 3 of 4 (1)', () => {
-                    run2([RH|M,RM|M,LH,RM,RM|M,AN|M], 0, 0, RE_OK);
+                    run2([RH|M,RM|M,LH,RM,RM|M,AN|M], 0, 0, RE_OK, false);
                     const org = vm.orgs.get(0);
     
                     expect(org.code).toEqual(Uint8Array.from([RH|M,LH,RM,RM,RM|M,AN|M]));
@@ -835,8 +835,8 @@ describe('src/irma/VM', () => {
                     run2([RH,RM,RM,LH|M,AN|M,1|M], 0, 0, RE_OK, false);
                     const org = vm.orgs.get(0);
     
-                    expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,LH,1|M,AN|M]));
-                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - (5 * Config.energyMetabolismCoef) - 1);
+                    expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,LH,1,AN|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - ((5 + 6) * Config.energyMetabolismCoef) - 1);
                 });
             });
         });

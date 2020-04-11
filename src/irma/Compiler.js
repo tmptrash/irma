@@ -160,13 +160,13 @@ class Compiler {
     static updateMetadata(org, index1 = 0, index2 = 0, dir = 1) {
         const amount = (index2 - index1) * dir;
         //
-        // Updates current line
+        // Updates current line. -1 because we are currently on org.line - 1
         //
-        const line   = org.line;
+        const line   = org.line - 1;
         if (dir < 0) {
-            if (line >= index2) {org.line += amount}
+            if (line >= index2) {org.line = line + amount}
             else if (line >= index1 && line < index2) {org.line = index1}
-        } else if (line >= index1) {org.line += amount}
+        } else if (line >= index1) {org.line = line + amount}
         //
         // Updates function metadata (indexes in a code). If amount of functions
         // were changed we have to remove call stack. In other case we have to 
