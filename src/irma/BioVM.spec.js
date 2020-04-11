@@ -873,6 +873,22 @@ describe('src/irma/VM', () => {
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - 1);
                 });
             });
+            describe('catabolist by head and index in ax', () => {
+                it('simple catabolism of mol 0', () => {
+                    run2([CT,1|M], 1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([CT|M,1|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy + (org.code.length * Config.energyMetabolismCoef) - 1);
+                });
+                it('simple catabolism of mol 0 and idx 1', () => {
+                    run2([1,CT,0,1|M], 1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([1,CT|M,0,1|M]));
+                    expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy + (org.code.length * Config.energyMetabolismCoef) - 1);
+                });
+            });
             // it('simple catabolism with longer molecule', () => {
             //     const code   = vm.split2Mols(Uint8Array.from([0,1,2,3,4,1,CB]));
             //     const energy = Config.energyMetabolismCoef * 10;
