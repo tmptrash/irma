@@ -452,7 +452,7 @@ class BioVM extends VM {
                 if (mol === molEnd) {org.re = RE_ERR; return}
                 let   cutPos  = org.ax;
                 const molSize = molEnd - mol + 1;
-                if (mol + cutPos > molEnd) {cutPos = mol + Math.floor(molSize / 2) - 1}
+                if (mol + cutPos > molEnd) {cutPos = 0}
                 if (code[mol + cutPos] & MASK8) {org.re = RE_OK; return}
                 code[mol + cutPos] |= MASK8;
                 this.updateAtom(mol + cutPos, true);
