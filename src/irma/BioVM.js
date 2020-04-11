@@ -196,10 +196,12 @@ class BioVM extends VM {
                 if (dot > -1) {org.re = RE_ERR; return} // something on the way
                 const code    = org.code;
                 let   idx0    = org.heads[org.head];
+                if (idx0 >= code.length) {idx0 = code.length - 1}
+                for (let i = idx0 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx0 = i + 1; break}} // find first atom of molecule
                 let   idx1    = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
-                if (idx0 > idx1) {const tmp = idx0; idx0 = idx1; idx1 = tmp}
-                if (idx1 < 0) {idx1 = 0}
                 if (idx1 >= code.length) {idx1 = code.length - 1}
+                for (let i = idx1 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx1 = i + 1; break}} // find first atom of molecule
+                if (idx0 > idx1) {const tmp = idx0; idx0 = idx1; idx1 = tmp}
                 idx1 = this._molLastOffs(code, idx1) + 1;
                 const newCode = code.subarray(idx0, idx1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
@@ -364,8 +366,10 @@ class BioVM extends VM {
              */
             case ANAB: {
                 ++org.line;
-                let   code  = org.code;
-                const m1Idx = org.heads[org.head];
+                let code    = org.code;
+                let m1Idx   = org.heads[org.head];
+                if (m1Idx > code.length) {m1Idx = code.length - 1}
+                for (let i = m1Idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m1Idx = i + 1; break}} // find first atom of molecule
                 //
                 // Join current and next molecules into one
                 //
@@ -385,7 +389,9 @@ class BioVM extends VM {
                 //
                 // Join current and molecule in ax into one
                 //
-                const m2Idx     = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
+                let m2Idx       = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
+                if (m2Idx > code.length) {m2Idx = code.length - 1}
+                for (let i = m2Idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
                 if (m1Idx === m2Idx) {org.re = RE_ERR; return}
                 let   anabIdx;
                 const m1EndIdx  = this._molLastOffs(code, m1Idx);
@@ -423,6 +429,12 @@ class BioVM extends VM {
              *   bx - idx to cut
              * Out:
              *   re - RE_OK|RE_ERR
+             * 
+             * In:
+             *   ax - >= 0 - cut idx inside cur mol
+             *   h0 - mol idx
+             * Out:
+             *   re - RE_OK|RE_ERR
              */
             case CATAB: {
                 ++org.line;
@@ -447,7 +459,9 @@ class BioVM extends VM {
                 //
                 // Cuts molecule by mol head and ax
                 //
-                const mol     = org.heads[org.head];
+                let mol       = org.heads[org.head];
+                if (mol > code.length) {mol = code.length - 1}
+                for (let i = mol - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {mol = i + 1; break}} // find first atom of molecule
                 const molEnd  = this._molLastOffs(code, mol);
                 if (mol === molEnd) {org.re = RE_ERR; return}
                 let   cutPos  = org.ax;
@@ -461,50 +475,54 @@ class BioVM extends VM {
                 return;
             }
             // TODO: if h0 > h1 then we need to in the same way like anab command (see if else with splice() commands)
+            /**
+             * In:
+             *   h0 - dst mol idx (after mol)
+             *   h1 - src mol idx
+             * Out:
+             *   re - RE_OK|RE_ERR
+             */
             case MMOL: {
                 ++org.line;
-                const heads    = org.heads;
-                const head     = org.head;
-                const nextHead = heads[head + 1 === heads.length ? 0 : head + 1];
-                //
-                // This code obtains source molecule
-                //
-                let    code    = org.code;
-                let   m2Idx    = heads[head];
-                if (m2Idx < 0) {m2Idx = 0}
-                if (m2Idx >= code.length) {m2Idx = code.length - 1}
-                for (let i = m2Idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
-                if (m2Idx === nextHead) {org.re = RE_OK; return}    // src and dest molecules are the same
-                const m2EndIdx = this._molLastOffs(code, m2Idx);
-                const moveCode = code.slice(m2Idx, m2EndIdx + 1);
-                if (moveCode.length < 1) {org.re = RE_ERR; return}
-                //
-                // This code obtains destination molecule
-                //
-                const len      = m2EndIdx - m2Idx + 1;
-                code           = code.splice(m2Idx, len);
-                const insIdx   = this._molLastOffs(code, nextHead + (m2Idx < (nextHead) ? -len : 0)) + 1;
-                org.code       = code.splice(insIdx, 0, moveCode);
-                org.energy    -= (moveCode.length * Config.energyMolMoveCoef);
-                org.re         = RE_OK;
+                let code        = org.code;
+                let m1Idx;
+                for (let i = org.heads[org.head] - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m1Idx = i + 1; break}} // find first atom of molecule
+                let m2Idx;
+                for (let i = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1] - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {m2Idx = i + 1; break}} // find first atom of molecule
+                if (m1Idx === m2Idx) {org.re = RE_ERR; return}
+                const m1EndIdx  = this._molLastOffs(code, m1Idx);
+                const m2EndIdx  = this._molLastOffs(code, m2Idx);
+                const cutCode   = code.subarray(m2Idx, m2EndIdx + 1);
+                const insIdx    = m1EndIdx + 1;
+                if (m1Idx > m2Idx) {
+                    code = code.splice(insIdx, 0, cutCode);
+                    code = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
+                } else {
+                    code = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
+                    code = code.splice(insIdx, 0, cutCode);
+                }
+                org.energy     -= Math.round(cutCode.length * Config.energyMolMoveCoef);
+                org.code        = code;
+                org.re          = RE_OK;
                 Compiler.compile(org, false);
-                //
-                // further changed code should be called first
-                //
                 if (m2Idx > insIdx) {
                     Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1);
-                    Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1);
+                    Compiler.updateMetadata(org, insIdx, insIdx + cutCode.length, 1);
                 } else {
-                    Compiler.updateMetadata(org, insIdx, insIdx + moveCode.length, 1);
+                    Compiler.updateMetadata(org, insIdx, insIdx + cutCode.length, 1);
                     Compiler.updateMetadata(org, m2Idx, m2EndIdx + 1, -1);
                 }
-                return; 
+                return;
             }
 
             case MOL: {
                 ++org.line;
-                org.ax    = org.heads[org.head];
-                org.bx    = this._molLastOffs(org.code, org.ax);
+                const code = org.code;
+                let idx    = org.heads[org.head];
+                if (idx > code.length) {idx = code.length - 1}
+                for (let i = idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
+                org.ax = idx;
+                org.bx = this._molLastOffs(org.code, idx);
                 return;
             }
 
@@ -535,7 +553,6 @@ class BioVM extends VM {
                 return;
             }
 
-            // TODO: what about case with zero length code?
             case LMOL: {
                 ++org.line;
                 const code = org.code;
@@ -579,7 +596,9 @@ class BioVM extends VM {
             case MCMP: {
                 ++org.line;
                 const code = org.code;
-                const idx0 = org.heads[org.head];
+                let idx0   = org.heads[org.head];
+                if (idx0 > code.length) {idx0 = code.length - 1}
+                for (let i = idx0 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx0 = i + 1; break}} // find first atom of molecule
                 const idx1 = this._molLastOffs(code, idx0);
 
                 if (org.ax < 1) {  // compares memory and current mol head
@@ -591,6 +610,8 @@ class BioVM extends VM {
                     }
                 } else {           // compares current and next mol heads
                     let idx2 = org.heads[org.head + 1 === org.heads.length ? 0 : org.head + 1];
+                    if (idx2 > code.length) {idx2 = code.length - 1}
+                    for (let i = idx2 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx2 = i + 1; break}} // find first atom of molecule
     
                     for (let i = idx0; i <= idx1; i++, idx2++) {
                         if (code[idx2] !== code[i]) {org.re = RE_ERR; return}
@@ -616,7 +637,9 @@ class BioVM extends VM {
                 const code   = org.code;
                 const idx0   = this._molLastOffs(code, org.heads[head + 1 === heads ? 0 : head + 1]) + 1;
                 const idx1   = this._molLastOffs(code, org.heads[head + 2 >=  heads ? head + 2 - heads : head + 2]) + 1;
-                const mol    = org.heads[head];
+                let mol      = org.heads[head];
+                if (mol > code.length) {mol = code.length - 1}
+                for (let i = mol - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {mol = i + 1; break}} // find first atom of molecule
                 const molLen = this._molLastOffs(code, mol) - mol + 1;
                 const ax     = this._molLastOffs(code, org.ax) + 1;
                 //

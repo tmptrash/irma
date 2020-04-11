@@ -65,6 +65,8 @@ describe('src/irma/VM', () => {
     const CO         = Config.CODE_CMDS.COLOR;
     const AN         = Config.CODE_CMDS.ANAB;
     const CT         = Config.CODE_CMDS.CATAB;
+    const MM         = Config.CODE_CMDS.MMOL;
+
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -903,54 +905,23 @@ describe('src/irma/VM', () => {
                     expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy + (org.code.length * Config.energyMetabolismCoef) - 1);
                 });
             });
-            // it('simple catabolism with longer molecule', () => {
-            //     const code   = vm.split2Mols(Uint8Array.from([0,1,2,3,4,1,CB]));
-            //     const energy = Config.energyMetabolismCoef * 10;
-            //     Config.molAmount = 0;
-            //     Config.orgAmount = 1;
-            //     Config.codeLinesPerIteration = code.length;
-            //     const org = vm.orgs.get(0);
-            //     org.code  = code.slice(); // code copy
-            //     Compiler.compile(org);
-            //     org.energy = energy;
-            //     vm.run();
-        
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([0,1|M,2|M,3|M,4,1|M,CB|M]));
-            //     expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMetabolismCoef) - 1);
-            //     expect(vm.orgs.get(0).re).toEqual(1);
-            // });
-            // it('catabolism if ax < 0', () => {
-            //     const code   = vm.split2Mols(Uint8Array.from([1,NT,CB]));
-            //     const energy = Config.energyMetabolismCoef * 10;
-            //     Config.molAmount = 0;
-            //     Config.orgAmount = 1;
-            //     Config.codeLinesPerIteration = code.length;
-            //     const org = vm.orgs.get(0);
-            //     org.code  = code.slice(); // code copy
-            //     Compiler.compile(org);
-            //     org.energy = energy;
-            //     vm.run();
-        
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([1|M,NT|M,CB|M]));
-            //     expect(vm.orgs.get(0).energy).toEqual(energy + (2 * Config.energyMetabolismCoef) - 1);
-            //     expect(vm.orgs.get(0).re).toEqual(1);
-            // });
-            // it('catabolism if ax > molAmount', () => {
-            //     const code   = vm.split2Mols(Uint8Array.from([10,CB]));
-            //     const energy = Config.energyMetabolismCoef * 10;
-            //     Config.molAmount = 0;
-            //     Config.orgAmount = 1;
-            //     Config.codeLinesPerIteration = code.length;
-            //     const org = vm.orgs.get(0);
-            //     org.code  = code.slice(); // code copy
-            //     Compiler.compile(org);
-            //     org.energy = energy;
-            //     vm.run();
-        
-            //     expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([10|M,CB|M]));
-            //     expect(vm.orgs.get(0).energy).toEqual(energy + 2 * Config.energyMetabolismCoef - 1);
-            //     expect(vm.orgs.get(0).re).toEqual(1);
-            // });
+        });
+
+        describe('mmol tests', () => {
+            it('mmol of one mol', () => {
+                run2([MM|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([MM|M]));
+                expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - 1);
+            })
+            it('mmol of two mols', () => {
+                run2([RH|M,RM,RM,LH,MM|M,1|M], 0, 0, RE_OK, false);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RH|M,RM,RM,LH,MM|M,1|M]));
+                expect(vm.orgs.get(0).energy).toEqual(Config.LUCAS[0].energy - Math.round(((1 + 4) * Config.energyMolMoveCoef)) - 1);
+            })
         });
 
         xdescribe('find tests', () => {

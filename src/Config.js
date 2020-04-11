@@ -359,7 +359,7 @@ module.exports = {
      * {Number} Energy related configuration
      */
     energyStepCoef             : .015,
-    energyMolMoveCoef          : .015,
+    energyMolMoveCoef          : .05,
     energyMetabolismCoef       : 150,
     /**
      * {Number} This value will be used for every LUCA on system start if
