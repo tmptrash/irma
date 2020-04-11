@@ -66,6 +66,7 @@ describe('src/irma/VM', () => {
     const AN         = Config.CODE_CMDS.ANAB;
     const CT         = Config.CODE_CMDS.CATAB;
     const MM         = Config.CODE_CMDS.MMOL;
+    const MO         = Config.CODE_CMDS.MOL;
 
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
@@ -924,6 +925,27 @@ describe('src/irma/VM', () => {
             })
         });
 
+        describe('mol tests', () => {
+            it('mol test', () => {
+                run2([MO|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([MO|M]));
+            })
+            it('mol test 1', () => {
+                run2([1,MO|M], 0, 1);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([1,MO|M]));
+            })
+            it('mol test 2', () => {
+                run2([MO,MO|M], 0, 1);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([MO,MO|M]));
+            })
+        });
+
         xdescribe('find tests', () => {
             it('find molecule [3,AR] at the end',     () => run2(vm.split2Mols([3,AR,1,TG,FI,0,3,AR]), 3, 1, 3));
             it('find molecule [3] at the middle',     () => run2([3|M,AR|M,3|M,1,TG,FI|M], 2, 1, 1));
@@ -932,8 +954,7 @@ describe('src/irma/VM', () => {
             it('should not find molecule [0]',        () => run2([0|M,4,AR|M,1,FI|M], 1, 0, 0));
         });
 
-        xdescribe('move tests', () => {
-            it('move first molecule to the center', () => {
+        xdescribe('move tests', () => { it('move first molecule to the center', () => {
                 const code = Uint8Array.from([0,1,2,2,TG,MO]);
                 Config.molAmount = 0;
                 Config.orgAmount = 1;

@@ -514,7 +514,11 @@ class BioVM extends VM {
                 }
                 return;
             }
-
+            /**
+             * Out:
+             *   ax - first atom in a mol
+             *   bx - last atom in a mol
+             */
             case MOL: {
                 ++org.line;
                 const code = org.code;
