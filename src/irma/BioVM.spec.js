@@ -944,6 +944,18 @@ describe('src/irma/VM', () => {
 
                 expect(org.code).toEqual(Uint8Array.from([MO,MO|M]));
             })
+            it('mol test 3', () => {
+                run2([MO|M,MO|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([MO|M,MO|M]));
+            })
+            it('mol test of mol 1', () => {
+                run2([RM|M,MO|M], 1, 1, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM|M,MO|M]));
+            })
         });
 
         xdescribe('find tests', () => {
