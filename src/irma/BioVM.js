@@ -349,14 +349,14 @@ class BioVM extends VM {
                 return;
             }
             /**
-             * ax < 0: (joining nearest mols)
              *   In:
+             *     ax - < 0 - joining nearest mols
              *     h0 - first mol to join
              *   Out:
              *     re - RE_OK|RE_ERR|RE_SPECIAL
              * 
-             * ax >= 0: (joining far located mols)
              *   In:
+             *     ax - > 0 - joining far located mols
              *     h0 - first mol to join
              *     h1 - second mol to join
              *   Out:
@@ -417,7 +417,13 @@ class BioVM extends VM {
                 }
                 return;
             }
-
+            /**
+             * In:
+             *   ax - < 0 - cut mol by idx
+             *   bx - idx to cut
+             * Out:
+             *   re - RE_OK|RE_ERR
+             */
             case CATAB: {
                 ++org.line;
                 const code = org.code;
@@ -431,9 +437,9 @@ class BioVM extends VM {
                     if (bx >= code.length) {bx = code.length - 1}
                     for (let i = bx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
                     if (code[bx] & MASK8) {org.re = RE_OK; return}
+                    const idxEnd = this._molLastOffs(code, bx);
                     code[bx] |= MASK8;
                     this.updateAtom(bx, true);
-                    const idxEnd = this._molLastOffs(code, bx);
                     org.energy += ((idxEnd - idx + 1) * Config.energyMetabolismCoef);
                     org.re = RE_OK;
                     return;
@@ -454,7 +460,7 @@ class BioVM extends VM {
                 org.re = RE_OK;
                 return;
             }
-
+            // TODO: if h0 > h1 then we need to in the same way like anab command (see if else with splice() commands)
             case MMOL: {
                 ++org.line;
                 const heads    = org.heads;
