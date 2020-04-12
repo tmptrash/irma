@@ -1003,11 +1003,33 @@ describe('src/irma/VM', () => {
         });
 
         describe('rmol tests', () => {
-            it('0 -> 1', () => {
+            it('rmol 0 -> 1', () => {
                 run2([RM|M,0|M], 0, 0, RE_OK);
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(1);
+            })
+            it('rmol 0 -> 0', () => {
+                run2([RM,RM|M,0|M], 0, 0, RE_SPECIAL);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM,RM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('rmol 1 -> 0', () => {
+                run2([RM,RM,RM|M,0|M], 0, 0, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM,RM,RM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(3);
+            })
+            it('rmol 0 -> 1 (1)', () => {
+                run2([RM,RM|M,0|M,1,2,3|M], 3, 0, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM,RM|M,0|M,1,2,3|M]));
+                expect(org.heads[org.head]).toEqual(3);
             })
         })
 
