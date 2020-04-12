@@ -1125,6 +1125,42 @@ describe('src/irma/VM', () => {
                     expect(org.mem[org.mPos + 1]).toEqual(0);
                     expect(org.heads[org.head]).toEqual(0);
                 })
+                it('mcmp of one mol (2)', () => {
+                    run2([1|M,SA,MC|M], 1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([1|M,SA,MC|M]));
+                    expect(org.mem[org.mPos]).toEqual(1);
+                    expect(org.heads[org.head]).toEqual(0);
+                })
+            })
+            describe('ax > 0', () => {
+                it('mcmp of first mol', () => {
+                    run2([1,MC|M], 1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([1,MC|M]));
+                    expect(org.mem[org.mPos]).toEqual(0);
+                    expect(org.heads[org.head]).toEqual(0);
+                })
+                it('mcmp of first and second mols', () => {
+                    run2([RH,RM,LH,RM,RM,1,MC|M,1|M,1|M], 1, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([RH,RM,LH,RM,RM,1,MC|M,1|M,1|M]));
+                    expect(org.mem[org.mPos]).toEqual(0);
+                    expect(org.heads[org.head]).toEqual(8);
+                    expect(org.heads[org.head + 1]).toEqual(7);
+                })
+                it('mcmp of first and second mols with different length', () => {
+                    run2([RH,RM,LH,RM,RM,1,MC|M,1|M,1,2|M], 2, 0, RE_ERR);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([RH,RM,LH,RM,RM,1,MC|M,1|M,1,2|M]));
+                    expect(org.mem[org.mPos]).toEqual(0);
+                    expect(org.heads[org.head]).toEqual(8);
+                    expect(org.heads[org.head + 1]).toEqual(7);
+                })
             })
         })
 
