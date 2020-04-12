@@ -664,7 +664,9 @@ class BioVM extends VM {
                 const heads  = org.heads.length;
                 const head   = org.head;
                 const code   = org.code;
-                const idx0   = this._molLastOffs(code, org.heads[head + 1 === heads ? 0 : head + 1]) + 1;
+                let idx0     = org.heads[head + 1 === heads ? 0 : head + 1];
+                if (idx0 > code.length) {idx0 = code.length - 1}
+                for (let i = idx0 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx0 = i + 1; break}} // find first atom of molecule
                 const idx1   = this._molLastOffs(code, org.heads[head + 2 >=  heads ? head + 2 - heads : head + 2]) + 1;
                 let mol      = org.heads[head];
                 if (mol > code.length) {mol = code.length - 1}
