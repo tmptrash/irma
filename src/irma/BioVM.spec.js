@@ -71,6 +71,7 @@ describe('src/irma/VM', () => {
     const RM         = Config.CODE_CMDS.RMOL;
     const LM         = Config.CODE_CMDS.LMOL;
     const CM         = Config.CODE_CMDS.CMOL;
+    const MC         = Config.CODE_CMDS.MCMP;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
     const RH         = Config.CODE_CMDS.RHEAD;
@@ -1102,6 +1103,28 @@ describe('src/irma/VM', () => {
                 expect(org.mem[org.mPos]).toEqual(1|M);
                 expect(org.mem[org.mPos + 1]).toEqual(0);
                 expect(org.heads[org.head]).toEqual(2);
+            })
+        })
+
+        describe('mcmp tests', () => {
+            describe('ax < 1', () => {
+                it('mcmp of one mol', () => {
+                    run2([MC|M], 0, 0, RE_ERR);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([MC|M]));
+                    expect(org.mem[org.mPos]).toEqual(0);
+                    expect(org.heads[org.head]).toEqual(0);
+                })
+                it('mcmp of one mol (1)', () => {
+                    run2([CM|M,MC|M], 0, 0, RE_OK);
+                    const org = vm.orgs.get(0);
+    
+                    expect(org.code).toEqual(Uint8Array.from([CM|M,MC|M]));
+                    expect(org.mem[org.mPos]).toEqual(CM|M);
+                    expect(org.mem[org.mPos + 1]).toEqual(0);
+                    expect(org.heads[org.head]).toEqual(0);
+                })
             })
         })
 

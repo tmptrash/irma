@@ -608,7 +608,21 @@ class BioVM extends VM {
                 }
                 return;
             }
-
+            /**
+             * In:
+             *   ax - < 1 compares m0 and h0
+             *   m0 - mol in m0 to compare
+             *   h0 - idx of mol to compare
+             * Out:
+             *   re - RE_OK|RE_ERR 
+             * 
+             * In:
+             *   ax - > 0 compares h0 and h1
+             *   h0 - idx of mol0 to compare
+             *   h1 - idx of mol1 to compare
+             * Out:
+             *   re - RE_OK|RE_ERR 
+             */
             case MCMP: {
                 ++org.line;
                 const code = org.code;
