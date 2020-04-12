@@ -550,12 +550,18 @@ class BioVM extends VM {
                 org.ax = ax;
                 return;
             }
-
+            /**
+             * Out:
+             *   h0 - new idx
+             *   re - RE_OK|RE_ERR
+             */
             case RMOL: {
                 ++org.line;
-                if (org.code.length < 2) {org.re = RE_OK; return}
-                if ((org.heads[org.head] = this._molLastOffs(org.code, org.heads[org.head]) + 1) >= org.code.length) {
-                    org.heads[org.head] = 0;
+                const code  = org.code;
+                const heads = org.heads;
+                if (code.length < 2) {org.re = RE_OK; return}
+                if ((heads[org.head] = this._molLastOffs(code, heads[org.head]) + 1) >= code.length) {
+                    heads[org.head] = 0;
                     org.re = RE_SPECIAL;
                 } else {
                     org.re = RE_OK;

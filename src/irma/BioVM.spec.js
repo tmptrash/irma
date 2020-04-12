@@ -68,7 +68,6 @@ describe('src/irma/VM', () => {
     const MM         = Config.CODE_CMDS.MMOL;
     const MO         = Config.CODE_CMDS.MOL;
     const SM         = Config.CODE_CMDS.SMOL;
-
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
@@ -1002,6 +1001,15 @@ describe('src/irma/VM', () => {
                 expect(org.heads[org.head]).toEqual(0);
             })
         });
+
+        describe('rmol tests', () => {
+            it('0 -> 1', () => {
+                run2([RM|M,0|M], 0, 0, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM|M,0|M]));
+            })
+        })
 
         xdescribe('find tests', () => {
             it('find molecule [3,AR] at the end',     () => run2(vm.split2Mols([3,AR,1,TG,FI,0,3,AR]), 3, 1, 3));
