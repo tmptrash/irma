@@ -72,6 +72,7 @@ describe('src/irma/VM', () => {
     const LM         = Config.CODE_CMDS.LMOL;
     const CM         = Config.CODE_CMDS.CMOL;
     const MC         = Config.CODE_CMDS.MCMP;
+    const AS         = Config.CODE_CMDS.ASM;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
     const RH         = Config.CODE_CMDS.RHEAD;
@@ -1164,65 +1165,29 @@ describe('src/irma/VM', () => {
             })
         })
 
-        xdescribe('find tests', () => {
-            it('find molecule [3,AR] at the end',     () => run2(vm.split2Mols([3,AR,1,TG,FI,0,3,AR]), 3, 1, 3));
-            it('find molecule [3] at the middle',     () => run2([3|M,AR|M,3|M,1,TG,FI|M], 2, 1, 1));
-            it('find molecule [0] at the beginning',  () => run2([0|M,4,AR|M,0,FI|M], 0, 0, 1));
-            it('find molecule [0,1] at the end',      () => run2([0,1|M,4,AR|M,1,TG,0,FI|M,0,1|M], 3, 1, 1));
-            it('should not find molecule [0]',        () => run2([0|M,4,AR|M,1,FI|M], 1, 0, 0));
-        });
+        describe('asm tests', () => {
+            it('asm of one mol with fail', () => {
+                run2([1|M,AS|M], 1, 0, RE_ERR);
+                const org = vm.orgs.get(0);
 
-        xdescribe('move tests', () => { it('move first molecule to the center', () => {
-                const code = Uint8Array.from([0,1,2,2,TG,MO]);
-                Config.molAmount = 0;
-                Config.orgAmount = 1;
-                Config.codeLinesPerIteration = code.length;
+                expect(org.code).toEqual(Uint8Array.from([1|M,AS|M]));
+                expect(org.heads[org.head]).toEqual(0);
+                expect(org.heads[org.head + 1]).toEqual(0);
+            })
+            it('asm of one mol', () => {
+                run2([1|M,1|M,AS|M], 1, 0, RE_OK, false);
                 const org = vm.orgs.get(0);
-                org.code  = vm.split2Mols(code);
-                Compiler.compile(org);
-                vm.run();
-        
-                expect(org.ax).toBe(0);
-                expect(org.bx).toBe(2);
-                expect(org.re).toBe(1);
-                expect(org.code).toEqual(Uint8Array.from([2,2|M,0,1|M,TG,MO|M]));
-            });
-            it('move first molecule with bx > molAmount', () => {
-                const code = Uint8Array.from([0,1,2,5,TG,MO]);
-                Config.molAmount = 0;
-                Config.orgAmount = 1;
-                Config.codeLinesPerIteration = code.length;
-                const org = vm.orgs.get(0);
-                org.code  = vm.split2Mols(code);
-                Compiler.compile(org);
-                vm.run();
-        
-                expect(org.ax).toBe(0);
-                expect(org.bx).toBe(5);
-                expect(org.re).toBe(1);
-                expect(org.code).toEqual(Uint8Array.from([2,5|M,0,1|M,TG,MO|M]));
-            });
-            it('move first molecule with ax < 0', () => {
-                const code = Uint8Array.from([0,1,2,5,TG,0,NT,MO]);
-                Config.molAmount = 0;
-                Config.orgAmount = 1;
-                Config.codeLinesPerIteration = code.length;
-                const org = vm.orgs.get(0);
-                org.code  = vm.split2Mols(code);
-                Compiler.compile(org);
-                vm.run();
-        
-                expect(org.ax).toBe(-1);
-                expect(org.bx).toBe(5);
-                expect(org.re).toBe(1);
-                expect(org.code).toEqual(Uint8Array.from([2,5|M,TG,0|M,0,1|M,NT,MO|M]));
-            });
-        });
 
-        xdescribe('mols tests', () => {
-            it('mols0', () => run2([0|M,1,ML|M], 2));
-            it('mols1', () => run2([ML|M], 1));
-            it('mols2', () => run2([ML], 1));
+                expect(org.code).toEqual(Uint8Array.from([1|M,1|M,AS|M]));
+                expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
+            })
+            it('asm of one mol (1)', () => {
+                run2([2|M,2|M,AS|M], 2, 0, RE_OK, false);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([2|M,AS|M,2|M]));
+                expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
+            })
         });
     });
 });
