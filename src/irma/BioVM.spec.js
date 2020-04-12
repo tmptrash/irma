@@ -69,6 +69,7 @@ describe('src/irma/VM', () => {
     const MO         = Config.CODE_CMDS.MOL;
     const SM         = Config.CODE_CMDS.SMOL;
     const RM         = Config.CODE_CMDS.RMOL;
+    const LM         = Config.CODE_CMDS.LMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
     const RH         = Config.CODE_CMDS.RHEAD;
@@ -1030,6 +1031,37 @@ describe('src/irma/VM', () => {
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RM|M,0|M,1,2,3|M]));
                 expect(org.heads[org.head]).toEqual(3);
+            })
+        })
+
+        describe('lmol tests', () => {
+            it('lmol 0 -> 1', () => {
+                run2([LM|M,0|M], 0, 0, RE_SPECIAL);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([LM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(1);
+            })
+            it('lmol 0 -> 0', () => {
+                run2([LM,LM|M,0|M], 0, 0, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([LM,LM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('lmol 0 -> 0 (1)', () => {
+                run2([LM,LM,LM|M,0|M], 0, 0, RE_SPECIAL);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([LM,LM,LM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(3);
+            })
+            it('lmol 0 -> 1 (1)', () => {
+                run2([LM,LM|M,0|M,1,2,3|M], 3, 0, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([LM,LM|M,0|M,1,2,3|M]));
+                expect(org.heads[org.head]).toEqual(2);
             })
         })
 

@@ -553,7 +553,7 @@ class BioVM extends VM {
             /**
              * Out:
              *   h0 - new idx
-             *   re - RE_OK|RE_ERR
+             *   re - RE_OK|RE_ERR|RE_SPECIAL
              */
             case RMOL: {
                 ++org.line;
@@ -568,31 +568,23 @@ class BioVM extends VM {
                 }
                 return;
             }
-
+            /**
+             * Out:
+             *   h0 - new idx
+             *   re - RE_OK|RE_ERR|SPECIAL
+             */
             case LMOL: {
                 ++org.line;
                 const code = org.code;
                 if (code.length < 2) {org.re = RE_OK; return}
-                let   mol  = org.heads[org.head];
-                let   ret  = RE_OK;
-
-                for (let i = mol - 1;; i--) {
-                    if (i < 0) {mol = 0; break}
-                    if ((code[i] & MASK8) > 0) {mol = i + 1; break}
-                }
-                if (--mol < 0) {mol = code.length - 1; org.re = RE_SPECIAL}
-                if (mol === 0) {org.heads[org.head] = 0; org.re = RE_OK; return}
-                for (let i = mol - 1, loop = 0;; i--) {
-                    if (i < 0) {
-                        ret = RE_SPECIAL;
-                        i = code.length - 1;
-                        if (++loop > 1) {org.heads[org.head] = 0; org.re  = RE_OK; return}
-                        continue;
-                    }
-                    if ((code[i] & MASK8) > 0) {mol = i + 1; break}
-                }
-                org.heads[org.head] = mol;
-                org.re  = ret;
+                let idx = org.heads[org.head];
+                let re  = RE_OK;
+                if (idx > code.length) {idx = code.length - 1}
+                for (let i = idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
+                if (idx <= 0 || --idx <= 0) {idx = code.length - 1; re = RE_SPECIAL}
+                for (let i = idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
+                org.heads[org.head] = idx;
+                org.re = re;
                 return;
             }
 
