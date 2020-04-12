@@ -70,6 +70,7 @@ describe('src/irma/VM', () => {
     const SM         = Config.CODE_CMDS.SMOL;
     const RM         = Config.CODE_CMDS.RMOL;
     const LM         = Config.CODE_CMDS.LMOL;
+    const CM         = Config.CODE_CMDS.CMOL;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
     const RH         = Config.CODE_CMDS.RHEAD;
@@ -1061,6 +1062,45 @@ describe('src/irma/VM', () => {
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([LM,LM|M,0|M,1,2,3|M]));
+                expect(org.heads[org.head]).toEqual(2);
+            })
+        })
+
+        describe('cmol tests', () => {
+            it('cmol of one mol', () => {
+                run2([CM|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([CM|M]));
+                expect(org.mem[org.mPos]).toEqual(CM|M);
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('cmol of one mols with two atoms', () => {
+                run2([CM,1|M], 1);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([CM,1|M]));
+                expect(org.mem[org.mPos]).toEqual(CM);
+                expect(org.mem[org.mPos + 1]).toEqual(1|M);
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('cmol of two mols', () => {
+                run2([CM,1|M,1|M], 1);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([CM,1|M,1|M]));
+                expect(org.mem[org.mPos]).toEqual(CM);
+                expect(org.mem[org.mPos + 1]).toEqual(1|M);
+                expect(org.mem[org.mPos + 2]).toEqual(0);
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('cmol of last mol', () => {
+                run2([RM,CM|M,1|M], 1, 0, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM,CM|M,1|M]));
+                expect(org.mem[org.mPos]).toEqual(1|M);
+                expect(org.mem[org.mPos + 1]).toEqual(0);
                 expect(org.heads[org.head]).toEqual(2);
             })
         })

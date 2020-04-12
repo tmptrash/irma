@@ -587,13 +587,21 @@ class BioVM extends VM {
                 org.re = re;
                 return;
             }
-
+            /**
+             * In:
+             *   h0 - copy mol idx
+             * Out:
+             *   m0 - copied mol
+             */
             case CMOL: {
                 ++org.line;
                 const code = org.code;
                 const len  = code.length;
                 const mem  = org.mem;
-                for (let i = org.heads[org.head], m = org.mPos; i < len; i++, m++) {
+                let idx    = org.heads[org.head];
+                if (idx > code.length) {idx = code.length - 1}
+                for (let i = idx - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx = i + 1; break}} // find first atom of molecule
+                for (let i = idx, m = org.mPos; i < len; i++, m++) {
                     if (m >= ORG_MAX_MEM_SIZE) {m = 0}
                     mem[m] = code[i];
                     if ((code[i] & MASK8) > 0) {break}
@@ -628,7 +636,6 @@ class BioVM extends VM {
                 org.re = RE_OK;
                 return;
             }
-
             /**
              * In:
              *   h0 - mol
