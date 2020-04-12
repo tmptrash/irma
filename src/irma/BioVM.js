@@ -529,22 +529,28 @@ class BioVM extends VM {
                 org.bx = this._molLastOffs(org.code, idx);
                 return;
             }
-
+            /**
+             * In:
+             *   ax - new idx to set
+             * Out:
+             *   h0 - new idx
+             */
             case SMOL: {
                 ++org.line;
                 const code = org.code;
-                if (org.ax < 0) {org.heads[org.head] = org.ax = 0; return}
-                if (org.ax >= code.length) {org.ax = code.length - 1}
-                for (let i = org.ax - 1;; i--) {
+                let ax = org.ax;
+                if (ax < 0) {org.heads[org.head] = org.ax = 0; return}
+                if (ax >= code.length) {ax = code.length - 1}
+                for (let i = ax - 1;; i--) {
                     if ((code[i] & MASK8) > 0 || i < 0) {
-                        org.heads[org.head] = i + 1;
+                        org.heads[org.head] = ax = i + 1;
                         break;
                     }
                 }
+                org.ax = ax;
                 return;
             }
 
-            // TODO: what about case with zero length code?
             case RMOL: {
                 ++org.line;
                 if (org.code.length < 2) {org.re = RE_OK; return}

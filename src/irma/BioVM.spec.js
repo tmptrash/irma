@@ -67,6 +67,7 @@ describe('src/irma/VM', () => {
     const CT         = Config.CODE_CMDS.CATAB;
     const MM         = Config.CODE_CMDS.MMOL;
     const MO         = Config.CODE_CMDS.MOL;
+    const SM         = Config.CODE_CMDS.SMOL;
 
     const RM         = Config.CODE_CMDS.RMOL;
     const DR         = Config.CODE_CMDS.DIR;
@@ -955,6 +956,50 @@ describe('src/irma/VM', () => {
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM|M,MO|M]));
+            })
+        });
+
+        describe('smol tests', () => {
+            it('set 0 mol', () => {
+                run2([SM|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([SM|M]));
+            })
+            it('set 0 mol (1)', () => {
+                run2([1,SM|M,0|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([1,SM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('set 1 mol', () => {
+                run2([2,SM|M,0|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([2,SM|M,0|M]));
+                expect(org.heads[org.head]).toEqual(2);
+            })
+            it('set 0 mol with long mol', () => {
+                run2([0,1,2,SM|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([0,1,2,SM|M]));
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('set -1 mol', () => {
+                run2([DE,SM|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([DE,SM|M]));
+                expect(org.heads[org.head]).toEqual(0);
+            })
+            it('set 10 mol', () => {
+                run2([10,SM|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([10,SM|M]));
+                expect(org.heads[org.head]).toEqual(0);
             })
         });
 
