@@ -707,7 +707,8 @@ class BioVM extends VM {
                     //
                     const atoms = code.slice(i, i + molLen);
                     org.code    = code.splice(i, molLen);
-                    org.code    = org.code.splice(ax <= i ? ax : ax - molLen, 0, atoms);
+                    const axIdx = ax <= i ? ax : ax - molLen;
+                    org.code    = org.code.splice(axIdx, 0, atoms);
                     Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
                     if (ax > i) {
                         Compiler.updateMetadata(org, i, i + molLen, -1);
@@ -724,13 +725,16 @@ class BioVM extends VM {
                     // join atoms together to needed molecule
                     //
                     if (molLen > 1) {
-                        for (let j = 0, prev = -1; j < molLen; j++) {
+                        let prev = -1;
+                        for (let j = 0, mLen = molLen - 1; j < mLen; j++) {
                             if ((atoms[j] & MASK8) > 0) {
+                                org.code[axIdx + j] &= MASK8R;
                                 if (prev === -1) {prev = j; continue}
                                 len -= (j - prev + 1);
                                 prev = j;
                             }
                         }
+                        if (prev !== -1) {len -= (molLen - prev)}
                     }
                     //
                     // Calc energy

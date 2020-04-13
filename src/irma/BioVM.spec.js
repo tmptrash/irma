@@ -1179,29 +1179,22 @@ describe('src/irma/VM', () => {
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,11,AS|M,1|M,0|M,1|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - (0 * Config.energyMetabolismCoef) - 1);
             })
             it('asm of one mol (1)', () => {
                 run2([RM,RH,RM,RM,RH,RM,RM,13,AS|M,0,1|M,0,1|M,0|M], 1, 0, RE_OK);
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,13,AS|M,0,1|M,0|M,0,1|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - (0 * Config.energyMetabolismCoef) - 1);
             })
-            // it('asm of one mol (1)', () => {
-            //     run2([2|M,2|M,AS|M], 2, 0, RE_OK, false);
-            //     const org = vm.orgs.get(0);
+            it('asm of one mol from smaller mols', () => {
+                run2([RM,RH,RM,RM,RH,RM,RM,RM,LH,LH,18,AS|M,0,1,2|M,0|M,1,2|M,9|M], 2, 0, RE_OK);
+                const org = vm.orgs.get(0); 
 
-            //     expect(org.code).toEqual(Uint8Array.from([2|M,AS|M,2|M]));
-            //     expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
-            // })
-            // it('asm of one mol from smoller', () => {
-            //     run2([0,1,2|M,RH,RM,AS|M,2,1|M,0|M], 2, 0, RE_OK, false);
-            //     const org = vm.orgs.get(0);
-
-            //     expect(org.code).toEqual(Uint8Array.from([2|M,AS|M,2|M]));
-            //     expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
-            // })
+                expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,RM,LH,LH,18,AS|M,0,1,2|M,9|M,0,1,2|M]));
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - (3 * Config.energyMetabolismCoef) - 1);
+            })
         });
     });
 });
