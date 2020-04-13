@@ -1175,10 +1175,17 @@ describe('src/irma/VM', () => {
                 expect(org.heads[org.head + 1]).toEqual(0);
             })
             it('asm of one mol', () => {
-                run2([RM,RH,RM,RM,RH,RM,RM,11,AS|M,1|M,1|M,0|M], 1, 0, RE_OK, false);
+                run2([RM,RH,RM,RM,RH,RM,RM,11,AS|M,1|M,1|M,0|M], 1, 0, RE_OK);
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,11,AS|M,1|M,0|M,1|M]));
+                expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
+            })
+            it('asm of one mol (1)', () => {
+                run2([RM,RH,RM,RM,RH,RM,RM,13,AS|M,0,1|M,0,1|M,0|M], 1, 0, RE_OK);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,13,AS|M,0,1|M,0|M,0,1|M]));
                 expect(org.energy).toEqual(Config.LUCAS[0].energy + (0 * Config.energyMetabolismCoef) - 1);
             })
             // it('asm of one mol (1)', () => {
