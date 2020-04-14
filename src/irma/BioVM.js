@@ -730,11 +730,11 @@ class BioVM extends VM {
                             if ((atoms[j] & MASK8) > 0) {
                                 org.code[axIdx + j] &= MASK8R;
                                 if (prev === -1) {prev = j; continue}
-                                len -= (j - prev + 1);
+                                len -= (j + 1);
                                 prev = j;
                             }
                         }
-                        if (prev !== -1) {len -= (molLen - prev)}
+                        if (prev !== -1) {len -= molLen}
                     }
                     //
                     // Calc energy
