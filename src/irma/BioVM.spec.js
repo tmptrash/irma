@@ -1298,5 +1298,32 @@ describe('src/irma/VM', () => {
                 expect(org.dir).toBe(DIRS[i]);
             });
         });
+
+        describe('lhead/rhead tests', () => {
+            it('lhead0', () => {
+                run2([LH|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.head).toBe(org.heads.length - 1);
+            });
+            it('lhead1', () => {
+                run2([RH,LH|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.head).toBe(0);
+            });
+            it('lhead2', () => {
+                run2([LH,LH|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.head).toBe(org.heads.length - 2);
+            });
+            it('lhead3', () => {
+                run2([LH,RH|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.head).toBe(0);
+            });
+        })
     });
 });
