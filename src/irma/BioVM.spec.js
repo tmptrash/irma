@@ -73,6 +73,7 @@ describe('src/irma/VM', () => {
     const CM         = Config.CODE_CMDS.CMOL;
     const MC         = Config.CODE_CMDS.MCMP;
     const AS         = Config.CODE_CMDS.ASM;
+    const RX         = Config.CODE_CMDS.REAX;
     const DR         = Config.CODE_CMDS.DIR;
     const LH         = Config.CODE_CMDS.LHEAD;
     const RH         = Config.CODE_CMDS.RHEAD;
@@ -1230,6 +1231,13 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,0|M,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,0|M,AS|M,0|M,1|M]));
                 expect(org.energy).toEqual(Config.LUCAS[0].energy - (11 * Config.energyMetabolismCoef) - 1);
             })
+        });
+
+        describe('reax tests', () => {
+            it('reax1', () => run2([RX|M]));
+            it('reax2', () => run2([1,RX|M]));
+            it('reax3', () => run2([1,TG,1,RX|M], 0, 1));
+            it('reax4', () => run2([RM|M,RX|M], 1, 0, RE_OK));
         });
     });
 });
