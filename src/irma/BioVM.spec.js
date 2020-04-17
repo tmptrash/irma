@@ -14,43 +14,44 @@ describe('src/irma/VM', () => {
     _setConfig();
     const BioVM      = require('./BioVM');
     const Compiler   = require('./Compiler');
+    const DIRS       = Config.DIRS;
 
-    const M         = Config.CODE_8_BIT_MASK;
+    const M          = Config.CODE_8_BIT_MASK;
     
-    const TG        = Config.CODE_CMDS.TOGGLE;
-    const EQ        = Config.CODE_CMDS.EQ;
-    const NO        = Config.CODE_CMDS.NOP;
-    const AD        = Config.CODE_CMDS.ADD;
-    const SU        = Config.CODE_CMDS.SUB;
-    const MU        = Config.CODE_CMDS.MUL;
-    const DI        = Config.CODE_CMDS.DIV;
-    const IN        = Config.CODE_CMDS.INC;
-    const DE        = Config.CODE_CMDS.DEC;
-    const RS        = Config.CODE_CMDS.RSHIFT;
-    const LS        = Config.CODE_CMDS.LSHIFT;
-    const RA        = Config.CODE_CMDS.RAND;
-    const FP        = Config.CODE_CMDS.IFP;
-    const FN        = Config.CODE_CMDS.IFN;
-    const FZ        = Config.CODE_CMDS.IFZ;
-    const FG        = Config.CODE_CMDS.IFG;
-    const FL        = Config.CODE_CMDS.IFL;
-    const FE        = Config.CODE_CMDS.IFE;
-    const FNE       = Config.CODE_CMDS.IFNE;
-    const LP        = Config.CODE_CMDS.LOOP;
-    const CA        = Config.CODE_CMDS.CALL;
-    const FU        = Config.CODE_CMDS.FUNC;
-    const RE        = Config.CODE_CMDS.RET;
-    const EN        = Config.CODE_CMDS.END;
-    const NA        = Config.CODE_CMDS.NAND;
-    const AG        = Config.CODE_CMDS.AGE;
-    const LI        = Config.CODE_CMDS.LINE;
-    const LE        = Config.CODE_CMDS.LEN;
-    const LF        = Config.CODE_CMDS.LEFT;
-    const RI        = Config.CODE_CMDS.RIGHT;
-    const SA        = Config.CODE_CMDS.SAVE;
-    const LO        = Config.CODE_CMDS.LOAD;
-    const RD        = Config.CODE_CMDS.READ;
-    const BR        = Config.CODE_CMDS.BREAK;
+    const TG         = Config.CODE_CMDS.TOGGLE;
+    const EQ         = Config.CODE_CMDS.EQ;
+    const NO         = Config.CODE_CMDS.NOP;
+    const AD         = Config.CODE_CMDS.ADD;
+    const SU         = Config.CODE_CMDS.SUB;
+    const MU         = Config.CODE_CMDS.MUL;
+    const DI         = Config.CODE_CMDS.DIV;
+    const IN         = Config.CODE_CMDS.INC;
+    const DE         = Config.CODE_CMDS.DEC;
+    const RS         = Config.CODE_CMDS.RSHIFT;
+    const LS         = Config.CODE_CMDS.LSHIFT;
+    const RA         = Config.CODE_CMDS.RAND;
+    const FP         = Config.CODE_CMDS.IFP;
+    const FN         = Config.CODE_CMDS.IFN;
+    const FZ         = Config.CODE_CMDS.IFZ;
+    const FG         = Config.CODE_CMDS.IFG;
+    const FL         = Config.CODE_CMDS.IFL;
+    const FE         = Config.CODE_CMDS.IFE;
+    const FNE        = Config.CODE_CMDS.IFNE;
+    const LP         = Config.CODE_CMDS.LOOP;
+    const CA         = Config.CODE_CMDS.CALL;
+    const FU         = Config.CODE_CMDS.FUNC;
+    const RE         = Config.CODE_CMDS.RET;
+    const EN         = Config.CODE_CMDS.END;
+    const NA         = Config.CODE_CMDS.NAND;
+    const AG         = Config.CODE_CMDS.AGE;
+    const LI         = Config.CODE_CMDS.LINE;
+    const LE         = Config.CODE_CMDS.LEN;
+    const LF         = Config.CODE_CMDS.LEFT;
+    const RI         = Config.CODE_CMDS.RIGHT;
+    const SA         = Config.CODE_CMDS.SAVE;
+    const LO         = Config.CODE_CMDS.LOAD;
+    const RD         = Config.CODE_CMDS.READ;
+    const BR         = Config.CODE_CMDS.BREAK;
 
     const JO         = Config.CODE_CMDS.JOIN;
     const SP         = Config.CODE_CMDS.SPLIT;
@@ -1234,10 +1235,68 @@ describe('src/irma/VM', () => {
         });
 
         describe('reax tests', () => {
-            it('reax1', () => run2([RX|M]));
-            it('reax2', () => run2([1,RX|M]));
-            it('reax3', () => run2([1,TG,1,RX|M], 0, 1));
-            it('reax4', () => run2([RM|M,RX|M], 1, 0, RE_OK));
+            it('reax0', () => run2([RX|M]));
+            it('reax1', () => run2([1,RX|M]));
+            it('reax2', () => run2([1,TG,1,RX|M], 0, 1));
+            it('reax3', () => run2([RM|M,RX|M], RE_OK, 0, RE_OK));
+        });
+
+        describe('dir tests', () => {
+            it('dir0', () => {
+                run2([DR|M]);
+                const org = vm.orgs.get(0);
+
+                expect(org.dir).toBe(DIRS[0]);
+            });
+            it('dir1', () => {
+                const i = 1;
+                run2([i,DR|M], i);
+                const org = vm.orgs.get(0);
+                
+                expect(org.dir).toBe(DIRS[i]);
+            });
+            it('dir2', () => {
+                const i = 2;
+                run2([i,DR|M], i);
+                const org = vm.orgs.get(0);
+                
+                expect(org.dir).toBe(DIRS[i]);
+            });
+            it('dir3', () => {
+                const i = 3;
+                run2([i,DR|M], i);
+                const org = vm.orgs.get(0);
+                
+                expect(org.dir).toBe(DIRS[i]);
+            });
+            it('dir4', () => {
+                const i = 4;
+                run2([i,DR|M], i);
+                const org = vm.orgs.get(0);
+                
+                expect(org.dir).toBe(DIRS[i]);
+            });
+            it('dir5', () => {
+                const i = 5;
+                run2([i,DR|M], i);
+                const org = vm.orgs.get(0);
+                
+                expect(org.dir).toBe(DIRS[i]);
+            });
+            it('dir6', () => {
+                const i = 6;
+                run2([i,DR|M], i);
+                const org = vm.orgs.get(0);
+                
+                expect(org.dir).toBe(DIRS[i]);
+            });
+            it('dir7', () => {
+                const i = 7;
+                run2([i,DR|M], i);
+                const org = vm.orgs.get(0);
+                
+                expect(org.dir).toBe(DIRS[i]);
+            });
         });
     });
 });
