@@ -43,76 +43,79 @@ loop                 @mol
     join             @mol
     len
     smol                      # h2=food
+    #
+    # Get energy by catabolism
+    #
+    0
+	catab
   end
   #
   # Do one step of clonning
   #
-  lhead                       # h1=cur clone mol
+  lhead              @mol     # h1=cur clone mol
   mol                         # ax=cur clone mol
-  lhead              @mol     # h0=cur mol
+  lhead                       # h0=cur mol
   asm
   reax
   ifp
     #
     # Last atom
     #
-    1
+    1                @mol
     toggle
-    33               @mol
+    33
     lshift                    # ax=66 - nop
     save                      # m0=66 - nop
     mol
-    read
+    read             @mol
     toggle
-    load             @mol
+    load
     ife
       rmol                    # h0++
       rhead                   # h1=cur clone mol
-      rmol
+      rmol           @mol
       17
-      save           @mol
+      save
       lhead                   # h0=cur mol
+      loop
+        split
+        reax         @mol
+        ifp
+          break
+        end
+        8
+        rand
+        step         @mol
+      end      
+      #
+      # Cut wastes
+      #
+      rhead                   # h1
+      len
+      smol
+      lhead                   # h0
+      20             @mol
       loop
         split
         reax
         ifp
-          break      @mol
-        end
+          break     
+        end          @mol
         8
         rand
         step
       end
-      #
-      # Cut wastes
-      #
-      rhead          @mol     # h1
-      len
-      smol
-      lhead                   # h0
-      20
-      loop
-        split        @mol
-        reax
-        ifp
-          break     
-        end
-        8
-        rand         @mol
-        step
-      end
       ret
-    end
+    end              @mol
     rmol                      # h0++
-    rhead            @mol     # h1=cur clone mol
+    rhead                     # h1=cur clone mol
     rmol
     lhead                     # h0=cur mol
   end
-  rhead
+  rhead              @mol
+  nop                         # separator atom
   rhead                       # h2=food
-end                  @mol
-nop                           # separator atom
-nop
-nop
+end
 nop
 nop
 nop                  @mol
