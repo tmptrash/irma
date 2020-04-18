@@ -197,14 +197,19 @@ module.exports = {
             #
             # Get energy by catabolism
             #
-            0
-            catab
+            reax
+            ifp
+              0
+              catab          @mol
+              len
+              smol
+            end
           end
           #
           # Do one step of clonning
           #
-          lhead              @mol     # h1=cur clone mol
-          mol                         # ax=cur clone mol
+          lhead                       # h1=cur clone mol
+          mol                @mol     # ax=cur clone mol
           lhead                       # h0=cur mol
           asm
           reax
@@ -212,32 +217,32 @@ module.exports = {
             #
             # Last atom
             #
-            1                @mol
-            toggle
+            1
+            toggle           @mol
             33
             lshift                    # ax=66 - nop
             save                      # m0=66 - nop
             mol
-            read             @mol
-            toggle
+            read
+            toggle           @mol
             load
             ife
               rmol                    # h0++
               rhead                   # h1=cur clone mol
-              rmol           @mol
-              17
+              rmol
+              17             @mol
               save
               lhead                   # h0=cur mol
               loop
                 split
-                reax         @mol
-                ifp
+                reax
+                ifp          @mol
                   break
                 end
                 8
                 rand
-                step         @mol
-              end      
+                step
+              end            @mol      
               #
               # Cut wastes
               #
@@ -245,28 +250,29 @@ module.exports = {
               len
               smol
               lhead                   # h0
-              20             @mol
-              loop
+              20
+              loop           @mol
                 split
                 reax
                 ifp
                   break     
-                end          @mol
-                8
+                end
+                8            @mol
                 rand
                 step
               end
               ret
-            end              @mol
-            rmol                      # h0++
+            end
+            rmol             @mol     # h0++
             rhead                     # h1=cur clone mol
             rmol
             lhead                     # h0=cur mol
           end
-          rhead              @mol
+          rhead
+          rhead              @mol     # h2=food
           nop                         # separator atom
-          rhead                       # h2=food
         end
+        nop
         nop
         nop
         nop                  @mol
