@@ -250,7 +250,7 @@ module.exports = {
               len
               smol
               lhead                   # h0
-              20
+              50
               loop           @mol
                 split
                 reax
@@ -367,7 +367,7 @@ module.exports = {
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .015,
+    energyStepCoef             : .001,
     energyMolMoveCoef          : .05,
     energyMetabolismCoef       : 150,
     /**

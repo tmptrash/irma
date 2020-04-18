@@ -99,7 +99,7 @@ loop                 @mol
       len
       smol
       lhead                   # h0
-      20
+      50
       loop           @mol
         split
         reax

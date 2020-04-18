@@ -672,7 +672,10 @@ class BioVM extends VM {
                 if (mol > code.length) {mol = code.length - 1}
                 for (let i = mol - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {mol = i + 1; break}} // find first atom of molecule
                 const molLen = this._molLastOffs(code, mol) - mol + 1;
-                const ax     = this._molLastOffs(code, org.ax) + 1;
+                let ax       = org.ax;
+                if (ax < 0) {ax = 0}
+                if (ax > code.length) {ax = code.length - 1}
+                ax           = this._molLastOffs(code, ax) + 1;
                 //
                 // We search needed atoms without checking of separator atoms
                 //
