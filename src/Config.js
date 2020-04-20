@@ -215,7 +215,7 @@ module.exports = {
           reax
           ifp
             #
-            # Last atom
+            # Last atom - nop means we have to split clonned org
             #
             1
             toggle           @mol
@@ -233,6 +233,9 @@ module.exports = {
               17             @mol
               save
               lhead                   # h0=cur mol
+              #
+              # Search for empty place to split
+              #
               loop
                 split
                 reax
@@ -241,8 +244,9 @@ module.exports = {
                 end
                 8
                 rand
-                step
-              end            @mol      
+                dir
+                step         @mol
+              end
               #
               # Cut wastes
               #
@@ -250,30 +254,29 @@ module.exports = {
               len
               smol
               lhead                   # h0
-              50
-              loop           @mol
+              50             @mol
+              loop
                 split
                 reax
                 ifp
                   break     
-                end
-                8            @mol
+                end          @mol
+                8
                 rand
+                dir
                 step
               end
-              ret
+              ret            @mol
             end
-            rmol             @mol     # h0++
+            rmol                      # h0++
             rhead                     # h1=cur clone mol
             rmol
             lhead                     # h0=cur mol
-          end
-          rhead
-          rhead              @mol     # h2=food
+          end                @mol
           nop                         # separator atom
+          rhead
+          rhead                       # h2=food
         end
-        nop
-        nop
         nop
         nop                  @mol
         `,
