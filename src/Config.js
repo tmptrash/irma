@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 3;
-const HEIGHT      = 1080 * 3;
+const WIDTH       = 1920;
+const HEIGHT      = 1080;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -309,8 +309,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH / 8,
-    WORLD_CANVAS_HEIGHT        : HEIGHT / 8,
+    WORLD_CANVAS_WIDTH         : WIDTH / 6,
+    WORLD_CANVAS_HEIGHT        : HEIGHT / 6,
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -361,18 +361,18 @@ module.exports = {
     /**
      * Molecules related configs
      */
-    molDecayPeriod             : 1,
-    molDecayDistance           : 60,
-    molAmount                  : WIDTH * HEIGHT * .2, // 20% of molecules
+    molSunPeriod               : 1,
+    molAmount                  : WIDTH * HEIGHT * .6, // 60% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .001,
+    energyStepCoef             : .002,
     energyMolMoveCoef          : .05,
-    energyMetabolismCoef       : 150,
+    energyMetabolismCoef       : 100,
+    energyDecEveryIteration    : 100,
     /**
      * {Number} This value will be used for every LUCA on system start if
      * there is no property "energy" in LUCAS config was specified
@@ -382,5 +382,5 @@ module.exports = {
      * Plugins. Extends irma core by additional functionality
      * @constant
      */
-    PLUGINS                    : [/* 'Decay', */ 'Status']
+    PLUGINS                    : ['Sun', 'Status']
 };
