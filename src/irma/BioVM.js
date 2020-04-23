@@ -223,11 +223,11 @@ class BioVM extends VM {
             case STEP: {
                 ++org.line;
                 org.re = RE_OK;
-                org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
                 let offset = org.offset + org.dir;
                 if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
                 if (this.world.index(offset) > -1) {org.re = RE_ERR; return}
+                org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
                 this.world.moveOrg(org, offset);
                 return;
             }

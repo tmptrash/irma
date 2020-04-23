@@ -12,8 +12,7 @@ lshift
 loop @mol 
   30      
   loop      
-    rand      
-    dir      
+    rand @mol 
     step      
     join @mol 
     len      
@@ -22,7 +21,6 @@ loop @mol
     ifp      
       0      
       catab @mol 
-      read      
       len      
       smol      
     end      
