@@ -255,40 +255,40 @@ module.exports = {
               smol
               lhead                   # h0
               50             @mol
+              save                    # resets unique clone id (17)
               loop
                 split
                 reax
                 ifp
-                  break     
-                end          @mol
+                  break      @mol
+                end
                 8
                 rand
                 dir
                 step
-              end
-              ret            @mol
+              end            @mol
+              ret
             end
             rmol                      # h0++
             rhead                     # h1=cur clone mol
             rmol
-            lhead                     # h0=cur mol
-          end                @mol
-          nop                         # separator atom
+            lhead            @mol     # h0=cur mol
+            nop                       # separator atom (must be first in mol)
+          end
           rhead
           rhead                       # h2=food
         end
-        nop
         nop                  @mol
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
          * generated automatically
          */
-        // offs: 0
+        offs: Math.round(WIDTH * HEIGHT / 2 + WIDTH / 2),
         /**
          * {Number} Start amount of evergy. If undefined, then will be generated automatically
          */
-        energy: 6000 * 1000 + (6000 * 1000) / 3 // 6000 sec * 1000 commands + 30%
+        energy: 6000 * 1024 + (6000 * 1024) / 3 // 6000 sec * 1024 commands + 30%
     }],
     codeLinesPerIteration      : 3,
     codeRepeatsPerRun          : 20,

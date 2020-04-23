@@ -898,9 +898,11 @@ class BioVM extends VM {
     addMols() {
         const world   = this.world;
         const cfg     = Config;
+        const offs2   = Math.round(MAX_OFFS * 6 / 8);
+        const offs4   = Math.round(MAX_OFFS / 16);
         let molecules = cfg.molAmount;
         while (molecules-- > 0) {
-            const offset = rand(MAX_OFFS);
+            const offset = rand(offs2) + offs4;
             if (world.index(offset) > -1) {molecules++; continue}
             this.addMol(offset, this._molCode());
             // const org = this.addMol(offset, this._molCode());

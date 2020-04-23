@@ -1,0 +1,91 @@
+0      
+smol      
+rhead      
+len      
+smol      
+rhead @mol 
+smol      
+20      
+toggle      
+eq      
+lshift      
+loop @mol 
+  30      
+  loop      
+    rand      
+    dir      
+    step      
+    join @mol 
+    len      
+    smol      
+    reax      
+    ifp      
+      0      
+      catab @mol 
+      read      
+      len      
+      smol      
+    end      
+  end      
+  lhead      
+  mol @mol 
+  lhead      
+  asm      
+  reax      
+  ifp      
+    1      
+    toggle @mol 
+    33      
+    lshift      
+    save      
+    mol      
+    read      
+    toggle @mol 
+    load      
+    ife      
+      rmol      
+      rhead      
+      rmol      
+      17 @mol 
+      save      
+      lhead      
+      loop      
+        split      
+        reax      
+        ifp @mol 
+          break      
+        end      
+        8      
+        rand      
+        dir      
+        step @mol 
+      end      
+      rhead      
+      len      
+      smol      
+      lhead      
+      50 @mol 
+      save      
+      loop      
+        split      
+        reax      
+        ifp      
+          break @mol 
+        end      
+        8      
+        rand      
+        dir      
+        step      
+      end @mol 
+      ret      
+    end      
+    rmol      
+    rhead      
+    rmol      
+    lhead @mol 
+    nop      
+  end      
+  rhead      
+  rhead      
+end      
+nop @mol 
