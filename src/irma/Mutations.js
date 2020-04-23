@@ -71,7 +71,7 @@ class Mutations {
         const oMols     = vm.orgsMols;
         const items     = oMols.items;
         let srcMol;
-        if (!((srcMol   = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items)) instanceof Molecule))) {return}
+        if (!((srcMol   = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule)) {return}
         if (srcMol.code.length < 2) {return}
         const srcCode   = srcMol.code;
         const dstIdx    = rand(code.length);

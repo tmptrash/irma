@@ -131,7 +131,7 @@ class BioVM extends VM {
             this.delOrg(org);
             this.addMol(org.offset, org.code);
         }
-        this.iteration % Config.energyDecEveryIteration === 0 && org.energy--;
+        org.age % Config.energyDecEveryIteration === 0 && org.energy--;
     }
 
     /**

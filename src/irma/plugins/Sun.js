@@ -52,12 +52,20 @@ class Sun {
         const orgsMols = this._vm.orgsMols;
         if (orgsMols.full) {return}                // No free slots for new molecules
         const molSize  = Config.molCodeSize;
-        if (++this._index >= orgsMols.items) {this._index = 0}
-        const mol      = orgsMols.get(this._index);
-        if (mol.code.length <= molSize) {return}   // Skip small molecules
-        if (mol.hasOwnProperty('energy')) {return} // Skip organisms
-        const offset   = this._getNearFreePos(mol);
-        if (offset === -1) {return}                // No free near space
+        let mol;
+        let j;
+        let offset;
+        const tries = 10;
+        for (j = 0; j < tries; j++) {
+            if (++this._index >= orgsMols.items) {this._index = 0}
+            mol = orgsMols.get(this._index);
+            if (mol.code.length <= molSize) {continue}   // Skip small molecules
+            offset = this._getNearFreePos(mol);
+            if (mol.hasOwnProperty('energy')) {continue} // Skip organisms
+            if (offset === -1) {continue}                // No free near space
+            break;
+        }
+        if (j === tries) {return}
         //
         // This line moves index back to current item to join it till the end.
         // It's good for big (with long code) molecules
@@ -86,13 +94,14 @@ class Sun {
             if (offset > 0 && offset < MAX_OFFS && world.index(offset) === -1) {return offset}
         }
 
-        this._offset = this._offset + DIRS[rand(8)] * 3;
+        this._offset = this._offset + DIRS[rand(8)] * 6;
         for (let i = 0; i < 8; i++) {
             if (++this._dir > 7) {this._dir = 0}
             const offset = this._offset + DIRS[this._dir];
             if (offset > 0 && offset < MAX_OFFS && world.index(offset) === -1) {return offset}
         }
 
+        this._offset = mol.offset;
         return -1;
     }
 }
