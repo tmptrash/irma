@@ -881,7 +881,7 @@ class BioVM extends VM {
             const luca   = lucas[orgs];
             const sCode  = luca.code;
             const bCode  = luca.bCode ? luca.bCode : luca.bCode = Compiler.toByteCode(sCode);
-            const offset = luca.offs || rand(MAX_OFFS);
+            const offset = (luca.offs && world.index(luca.offs) === -1 ) ? luca.offs : rand(MAX_OFFS);
             const energy = luca.energy ? luca.energy : Config.energyOrg;
             if (world.index(offset) > -1) {orgs++; continue}
             this.addOrg(null, offset, bCode.slice(), energy);
