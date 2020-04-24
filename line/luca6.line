@@ -15,12 +15,9 @@
 # Reset 0 head
 #
 #
-# Splits wastes or clonning
+# Splits wastes or clonning. Search for empty space near
 #
 func                          # func0
-  #
-  # Search for empty splace to split
-  #
   63
   loop
     split
@@ -148,4 +145,4 @@ nop
 nop
 nop
 nop
-nop                  @mol
+ret                  @mol
