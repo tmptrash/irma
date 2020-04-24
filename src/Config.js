@@ -176,13 +176,13 @@ module.exports = {
           loop
             split
             reax
-            ifp          @mol
+            ifp              @mol
               break
             end
             8
             rand
             dir
-            step         @mol
+            step             @mol
           end
         end
         0
@@ -191,43 +191,43 @@ module.exports = {
         # Sets heads 1,2 to the end
         #
         rhead                         # h1=cur clone mol
-        len
+        len                  @mol
         smol
-        rhead                @mol     # h2=food
+        rhead                         # h2=food
         smol
         #
         # Global big loop
         #
         20
         toggle
-        eq
+        eq                   @mol
         lshift                        # ax=20971520
-        loop                 @mol
+        loop
           #
           # 30 random steps & eat
           #
           30
           loop
             rand
-            dir
+            dir              @mol
             step
-            join             @mol
+            join
             len
             smol                      # h2=food
             #
             # Get energy by catabolism
             #
             reax
-            ifp
+            ifp              @mol
               0
-              catab          @mol
+              catab
               len
               smol
             end
             #
             # Organism is full
             #
-            ifn
+            ifn              @mol
               #
               # Search for empty place to split
               #
@@ -236,40 +236,40 @@ module.exports = {
               call
               rhead                   # h2
             end
-          end
+          end                @mol
           #
           # Do one step of clonning
           #
           lhead                       # h1=cur clone mol
-          mol                @mol     # ax=cur clone mol
+          mol                         # ax=cur clone mol
           lhead                       # h0=cur mol
           asm
           reax
-          ifp
+          ifp                @mol
             #
             # Last atom - nop means we have to split clonned org
             #
             1
-            toggle           @mol
+            toggle
             33
             lshift                    # ax=66 - nop
             save                      # m0=66 - nop
-            mol
+            mol              @mol
             read
-            toggle           @mol
+            toggle
             load
             ife
               rmol                    # h0++
-              rhead                   # h1=cur clone mol
+              rhead          @mol     # h1=cur clone mol
               rmol
-              17             @mol
+              17
               save
               lhead                   # h0=cur mol
               #
               # Search for empty place to split
               #
               0
-              call
+              call           @mol
               #
               # Cut wastes
               #
@@ -277,8 +277,8 @@ module.exports = {
               len
               smol
               lhead                   # h0
-              50             @mol
-              save                    # resets unique clone id (17)
+              50
+              save           @mol     # resets unique clone id (17)
               #
               # Search for empty place to split
               #
@@ -287,14 +287,18 @@ module.exports = {
               ret
             end
             rmol                      # h0++
-            rhead                     # h1=cur clone mol
+            rhead            @mol     # h1=cur clone mol
             rmol
-            lhead            @mol     # h0=cur mol
-            nop                       # separator atom (must be first in mol)
+            lhead                     # h0=cur mol
           end
           rhead
           rhead                       # h2=food
-        end
+        end                  @mol
+        nop
+        nop
+        nop
+        nop
+        nop
         nop                  @mol
         `,
         /**
