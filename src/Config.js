@@ -166,12 +166,9 @@ module.exports = {
         # Reset 0 head
         #
         #
-        # Splits wastes or clonning
+        # Splits wastes or clonning. Search for empty space near
         #
         func                          # func0
-          #
-          # Search for empty splace to split
-          #
           63
           loop
             split
@@ -299,7 +296,7 @@ module.exports = {
         nop
         nop
         nop
-        nop                  @mol
+        ret                  @mol
         `,
         /**
          * {Number} absolute world offset of organism. If undefined, then will be 
