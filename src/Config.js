@@ -201,9 +201,9 @@ module.exports = {
         lshift                        # ax=20971520
         loop
           #
-          # 30 random steps & eat
+          # 10 random steps & eat
           #
-          30
+          10
           loop
             rand
             dir              @mol
