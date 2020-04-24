@@ -4,6 +4,7 @@ rhead
 len      
 smol      
 rhead @mol 
+33 @mol 
 smol      
 20      
 toggle      
@@ -12,7 +13,8 @@ lshift
 loop @mol 
   30      
   loop      
-    rand @mol 
+    rand      
+    dir      
     step      
     join @mol 
     len      
@@ -33,7 +35,6 @@ loop @mol
   ifp      
     1      
     toggle @mol 
-    33      
     lshift      
     save      
     mol      
@@ -46,25 +47,25 @@ loop @mol
       rmol      
       17 @mol 
       save      
-      lhead      
-      loop      
-        split      
-        reax      
-        ifp @mol 
-          break      
+      ifn      
+        loop      
+          split      
+          reax      
+          ifp @mol 
+            break      
+          end      
+          8      
+          rand      
+          dir      
+          step @mol 
         end      
-        8      
-        rand      
-        dir      
-        step @mol 
-      end      
-      rhead      
-      len      
-      smol      
-      lhead      
-      50 @mol 
-      save      
-      loop      
+        rhead      
+        len      
+        smol      
+        lhead      
+        50 @mol 
+        save      
+        nand      
         split      
         reax      
         ifp      

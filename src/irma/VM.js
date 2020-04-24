@@ -69,7 +69,7 @@ class VM {
     beforeIteration() {}
 
     /**
-     * Is called after organism iteration
+     * Is called after organism's one command run
      * @param {Organism} org
      * @interface
      */
@@ -141,14 +141,15 @@ class VM {
                 let   bx   = org.bx;
                 let   line = org.line;
                 //
-                // Is called once before every organism iteration
-                //
-                this.beforeIteration(org);
-                //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
                 //
                 for (let l = 0; l < lines; l++) {
+                    //
+                    // Is called once before every organism iteration
+                    //
+                    this.beforeIteration(org);
+
                     const cmd = code[line] & CODE_8_BIT_RESET_MASK;
                     // eslint-disable-next-line default-case
                     switch (cmd) {
@@ -409,19 +410,19 @@ class VM {
                         bx       = org.bx;
                         code     = org.code;
                     }
+                    //
+                    // Age increased after every run command 
+                    //
+                    org.age++;
+                    //
+                    // Cosmic ray mutations
+                    //
+                    if (org.age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(this, org)}
+                    this.afterIteration(org);
                 }
                 org.line = line;
                 org.ax   = ax;
                 org.bx   = bx;
-                //
-                // Cosmic ray mutations
-                //
-                if (org.age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(this, org)}
-                this.afterIteration(org);
-                //
-                // Age should be changed every iteration
-                //
-                org.age++;
             }
             this.afterRepeat();
             this.iteration++;

@@ -165,6 +165,26 @@ module.exports = {
         #
         # Reset 0 head
         #
+        #
+        # Splits wastes or clonning
+        #
+        func                          # func0
+          #
+          # Search for empty splace to split
+          #
+          63
+          loop
+            split
+            reax
+            ifp          @mol
+              break
+            end
+            8
+            rand
+            dir
+            step         @mol
+          end
+        end
         0
         smol                          # h0=cur mol
         #
@@ -204,6 +224,18 @@ module.exports = {
               len
               smol
             end
+            #
+            # Organism is full
+            #
+            ifn
+              #
+              # Search for empty place to split
+              #
+              lhead                   # h1
+              0
+              call
+              rhead                   # h2
+            end
           end
           #
           # Do one step of clonning
@@ -236,17 +268,8 @@ module.exports = {
               #
               # Search for empty place to split
               #
-              loop
-                split
-                reax
-                ifp          @mol
-                  break
-                end
-                8
-                rand
-                dir
-                step         @mol
-              end
+              0
+              call
               #
               # Cut wastes
               #
@@ -256,17 +279,11 @@ module.exports = {
               lhead                   # h0
               50             @mol
               save                    # resets unique clone id (17)
-              loop
-                split
-                reax
-                ifp
-                  break      @mol
-                end
-                8
-                rand
-                dir
-                step
-              end            @mol
+              #
+              # Search for empty place to split
+              #
+              0
+              call
               ret
             end
             rmol                      # h0++
@@ -292,7 +309,7 @@ module.exports = {
     }],
     codeLinesPerIteration      : 3,
     codeRepeatsPerRun          : 20,
-    codeMutateEveryClone       : 5,
+    codeMutateEveryClone       : 2,
     codeMutateMutations        : false,
 
     /**
@@ -348,9 +365,9 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
-    orgMaxAge                  : 5000000,
+    orgMaxAge                  : 0,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 0, // 3000000,
+    orgMutationPeriod          : 1000000,
     ORG_MAX_CODE_SIZE          : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
@@ -370,9 +387,8 @@ module.exports = {
      * {Number} Energy related configuration
      */
     energyStepCoef             : .002,
-    energyMolMoveCoef          : .05,
-    energyMetabolismCoef       : 100,
-    energyDecEveryIteration    : 100,
+    energyMetabolismCoef       : 10,
+    energyCommand              : .01,
     /**
      * {Number} This value will be used for every LUCA on system start if
      * there is no property "energy" in LUCAS config was specified

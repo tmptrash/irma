@@ -131,7 +131,7 @@ class BioVM extends VM {
             this.delOrg(org);
             this.addMol(org.offset, org.code);
         }
-        org.age % Config.energyDecEveryIteration === 0 && org.energy--;
+        org.energy -= Config.energyCommand;
     }
 
     /**
@@ -149,7 +149,7 @@ class BioVM extends VM {
              *   dir - join direction
              *   h0  - insertion index (after this mol)
              * Out:
-             *   re  - joined-atoms-amount|RE_ERR
+             *   re  - joined-atoms-amount|RE_ERR|RE_SPECIAL
              */
             case JOIN: {
                 ++org.line;
@@ -162,7 +162,7 @@ class BioVM extends VM {
                 if (nearOrg.packet) {org.re = RE_ERR; return}
                 const nearLen = nearOrg.code.length;
                 const code    = org.code;
-                if (nearLen + code.length > ORG_CODE_MAX_SIZE) {org.re = RE_ERR; return}
+                if (nearLen + code.length > ORG_CODE_MAX_SIZE) {org.re = RE_SPECIAL; return}
                 const idx     = this._molLastOffs(code, org.heads[org.head]) + 1;
                 org.code      = code.splice(idx, 0, nearOrg.code);
                 nearOrg.hasOwnProperty('energy') ? this.delOrg(nearOrg) : this.delMol(nearOrg);
@@ -206,7 +206,7 @@ class BioVM extends VM {
                 const newCode = code.subarray(idx0, idx1);
                 if (newCode.length < 1) {org.re = RE_ERR; return}
                 org.code      = code.splice(idx0, idx1 - idx0);
-                const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(org, offset, newCode, org.energy = Math.floor(org.energy / 2)) : this.addMol(offset, newCode);
+                const clone   = org.mem[org.mPos] === IS_ORG_ID ? this.addOrg(org, offset, newCode, org.energy /= 2) : this.addMol(offset, newCode);
                 // this.db && this.db.put(clone, org);
                 if (Config.codeMutateEveryClone > 0 && rand(Config.codeMutateEveryClone) === 0 && clone.energy) {Mutations.mutate(this, clone)}
                 if (org.code.length < 1) {this.delOrg(org); return}
@@ -227,7 +227,7 @@ class BioVM extends VM {
                 if (offset < 0) {org.re = RE_SPECIAL; offset = LINE_OFFS + org.offset}
                 else if (offset > MAX_OFFS) {org.re = RE_SPECIAL; offset = org.offset - LINE_OFFS}
                 if (this.world.index(offset) > -1) {org.re = RE_ERR; return}
-                org.energy -= (Math.floor(org.code.length * Config.energyStepCoef) + (org.packet ? Math.floor(org.packet.code.length * Config.energyStepCoef) : 0));
+                org.energy -= (org.code.length * Config.energyStepCoef + (org.packet ? org.packet.code.length * Config.energyStepCoef : 0));
                 this.world.moveOrg(org, offset);
                 return;
             }
@@ -501,7 +501,6 @@ class BioVM extends VM {
                     code = code.splice(m2Idx, m2EndIdx - m2Idx + 1);
                     code = code.splice(insIdx, 0, cutCode);
                 }
-                org.energy     -= Math.round(cutCode.length * Config.energyMolMoveCoef);
                 org.code        = code;
                 org.re          = RE_OK;
                 Compiler.compile(org, false);
@@ -534,6 +533,7 @@ class BioVM extends VM {
              *   ax - new idx to set
              * Out:
              *   h0 - new idx
+             *   ax - fixed idx of first atom
              */
             case SMOL: {
                 ++org.line;

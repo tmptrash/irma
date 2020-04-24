@@ -14,6 +14,26 @@
 #
 # Reset 0 head
 #
+#
+# Splits wastes or clonning
+#
+func                          # func0
+  #
+  # Search for empty splace to split
+  #
+  63
+  loop
+    split
+    reax
+    ifp          @mol
+      break
+    end
+    8
+    rand
+    dir
+    step         @mol
+  end
+end
 0
 smol                          # h0=cur mol
 #
@@ -53,6 +73,18 @@ loop                 @mol
       len
       smol
     end
+    #
+    # Organism is full
+    #
+    ifn
+      #
+      # Search for empty place to split
+      #
+      lhead                   # h1
+      0
+      call
+      rhead                   # h2
+    end
   end
   #
   # Do one step of clonning
@@ -85,17 +117,8 @@ loop                 @mol
       #
       # Search for empty place to split
       #
-      loop
-        split
-        reax
-        ifp          @mol
-          break
-        end
-        8
-        rand
-        dir
-        step         @mol
-      end
+      0
+      call
       #
       # Cut wastes
       #
@@ -105,17 +128,11 @@ loop                 @mol
       lhead                   # h0
       50             @mol
       save                    # resets unique clone id (17)
-      loop
-        split
-        reax
-        ifp
-          break      @mol
-        end
-        8
-        rand
-        dir
-        step
-      end            @mol
+      #
+      # Search for empty place to split
+      #
+      0
+      call
       ret
     end
     rmol                      # h0++

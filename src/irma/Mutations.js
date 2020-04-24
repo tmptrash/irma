@@ -127,7 +127,7 @@ class Mutations {
         Compiler.updateMetadata(org, dstIdx, dstIdx, 1);
     }
 
-    static _onPeriod (vm, code, org) {if (!Config.codeMutateMutations) {return} org.period = rand(Config.orgMaxAge) + 1}
+    static _onPeriod (vm, code, org) {if (!Config.codeMutateMutations || Config.orgMaxAge < 1) {return} org.period = rand(Config.orgMaxAge) + 1}
 
     static _onPercent(vm, code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT}
 
