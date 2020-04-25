@@ -688,7 +688,7 @@ class BioVM extends VM {
                 //
                 const molEnd = mol + molLen;
                 while (mol < molEnd && molLen > 0) {
-                    if ((ax = this._asmAtoms(org, mol, idx0, idx1, ax, molLen)) < 0) {molLen--; continue}
+                    if (this._asmAtoms(org, mol, idx0, idx1, ax, molLen)) {molLen--; continue}
                     if (mol > ax)   {mol   += molLen}
                     if (mol > idx1) {mol   -= molLen}
                     if (ax > idx1)  {ax += molLen}
