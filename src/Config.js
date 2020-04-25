@@ -152,8 +152,8 @@ module.exports = {
         #
         # LUCA v6
         # This is Last Universal Common Ancestor - first leaving 
-        # replicator in irma simulation. He is written by developer.
-        # He may eat, move around the world randomly, make his clone
+        # replicator in irma simulator. He is written by developer.
+        # He may eat, move around the world randomly, make his clones
         # and gather energy by doing catabolism. He uses three heads
         # to do clone:
         #   h0 - current clonning molecule
@@ -161,9 +161,6 @@ module.exports = {
         #   h2 - food
         #
         # @author flatline
-        #
-        #
-        # Reset 0 head
         #
         #
         # Splits wastes or clonning. Search for empty space near
@@ -182,6 +179,9 @@ module.exports = {
             step             @mol
           end
         end
+        #
+        # Reset 0 head
+        #
         0
         smol                          # h0=cur mol
         #
