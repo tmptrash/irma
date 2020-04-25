@@ -696,7 +696,7 @@ class BioVM extends VM {
                     mol   += molLen;
                     ax    += molLen;
                     idx1  -= molLen;
-                    molLen = molEnd - mol + 1;
+                    molLen = molEnd - mol;
                 }
                 //
                 // All atoms of needed mol were copied
