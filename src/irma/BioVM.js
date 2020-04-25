@@ -953,7 +953,7 @@ class BioVM extends VM {
                 len += (molLen / 2);
             }
             const idx01 = i + molLen - 1;
-            if ((code[idx1] & MASK8) === 0) {
+            if ((code[idx01] & MASK8) === 0) {
                 code[idx01] |= MASK8;
                 this.updateAtom(idx01, true);
                 len += (molLen / 2);
