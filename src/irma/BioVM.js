@@ -707,7 +707,7 @@ class BioVM extends VM {
                     //
                     code    = org.code;
                     let len = 0;
-                    if (molLen > 1) {
+                    if (molEnd - mol > 1) {
                         for (let j = ax; j < molEnd; j++) {
                             if ((code[j] & MASK8) > 0) {
                                 code[j] &= MASK8R;
