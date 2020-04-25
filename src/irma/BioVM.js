@@ -726,7 +726,9 @@ class BioVM extends VM {
                 //
                 // Not all atoms were copied. Moves found atoms back and do recompilation
                 //
+                org.re      = RE_ERR;
                 molLen      = mol - mol0;
+                if (molLen < 1) {return}
                 const atoms = org.code.slice(mol0, mol);
                 const axIdx = idx0 <= mol0 ? idx0 : idx0 - molLen;
                 org.code    = org.code.splice(mol0, molLen);
@@ -739,7 +741,6 @@ class BioVM extends VM {
                     Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
                     Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
                 }
-                org.re = RE_ERR;
                 return;
             }
 
