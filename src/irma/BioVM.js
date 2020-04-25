@@ -707,16 +707,16 @@ class BioVM extends VM {
                 //
                 molLen      = mol - mol0;
                 const atoms = org.code.slice(mol0, mol);
-                const axIdx = ax <= mol0 ? ax : ax - molLen;
+                const axIdx = idx0 <= mol0 ? idx0 : idx0 - molLen;
                 org.code    = org.code.splice(mol0, molLen);
                 org.code    = org.code.splice(axIdx, 0, atoms);
                 Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
-                if (ax > mol0) {
+                if (mol0 > ax) {
                     Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
                     Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
                 } else {
-                    Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
                     Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
+                    Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
                 }
                 org.re = RE_ERR;
                 return;
@@ -943,8 +943,8 @@ class BioVM extends VM {
                 Compiler.updateMetadata(org, i, i + molLen, -1);
                 Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
             } else {
-                Compiler.updateMetadata(org, i, i + molLen, -1);
                 Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
+                Compiler.updateMetadata(org, i, i + molLen, -1);
             }
             //
             // join atoms together to needed molecule
