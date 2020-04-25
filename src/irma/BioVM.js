@@ -667,89 +667,56 @@ class BioVM extends VM {
                 let idx0     = org.heads[head + 1 === heads ? 0 : head + 1];
                 if (idx0 > code.length) {idx0 = code.length - 1}
                 for (let i = idx0 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx0 = i + 1; break}} // find first atom of molecule
-                const idx1   = this._molLastOffs(code, org.heads[head + 2 >=  heads ? head + 2 - heads : head + 2]) + 1;
+                let idx1     = this._molLastOffs(code, org.heads[head + 2 >=  heads ? head + 2 - heads : head + 2]) + 1;
                 let mol      = org.heads[head];
                 if (mol > code.length) {mol = code.length - 1}
+                const mol0   = mol;
                 for (let i = mol - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {mol = i + 1; break}} // find first atom of molecule
-                const molLen = this._molLastOffs(code, mol) - mol + 1;
+                let molLen   = this._molLastOffs(code, mol) - mol + 1;
                 let ax       = org.ax;
                 if (ax < 0) {ax = 0}
                 if (ax > code.length) {ax = code.length - 1}
                 ax           = this._molLastOffs(code, ax) + 1;
                 //
-                // We search needed atoms without checking of separator atoms
+                // Imagine we search for [1,2,3,4] in [0,3,1,2,4,5]. Search will work in this way:
+                //   1. Try to find [1,2,3,4] -> false [0,3,1,2,4,5]
+                //   2. Try to find [1,2,3]   -> false [0,3,1,2,4,5]
+                //   3. Try to find [1,2]     -> true  [0,3,4,5]
+                //   4. Try to find [3,4]     -> false [0,3,4,5]
+                //   5. Try to find [3]       -> true  [0,4,5]
+                //   6. Try to find [4]       -> true  [0,5]
                 //
-                loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1); i <= till; i++) {
-                    for (let j = 0; j < molLen; j++) {
-                        if ((code[i + j] & MASK8R) !== (code[j + mol] & MASK8R)) {continue loop}
-                    }
-                    //
-                    // Index of needed atoms in "i". Search for right mol len
-                    //
-                    const idx01 = i + molLen - 1;
-                    let len;
-                    for (let j = idx01 - 1;; j--) {
-                        if (j < 0) {len = idx01 + 1; break}
-                        if ((code[j] & MASK8) > 0) {len = idx01 - j; break}
-                    }
-                    let rIdx;
-                    len += ((rIdx = this._molLastOffs(code, idx01)) - idx01);
-                    code[idx01] |= MASK8;
-                    this.updateAtom(idx01, true);
-                    //
-                    // Search for left mol len
-                    //
-                    let lIdx;
-                    for (let j = i - 1;; j--) {
-                        if (j < 0) {len += (lIdx = i); break}
-                        if ((code[j] & MASK8) > 0) {len += (i - j - 1); lIdx = j + 1; break}
-                    }
-                    len += (this._molLastOffs(code, i) - i + 1);
-                    if (i > 0) {
-                        code[i - 1] |= MASK8;
-                        this.updateAtom(i - 1, true);
-                    }
-                    //
-                    // Cuts found atoms
-                    //
-                    const atoms = code.slice(i, i + molLen);
-                    org.code    = code.splice(i, molLen);
-                    const axIdx = ax <= i ? ax : ax - molLen;
-                    org.code    = org.code.splice(axIdx, 0, atoms);
-                    Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
-                    if (ax > i) {
-                        Compiler.updateMetadata(org, i, i + molLen, -1);
-                        Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
-                    } else {
-                        Compiler.updateMetadata(org, i, i + molLen, -1);
-                        Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
-                    }
-                    //
-                    // Found entire molecule
-                    //
-                    if (i === lIdx && idx01 === rIdx) {len = 0}
-                    //
-                    // join atoms together to needed molecule
-                    //
-                    if (molLen > 1) {
-                        let prev = -1;
-                        for (let j = 0, mLen = molLen - 1; j < mLen; j++) {
-                            if ((atoms[j] & MASK8) > 0) {
-                                org.code[axIdx + j] &= MASK8R;
-                                this.updateAtom(axIdx + j, false);
-                                if (prev === -1) {prev = j; continue}
-                                len -= (j + 1);
-                                prev = j;
-                            }
-                        }
-                        if (prev !== -1) {len -= molLen}
-                    }
-                    //
-                    // Calc energy
-                    //
-                    org.energy += (len * Config.energyMetabolismCoef);
-                    org.re = RE_OK;
-                    return;
+                const molEnd = mol + molLen;
+                while (mol < molEnd && molLen > 0) {
+                    if ((ax = this._asmAtoms(org, mol, idx0, idx1, ax, molLen)) < 0) {molLen--; continue}
+                    if (mol > ax)   {mol   += molLen}
+                    if (mol > idx1) {mol   -= molLen}
+                    if (ax > idx1)  {ax += molLen}
+                    if (idx1 > ax)  {idx1  += molLen}
+                    mol   += molLen;
+                    ax    += molLen;
+                    idx1  -= molLen;
+                    molLen = molEnd - mol + 1;
+                }
+                //
+                // All atoms of needed mol were copied
+                //
+                if (molLen > 0) {org.re = RE_OK; return}
+                //
+                // Not all atoms were copied. Moves found atoms back and do recompilation
+                //
+                molLen      = mol - mol0;
+                const atoms = org.code.slice(mol0, mol);
+                const axIdx = ax <= mol0 ? ax : ax - molLen;
+                org.code    = org.code.splice(mol0, molLen);
+                org.code    = org.code.splice(axIdx, 0, atoms);
+                Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
+                if (ax > mol0) {
+                    Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
+                    Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
+                } else {
+                    Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
+                    Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
                 }
                 org.re = RE_ERR;
                 return;
@@ -931,6 +898,75 @@ class BioVM extends VM {
         }
 
         return color;
+    }
+
+    /**
+     * Searches for specified molecule in a code ignoring separator atoms.
+     * Does anabolism and catabolism if needed. So, generally it's metabolism
+     * implementation
+     * @param {Organism} org
+     * @param {Number} molIdx Index of molecule to find
+     * @param {Number} idx0 Start search index
+     * @param {Number} idx1 End search index
+     * @param {Number} ax insertion index
+     * @param {Number} molLen Length of molecule to find
+     * @return {Boolean} Atoms were found and moved
+     */
+    _asmAtoms(org, molIdx, idx0, idx1, ax, molLen) {
+        const code = org.code;
+        //
+        // We search needed atoms without checking of separator atoms
+        //
+        loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1); i <= till; i++) {
+            for (let j = 0; j < molLen; j++) {
+                if ((code[i + j] & MASK8R) !== (code[j + molIdx] & MASK8R)) {continue loop}
+            }
+            //
+            // Index of needed atoms in "i". Cuts found atoms from left and right
+            //
+            if (i > 0) {
+                code[i - 1] |= MASK8;
+                this.updateAtom(i - 1, true);
+            }
+            const idx01 = i + molLen - 1;
+            code[idx01] |= MASK8;
+            this.updateAtom(idx01, true);
+            //
+            // Moves found atoms and do recompilation
+            //
+            const atoms = code.slice(i, i + molLen);
+            const axIdx = ax <= i ? ax : ax - molLen;
+            org.code    = code.splice(i, molLen);
+            org.code    = org.code.splice(axIdx, 0, atoms);
+            Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
+            if (ax > i) {
+                Compiler.updateMetadata(org, i, i + molLen, -1);
+                Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
+            } else {
+                Compiler.updateMetadata(org, i, i + molLen, -1);
+                Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
+            }
+            //
+            // join atoms together to needed molecule
+            //
+            let len = 0;
+            if (molLen > 1) {
+                for (let j = 0, mLen = molLen - 1; j < mLen; j++) {
+                    if ((atoms[j] & MASK8) > 0) {
+                        org.code[axIdx + j] &= MASK8R;
+                        this.updateAtom(axIdx + j, false);
+                        len += (j + 1);
+                    }
+                }
+            }
+            //
+            // Calc energy
+            //
+            org.energy -= (len * Config.energyMetabolismCoef);
+            return true;
+        }
+
+        return false;
     }
 
     /**
