@@ -701,7 +701,7 @@ class BioVM extends VM {
                 //
                 // All atoms of needed mol were copied
                 //
-                if (molLen > 0) {
+                if (mol >= molEnd) {
                     //
                     // join atoms together to needed molecule
                     //
