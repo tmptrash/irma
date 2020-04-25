@@ -663,7 +663,7 @@ class BioVM extends VM {
                 ++org.line;
                 const heads  = org.heads.length;
                 const head   = org.head;
-                const code   = org.code;
+                let   code   = org.code;
                 let idx0     = org.heads[head + 1 === heads ? 0 : head + 1];
                 if (idx0 > code.length) {idx0 = code.length - 1}
                 for (let i = idx0 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx0 = i + 1; break}} // find first atom of molecule
@@ -701,7 +701,28 @@ class BioVM extends VM {
                 //
                 // All atoms of needed mol were copied
                 //
-                if (molLen > 0) {org.re = RE_OK; return}
+                if (molLen > 0) {
+                    //
+                    // join atoms together to needed molecule
+                    //
+                    code    = org.code;
+                    let len = 0;
+                    if (molLen > 1) {
+                        for (let j = ax; j < molEnd; j++) {
+                            if ((code[j] & MASK8) > 0) {
+                                code[j] &= MASK8R;
+                                this.updateAtom(j, false);
+                                len += (j + 1);
+                            }
+                        }
+                    }
+                    //
+                    // Calc energy
+                    //
+                    org.energy -= (len * Config.energyMetabolismCoef);
+                    org.re = RE_OK;
+                    return;
+                }
                 //
                 // Not all atoms were copied. Moves found atoms back and do recompilation
                 //
@@ -932,12 +953,16 @@ class BioVM extends VM {
             code[idx01] |= MASK8;
             this.updateAtom(idx01, true);
             //
+            // We calculate average energy adding, because we do catabolism.
+            // Calculation of real energy amount is very complicated process.
+            //
+            org.energy += (molLen * Config.energyMetabolismCoef);
+            //
             // Moves found atoms and do recompilation
             //
             const atoms = code.slice(i, i + molLen);
-            const axIdx = ax <= i ? ax : ax - molLen;
             org.code    = code.splice(i, molLen);
-            org.code    = org.code.splice(axIdx, 0, atoms);
+            org.code    = org.code.splice(ax <= i ? ax : ax - molLen, 0, atoms);
             Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
             if (ax > i) {
                 Compiler.updateMetadata(org, i, i + molLen, -1);
@@ -946,23 +971,7 @@ class BioVM extends VM {
                 Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
                 Compiler.updateMetadata(org, i, i + molLen, -1);
             }
-            //
-            // join atoms together to needed molecule
-            //
-            let len = 0;
-            if (molLen > 1) {
-                for (let j = 0, mLen = molLen - 1; j < mLen; j++) {
-                    if ((atoms[j] & MASK8) > 0) {
-                        org.code[axIdx + j] &= MASK8R;
-                        this.updateAtom(axIdx + j, false);
-                        len += (j + 1);
-                    }
-                }
-            }
-            //
-            // Calc energy
-            //
-            org.energy -= (len * Config.energyMetabolismCoef);
+
             return true;
         }
 
