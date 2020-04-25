@@ -974,8 +974,8 @@ class BioVM extends VM {
                 Compiler.updateMetadata(org, i, i + molLen, -1);
                 Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
             } else {
-                Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
                 Compiler.updateMetadata(org, i, i + molLen, -1);
+                Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
             }
 
             return true;
