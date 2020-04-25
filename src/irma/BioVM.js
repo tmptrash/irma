@@ -946,18 +946,23 @@ class BioVM extends VM {
             //
             // Index of needed atoms in "i". Cuts found atoms from left and right
             //
-            if (i > 0) {
+            let len = 0;
+            if (i > 0 && (code[i - 1] & MASK8) === 0) {
                 code[i - 1] |= MASK8;
                 this.updateAtom(i - 1, true);
+                len += (molLen / 2);
             }
             const idx01 = i + molLen - 1;
-            code[idx01] |= MASK8;
-            this.updateAtom(idx01, true);
+            if ((code[idx1] & MASK8) === 0) {
+                code[idx01] |= MASK8;
+                this.updateAtom(idx01, true);
+                len += (molLen / 2);
+            }
             //
             // We calculate average energy adding, because we do catabolism.
             // Calculation of real energy amount is very complicated process.
             //
-            org.energy += (molLen * Config.energyMetabolismCoef);
+            org.energy += (len * Config.energyMetabolismCoef);
             //
             // Moves found atoms and do recompilation
             //
