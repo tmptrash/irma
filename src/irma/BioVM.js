@@ -605,19 +605,16 @@ class BioVM extends VM {
              */
             case ASM: {
                 ++org.line;
-                const heads  = org.heads.length;
-                const head   = org.head;
-                let   code   = org.code;
-                let idx0     = org.heads[head + 1 === heads ? 0 : head + 1];
-                if (idx0 > code.length) {idx0 = code.length - 1}
-                for (let i = idx0 - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {idx0 = i + 1; break}} // find first atom of molecule
-                let idx1     = this._lastAtomIdx(code, org.heads[head + 2 >=  heads ? head + 2 - heads : head + 2]) + 1;
-                let mol      = org.heads[head];
-                if (mol > code.length) {mol = code.length - 1}
-                const mol0   = mol;
-                for (let i = mol - 1;; i--) {if ((code[i] & MASK8) > 0 || i < 0) {mol = i + 1; break}} // find first atom of molecule
-                let molLen   = this._lastAtomIdx(code, mol) - mol + 1;
-                let ax       = org.ax;
+                const heads   = org.heads;
+                const headLen = heads.length;
+                const head    = org.head;
+                let   code    = org.code;
+                const idx0    = this._firstAtomIdx(code, heads[head + 1 === headLen ? 0 : head + 1]);
+                let idx1      = this._lastAtomIdx(code, heads[head + 2 >=  headLen ? head + 2 - headLen : head + 2]) + 1;
+                let mol       = this._firstAtomIdx(code, heads[head]);
+                const mol0    = mol;
+                let molLen    = this._lastAtomIdx(code, mol) - mol + 1;
+                let ax        = org.ax;
                 if (ax < 0) {ax = 0}
                 if (ax > code.length) {ax = code.length - 1}
                 const ax0 = ax = this._lastAtomIdx(code, ax) + 1;
@@ -917,17 +914,9 @@ class BioVM extends VM {
             //
             // Moves found atoms and do recompilation
             //
-            const atoms = code.slice(i, i + molLen);
-            org.code    = code.splice(i, molLen);
-            org.code    = org.code.splice(ax <= i ? ax : ax - molLen, 0, atoms);
-            Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
-            if (ax > i) {
-                Compiler.updateMetadata(org, i, i + molLen, -1);
-                Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
-            } else {
-                Compiler.updateMetadata(org, i, i + molLen, -1);
-                Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
-            }
+            org.code = code.move(i, i + molLen, ax);
+            Compiler.compile(org, false);
+            Compiler.updateMovedMetadata(org, i, i + molLen, ax);
 
             return true;
         }
