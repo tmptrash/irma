@@ -3,6 +3,12 @@
  *
  * @author flatline
  */
+/**
+ * {Uint8Array} Shared memory peace, which may be used in different functions.
+ * Size of this peace is a maximum size of copied memory.
+ */
+const SHARED_MEM = new Uint8Array(1024);
+
 class Helper {
     /**
      * Overrides specified function in two ways: softly - by
@@ -114,65 +120,6 @@ class Helper {
     }
 
     /**
-     * Calculates Levenshtein distance between two numeric arrays. See this article
-     * for details: https://en.wikipedia.org/wiki/Levenshtein_distance. Original code
-     * obtained here: https://stackoverflow.com/a/11958496
-     * @param {Array} arr1 First array
-     * @param {Array} arr2 Second array
-     * @returns {Number}
-     */
-    static distance(arr1, arr2) {
-        const d = []; // 2d matrix
-
-        // Step 1
-        const n = arr1.length;
-        const m = arr2.length;
-
-        if (n === 0) {return m}
-        if (m === 0) {return n}
-
-        // Create an array of arrays in javascript (a descending loop is quicker)
-        for (let i = n; i >= 0; i--) {d[i] = []}
-
-        // Step 2
-        for (let i = n; i >= 0; i--) {d[i][0] = i}
-        for (let j = m; j >= 0; j--) {d[0][j] = j}
-
-        // Step 3
-        for (let i = 1; i <= n; i++) {
-            const sI = arr1[i - 1];
-
-            // Step 4
-            for (let j = 1; j <= m; j++) {
-
-                // Check the jagged ld total so far
-                if (i === j && d[i][j] > 4) {return n}
-
-                const tJ = arr2[j - 1];
-                const cost = (sI === tJ) ? 0 : 1; // Step 5
-
-                // Calculate the minimum
-                let mi = d[i - 1][j] + 1;
-                const b = d[i][j - 1] + 1;
-                const c = d[i - 1][j - 1] + cost;
-
-                if (b < mi) {mi = b}
-                if (c < mi) {mi = c}
-
-                d[i][j] = mi; // Step 6
-
-                // Damerau transposition
-                if (i > 1 && j > 1 && sI === arr2[j - 2] && arr1[i - 2] === tJ) {
-                    d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
-                }
-            }
-        }
-
-        // Step 7
-        return d[n][m];
-    }
-
-    /**
      * It calculates probability index from variable amount of components.
      * Let's imagine we have two actions: one and two. We want
      * these actions to be called randomly, but with different probabilities.
@@ -211,17 +158,86 @@ class Helper {
  * @private
  */
 Helper._id = 0;
-Helper._id = 0;
+
+/**
+ * Removes elements from Uint8Array array and returns new Uint8Array
+ * @param {Number} start index for deleting items
+ * @param {Number} deleted Amount of items to delete
+ * @return {Uint8Array} New array
+ */
+Uint8Array.prototype.remove = function(start, deleted) {
+    const len = this.length;
+    if (start >= len || start < 0 || deleted <= 0 || deleted > len - start) {return this}
+    const newArr = new Uint8Array(len - deleted);
+  
+    newArr.set(this.subarray(0, start));
+    newArr.set(this.subarray(start + deleted), start);
+
+    return newArr;
+}
+
+/**
+ * Inserts items into Uint8Array starting from start
+ * @param {Number} start index for inserting items
+ * @param {Uint8Array} numbers Items to insert into start position
+ * @return {Uint8Array} New array
+ */
+Uint8Array.prototype.insert = function(start, numbers) {
+    const len = this.length;
+    if (start >= len || start < 0) {return this}
+    const amount = numbers.length;
+    const newArr  = new Uint8Array(len + amount);
+  
+    newArr.set(this.subarray(0, start));
+    newArr.set(numbers, start);
+    newArr.set(this.subarray(start), start + amount);
+
+    return newArr;
+}
+
+/**
+ * Moves items from "start" till "end" within Uint8Array into position of "target".
+ * During move temporary SHARE_MEM array is used to speed up copy process. This 
+ * function has limitations: It's impossible to move the block within block itself.
+ * For example: [0,1,2,3,4].move(0,2,1) -> [0,1,2,3,4] // move was cancelled
+ * Examples:
+ *   [0,1,2,3,4].move(0,2,3) -> [2,0,1,3,4]
+ *   [0,1,2,3,4].move(3,5,1) -> [0,3,4,1,2]
+ *   [0,1,2,3,4].move(0,2,5) -> [2,3,4,0,1]
+ * 
+ * @param {Number} start index of first item to move
+ * @param {Number} end Index of last item to move + 1
+ * @param {Number} target Index of insertion
+ */
+Uint8Array.prototype.move = function(start, end, target) {
+    const len = this.length;
+    if (start < 0 || start > end || end > len || target < 0 || target > len) {return this}
+    //
+    // Scenario 1: move from right to left
+    //
+    if (target < start) {
+        SHARED_MEM.set(this.subarray(start, end));
+        this.copyWithin(target + end - start, target, start);
+        this.set(SHARED_MEM.subarray(0, end - start), target);
+    //
+    // Scenario 2: move from left to right
+    //
+    } else if (target >= end) {
+        SHARED_MEM.set(this.subarray(start, end));
+        this.copyWithin(start, end, target);
+        this.set(SHARED_MEM.subarray(0, end - start), target - end + start);
+    }
+}
 
 /**
  * Analog of Array.prototype.splice(), but for Uint8Array
  * @param {Number} start index for deleting and inserting elements
  * @param {Number} deleted Amount of items to delete in 'start' index
- * @param {Array} numbers Numbers array, which will be added by 'start' index
- * @return {Uint32Array} New array
+ * @param {Uint8Array} numbers Numbers array, which will be added by 'start' index
+ * @return {Uint8Array} New array
  */
-Uint8Array.prototype.splice = function splice(start, deleted, numbers) {
-    if (arguments.length < 2 || start > this.length || start < 0 || deleted < 0) {return this}
+Uint8Array.prototype.splice = function(start, deleted, numbers) {
+    if (start > this.length || start < 0 || deleted < 0) {return this}
     const amount  = numbers && numbers.length || 0;
     if (deleted > this.length - start) {deleted = this.length - start}
     const newArr  = new Uint8Array(this.length - deleted + amount);
@@ -235,9 +251,9 @@ Uint8Array.prototype.splice = function splice(start, deleted, numbers) {
 
 /**
  * Array.prototype.push analog
- * @param {Uint8Array} pushedArr
+ * @param {Uint8Array} New array with pushed items inside
  */
-Uint8Array.prototype.push = function push(pushedArr) {
+Uint8Array.prototype.push = function(pushedArr) {
     const newArr = new Uint8Array(this.length + pushedArr.length);
 
     newArr.set(this, 0);

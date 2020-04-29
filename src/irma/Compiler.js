@@ -163,10 +163,8 @@ class Compiler {
         // Updates current line. -1 because we are currently on org.line - 1
         //
         const line   = org.line - 1;
-        if (dir < 0) {
-            if (line >= index2) {org.line = line + amount}
-            else if (line >= index1 && line < index2) {org.line = index1}
-        } else if (line >= index1) {org.line = line + amount}
+        if (dir < 0) {if (line >= index2) {org.line = line + amount}}
+        else if (line >= index1) {org.line = line + amount}
         //
         // Updates function metadata (indexes in a code). If amount of functions
         // were changed we have to remove call stack. In other case we have to 
@@ -175,25 +173,80 @@ class Compiler {
         const stk = org.stack;
         for (let i = 0, len = org.stackIndex; i <= len; i++) {
             const ln = stk[i];                                      // Updates back line
-            if (dir < 0) {
-                if (ln >= index2) {stk[i] += amount}
-                else if (ln >= index1 && ln <= index2) {stk[i] = index1}
-            } else if (ln >= index1) {stk[i] += amount}
+            if (dir < 0) {if (ln >= index2) {stk[i] += amount}}
+            else if (ln >= index1) {stk[i] += amount}
         }
         //
         // Updates loop metadata (after loop lines indexes)
         //
         const loops   = org.loops;
         const newLoop = {};
+        const code    = org.code;
         for (let l in loops) {
             if (loops.hasOwnProperty(l)) {
                 l = +l;
                 const iterations = loops[l];
                 if (dir < 0) {
                     if (l > index2) {newLoop[l + amount] = iterations}
-                    else if (l >= index1 && l <= index2) {newLoop[index1] = iterations}
+                    else if (l >= index1 && l <= index2 && (code[l] & CODE_8_BIT_RESET_MASK) === LOOP) {newLoop[l] = iterations}
                     else {newLoop[l] = iterations}
                 } else if (l >= index1) {newLoop[l + amount] = iterations}
+                else {newLoop[l] = iterations}
+            }
+        }
+        org.loops = newLoop;
+    }
+
+    /**
+     * This method only updates metadata: Organism.offs|funcs|stack and should
+     * be called after Uint8Array.move() function calls.
+     * @param {Organism} org Organism we need to compile
+     * @param {Number} start Start index in a code, where change was occure
+     * @param {Number} end End index in a code where changed were occure
+     * @param {Number} target Destination index of insertion
+     */
+    static updateMovedMetadata(org, start, end, target) {
+        let amount;
+        //
+        // Assume, that target is always on the right size
+        //
+        if (target < start) {
+            const tmp = target;
+            end       = target + amount;
+            target    = start;
+            start     = tmp;
+            amount    = end - start;
+        } else {
+            amount    = -(end - start);
+        }
+        //
+        // Updates current line. -1 because we are currently on org.line - 1
+        //
+        const line = org.line - 1;
+        if (line > end && line < target) {org.line = line + amount}
+        //
+        // Updates function metadata (indexes in a code). If amount of functions
+        // were changed we have to remove call stack. In other case we have to 
+        // update all call stack indexes
+        //
+        const stk = org.stack;
+        for (let i = 0, len = org.stackIndex; i <= len; i++) {
+            const ln = stk[i];                                      // Updates back line
+            if (ln > end && ln < target) {stk[i] += amount}
+        }
+        //
+        // Updates loop metadata (after loop lines indexes)
+        //
+        const loops   = org.loops;
+        const newLoop = {};
+        const code    = org.code;
+        const end2    = target + Math.abs(amount);
+        for (let l in loops) {
+            if (loops.hasOwnProperty(l)) {
+                l = +l;
+                const iterations = loops[l];
+                if (l > end && l < target) {newLoop[l + amount] = iterations}
+                else if (amount > 0 && (l >= start && l <= end || l > target && l < end2) && (code[l] & CODE_8_BIT_RESET_MASK) === LOOP) {newLoop[l] = iterations}
                 else {newLoop[l] = iterations}
             }
         }
