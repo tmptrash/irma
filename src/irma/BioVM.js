@@ -423,8 +423,8 @@ class BioVM extends VM {
                 // Cuts molecules by index
                 //
                 if (org.ax < 0) {
-                    let idx;
-                    const bx = this._firstAtomIdx(org.code, org.bx);
+                    const bx  = this._fixIndex(code, org.bx);
+                    const idx = this._firstAtomIdx(org.code, bx);
                     if (code[bx] & MASK8) {org.re = RE_OK; return}
                     const idxEnd = this._lastAtomIdx(code, bx);
                     code[bx] |= MASK8;
@@ -613,10 +613,10 @@ class BioVM extends VM {
                 let idx1      = this._lastAtomIdx(code, heads[head + 2 >= headLen ? head + 2 - headLen : head + 2]) + 1;
                 let mol       = this._firstAtomIdx(code, heads[head]);
                 const mol0    = mol;
-                let molLen    = this._lastAtomIdx(code, mol) - mol + 1;
-                let ax        = org.ax;
-                if (ax < 0) {ax = 0}
-                if (ax > code.length) {ax = code.length - 1}
+                let molLen    = this._lastAtomIdx(code, heads[head]) - mol + 1;
+                let ax        = this._fixIndex(code, org.ax);
+                if (ax > idx0 && ax <= idx1) {org.re = RE_ERR; return}
+                if (mol >= idx0 && mol <= idx1) {org.re = RE_ERR; return}
                 const ax0 = ax = this._lastAtomIdx(code, ax) + 1;
                 //
                 // Imagine we search for [1,2,3,4] in [0,3,1,2,4,5]. Search will work in this way:
@@ -629,14 +629,21 @@ class BioVM extends VM {
                 //
                 const molEnd = mol + molLen;
                 while (mol < molEnd && molLen > 0) {
+                    const axp   = ax;
+                    const idx1p = idx1;
+                    const molp  = mol;
                     if (!this._asmAtoms(org, mol, idx0, idx1, ax, molLen)) {molLen--; continue}
-                    if (mol > ax)   {mol  += molLen}
-                    if (mol > idx1) {mol  -= molLen}
-                    if (ax > idx1)  {ax   += molLen}
-                    if (idx1 > ax)  {idx1 += molLen}
+                    //
+                    // Update indexes after move
+                    //
+                    if (molp > axp && molp < idx0)                  {mol  += molLen}
+                    else if (molp > idx1p && molp < axp)            {mol  -= molLen}
+                    if (axp > idx1p && (axp < molp || molp < idx0)) {ax   -= molLen}
+                    else if (axp > molp && molp > idx1p)            {ax   -= molLen}
+                    if (idx1p < axp)                                {idx1 -= molLen}
+
                     mol   += molLen;
                     ax    += molLen;
-                    idx1  -= molLen;
                     molLen = molEnd - mol;
                 }
                 //
@@ -957,18 +964,16 @@ class BioVM extends VM {
     }
 
     /**
-     * Returns index of last atom in molecule in a code starting from idx
-     * @param {Uint8Array} code Code we a looking in
-     * @param {Number} idx Index of first atom in molecule
-     * @return {Number} Index of last atom
+     * Fixed index, if it's out of range. Index should be in 0...code.length-1
+     * @param {Uint8Array} code 
+     * @param {Number} idx Index we have to fix
      */
-    _lastAtomIdx(code, idx) {
-        const len = code.length;
-        // eslint-disable-next-line no-empty
-        while ((code[idx] & MASK8) === 0 && idx < len) {idx++}
+    _fixIndex(code, idx) {
+        if (idx < 0) {idx = 0}
+        else if (idx > code.length) {idx = code.length - 1}
         return idx;
     }
-    
+
     /**
      * Returns first atom in a molecule starting from idx
      * @param {Uint8Array} code Code, where to search
@@ -976,10 +981,24 @@ class BioVM extends VM {
      * @return {Number} index of first atom in a mol or -1
      */
     _firstAtomIdx(code, idx) {
-        if (idx > code.length) {idx = code.length - 1}
+        idx = this._fixIndex(code, idx);
         for (let i = idx - 1;; i--) {
             if ((code[i] & MASK8) > 0 || i < 0) {return i + 1}
         }
+    }
+
+    /**
+     * Returns index of last atom in molecule in a code starting from idx
+     * @param {Uint8Array} code Code we a looking in
+     * @param {Number} idx Index of first atom in molecule
+     * @return {Number} Index of last atom
+     */
+    _lastAtomIdx(code, idx) {
+        const len = code.length;
+        idx = this._fixIndex(code, idx);
+        // eslint-disable-next-line no-empty
+        while ((code[idx] & MASK8) === 0 && idx < len) {idx++}
+        return idx;
     }
 
     /**

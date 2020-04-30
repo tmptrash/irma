@@ -106,7 +106,7 @@ describe('src/irma/VM', () => {
             orgMutationPercent         : .02,
             orgMutationPeriod          : 2000001,
             orgMaxCodeSize             : 50,
-            orgProbs                   : new Uint32Array([10,1,3,1,5,1,1]),
+            orgProbs                   : new Uint32Array([10,1,3,1,5,1]),
             molSunPeriod               : 1000,
             molDecayDistance           : 60,
             molCodeSize                : 2,
@@ -1170,10 +1170,10 @@ describe('src/irma/VM', () => {
 
         describe('asm tests', () => {
             it('asm of one mol with fail', () => {
-                run2([1|M,AS|M], 1, 0, RE_OK, false);
+                run2([1|M,AS|M], 1, 0, RE_ERR);
                 const org = vm.orgs.get(0);
 
-                expect(org.code).toEqual(Uint8Array.from([AS|M,1|M]));
+                expect(org.code).toEqual(Uint8Array.from([1|M,AS|M]));
                 expect(org.heads[org.head]).toEqual(0);
                 expect(org.heads[org.head + 1]).toEqual(0);
             })
