@@ -5,14 +5,14 @@
 # He may eat, move around the world randomly, make his clones
 # and gather energy by doing catabolism. He uses three heads
 # to do clone:
-#   h0 - current clonning molecule
+#   h0 - current cloning molecule
 #   h1 - cur clone mol
 #   h2 - food
 #
 # @author flatline
 #
 #
-# Splits wastes or clonning. Search for empty space near
+# Splits wastes or cloning. Search for empty space near
 #
 func                          # func0
   63
@@ -84,7 +84,7 @@ loop
     end
   end                @mol
   #
-  # Do one step of clonning
+  # Do one step of cloning
   #
   lhead                       # h1=cur clone mol
   mol                         # ax=cur clone mol

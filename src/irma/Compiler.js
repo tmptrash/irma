@@ -205,7 +205,7 @@ class Compiler {
      * @param {Number} end End index in a code where changed were occure
      * @param {Number} target Destination index of insertion
      */
-    static updateMovedMetadata(org, start, end, target) {
+    static updateMetadataOnMove(org, start, end, target) {
         let amount;
         //
         // Assume, that target is always on the right size

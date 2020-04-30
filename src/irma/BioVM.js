@@ -468,7 +468,7 @@ class BioVM extends VM {
                 org.code        = code;
                 org.re          = RE_OK;
                 Compiler.compile(org, false);
-                Compiler.updateMovedMetadata(org, m2Idx, m2EndIdx + 1, insIdx);
+                Compiler.updateMetadataOnMove(org, m2Idx, m2EndIdx + 1, insIdx);
                 return;
             }
             /**
@@ -610,7 +610,7 @@ class BioVM extends VM {
                 const head    = org.head;
                 let   code    = org.code;
                 const idx0    = this._firstAtomIdx(code, heads[head + 1 === headLen ? 0 : head + 1]);
-                let idx1      = this._lastAtomIdx(code, heads[head + 2 >=  headLen ? head + 2 - headLen : head + 2]) + 1;
+                let idx1      = this._lastAtomIdx(code, heads[head + 2 >= headLen ? head + 2 - headLen : head + 2]) + 1;
                 let mol       = this._firstAtomIdx(code, heads[head]);
                 const mol0    = mol;
                 let molLen    = this._lastAtomIdx(code, mol) - mol + 1;
@@ -661,27 +661,19 @@ class BioVM extends VM {
                     // Calc energy
                     //
                     org.energy -= (len * Config.energyMetabolismCoef);
+                    Compiler.compile(org, false);
                     org.re = RE_OK;
                     return;
                 }
                 //
                 // Not all atoms were copied. Moves found atoms back and do recompilation
-                // TODO: i'm here!!!
-                org.re      = RE_ERR;
-                molLen      = mol - mol0;
+                //
+                org.re   = RE_ERR;
+                molLen   = mol - mol0;
                 if (molLen < 1) {return}
-                const atoms = org.code.slice(ax0, ax0 + molLen);
-                const axIdx = idx0 <= mol0 ? idx0 : idx0 - molLen;
-                org.code    = org.code.splice(mol0, molLen);
-                org.code    = org.code.splice(axIdx, 0, atoms);
-                Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
-                if (mol0 > ax) {
-                    Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
-                    Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
-                } else {
-                    Compiler.updateMetadata(org, ax, ax + atoms.length, 1);
-                    Compiler.updateMetadata(org, mol0, mol0 + molLen, -1);
-                }
+                org.code = org.code.move(ax0, ax0 + molLen, idx0);
+                Compiler.compile(org, false);
+                Compiler.updateMetadataOnMove(org, ax0, ax0 + molLen, idx0);
                 return;
             }
 
@@ -915,8 +907,7 @@ class BioVM extends VM {
             // Moves found atoms and do recompilation
             //
             org.code = code.move(i, i + molLen, ax);
-            Compiler.compile(org, false);
-            Compiler.updateMovedMetadata(org, i, i + molLen, ax);
+            Compiler.updateMetadataOnMove(org, i, i + molLen, ax);
 
             return true;
         }

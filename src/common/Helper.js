@@ -184,7 +184,7 @@ Uint8Array.prototype.remove = function(start, deleted) {
  */
 Uint8Array.prototype.insert = function(start, numbers) {
     const len = this.length;
-    if (start >= len || start < 0) {return this}
+    if (start > len || start < 0) {return this}
     const amount = numbers.length;
     const newArr  = new Uint8Array(len + amount);
   

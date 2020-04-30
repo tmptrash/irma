@@ -526,11 +526,11 @@ describe('src/irma/VM', () => {
                 const org = vm.orgs.get(0);
                 run([AG], 1);
 
-                expect(org.age).toBe(2);
+                expect(org.age).toBe(1);
             });
             it('age1',   () => {
                 const org = vm.orgs.get(0);
-                run([AG,AG], 1);
+                run([AG,AG], 2);
 
                 expect(org.age).toBe(2);
             });
@@ -546,7 +546,7 @@ describe('src/irma/VM', () => {
                 expect(org.line).toBe(0);
                 vm.run();
 
-                expect(org.age).toBe(4);
+                expect(org.age).toBe(3);
                 expect(org.ax).toBe(3);
                 expect(org.bx).toBe(0);
                 expect(org.code).toEqual(code);

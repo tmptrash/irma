@@ -141,14 +141,22 @@ class VM {
                 let   bx   = org.bx;
                 let   line = org.line;
                 //
+                // Is called once before every organism iteration
+                //
+                this.beforeIteration(org);
+                //
                 // Loop through few lines in one organism to
                 // support pseudo multi threading
                 //
                 for (let l = 0; l < lines; l++) {
                     //
-                    // Is called once before every organism iteration
+                    // Age increased after every run command 
                     //
-                    this.beforeIteration(org);
+                    org.age++;
+                    //
+                    // Cosmic ray mutations
+                    //
+                    if (org.age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(this, org)}
 
                     const cmd = code[line] & CODE_8_BIT_RESET_MASK;
                     // eslint-disable-next-line default-case
@@ -410,16 +418,9 @@ class VM {
                         bx       = org.bx;
                         code     = org.code;
                     }
-                    //
-                    // Age increased after every run command 
-                    //
-                    org.age++;
-                    //
-                    // Cosmic ray mutations
-                    //
-                    if (org.age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(this, org)}
-                    this.afterIteration(org);
                 }
+                this.afterIteration(org);
+                
                 org.line = line;
                 org.ax   = ax;
                 org.bx   = bx;
