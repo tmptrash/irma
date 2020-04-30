@@ -615,8 +615,7 @@ class BioVM extends VM {
                 const mol0    = mol;
                 let molLen    = this._lastAtomIdx(code, heads[head]) - mol + 1;
                 let ax        = this._fixIndex(code, org.ax);
-                if (ax > idx0 && ax <= idx1) {org.re = RE_ERR; return}
-                if (mol >= idx0 && mol <= idx1) {org.re = RE_ERR; return}
+                if (ax > idx0 && ax < idx1 || mol >= idx0 && mol < idx1) {org.re = RE_ERR; return}
                 const ax0 = ax = this._lastAtomIdx(code, ax) + 1;
                 //
                 // Imagine we search for [1,2,3,4] in [0,3,1,2,4,5]. Search will work in this way:
@@ -636,11 +635,10 @@ class BioVM extends VM {
                     //
                     // Update indexes after move
                     //
-                    if (molp > axp && molp < idx0)                  {mol  += molLen}
-                    else if (molp > idx1p && molp < axp)            {mol  -= molLen}
-                    if (axp > idx1p && (axp < molp || molp < idx0)) {ax   -= molLen}
-                    else if (axp > molp && molp > idx1p)            {ax   -= molLen}
-                    if (idx1p < axp)                                {idx1 -= molLen}
+                    if (molp > axp && molp < idx0)        {mol  += molLen}
+                    else if (molp > idx1p && molp < axp)  {mol  -= molLen}
+                    if (axp > idx1p)                      {ax   -= molLen}
+                    if (idx1p < axp)                      {idx1 -= molLen}
 
                     mol   += molLen;
                     ax    += molLen;
@@ -678,7 +676,7 @@ class BioVM extends VM {
                 org.re   = RE_ERR;
                 molLen   = mol - mol0;
                 if (molLen < 1) {return}
-                org.code = org.code.move(ax0, ax0 + molLen, idx0);
+                org.code.move(ax0, ax0 + molLen, idx0);
                 Compiler.compile(org, false);
                 Compiler.updateMetadataOnMove(org, ax0, ax0 + molLen, idx0);
                 return;
@@ -913,7 +911,7 @@ class BioVM extends VM {
             //
             // Moves found atoms and do recompilation
             //
-            org.code = code.move(i, i + molLen, ax);
+            code.move(i, i + molLen, ax);
             Compiler.updateMetadataOnMove(org, i, i + molLen, ax);
 
             return true;
