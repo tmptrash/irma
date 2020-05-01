@@ -629,10 +629,10 @@ class BioVM extends VM {
                 //
                 const molEnd = mol + molLen;
                 while (mol < molEnd && molLen > 0) {
+                    if (!this._asmAtoms(org, mol, idx0, idx1, ax, molLen)) {molLen--; continue}
                     const axp   = ax;
                     const idx1p = idx1;
                     const molp  = mol;
-                    if (!this._asmAtoms(org, mol, idx0, idx1, ax, molLen)) {molLen--; continue}
                     //
                     // Update indexes after move
                     //
@@ -892,23 +892,17 @@ class BioVM extends VM {
             //
             // Index of needed atoms in "i". Cuts found atoms from left and right
             //
-            let len = 0;
             if (i > 0 && (code[i - 1] & MASK8) === 0) {
                 code[i - 1] |= MASK8;
                 this.updateAtom(i - 1, true);
-                len += (molLen / 2);
+                org.energy += (molLen / 2 * Config.energyMetabolismCoef);
             }
             const idx01 = i + molLen - 1;
             if ((code[idx01] & MASK8) === 0) {
                 code[idx01] |= MASK8;
                 this.updateAtom(idx01, true);
-                len += (molLen / 2);
+                org.energy += (molLen / 2 * Config.energyMetabolismCoef);
             }
-            //
-            // We calculate average energy adding, because we do catabolism.
-            // Calculation of real energy amount is very complicated process.
-            //
-            org.energy += (len * Config.energyMetabolismCoef);
             //
             // Moves found atoms and do recompilation
             //
