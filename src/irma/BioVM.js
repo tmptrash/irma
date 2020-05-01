@@ -614,6 +614,7 @@ class BioVM extends VM {
                 let mol       = this._firstAtomIdx(code, heads[head]);
                 const mol0    = mol;
                 let molLen    = this._lastAtomIdx(code, heads[head]) - mol + 1;
+                const molLen0 = molLen;
                 let ax        = this._fixIndex(code, org.ax);
                 if (ax > idx0 && ax < idx1 || mol >= idx0 && mol < idx1) {org.re = RE_ERR; return}
                 const ax0 = ax = this._lastAtomIdx(code, ax) + 1;
@@ -651,15 +652,14 @@ class BioVM extends VM {
                     //
                     // join atoms together to needed molecule
                     //
-                    code    = org.code;
-                    let len = 0;
-                    if (molEnd - mol > 1) {
-                        for (let j = ax; j < molEnd; j++) {
-                            if ((code[j] & MASK8) > 0) {
-                                code[j] &= MASK8R;
-                                this.updateAtom(j, false);
-                                len += (j + 1);
-                            }
+                    code     = org.code;
+                    let len  = 0;
+                    const j0 = ax > idx1 ? ax - molLen0 : ax0;
+                    for (let j = j0, l = j + molLen0 - 1; j < l; j++) {
+                        if ((code[j] & MASK8) > 0) {
+                            code[j] &= MASK8R;
+                            this.updateAtom(j, false);
+                            len += (j - j0 + 1);
                         }
                     }
                     //
