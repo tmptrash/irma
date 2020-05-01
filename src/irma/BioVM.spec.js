@@ -1196,7 +1196,7 @@ describe('src/irma/VM', () => {
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,RM,LH,LH,18,AS|M,0,1,2|M,9|M,0,1,2|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy - (3 * Config.energyMetabolismCoef) - Config.energyCommand);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - (4 * Config.energyMetabolismCoef) - Config.energyCommand);
             })
             it('asm of one mol from smaller mols (1)', () => {
                 run2([RM,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,19,AS|M,0,1,2|M,0|M,1|M,2|M,9|M], 2, 0, RE_OK);

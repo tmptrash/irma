@@ -662,6 +662,7 @@ class BioVM extends VM {
                             len += (j - j0 + 1);
                         }
                     }
+                    if (len > 0) {len += molLen0}
                     //
                     // Calc energy
                     //
