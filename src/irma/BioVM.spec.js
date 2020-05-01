@@ -1233,6 +1233,13 @@ describe('src/irma/VM', () => {
                 expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,0|M,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,0|M,AS|M,0|M,1|M]));
                 expect(org.energy).toEqual(Config.LUCAS[0].energy - ((4 + 11) * Config.energyMetabolismCoef) - Config.energyCommand);
             })
+            it('asm should fail if part of the mol found', () => {
+                run2([RM,RH,RM,RM,RH,RM,RM,RM,LH,LH,18,AS|M,0,1,2|M,0|M,1|M,9|M], 9, 0, RE_ERR);
+                const org = vm.orgs.get(0);
+
+                expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,RM,LH,LH,18,AS|M,0,1,2|M,0|M,1|M,9|M]));
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - Config.energyCommand);
+            })
         });
 
         describe('reax tests', () => {

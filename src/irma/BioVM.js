@@ -672,14 +672,15 @@ class BioVM extends VM {
                     return;
                 }
                 //
-                // Not all atoms were copied. Moves found atoms back and do recompilation
+                // Not all atoms were copied. Moves found atoms back to search region and do recompilation
                 //
                 org.re   = RE_ERR;
                 molLen   = mol - mol0;
                 if (molLen < 1) {return}
-                org.code.move(ax0, ax0 + molLen, idx0);
+                ax = ax > idx1 ? ax - molLen : ax0;
+                org.code.move(ax, ax + molLen, idx0);
                 Compiler.compile(org, false);
-                Compiler.updateMetadataOnMove(org, ax0, ax0 + molLen, idx0);
+                Compiler.updateMetadataOnMove(org, ax, ax + molLen, idx0);
                 return;
             }
 
@@ -963,7 +964,7 @@ class BioVM extends VM {
      */
     _fixIndex(code, idx) {
         if (idx < 0) {idx = 0}
-        else if (idx > code.length) {idx = code.length - 1}
+        else if (idx >= code.length) {idx = code.length - 1}
         return idx;
     }
 
