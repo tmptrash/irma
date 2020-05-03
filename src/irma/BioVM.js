@@ -608,8 +608,8 @@ class BioVM extends VM {
                 const heads   = org.heads;
                 const headLen = heads.length;
                 const head    = org.head;
-                let   code    = org.code;
-                const idx0    = this._firstAtomIdx(code, heads[head + 1 === headLen ? 0 : head + 1]);
+                let code      = org.code;
+                let idx0      = this._firstAtomIdx(code, heads[head + 1 === headLen ? 0 : head + 1]);
                 let idx1      = this._lastAtomIdx(code, heads[head + 2 >= headLen ? head + 2 - headLen : head + 2]) + 1;
                 let mol       = this._firstAtomIdx(code, heads[head]);
                 const mol0    = mol;
@@ -631,6 +631,7 @@ class BioVM extends VM {
                 while (mol < molEnd && molLen > 0) {
                     if (!this._asmAtoms(org, mol, idx0, idx1, ax, molLen)) {molLen--; continue}
                     const axp   = ax;
+                    const idx0p = idx0;
                     const idx1p = idx1;
                     const molp  = mol;
                     //
@@ -640,6 +641,7 @@ class BioVM extends VM {
                     else if (molp > idx1p && molp < axp)  {mol  -= molLen}
                     if (axp > idx1p)                      {ax   -= molLen}
                     if (idx1p < axp)                      {idx1 -= molLen}
+                    if (axp < idx0p)                      {idx0 += molLen}
 
                     mol   += molLen;
                     ax    += molLen;
