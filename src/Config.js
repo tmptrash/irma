@@ -239,40 +239,42 @@ module.exports = {
           #
           lhead                       # h1=cur clone mol
           mol                         # ax=cur clone mol
+          toggle                      # ax=cur clone mol
           rmol
           reax
           #
           # No mols eated, continue eat and move
           #
-          ifn
-            cont             @mol
+          ifn                @mol
+            cont
           end
+          toggle                      # ax=cur clone mol
           lhead                       # h0=cur mol
           asm
-          rhead                       # h1=cur clone mol
+          rhead              @mol     # h1=cur clone mol
           reax
-          lmol               @mol
+          lmol
           lhead                       # h0=cur mol
           ifp
             #
             # Last atom - nop means we have to split clonned org
             #
             1
-            toggle
+            toggle           @mol
             33
-            lshift           @mol     # ax=66 - nop
+            lshift                    # ax=66 - nop
             save                      # m0=66 - nop
             mol
             read
-            toggle
+            toggle           @mol
             load
-            ife              @mol
+            ife
               rmol                    # h0++
               rhead                   # h1=cur clone mol
               rmol
-              17
+              17             @mol
               save
-              lhead          @mol     # h0=cur mol
+              lhead                   # h0=cur mol
               #
               # Search for empty place to split
               #
@@ -282,29 +284,27 @@ module.exports = {
               # Cut wastes
               #
               rhead                   # h1
-              len
+              len            @mol
               smol
-              lhead          @mol     # h0
+              lhead                   # h0
               50
               save                    # resets unique clone id (17)
               #
               # Search for empty place to split
               #
               0
-              call
+              call           @mol
               ret
-            end              @mol
+            end
             rmol                      # h0++
             rhead                     # h1=cur clone mol
             rmol
-            lhead                     # h0=cur mol
+            lhead            @mol     # h0=cur mol
+            nop
           end
-          rhead              @mol
-          nop
+          rhead
           rhead                       # h2=food
         end
-        nop
-        nop
         ret                  @mol
         `,
         /**
