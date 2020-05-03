@@ -6,6 +6,7 @@
  */
 const Config              = require('./../Config');
 const Canvas              = require('./Canvas');
+const Helper              = require('./../common/Helper');
 
 const WORLD_WIDTH         = Config.WORLD_WIDTH;
 const WORLD_HEIGHT        = Config.WORLD_HEIGHT;
@@ -137,7 +138,7 @@ class World {
         const distance2 = Math.floor(distance / 2);
 
         for (let i = 0; i < distance * distance; i++) {
-            const offs = offset + DIRS[Math.floor(Math.random() * 8)] * distance + Math.floor(Math.random() * distance) - distance2;
+            const offs = offset + DIRS[Math.floor(Helper.rand(8))] * distance + Math.floor(Math.random() * distance) - distance2;
             if (this._data[offs] === 0) {return offs}
         }
 

@@ -85,7 +85,7 @@ class BioVM extends VM {
     /**
      * Is called when atom stay molecule-separator or was a separator
      * @param {Number} index Index of atom, which was changed
-     * @param {Boolean} isLast true if current atom is the last atom in molecule
+     * @param {Boolean} isLast true if current atom is the last atom in molecule. Last - means the atom with @mol annotation
      * @abstract
      */
     updateAtom() {}
@@ -949,7 +949,7 @@ class BioVM extends VM {
         const luca  = Config.LUCAS[0];
         const bCode = luca.bCode ? luca.bCode : luca.bCode = Compiler.toByteCode(luca.code);
         const len   = bCode.length;
-        let   start = Math.floor(Math.random() * len);
+        let   start = Math.floor(Helper.rand(len));
         //
         // Sets start to the first atom in a molecule
         //

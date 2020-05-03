@@ -156,14 +156,14 @@ module.exports = {
         # He may eat, move around the world randomly, make his clones
         # and gather energy by doing catabolism. He uses three heads
         # to do clone:
-        #   h0 - current clonning molecule
+        #   h0 - current cloning molecule
         #   h1 - cur clone mol
         #   h2 - food
         #
         # @author flatline
         #
         #
-        # Splits wastes or clonning. Search for empty space near
+        # Splits wastes or cloning. Search for empty space near
         #
         func                          # func0
           63
@@ -235,67 +235,67 @@ module.exports = {
             end
           end                @mol
           #
-          # Do one step of clonning
+          # Do one step of cloning
           #
           lhead                       # h1=cur clone mol
           mol                         # ax=cur clone mol
+          rmol
           lhead                       # h0=cur mol
           asm
+          rhead              @mol     # h1=cur clone mol
           reax
-          ifp                @mol
+          lmol
+          lhead                       # h0=cur mol
+          ifp
             #
             # Last atom - nop means we have to split clonned org
             #
             1
-            toggle
+            toggle           @mol
             33
             lshift                    # ax=66 - nop
             save                      # m0=66 - nop
-            mol              @mol
+            mol
             read
-            toggle
+            toggle           @mol
             load
             ife
               rmol                    # h0++
-              rhead          @mol     # h1=cur clone mol
+              rhead                   # h1=cur clone mol
               rmol
-              17
+              17             @mol
               save
               lhead                   # h0=cur mol
               #
               # Search for empty place to split
               #
               0
-              call           @mol
+              call
               #
               # Cut wastes
               #
               rhead                   # h1
-              len
+              len            @mol
               smol
               lhead                   # h0
               50
-              save           @mol     # resets unique clone id (17)
+              save                    # resets unique clone id (17)
               #
               # Search for empty place to split
               #
               0
-              call
+              call           @mol
               ret
             end
             rmol                      # h0++
-            rhead            @mol     # h1=cur clone mol
+            rhead                     # h1=cur clone mol
             rmol
-            lhead                     # h0=cur mol
+            lhead            @mol     # h0=cur mol
+            nop
           end
           rhead
           rhead                       # h2=food
-        end                  @mol
-        nop
-        nop
-        nop
-        nop
-        nop
+        end
         ret                  @mol
         `,
         /**
