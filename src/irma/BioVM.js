@@ -641,7 +641,7 @@ class BioVM extends VM {
                     else if (molp > idx1p && molp < axp)  {mol  -= molLen}
                     if (axp > idx1p)                      {ax   -= molLen}
                     if (idx1p < axp)                      {idx1 -= molLen}
-                    if (axp < idx0p)                      {idx0 += molLen}
+                    if (axp <= idx0p)                     {idx0 += molLen}
 
                     mol   += molLen;
                     ax    += molLen;
