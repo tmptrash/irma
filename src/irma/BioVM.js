@@ -679,7 +679,8 @@ class BioVM extends VM {
                 org.re   = RE_ERR;
                 molLen   = mol - mol0;
                 if (molLen < 1) {return}
-                ax = ax > idx1 ? ax - molLen : ax0;
+                ax   = ax > idx1 ? ax   - molLen : ax0;
+                idx0 = ax < idx0 ? idx0 - molLen : idx0;
                 org.code.move(ax, ax + molLen, idx0);
                 Compiler.compile(org, false);
                 Compiler.updateMetadataOnMove(org, ax, ax + molLen, idx0);
