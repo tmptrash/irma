@@ -12,30 +12,18 @@ func                          # func0
     step             @mol
   end
 end
-#
-# Reset 0 head
-#
 0
 smol                          # h0=cur mol
-#
-# Sets heads 1,2 to the end
-#
 rhead                         # h1=cur clone mol
 len                  @mol
 smol
 rhead                         # h2=food
 smol
-#
-# Global big loop
-#
 20
 toggle
 eq                   @mol
 lshift                        # ax=20971520
 loop
-  #
-  # 10 random steps & eat
-  #
   10
   loop
     rand
@@ -44,9 +32,6 @@ loop
     join
     len
     smol                      # h2=food
-    #
-    # Get energy by catabolism
-    #
     reax
     ifp              @mol
       0
@@ -54,92 +39,70 @@ loop
       len
       smol
     end
-    #
-    # Organism is full
-    #
     ifn              @mol
-      #
-      # Search for empty place to split
-      #
       lhead                   # h1
       0
       call
       rhead                   # h2
     end
   end                @mol
-  #
-  # Do one step of cloning
-  #
   lhead                       # h1=cur clone mol
   mol                         # ax=cur clone mol
   toggle                      # ax=cur clone mol
   rmol
   reax
-  #
-  # No mols eated, continue eat and move
-  #
   ifn                @mol
-    #
-    # We have to reset cur head back to h2
-    #
     rhead                     # h2
     cont
   end
   toggle                      # ax=cur clone mol
   lhead                       # h0=cur mol
-  asm
-  rhead              @mol     # h1=cur clone mol
+  asm                @mol
+  rhead                       # h1=cur clone mol
   reax
   lmol
   lhead                       # h0=cur mol
   ifp
-    #
-    # Last atom - nop means we have to split clonned org
-    #
-    1
-    toggle           @mol
+    1                @mol
+    toggle
     33
     lshift                    # ax=66 - nop
     save                      # m0=66 - nop
     mol
-    read
-    toggle           @mol
+    read             @mol
+    toggle
     load
     ife
       rmol                    # h0++
       rhead                   # h1=cur clone mol
-      rmol
-      17             @mol
+      rmol           @mol
+      17
       save
       lhead                   # h0=cur mol
-      #
-      # Search for empty place to split
-      #
       0
       call
-      #
-      # Cut wastes
-      #
-      rhead                   # h1
-      len            @mol
+      rhead          @mol     # h1
+      len
       smol
       lhead                   # h0
       50
       save                    # resets unique clone id (17)
-      #
-      # Search for empty place to split
-      #
-      0
-      call           @mol
+      0              @mol
+      call
       ret
     end
     rmol                      # h0++
     rhead                     # h1=cur clone mol
-    rmol
-    lhead            @mol     # h0=cur mol
-    nop
+    rmol             @mol
+    lhead                     # h0=cur mol
   end
   rhead
   rhead                       # h2=food
 end
+nop                  @mol
+nop
+nop
+nop
+nop
+nop
 ret                  @mol
