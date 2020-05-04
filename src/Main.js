@@ -8,6 +8,20 @@
 const Compiler = require('./irma/Compiler');
 const Config   = require('./Config');
 const Irma     = require('./irma/Irma');
+/**
+ * Turns on debug mode, where randomizer uses seed value to
+ * produce same values on every app reload
+ * @param {Number} seed
+ */
+function debugMode(seed) {
+    let value = seed;
+
+    Math.random = function() {
+        value = value * 16807 % 2147483647;
+        return value / 2147483647;
+    }
+}
+Config.debugMode && debugMode(Config.debugSeed);
 //
 // Creates global objects to have an access to app from browser's console
 //

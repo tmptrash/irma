@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 2;
-const HEIGHT      = 1080 * 2;
+const WIDTH       = 1920;
+const HEIGHT      = 1080;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -86,6 +86,12 @@ const COMMANDS    = {
 // TODO: do we really can change all non constants in real time? worldZoomSpeed,...
 // TODO: add comments for every config parameter
 module.exports = {
+    /**
+     * Turns on debug mode. In this case special randomizer with specified seed will be set
+     * and every time on world reload all evolution will go through the same steps
+     */
+    debugMode                  : true,
+    debugSeed                  : 1,
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
      * nearest point depending on one of 8 directions. We use these values in any
@@ -249,33 +255,34 @@ module.exports = {
             #
             # We have to reset cur head back to h2
             #
+            lmol
             rhead                     # h2
             cont
           end
           toggle                      # ax=cur clone mol
-          lhead                       # h0=cur mol
-          asm                @mol
+          lhead              @mol     # h0=cur mol
+          asm
           rhead                       # h1=cur clone mol
           reax
           lmol
           lhead                       # h0=cur mol
-          ifp
+          ifp                @mol
             #
             # Last atom - nop means we have to split clonned org
             #
-            1                @mol
+            1
             toggle
             33
             lshift                    # ax=66 - nop
             save                      # m0=66 - nop
-            mol
-            read             @mol
+            mol              @mol
+            read
             toggle
             load
             ife
               rmol                    # h0++
-              rhead                   # h1=cur clone mol
-              rmol           @mol
+              rhead          @mol     # h1=cur clone mol
+              rmol
               17
               save
               lhead                   # h0=cur mol
@@ -283,35 +290,34 @@ module.exports = {
               # Search for empty place to split
               #
               0
-              call
+              call           @mol
               #
               # Cut wastes
               #
-              rhead          @mol     # h1
+              rhead                   # h1
               len
               smol
               lhead                   # h0
               50
-              save                    # resets unique clone id (17)
+              save           @mol     # resets unique clone id (17)
               #
               # Search for empty place to split
               #
-              0              @mol
+              0
               call
               ret
             end
             rmol                      # h0++
-            rhead                     # h1=cur clone mol
-            rmol             @mol
+            rhead            @mol     # h1=cur clone mol
+            rmol
             lhead                     # h0=cur mol
           end
           rhead
           rhead                       # h2=food
-        end
-        lhead                @mol
+        end                  @mol
         nop
         lhead
-        nop
+        lhead
         nop
         nop
         ret                  @mol
