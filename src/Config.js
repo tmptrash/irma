@@ -308,9 +308,9 @@ module.exports = {
           rhead
           rhead                       # h2=food
         end
-        nop                  @mol
+        lhead                @mol
         nop
-        nop
+        lhead
         nop
         nop
         nop
