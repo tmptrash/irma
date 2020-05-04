@@ -95,6 +95,10 @@ loop
   # No mols eated, continue eat and move
   #
   ifn                @mol
+    #
+    # We have to reset cur head back to h2
+    #
+    rhead                     # h2
     cont
   end
   toggle                      # ax=cur clone mol
