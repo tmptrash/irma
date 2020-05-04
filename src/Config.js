@@ -254,8 +254,8 @@ module.exports = {
           end
           toggle                      # ax=cur clone mol
           lhead                       # h0=cur mol
-          asm
-          rhead              @mol     # h1=cur clone mol
+          asm                @mol
+          rhead                       # h1=cur clone mol
           reax
           lmol
           lhead                       # h0=cur mol
@@ -263,20 +263,20 @@ module.exports = {
             #
             # Last atom - nop means we have to split clonned org
             #
-            1
-            toggle           @mol
+            1                @mol
+            toggle
             33
             lshift                    # ax=66 - nop
             save                      # m0=66 - nop
             mol
-            read
-            toggle           @mol
+            read             @mol
+            toggle
             load
             ife
               rmol                    # h0++
               rhead                   # h1=cur clone mol
-              rmol
-              17             @mol
+              rmol           @mol
+              17
               save
               lhead                   # h0=cur mol
               #
@@ -287,8 +287,8 @@ module.exports = {
               #
               # Cut wastes
               #
-              rhead                   # h1
-              len            @mol
+              rhead          @mol     # h1
+              len
               smol
               lhead                   # h0
               50
@@ -296,19 +296,24 @@ module.exports = {
               #
               # Search for empty place to split
               #
-              0
-              call           @mol
+              0              @mol
+              call
               ret
             end
             rmol                      # h0++
             rhead                     # h1=cur clone mol
-            rmol
-            lhead            @mol     # h0=cur mol
-            nop
+            rmol             @mol
+            lhead                     # h0=cur mol
           end
           rhead
           rhead                       # h2=food
         end
+        nop                  @mol
+        nop
+        nop
+        nop
+        nop
+        nop
         ret                  @mol
         `,
         /**
