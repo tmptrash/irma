@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920;
-const HEIGHT      = 1080;
+const WIDTH       = 1920 * 2;
+const HEIGHT      = 1080 * 2;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -90,8 +90,8 @@ module.exports = {
      * Turns on debug mode. In this case special randomizer with specified seed will be set
      * and every time on world reload all evolution will go through the same steps
      */
-    debugMode                  : true,
-    debugSeed                  : 1,
+    debugMode                  : false,
+    debugSeed                  : 2,
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
      * nearest point depending on one of 8 directions. We use these values in any
@@ -334,7 +334,7 @@ module.exports = {
     }],
     codeLinesPerIteration      : 3,
     codeRepeatsPerRun          : 20,
-    codeMutateEveryClone       : 2,
+    codeMutateEveryClone       : 0,
     codeMutateMutations        : false,
 
     /**
@@ -392,7 +392,7 @@ module.exports = {
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 0,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 1000000,
+    orgMutationPeriod          : 0,
     ORG_MAX_CODE_SIZE          : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
