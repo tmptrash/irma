@@ -341,7 +341,7 @@ module.exports = {
     codeLinesPerIteration      : 3,
     codeRepeatsPerRun          : 20,
     codeMutateEveryClone       : 10,
-    codeMutateMutations        : false,
+    codeMutateMutations        : true,
 
     /**
      * {Boolean} Turns on or off panzoom library
@@ -398,7 +398,7 @@ module.exports = {
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 0,
     orgMutationPercent         : .01,
-    orgMutationPeriod          : 0,
+    orgMutationPeriod          : 1000000,
     ORG_MAX_CODE_SIZE          : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
@@ -410,7 +410,7 @@ module.exports = {
      * Molecules related configs
      */
     molSunPeriod               : 1,
-    molAmount                  : Math.round(WIDTH * HEIGHT * .07), // 7% of molecules
+    molAmount                  : Math.round(WIDTH * HEIGHT * .1), // 10% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
