@@ -75,92 +75,98 @@ loop
     #
     ifn              @mol
       #
-      # Search for empty place to split
+      # Search for empty place to split wastes
       #
       lhead                   # h1
+      rmol
       0
       call
+      len
+      smol           @mol
       rhead                   # h2
     end
-  end                @mol
+  end
   #
   # Do one step of cloning
   #
   lhead                       # h1=cur clone mol
   mol                         # ax=cur clone mol
-  toggle                      # ax=cur clone mol
+  toggle             @mol     # ax=cur clone mol
   rmol
   reax
   #
   # No mols eated, continue eat and move
   #
-  ifn                @mol
+  ifn
     #
     # We have to reset cur head back to h2
     #
 	lmol
     rhead                     # h2
-    cont
+    cont             @mol
   end
   toggle                      # ax=cur clone mol
-  lhead              @mol     # h0=cur mol
+  lhead                       # h0=cur mol
   asm
   rhead                       # h1=cur clone mol
-  reax
+  reax               @mol
   lmol
   lhead                       # h0=cur mol
-  ifp                @mol
+  ifp
     #
     # Last atom - nop means we have to split clonned org
     #
     1
     toggle
-    33
+    33               @mol
     lshift                    # ax=66 - nop
     save                      # m0=66 - nop
-    mol              @mol
+    mol
     read
     toggle
-    load
+    load             @mol
     ife
       rmol                    # h0++
-      rhead          @mol     # h1=cur clone mol
+      rhead                   # h1=cur clone mol
       rmol
       17
-      save
+      save           @mol
       lhead                   # h0=cur mol
       #
       # Search for empty place to split
       #
       0
-      call           @mol
+      call
       #
       # Cut wastes
       #
       rhead                   # h1
       len
-      smol
+      smol           @mol
       lhead                   # h0
       50
-      save           @mol     # resets unique clone id (17)
+      save                    # resets unique clone id (17)
       #
       # Search for empty place to split
       #
       0
       call
-      ret
+      ret            @mol
     end
     rmol                      # h0++
-    rhead            @mol     # h1=cur clone mol
+    rhead                     # h1=cur clone mol
     rmol
     lhead                     # h0=cur mol
-  end
+  end                @mol
   rhead
   rhead                       # h2=food
-end                  @mol
+end
+lhead
+lhead
+nop                  @mol
+nop                           # tail separator atom
 nop
-lhead
-lhead
+nop
 nop
 nop
 ret                  @mol

@@ -9,6 +9,7 @@ const Package               = require('./../../package.json');
 const Helper                = require('./../common/Helper');
 const Config                = require('./../Config');
 const Molecule              = require('./Molecule');
+const Organism              = require('./Organism');
 const VM                    = require('./VM');
 const Mutations             = require('./Mutations');
 const World                 = require('./World');
@@ -163,7 +164,9 @@ class BioVM extends VM {
                 if (nearLen + code.length > ORG_CODE_MAX_SIZE) {org.re = RE_SPECIAL; return}
                 const idx     = this._lastAtomIdx(code, org.heads[org.head]) + 1;
                 org.code      = code.insert(idx, nearOrg.code);
-                nearOrg.energy > 0 ? this.delOrg(nearOrg) : this.delMol(nearOrg);
+                const isOrg   = nearOrg instanceof Organism;
+                if (isOrg) {org.energy += nearOrg.energy; this.delOrg(nearOrg)}
+                else {this.delMol(nearOrg)}
                 org.re        = nearLen;
                 Compiler.compile(org, false);                 // Safe recompilation without loosing metadata
                 Compiler.updateMetadata(org, idx, idx + nearLen, 1);
@@ -664,7 +667,7 @@ class BioVM extends VM {
                             len += (j - j0 + 1);
                         }
                     }
-                    if (len > 0) {len += molLen0}
+                    if (len > 0) {len += (molLen0 - 1)}
                     //
                     // Calc energy
                     //
@@ -886,12 +889,13 @@ class BioVM extends VM {
      */
     _asmAtoms(org, molIdx, idx0, idx1, ax, molLen) {
         const code = org.code;
+        const codeLen = code.length;
         //
         // We search needed atoms without checking of separator atoms
         //
         loop: for (let i = Math.max(0, idx0), till = Math.min(code.length - 1, idx1); i <= till; i++) {
             for (let j = 0; j < molLen; j++) {
-                if ((code[i + j] & MASK8R) !== (code[j + molIdx] & MASK8R)) {continue loop}
+                if (i + j >= codeLen || (code[i + j] & MASK8R) !== (code[j + molIdx] & MASK8R)) {continue loop}
             }
             //
             // Index of needed atoms in "i". Cuts found atoms from left and right
