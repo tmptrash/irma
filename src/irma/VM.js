@@ -123,7 +123,7 @@ class VM {
     run() {
         const repeats          = Config.codeRepeatsPerRun;
         const lines            = Config.codeLinesPerIteration;
-        const mutationPeriod   = Config.orgMutationPeriod;
+        const mutationPeriod   = Config.codeMutationPeriod;
         const orgs             = this.orgs;
         const orgsRef          = orgs.ref();
         //

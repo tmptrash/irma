@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 3;
-const HEIGHT      = 1080 * 3;
+const WIDTH       = 1920 * 4;
+const HEIGHT      = 1080 * 4;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -338,11 +338,12 @@ module.exports = {
          */
         energy: 6000 * 1024 + (6000 * 1024) / 3 // 6000 sec * 1024 commands + 30%
     }],
-    codeLinesPerIteration      : 3,
-    codeRepeatsPerRun          : 20,
-    codeMutateEveryClone       : 10,
+    codeLinesPerIteration      : 1,
+    codeRepeatsPerRun          : 30,
+    codeMutateEveryClone       : 5,
     codeMutateMutations        : true,
-
+    codeMutationPercent        : .01,
+    codeMutationPeriod         : 1000000,
     /**
      * {Boolean} Turns on or off panzoom library
      */
@@ -357,8 +358,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH / 5,
-    WORLD_CANVAS_HEIGHT        : HEIGHT / 5,
+    WORLD_CANVAS_WIDTH         : WIDTH / 8,
+    WORLD_CANVAS_HEIGHT        : HEIGHT / 8,
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -397,8 +398,6 @@ module.exports = {
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 0,
-    orgMutationPercent         : .01,
-    orgMutationPeriod          : 1000000,
     ORG_MAX_CODE_SIZE          : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
@@ -410,16 +409,16 @@ module.exports = {
      * Molecules related configs
      */
     molSunPeriod               : 1,
-    molAmount                  : Math.round(WIDTH * HEIGHT * .1), // 10% of molecules
+    molAmount                  : Math.round(WIDTH * HEIGHT * .07), // 5% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .001,
+    energyStepCoef             : .002,
     energyMetabolismCoef       : 10,
-    energyCommand              : .001,
+    energyCommand              : .0003,
     /**
      * {Number} This value will be used for every LUCA on system start if
      * there is no property "energy" in LUCAS config was specified
