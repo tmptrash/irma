@@ -1196,21 +1196,21 @@ describe('src/irma/VM', () => {
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,RM,LH,LH,18,AS|M,0,1,2|M,9|M,0,1,2|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy - (4 * Config.energyMetabolismCoef) - Config.energyCommand);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - (3 * Config.energyMetabolismCoef) - Config.energyCommand);
             })
             it('asm of one mol from smaller mols (1)', () => {
                 run2([RM,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,19,AS|M,0,1,2|M,0|M,1|M,2|M,9|M], 2, 0, RE_OK);
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,19,AS|M,0,1,2|M,9|M,0,1,2|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy - ((1 + 2 + 3) * Config.energyMetabolismCoef) - Config.energyCommand);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - ((1 + 2 + 2) * Config.energyMetabolismCoef) - Config.energyCommand);
             })
             it('asm of one mol from smaller mols (2)', () => {
                 run2([RM,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,19,AS|M,0,1,2|M,0|M,2|M,1|M,9|M], 2, 0, RE_OK);
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RM,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,19,AS|M,0,1,2|M,9|M,0,1,2|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy - (6 * Config.energyMetabolismCoef) - Config.energyCommand);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - (5 * Config.energyMetabolismCoef) - Config.energyCommand);
             })
             it('asm of one big mol', () => {
                 run2([RH,RM,RM,RH,RM,RM,LH,LH,0|M,AS|M,RH,RM,RM,RH,RM,RM,LH,LH,0|M,1|M], 1, 0, RE_ERR);
@@ -1224,14 +1224,14 @@ describe('src/irma/VM', () => {
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,RH,RM,RM,LH,LH,0|M,RH,RM,RM,RH,RM,RM,LH,LH,0|M,AS|M,1|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy - ((4 + 9) * Config.energyMetabolismCoef) - Config.energyCommand);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - ((4 + 8) * Config.energyMetabolismCoef) - Config.energyCommand);
             })
             it('asm of one big mol (2)', () => {
                 run2([RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,0|M,AS|M,0|M,RH,RM,RM,RH|M,RM,RM,RM,RM,LH,LH,0|M,1|M], 1, 0, RE_ERR);
                 const org = vm.orgs.get(0);
 
                 expect(org.code).toEqual(Uint8Array.from([RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,0|M,RH,RM,RM,RH,RM,RM,RM,RM,LH,LH,0|M,AS|M,0|M,1|M]));
-                expect(org.energy).toEqual(Config.LUCAS[0].energy - ((4 + 11) * Config.energyMetabolismCoef) - Config.energyCommand);
+                expect(org.energy).toEqual(Config.LUCAS[0].energy - ((4 + 10) * Config.energyMetabolismCoef) - Config.energyCommand);
             })
             it('asm should fail if part of the mol found', () => {
                 run2([RM,RH,RM,RM,RH,RM,RM,RM,LH,LH,18,AS|M,0,1,2|M,0|M,1|M,9|M], 9, 0, RE_ERR);
