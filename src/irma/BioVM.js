@@ -164,8 +164,7 @@ class BioVM extends VM {
                 if (nearLen + code.length > ORG_CODE_MAX_SIZE) {org.re = RE_SPECIAL; return}
                 const idx     = this._lastAtomIdx(code, org.heads[org.head]) + 1;
                 org.code      = code.insert(idx, nearOrg.code);
-                const isOrg   = nearOrg instanceof Organism;
-                if (isOrg) {org.energy += nearOrg.energy; this.delOrg(nearOrg)}
+                if (nearOrg instanceof Organism) {org.energy += nearOrg.energy; this.delOrg(nearOrg)}
                 else {this.delMol(nearOrg)}
                 org.re        = nearLen;
                 Compiler.compile(org, false);                 // Safe recompilation without loosing metadata

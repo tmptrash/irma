@@ -19,39 +19,10 @@ describe('src/irma/VM', () => {
     const M          = Config.CODE_8_BIT_MASK;
     
     const TG         = Config.CODE_CMDS.TOGGLE;
-    const EQ         = Config.CODE_CMDS.EQ;
-    const NO         = Config.CODE_CMDS.NOP;
-    const AD         = Config.CODE_CMDS.ADD;
-    const SU         = Config.CODE_CMDS.SUB;
-    const MU         = Config.CODE_CMDS.MUL;
-    const DI         = Config.CODE_CMDS.DIV;
     const IN         = Config.CODE_CMDS.INC;
     const DE         = Config.CODE_CMDS.DEC;
-    const RS         = Config.CODE_CMDS.RSHIFT;
     const LS         = Config.CODE_CMDS.LSHIFT;
-    const RA         = Config.CODE_CMDS.RAND;
-    const FP         = Config.CODE_CMDS.IFP;
-    const FN         = Config.CODE_CMDS.IFN;
-    const FZ         = Config.CODE_CMDS.IFZ;
-    const FG         = Config.CODE_CMDS.IFG;
-    const FL         = Config.CODE_CMDS.IFL;
-    const FE         = Config.CODE_CMDS.IFE;
-    const FNE        = Config.CODE_CMDS.IFNE;
-    const LP         = Config.CODE_CMDS.LOOP;
-    const CA         = Config.CODE_CMDS.CALL;
-    const FU         = Config.CODE_CMDS.FUNC;
-    const RE         = Config.CODE_CMDS.RET;
-    const EN         = Config.CODE_CMDS.END;
-    const NA         = Config.CODE_CMDS.NAND;
-    const AG         = Config.CODE_CMDS.AGE;
-    const LI         = Config.CODE_CMDS.LINE;
-    const LE         = Config.CODE_CMDS.LEN;
-    const LF         = Config.CODE_CMDS.LEFT;
-    const RI         = Config.CODE_CMDS.RIGHT;
     const SA         = Config.CODE_CMDS.SAVE;
-    const LO         = Config.CODE_CMDS.LOAD;
-    const RD         = Config.CODE_CMDS.READ;
-    const BR         = Config.CODE_CMDS.BREAK;
 
     const JO         = Config.CODE_CMDS.JOIN;
     const SP         = Config.CODE_CMDS.SPLIT;
@@ -124,7 +95,7 @@ describe('src/irma/VM', () => {
      */
     function run(code, cfg, move) {
         Config.codeLinesPerIteration = Math.max(...code.map(c => c.length));
-        Object.assign(Config, {LUCAS: (new Array(code.length - cfg.molAmount).fill(0).map(() => {return {code: ''}}))});
+        Object.assign(Config, {LUCAS: (new Array(code.length - cfg.molAmount).fill(0).map(() => {return {code: '', energy: 100}}))});
         Object.assign(Config, cfg);
         vm  = new BioVM({animate: false});
         for (let i = 0; i < move.length; i++) {
@@ -213,6 +184,7 @@ describe('src/irma/VM', () => {
                 expect(vm.orgs.items).toBe(1);
                 expect(vm.orgsMols.items).toBe(1);
                 expect(vm.orgs.get(0).code).toEqual(Uint8Array.from([JO|M,JO|M]));
+                expect(vm.orgs.get(0).energy.toFixed(2)).toEqual((Config.LUCAS[0].energy * 2 - Config.energyCommand * 2).toFixed(2));
             });
             it('Checks joining right organism at the end of the code',  () => {
                 run([[0|M],[1,JO|M]], {molAmount: 0}, [1,0]);
