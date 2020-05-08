@@ -294,7 +294,7 @@ class BioVM extends VM {
                 const offset = this._getOffset(org);
                 const dot = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
-                (org.packet = this.orgsMols.get(dot)).hasOwnProperty('energy') ? this.delOrg(org.packet) : this.delMol(org.packet);
+                (org.packet = this.orgsMols.get(dot)) instanceof Organism ? this.delOrg(org.packet) : this.delMol(org.packet);
                 return;
             }
             /**
@@ -779,7 +779,7 @@ class BioVM extends VM {
         while (packet) {
             const offset = rand(MAX_OFFS);
             if (world.index(offset) > -1) {continue}
-            packet.hasOwnProperty('energy') ? this.addOrg(null, offset, packet.code, packet.energy) : this.addMol(offset, packet.code);
+            packet instanceof Organism ? this.addOrg(null, offset, packet.code, packet.energy) : this.addMol(offset, packet.code);
             packet = packet.packet;
         }
     }
@@ -994,7 +994,7 @@ class BioVM extends VM {
      * @return {Number} Index of last atom
      */
     _lastAtomIdx(code, idx) {
-        const len = code.length;
+        const len = code.length - 1;
         idx = this._fixIndex(code, idx);
         // eslint-disable-next-line no-empty
         while ((code[idx] & MASK8) === 0 && idx < len) {idx++}

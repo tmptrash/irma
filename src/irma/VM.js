@@ -157,7 +157,6 @@ class VM {
                     // Cosmic ray mutations
                     //
                     if (org.age % org.period === 0 && mutationPeriod > 0) {Mutations.mutate(this, org)}
-
                     const cmd = code[line] & CODE_8_BIT_RESET_MASK;
                     // eslint-disable-next-line default-case
                     switch (cmd) {

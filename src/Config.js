@@ -90,7 +90,7 @@ module.exports = {
      * Turns on debug mode. In this case special randomizer with specified seed will be set
      * and every time on world reload all evolution will go through the same steps
      */
-    debugMode                  : false,
+    debugMode                  : true,
     debugSeed                  : 2,
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
@@ -409,7 +409,7 @@ module.exports = {
      * Molecules related configs
      */
     molSunPeriod               : 1,
-    molAmount                  : Math.round(WIDTH * HEIGHT * .07), // 5% of molecules
+    molAmount                  : Math.round(WIDTH * HEIGHT * .07), // 7% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,

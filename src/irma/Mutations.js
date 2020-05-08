@@ -94,11 +94,11 @@ class Mutations {
         else if (offset > MAX_OFFS) {offset = org.offset - LINE_OFFS}
         const dot       = vm.world.index(offset);
         if (dot > -1) {return} // something on the way
-        const idx       = rand(code.length);
+        let idx         = rand(code.length);
         const dstCmd    = code[idx];
         const isMol     = (dstCmd & CODE_8_BIT_MASK) > 0;
         org.code        = code.splice(idx, 1);
-        if (isMol) {org.code[idx] |= CODE_8_BIT_MASK}
+        if (isMol) {if (idx >= org.code.length) {idx--} org.code[idx] |= CODE_8_BIT_MASK}
         vm.addMol(offset, new Uint8Array([dstCmd | CODE_8_BIT_MASK])); // one atom always final
         if (org.code.length < 1) {vm.delOrg(org); return}
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
@@ -117,12 +117,12 @@ class Mutations {
         if (srcMol.code.length < 2) {return}
         const srcCode   = srcMol.code;
         const dstIdx    = rand(code.length);
-        const srcIdx    = rand(srcCode.length);
+        let srcIdx      = rand(srcCode.length);
         const srcCmd    = srcCode[srcIdx];
         const isMol     = (srcCmd & CODE_8_BIT_MASK) > 0;
         org.code        = code.splice(dstIdx, 0, new Uint8Array([srcCmd]));
-        srcMol.code     = srcMol.code.splice(srcIdx, 1);
-        if (isMol) {srcMol.code[srcIdx] |= CODE_8_BIT_MASK}
+        srcMol.code     = srcCode.splice(srcIdx, 1);
+        if (isMol) {if (srcIdx >= srcMol.code.length) {srcIdx--} srcMol.code[srcIdx] |= CODE_8_BIT_MASK}
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
         Compiler.updateMetadata(org, dstIdx, dstIdx, 1);
     }
