@@ -1,4 +1,8 @@
 /**
+ * Mutations class. The purpose of this class is to change organisms code a little randomly.
+ * Code change breaks original organism in most cases, but sometimes it brings new effective
+ * mutations (features) to organism.
+ * 
  * @author flatline
  */
 const Config   = require('./../Config');
