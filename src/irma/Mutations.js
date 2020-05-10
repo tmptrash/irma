@@ -37,6 +37,10 @@ const CODE_COMMANDS         = Config.CODE_COMMANDS;
  */
 const CODE_MUTATION_AMOUNT  = .02;
 /**
+ * Max code size
+ */
+const ORG_CODE_MAX_SIZE     = Config.ORG_MAX_CODE_SIZE;
+/**
  * {Number} Last atom in molecule bit mask
  */
 const CODE_8_BIT_MASK       = Config.CODE_8_BIT_MASK;
@@ -114,6 +118,7 @@ class Mutations {
      * code position
      */
     static _onAdd (vm, code, org) {
+        if (code.length > ORG_CODE_MAX_SIZE) {return}
         const oMols     = vm.orgsMols;
         const items     = oMols.items;
         let srcMol;
