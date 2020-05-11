@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 4;
-const HEIGHT      = 1080 * 4;
+const WIDTH       = 1920 * 6;
+const HEIGHT      = 1080 * 6;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -343,7 +343,7 @@ module.exports = {
     codeMutateEveryClone       : 5,
     codeMutateMutations        : true,
     codeMutationPercent        : .01,
-    codeMutationPeriod         : 1000000,
+    codeMutationPeriod         : 10000000,
     /**
      * {Boolean} Turns on or off panzoom library
      */
@@ -358,8 +358,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : WIDTH / 8,
-    WORLD_CANVAS_HEIGHT        : HEIGHT / 8,
+    WORLD_CANVAS_WIDTH         : Math.round(WIDTH / 10),
+    WORLD_CANVAS_HEIGHT        : Math.round(HEIGHT / 10),
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -397,7 +397,7 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
-    orgMaxAge                  : 0,
+    orgMaxAge                  : 1000000,
     ORG_MAX_CODE_SIZE          : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
@@ -416,7 +416,7 @@ module.exports = {
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .002,
+    energyStepCoef             : .004,
     energyMetabolismCoef       : 10,
     energyCommand              : .0003,
     /**
