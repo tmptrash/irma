@@ -1,0 +1,378 @@
+#
+# func0
+# In:
+#   m-1   - wrong molecules amount
+#   m0    - back direction
+#   m1    - anabolism regime (-1)
+# Out:
+#   ax    - 1 - success
+#           0 - fail
+#
+# func0. Cuts the tail
+#
+func
+  load                        # ax=back dir
+  dir
+  len
+  rhead
+  split                @mol   # bx=back dir
+  lhead
+  reax
+end
+#
+# func1
+# Checks ate molecule and cut first atom if needed.
+# Turns off anabolism regime if last atom found.
+# Stores index of current atom in m2
+# In:
+#   mPos - 1
+#   head - 0
+#   m2   - cur atom idx
+#
+func
+  right                       # m2
+  #
+  # Loads first atom from ate molecule
+  #
+  rhead                @mol   # h1
+  mol
+  read
+  toggle                      # bx=ate first atom
+  #
+  # Loads index of current atom of needed molecule
+  #
+  load
+  read                        # ax=cur atom
+  #
+  # Returns memory pos
+  #
+  left                 @mol   # m1
+  #
+  # Unneeded atom
+  #
+  ifne
+    left                      # m0
+    lhead                     # h0
+    0
+    call
+    ifz                @mol
+      2
+      call
+    end
+    right                     # m1
+    ret
+  end                  @mol
+  #
+  # Compares two atoms. Splits first atom and cut other
+  #
+  0
+  catab
+  rmol
+  left                        # m0
+  #
+  # Resets head position
+  #
+  lhead                       # h0
+  call                 @mol
+  ifz
+    2
+    call
+  end
+  #
+  # Updates cur atom index
+  #
+  right                       # m1
+  right                @mol   # m2
+  load
+  inc                         # ax=cur atom index
+  save
+  #
+  # Checks if it's last atom
+  #
+  mol                         # bx=last atom idx
+  load                        # ax=cur atom idx
+  ifg                  @mol
+    #
+    # Joins all atoms together
+    #
+    mol                       # h0
+    toggle
+    sub  
+    inc                       # ax=mol len
+    toggle                    # bx=mol len
+    len                @mol
+    sub                       # ax=first atom idx
+    rhead                     # h1
+    smol
+    63
+    loop
+      0                @mol
+      dec
+      anab
+      reax
+      #
+      # Reaches last atom
+      #
+      ifn
+        break
+      end              @mol
+    end
+    lhead                     # h0
+    rmol
+    left                      # m1
+    0
+    save               @mol
+    right                     # m2
+  end
+  left                        # m1
+end
+#
+# Sets head0 to the beginnig of replicator
+#
+0
+smol                   @mol
+#
+# Create big loop
+#
+20
+toggle
+eq
+lshift                        # ax=20971520
+loop
+  #
+  # Step any direction, eat and checks if needed mol
+  #
+  8                    @mol
+  rand
+  dir
+  step
+  #
+  # Store back dir in m0
+  #
+  toggle                      # bx=dir
+  4
+  add                  @mol   # ax=back dir
+  save                        # m0=back dir
+  #
+  # We should have free space behind for wastes
+  #
+  reax
+  ifp
+    eq                        # ax=dir
+    join
+    reax               @mol   # ax=ate mol len
+    ifp                       # ate something
+      right                   # m1
+      #
+      # Checks anabolism regime
+      #
+      load
+      ifn
+        1
+        call           @mol
+        left                  # m0
+        cont
+      end
+      #
+      # Checks cur mol len
+      #
+      mol                     # h0
+      toggle                  # ax=molIdx1  bx=molIdx0
+      sub              @mol
+      inc                     # ax=cur mol len
+      save                    # m1=cur mol len
+      #
+      # Sets head1 to ate molecule
+      #
+      reax                    # ax=ate mol len
+      toggle                  # bx=ate mol len
+      len
+      sub              @mol   # ax=ate mol idx
+      rhead                   # h1
+      smol
+      lhead                   # h0
+      #
+      # Loads cur mol len into ax
+      #
+      load
+      left                    # m0
+      toggle           @mol   # bx=cur mol len
+      reax                    # ax=ate mol len
+      #
+      # Wrong length. Cut it
+      #
+      ifne
+        #
+        # Inc wrong molecules counter
+        #
+        left                  # m-1
+        load
+        inc
+        save           @mol
+        right                 # m0
+        #
+        # Try to get energy by catabolism
+        #
+        0
+        rhead                 # h1
+        catab
+        lhead                 # h0
+        #
+        # Cut bad molecules
+        #
+        call           @mol
+        ifz
+          2
+          call
+          ret
+        end
+      end              @mol
+      #
+      # Correct len. Check if needed
+      #
+      ife
+        #
+        # Compares current mol and eated
+        #
+        mcmp
+        reax
+        ifz
+          #
+          # Try to get energy by catabolism on every second molecule
+          #
+          2
+          rand         @mol
+          ifz
+            rhead
+            catab
+            lhead
+          end
+          #
+          # wrong mol, cut it
+          #
+          0            @mol
+          call
+          ifz
+            2
+            call
+            ret
+          end          @mol
+          #
+          # Generate big number: 63 << 5 === 2016
+          #
+          5
+          toggle
+          63
+          lshift
+          toggle              # bx=2016
+          #
+          # Inc wrong molecules counter
+          #
+          left         @mol   # m-1
+          load
+          inc
+          save                # ax=wrong mol amount
+          right               # m0
+          #
+          # Try to assemble needed molecule with anabolism. 
+          # If 63 molecules were wrong, then set anabolism regime
+          #
+          ifg
+            right      @mol   # m1
+            0
+            dec
+            save
+            #
+            # Sets cur atom idx
+            #
+            mol
+            right             # m2
+            save       @mol
+            left              # m1
+            left              # m0
+            # check ax here to break the loop
+          end
+          cont
+        end
+        #
+        # Needed mol, just leave it. Checks if 
+        # this is the end (last replicator mol)
+        #
+        1              @mol
+        toggle
+        33
+        lshift                # ax=66 - nop
+        right                 # m1
+        save                  # m1=66 - nop
+        mol            @mol
+        read
+        toggle                # bx=first atom
+        load
+        left                  # m0
+        ife
+          #
+          # Loads back dir from m0
+          #
+          load         @mol
+          toggle              # bx=back dir
+          17
+          save
+          2
+          call
+          ret          @mol
+        end
+        #
+        # Resets wrong molecules counter 
+        #
+        left                  # m-1
+        0
+        save
+        right                 # m0
+        #
+        # Move h0 to the next mol
+        #
+        rmol           @mol
+      end
+    end
+  end
+end
+#
+# func2
+# Cut wastes. The code below is not random. The reason behind
+# it, that nop atom should be the first atom in a last molecule.
+# Any other molecule must not have it on the beginning
+# In:
+#   h0   - last mol
+#
+func
+  63                   @mol
+  #
+  # We have to try cut wastes many times in different places
+  #
+  loop
+    8
+    8
+    rand
+    dir
+    step               @mol
+    line
+    smol
+    rmol
+    rmol
+    rmol
+    reax               @mol
+    ifn
+      ret
+    end
+    len
+    split
+    reax               @mol
+    nop
+    ifp
+      ret
+    end
+  end
+end                    @mol
+#
+# Food section
+#

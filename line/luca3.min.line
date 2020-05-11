@@ -1,0 +1,234 @@
+nop
+nop
+nop               @mol
+func                    # func0
+  63
+  lshift          @mol
+  lshift                # 252 molecules/iterations
+  lshift
+  lshift          @mol
+  lshift
+  loop
+    right         @mol  # m1
+    mcmp                # re=0|1
+    reax                # ax=0|1
+    ifp           @mol
+      mol               # ax=mol
+      ret
+    end           @mol
+    rmol
+    reax
+    ifn           @mol
+      0
+      dec
+      ret         @mol
+    end
+    mol
+    inc           @mol  # ax=start+1
+    toggle              # ax=end       bx=start+1
+    left                # m0
+    load          @mol  # ax=limit     bx=start+1
+    ifl
+      0
+      dec         @mol
+      ret
+    end
+  end             @mol
+end
+func                    # func1
+  load            @mol  # ax=start
+  right                 # m3
+  toggle
+  load            @mol  # ax=end       bx=start
+  toggle                # ax=start     bx=end
+  find
+  right           @mol  # m4
+  save                  # m2=idx-1
+  toggle
+  reax            @mol
+  ifz
+    left                # m3
+    left          @mol  # m2
+    dec
+    ret
+  end             @mol
+  toggle                # ax=idx
+  dec
+  toggle          @mol  # bx=idx-1
+  0
+  dec                   # ax=-1        bx=idx-1
+  catab           @mol
+  mol
+  toggle
+  sub             @mol
+  toggle                # bx=molLen
+  load                  # ax=molIdx-1
+  add             @mol  # ax=molEndIdx
+  toggle                # bx=molEndIdx+1
+  0
+  dec             @mol  # ax-1         bx=molEndIdx+1
+  catab
+  load                  # ax=molIdx
+  savea           @mol  # m4=molIdx    m5=molEndIdx
+  smol
+  0
+  smol            @mol
+  lmol
+  w2mol
+  load            @mol
+  smol
+  right
+  10              @mol
+  loop
+    mol
+    load          @mol  # ax=molEnd1   bx=molEnd2
+    ife
+      break
+    end           @mol
+    0
+    dec
+    anab          @mol
+  end
+  left
+end               @mol
+func                    # func2
+  0
+  smol            @mol
+  lmol
+  w2mol
+  mol             @mol  # ax=last molecule
+  save                  # m0=last molecule
+  right                 # m1
+  0               @mol
+  smol
+  cmol                  # m1-m3[nop,nop,nop]
+  rmol            @mol
+  left                  # m0
+  call                  # ax=sep1Idx
+  ifn             @mol
+    ret
+  end
+  toggle          @mol  # bx=sep1Idx
+  left                  # m0
+  0
+  smol            @mol
+  save                  # m0=i
+  toggle                # ax=sep1Idx
+  smol            @mol
+  rmol
+  reax
+  ifn             @mol
+    ret
+  end
+  mol             @mol
+  right                 # m1
+  save                  # m1=foodStart
+  mol2w           @mol
+  mol
+  right                 # m2
+  save            @mol  # m2=foodEnd
+  left                  # m1
+  left                  # m0
+  load            @mol
+  smol
+  right
+  right           @mol
+  right                 # m3
+  63
+  lshift          @mol
+  lshift
+  lshift
+  lshift          @mol
+  lshift
+  loop
+    cmol          @mol  # m3[nop,nop,nop]
+    left                # m2
+    left                # m1=foodStart
+    load          @mol
+    smol
+    right               # m2
+    0             @mol
+    call                # ax=molIdx
+    ifn
+      left        @mol  # m1
+      left              # m0
+      load
+      smol        @mol  # mol=molIdx
+      right             # m1
+      1
+      call        @mol
+      ifn
+        60
+        lshift    @mol
+        lshift
+        lshift
+        lshift    @mol  # ax=960
+        toggle          # bx=960
+        len             # ax=len      bx=960
+        ifg       @mol
+          load          # ax=foodStart
+          smol
+          len     @mol
+          split
+        end
+        ret       @mol
+      end
+    end
+    mmol          @mol
+    left                # m2=foodEnd
+    load
+    smol          @mol
+    lmol
+    mol
+    save          @mol  # m2=foodEnd-1
+    0
+    smol
+    lmol          @mol
+    w2mol
+    left                # m1
+    left          @mol  # m0
+    load
+    smol
+    rmol          @mol
+    mol
+    save                # m0=i++
+    toggle        @mol  # bx=i
+    right               # m1=foodStart
+    load                # ax=foodStart bx=i
+    ife           @mol
+      break
+    end
+    right         @mol  # m2
+    right               # m3
+  end
+  17              @mol
+  save
+  len
+  split           @mol
+end 
+2
+call              @mol
+5
+toggle                  # bx=5
+30                @mol
+loop
+  8
+  rand            @mol
+  step
+  join
+  ifl             @mol  # ax=rnd       bx=5
+    reax
+    ifp
+      0           @mol
+      smol
+      lmol
+      catab       @mol
+      len
+      split
+    end           @mol
+  end
+end
+ret               @mol
+nop
+nop
+nop               @mol

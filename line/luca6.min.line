@@ -1,0 +1,114 @@
+func                          # func0
+  63
+  loop
+    split
+    reax
+    ifp              @mol
+      break
+    end
+    8
+    rand
+    dir
+    step             @mol
+  end
+end
+0
+smol                          # h0=cur mol
+rhead                         # h1=cur clone mol
+len                  @mol
+smol
+rhead                         # h2=food
+smol
+20
+toggle
+eq                   @mol
+lshift                        # ax=20971520
+loop
+  10
+  loop
+    rand
+    dir              @mol
+    step
+    join
+    len
+    smol                      # h2=food
+    reax
+    ifp              @mol
+      0
+      catab
+      len
+      smol
+    end
+    ifn              @mol
+      lhead                   # h1
+      rmol
+      0
+      call
+      len
+      smol           @mol
+      rhead                   # h2
+    end
+  end
+  lhead                       # h1=cur clone mol
+  mol                         # ax=cur clone mol
+  toggle             @mol     # ax=cur clone mol
+  rmol
+  reax
+  ifn
+	lmol
+    rhead                     # h2
+    cont             @mol
+  end
+  toggle                      # ax=cur clone mol
+  lhead                       # h0=cur mol
+  asm
+  rhead                       # h1=cur clone mol
+  reax               @mol
+  lmol
+  lhead                       # h0=cur mol
+  ifp
+    1
+    toggle
+    33               @mol
+    lshift                    # ax=66 - nop
+    save                      # m0=66 - nop
+    mol
+    read
+    toggle
+    load             @mol
+    ife
+      rmol                    # h0++
+      rhead                   # h1=cur clone mol
+      rmol
+      17
+      save           @mol
+      lhead                   # h0=cur mol
+      0
+      call
+      rhead                   # h1
+      len
+      smol           @mol
+      lhead                   # h0
+      50
+      save                    # resets unique clone id (17)
+      0
+      call
+      ret            @mol
+    end
+    rmol                      # h0++
+    rhead                     # h1=cur clone mol
+    rmol
+    lhead                     # h0=cur mol
+  end                @mol
+  rhead
+  rhead                       # h2=food
+end
+lhead
+lhead
+nop                  @mol
+nop                           # tail separator atom
+nop
+nop
+nop
+nop
+ret                  @mol

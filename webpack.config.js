@@ -11,7 +11,7 @@ const Cleaner  = require('clean-webpack-plugin');
  * {String} Determine development mode. Possible values: 'development', 'production'.
  * In package.json may be set as parameter: npx webpack --mode=development
  */
-const NODE_ENV = process.env.NODE_ENV;
+const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 /**
  * {Boolean} Means development mode. In this mode we have to suppress code minification
  * and add source maps into it for debug
@@ -21,7 +21,10 @@ const DEV_MODE = NODE_ENV === 'development';
 module.exports = {
     mode   : NODE_ENV,
     entry  : './src/Main.js',
-    watch  : DEV_MODE,
+    //
+    // We do not need watching at all
+    //
+    watch  : false,
     devtool: DEV_MODE ? 'source-map' : 'source-map', // 'source-map' doesn't work with karma
 
     module : {

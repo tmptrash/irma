@@ -3,3 +3,6 @@ node_modules/
 coverage/
 dist/
 package-lock.json
+line/new.line
+line/orig.line
+line/luca2.line

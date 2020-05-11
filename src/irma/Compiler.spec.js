@@ -1,6 +1,6 @@
 describe('src/irma/Bytes2Code', () => {
     const Bytes2Code    = require('./Bytes2Code');
-    const Config        = require('./../Config');
+    const Config        = require('../Config');
     const CODE_CMD_OFFS = Config.CODE_CMD_OFFS;
 
     it('Checks constant number command', () => {

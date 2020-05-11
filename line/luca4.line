@@ -1,0 +1,326 @@
+#
+# In:
+#   m0    - i
+#   m1..x - mol
+# Out:
+#   ax    - 1 - success
+#           0 - fail
+#
+# func0. Cuts the tail
+#
+func
+  left
+  load
+  right
+  toggle               @mol   # bx=back dir
+  len
+  split                       # bx=back dir
+  reax
+end
+#
+# func1. Assemble needed molecule with anabolism.
+# Joins outside molecules and find needed atoms
+# (by one) inside them. If found, then cut it and
+# join to temporary molecule.
+# In:
+#   m0    - i
+#   m1..x - i mol
+# Out:
+#   ax    - 1 - success
+#           0 - fail
+#
+func
+  #
+  # Sets to m1 - j, current atom index
+  #
+  0
+  right
+  save
+  left
+  #
+  # Gets needed molecule len anf loop by it's atoms
+  #
+  load                        # ax=i
+  smol
+  mol
+  toggle
+  sub
+  inc                         # ax=needed mol len
+  loop
+    #
+    # This loop try to find molecule with current needed atom
+    #
+	63
+	toggle
+	eq
+	mul                       # 3969 attempts to find needed atom
+    loop
+	  #
+	  # Step in random direction
+	  #
+      8
+      rand
+      step
+	  toggle
+	  reax
+      ifp
+	    #
+		# Joins nearest molecule
+		#
+	    eq
+	    join
+		reax                  # ax=joined mol len
+		ifp
+		  #
+		  # Sets mol head to the first joined atom
+		  #
+		  toggle              # bx=joined mol len
+		  len
+		  sub                 # ax=first joined atom
+		  right               # m1
+		  right               # m2
+		  save
+		  smol
+		  #
+		  # Loop by atoms of joined mol to find needed
+		  #
+		  toggle              # ax=joined mol len
+		  loop
+		    load              # m2 - first joined atom
+			toggle            # bx=first joined atom
+			left              # m1 - j
+			load
+			right             # m2
+			add               # ax=cur joined atom
+			read              # ax=cur joined atom value
+			right             # m3
+			save              # m3=cur joined atom value
+			left              # m2
+			left              # m1
+			load              # ax=j
+			toggle            # bx=j
+			left              # m0
+			load              # ax=i
+			add               # ax=cur needed atom
+			toggle            # bx=cur needed atom
+			right             # m1
+			right             # m2
+			right             # m3
+			load              # ax=cur joined atom value
+			left              # m2
+			ife
+			  # TODO: found needed atom. cut it!!
+			end
+		  end
+		  left                # m1
+		  left                # m0
+		end
+	  end
+    loop
+	#
+	# Updates j index
+	#
+	right
+	load
+	inc
+	save
+	left
+  end
+  0
+end
+#
+# Reset i counter in m0
+#
+0                      @mol
+save
+#
+# Create big loop
+#
+len                           # ~70
+toggle
+eq
+mul                    @mol
+loop
+  #
+  # Copy current mol into m1..x
+  #
+  load                        # ax=i
+  smol
+  right                       # m1
+  cmol                 @mol   # m1..x - i mol
+  left                        # m0
+  #
+  # Step any direction, eat and checks if needed mol
+  #
+  8
+  rand
+  step
+  #
+  # Store back dir in m-1
+  #
+  toggle               @mol   # bx=dir
+  4
+  add                         # ax=back dir
+  left                        # m-1
+  save
+  right                @mol   # m0
+  #
+  # We should have free space behind for wastes
+  #
+  reax
+  ifp
+    eq                        # ax=dir
+    join
+    reax               @mol
+    ifp                       # ate something
+      #
+      # Checks ate mol len
+      #
+      load                    # ax=cur mol idx
+      smol
+      mol
+      toggle           @mol   # ax=molIdx1  bx=molIdx0
+      sub                     # ax=cur mol len
+      inc
+      toggle                  # bx=cur mol len
+      reax                    # ax=ate mol len
+      #
+      # Cut bad mol
+      #
+      ifne             @mol   # bad ate mol len
+        toggle                # bx=ate mol len
+        len
+        sub                   # ax=old code len
+        smol
+        #
+        # Try to get energy by catabolism
+        #
+        0              @mol
+        catab
+        #
+        # Cut bad molecules
+        #
+        call
+        ifz
+          break
+        end            @mol
+      end
+      #
+      # Sets mol head to the end
+      #
+      ife
+        toggle                  # bx=ate mol len
+        len
+        sub              @mol
+        smol
+        #
+        # Compares current mol and eated
+        #
+        right                   # m1
+        mcmp
+        left                    # m0
+        reax             @mol
+        ifz                     # unneeded mol cut it
+          0
+          #
+          # Try to get energy by catabolism
+          #
+          catab
+          call
+          ifz            @mol
+            break
+          end
+          #
+          # Try to assemble needed molecule with anabolism
+          #
+          10
+          rand
+          toggle
+          3
+          #
+          # In 20% of cases call anabolism based function
+          #
+		  ifl
+            1
+            call
+            # check ax here to break the loop
+            1
+          end
+          ifg
+            0
+          end
+          ife
+            0
+          end
+        end
+        ifp              @mol   # needed mol
+          #
+          # Increase i, in m0
+          #
+          load
+          smol
+          rmol
+          mol
+          save           @mol
+          #
+          # Checks if this is the end (last replicator mol)
+          #
+          33
+          lshift                # ax=66 - nop
+          toggle                # bx=66
+          right
+          load           @mol
+          left
+          ife
+            #
+            # Loads back dir from m-1
+            #
+            left                # m-1
+            load
+            right        @mol
+            toggle              # bx=back dir
+            17
+            save
+            break
+          end            @mol
+        end
+      end
+    end
+  end
+end                      @mol
+#
+# Cut wastes. The code below is not random. The reason behind
+# it, that nop atom should be the first atom in a last molecule.
+# Any other molecule must not have it on the beginning
+#
+63
+#
+# We have to try cut wastes many times in different places
+#
+loop
+  8
+  8
+  rand                 @mol
+  step
+  line
+  smol
+  rmol
+  rmol                 @mol
+  rmol
+  rmol
+  reax
+  ifn
+    break              @mol
+  end
+  len
+  split
+  reax
+  nop                  @mol
+  nop                         # separator. must be first atom of last mol 
+  ifp
+    break
+  end
+end                    @mol
+#
+# Food section
+#

@@ -60,7 +60,14 @@ func             # func 0
     toggle       # ax=0       bx=findIdx  ret=len
     retax        # ax=len     bx=findIdx
     dec          # ax=len-1   bx=findIdx
-    toggle       # ax=findIdx bx=len-1
+	toggle       # ax=findIdx bx=len-1
+	axret        # ax=findIdx bx=len-1    ret=findIdx
+	pop          # ax=0       bx=len-1
+	push         # ax=0       bx=len-1
+	toggle       # ax=len-1   bx=0
+	sub          # ax=len-1   bx=0
+	toggle       # ax=0       bx=len-1
+	retax        # ax=findIdx bx=len-1
     ifg
       pop
       pop        # resets stack
@@ -89,10 +96,11 @@ func             # func 0
   sub            # ax=copyIdx bx=sepIdx1
   toggle         # ax=sepIdx1 bx=copyIdx
   17             # ax=17      bx=copyIdx
-  axret          # ax=17      bx=copyIdx ret=17  
+  push           # ax=17      bx=copyIdx
   len            # ax=len     bx=copyIdx
   toggle         # ax=copyIdx bx=len
   split          # ax=copyIdx bx=len
+  pop            # ax=17      bx=len
 end
 #
 # Eating function. Randomly change direction and
@@ -105,7 +113,8 @@ func             # func 1
     2            # ax=2       bx=?      right side
   end
   ifz
-    -1           # ax=-1      bx=?
+    0            # ax=0       bx=?
+    not          # ax=-1      bx=?
     rand         # ax=2       bx=?
     step         # ax=2       bx=?
     step         # ax=2       bx=?
@@ -115,8 +124,6 @@ func             # func 1
   len            # ax=len     bx=2
   toggle         # ax=2       bx=len
   push           # ax=2       bx=len
-  1              # ax=0       bx=len
-  axret          # ax=1       bx=len    ret=1
   pop            # ax=2       bx=len
   join           # ax=2       bx=len    ret=1
 end
@@ -124,10 +131,13 @@ end
 # Checks if body length is long to cut random peace of it 
 #
 func             # func 2
-  900            # ax=900     bx=0
-  toggle         # ax=0       bx=900
-  len            # ax=len     bx=900
-  ifl            # ax=len     bx=900
+  100            # ax=100     bx=0
+  toggle         # ax=0       bx=100
+  5              # ax=5       bx=100
+  mul            # ax=500     bx=100
+  toggle         # ax=100     bx=500
+  len            # ax=len     bx=500
+  ifl            # ax=len     bx=500
     ret
   end
   3
@@ -140,7 +150,7 @@ func             # func 2
   add            # ax=cutIdx  bx=sepIdx
   toggle         # ax=sepIdx  bx=cutIdx
   0              # ax=0       bx=cutIdx
-  axret          # ax=0       bx=cutIdx ret=0
+  axret          # ax=0       bx=cutIdx    ret=0
   len            # ax=len     bx=cutIdx
   toggle         # ax=cutIdx  bx=len
   split          # ax=cutIdx  bx=len
@@ -151,13 +161,14 @@ end
 func             # func 3
   0              # ax=0       bx=?
   axret          # ax=0       bx=?         ret=0
-  1023           # ax=1023    bx=?
-  toggle         # ax=?       bx=1023
-  6              # ax=6       bx=1023
-  add            # ax=1029    bx=1023     (1029 - nop command)
-  toggle         # ax=1023    bx=1029
-  -1             # ax=-1      bx=1029
-  toggle         # ax=1029    bx=-1  
+  191            # ax=191     bx=?
+  toggle         # ax=?       bx=191
+  6              # ax=5       bx=191
+  add            # ax=197     bx=191      (197 - nop command)
+  toggle         # ax=197     bx=191
+  0              # ax=0       bx=191
+  not            # ax=-1      bx=191
+  toggle         # ax=191     bx=-1  
   find           # ax=sepIdx  bx=-1
   axret          # ax=sepIdx  bx=-1
 end
@@ -169,7 +180,9 @@ end
 # that repeat all above...
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
-255              # ax=255     bx=0 
+128              # ax=128     bx=0 
+lshift           # ax=256     bx=0
+dec              # ax=255     bx=0
 lshift
 lshift
 lshift

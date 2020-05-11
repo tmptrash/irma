@@ -1,15 +1,15 @@
 /**
- * This is application class. Entry point of irma project. Instance of this class
- * should be created in index.html file. Creates main (infinite) loop of application
- * and creates main (manager) object - Virtual Machine (VM.js). The only thing you
- * have to do with this class is call run() method to run VM and all inner stuff.
+ * This is application class. Creates main (infinite) loop of application and creates
+ * main (manager) object - Virtual Machine (BioVM.js). The only thing you have to do
+ * with this class is call run() method to run BioVM and all inner stuff. You may also
+ * pause execution by calling pause(paused:Boolean) method.
  */
-const VM = require('./VM');
+const BioVM = require('./BioVM');
 
 class Irma {
     constructor() {
+        this.vm     = new BioVM();
         this._pause = false;
-        this._vm    = new VM();
         this._runCb = this.run.bind(this);
 
         this._initLoop();
@@ -17,7 +17,7 @@ class Irma {
 
     run() {
         if (this._pause) {return}
-        this._vm.run();
+        this.vm.run();
         this.zeroTimeout(this._runCb);
     }
 
@@ -25,19 +25,19 @@ class Irma {
         return this._pause;
     }
 
-    set pause(val) {
-        this._pause = val;
+    set pause(paused) {
+        this._pause = paused;
         this.run();
     }
 
     get ready() {
-        return this._vm.ready;
+        return this.vm.ready;
     }
 
     destroy() {
-        this._vm.destroy();
-        this._vm       = null;
-        this._runCb    = null;
+        this.vm.destroy();
+        this.vm     = null;
+        this._runCb = null;
     }
 
     /**

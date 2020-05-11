@@ -1,0 +1,172 @@
+#
+# LUCA v6
+# This is Last Universal Common Ancestor - first leaving 
+# replicator in irma simulator. He is written by developer.
+# He may eat, move around the world randomly, make his clones
+# and gather energy by doing catabolism. He uses three heads
+# to do clone:
+#   h0 - current cloning molecule
+#   h1 - cur clone mol
+#   h2 - food
+#
+# @author flatline
+#
+#
+# Splits wastes or cloning. Search for empty space near
+#
+func                          # func0
+  63
+  loop
+    split
+    reax
+    ifp              @mol
+      break
+    end
+    8
+    rand
+    dir
+    step             @mol
+  end
+end
+#
+# Reset 0 head
+#
+0
+smol                          # h0=cur mol
+#
+# Sets heads 1,2 to the end
+#
+rhead                         # h1=cur clone mol
+len                  @mol
+smol
+rhead                         # h2=food
+smol
+#
+# Global big loop
+#
+20
+toggle
+eq                   @mol
+lshift                        # ax=20971520
+loop
+  #
+  # 10 random steps & eat
+  #
+  10
+  loop
+    rand
+    dir              @mol
+    step
+    join
+    len
+    smol                      # h2=food
+    #
+    # Get energy by catabolism
+    #
+    reax
+    ifp              @mol
+      0
+      catab
+      len
+      smol
+    end
+    #
+    # Organism is full
+    #
+    ifn              @mol
+      #
+      # Search for empty place to split wastes
+      #
+      lhead                   # h1
+      rmol
+      0
+      call
+      len
+      smol           @mol
+      rhead                   # h2
+    end
+  end
+  #
+  # Do one step of cloning
+  #
+  lhead                       # h1=cur clone mol
+  mol                         # ax=cur clone mol
+  toggle             @mol     # ax=cur clone mol
+  rmol
+  reax
+  #
+  # No mols eated, continue eat and move
+  #
+  ifn
+    #
+    # We have to reset cur head back to h2
+    #
+	lmol
+    rhead                     # h2
+    cont             @mol
+  end
+  toggle                      # ax=cur clone mol
+  lhead                       # h0=cur mol
+  asm
+  rhead                       # h1=cur clone mol
+  reax               @mol
+  lmol
+  lhead                       # h0=cur mol
+  ifp
+    #
+    # Last atom - nop means we have to split clonned org
+    #
+    1
+    toggle
+    33               @mol
+    lshift                    # ax=66 - nop
+    save                      # m0=66 - nop
+    mol
+    read
+    toggle
+    load             @mol
+    ife
+      rmol                    # h0++
+      rhead                   # h1=cur clone mol
+      rmol
+      17
+      save           @mol
+      lhead                   # h0=cur mol
+      #
+      # Search for empty place to split
+      #
+      0
+      call
+      #
+      # Cut wastes
+      #
+      rhead                   # h1
+      len
+      smol           @mol
+      lhead                   # h0
+      50
+      save                    # resets unique clone id (17)
+      #
+      # Search for empty place to split
+      #
+      0
+      call
+      ret            @mol
+    end
+    rmol                      # h0++
+    rhead                     # h1=cur clone mol
+    rmol
+    lhead                     # h0=cur mol
+  end                @mol
+  rhead
+  rhead                       # h2=food
+end
+lhead
+lhead
+nop                  @mol
+nop                           # tail separator atom
+nop
+nop
+nop
+nop
+ret                  @mol

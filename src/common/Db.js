@@ -38,6 +38,7 @@ class Db {
             this._db.orgs.bulkPut(this._buf);
             this._bufIndex = 0;
         }
+        // TODO: there is no generation inside organism now
         this._buf[this._bufIndex++] = {id: org.id, code: org.code.slice(), parent: parent && parent.id || null, generation: org.generation};
     }
 

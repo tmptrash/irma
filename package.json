@@ -1,18 +1,21 @@
 {
   "name": "irma",
   "version": "0.2.0",
-  "description": "irma - JavaScript digital organisms simulator",
+  "description": "irma - JavaScript digital organisms ecosystem simulator",
   "main": "irma.js",
   "directories": {
     "doc": "doc"
   },
   "dependencies": {
-    "dexie": "^2.0.4",
-    "panzoom": "^4.5.0"
+    "panzoom": "^8.4.0"
   },
   "scripts": {
-    "test": "SET NODE_ENV=production& npx karma start",
-    "dtest": "SET NODE_ENV=development& npx karma start",
+    "test": "run-script-os",
+    "dtest": "run-script-os",
+    "test:win32": "SET NODE_ENV=production& npx karma start",
+    "dtest:win32": "SET NODE_ENV=development& npx karma start",
+    "test:linux": "export NODE_ENV=production;export CHROME_BIN=$(which chromium);npx karma start",
+    "dtest:linux": "export NODE_ENV=development;export CHROME_BIN=$(which chromium);npx karma start",
     "cover": "istanbul cover tests/run.js",
     "prod": "npx webpack --mode=production",
     "dev": "npx webpack --mode=development"
@@ -44,6 +47,12 @@
     "babel-preset-env": "^1.7.0",
     "babel-register": "latest",
     "clean-webpack-plugin": "^0.1.19",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jasmine": "^4.1.0",
+    "eslint-plugin-prettier": "^3.1.1",
     "ignore-loader": "^0.1.2",
     "istanbul": "^0.4.5",
     "jasmine": "^3.3.1",
@@ -52,6 +61,8 @@
     "karma-chrome-launcher": "^3.0.0",
     "karma-jasmine": "^2.0.1",
     "karma-webpack": "^4.0.2",
+    "prettier": "^1.19.1",
+    "run-script-os": "^1.0.7",
     "watchify": "^3.11.1",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6"

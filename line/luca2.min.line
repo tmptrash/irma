@@ -1,0 +1,155 @@
+nop
+nop
+nop
+func
+  60
+  toggle
+  5
+  mul             # 300 mols max
+  loop
+    mol           # ax=idx0   bx=idx1
+    toggle
+    sub
+    inc           # ax=molLen
+    toggle        # bx=molLen
+    load          # ax=len
+    ife
+      right       # m1
+      mol         # ax=idx0   bx=idx1
+      cmp         # re=0|1|-1
+      left        # m0
+      toggle      # ax=idx1   bx=idx0
+      reax        # ax=0|1    bx=idx0
+      ifp
+        toggle    # ax=idx0
+        axre      # re=idx0
+        ret
+      end
+    end
+    rmol
+    reax
+    ifn
+      0
+      dec
+      axre
+      ret
+    end
+  end
+end
+func
+  60
+  toggle
+  5
+  mul             # 300 mols max
+  loop
+    mol
+    toggle        # bx=idx0
+    rmol
+    reax
+    ifn
+      toggle      # ax=idx0
+      ret
+    end
+  end
+  0
+  dec
+  axre
+end
+func
+  3
+  save            # m[3]
+  right           # m1
+  63
+  toggle
+  3
+  add             # ax=nop
+  save            # m[3,nop]
+  right           # m2
+  save            # m[3,nop,nop]
+  right           # m3
+  save            # m[3,nop,nop,nop]
+  left            # m2
+  left            # m1
+  left            # m0
+  0
+  smol            # mol=0
+  call
+  reax            # re=offs|-1
+  ifn
+    ret
+  end
+  left            # m-1
+  rmol
+  mol
+  save            # m-1=sep0+1
+  right           # m0
+  0
+  call
+  reax            # re=offs-1
+  ifn
+    ret
+  end
+  rmol
+  mol
+  save            # m0=sep1+1
+  right           # m1
+  1
+  call
+  save            # m1=len
+  left
+  left            # m-1
+  load            # ax=sep0+1
+  smol            # mol=sep0+1
+  60
+  toggle
+  5
+  mul             # 300 mols max
+  loop
+    right
+    right
+    right         # m2
+    cmol
+    left
+    left          # m0
+    load          # ax=sep1+i
+    smol          # sep1+x
+    right         # m1
+    right         # m2
+    60
+    toggle
+    5
+    mul             # 300 mols max
+    loop
+      mol           # ax=idx0   bx=idx1
+      toggle        # bx=idx0
+      cmp
+      reax
+      ifp
+        left
+        load          # ax=end
+        smol
+        toggle        # ax=idx0
+        move
+        left      # m0
+        left      # m-1
+        load      # ax=sep0
+        smol
+        right     # m0
+        right     # m1
+        load
+        dec
+        save
+        left      # m0
+        left      # m-1
+        break
+      end
+      rmol
+    end
+    rmol
+  end
+end
+2
+call
+nop
+nop
+nop
