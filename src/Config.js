@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 6;
-const HEIGHT      = 1080 * 6;
+const WIDTH       = 1920 * 2;
+const HEIGHT      = 1080 * 2;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -339,11 +339,11 @@ module.exports = {
         energy: 6000 * 1024 + (6000 * 1024) / 3 // 6000 sec * 1024 commands + 30%
     }],
     codeLinesPerIteration      : 1,
-    codeRepeatsPerRun          : 30,
+    codeRepeatsPerRun          : 40,
     codeMutateEveryClone       : 5,
-    codeMutateMutations        : true,
+    codeMutateMutations        : false,
     codeMutationPercent        : .01,
-    codeMutationPeriod         : 10000000,
+    codeMutationPeriod         : 1000000,
     /**
      * {Boolean} Turns on or off panzoom library
      */
@@ -358,8 +358,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : Math.round(WIDTH / 10),
-    WORLD_CANVAS_HEIGHT        : Math.round(HEIGHT / 10),
+    WORLD_CANVAS_WIDTH         : Math.round(WIDTH / 6),
+    WORLD_CANVAS_HEIGHT        : Math.round(HEIGHT / 6),
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -409,14 +409,14 @@ module.exports = {
      * Molecules related configs
      */
     molSunPeriod               : 1,
-    molAmount                  : Math.round(WIDTH * HEIGHT * .07), // 7% of molecules
+    molAmount                  : Math.round(WIDTH * HEIGHT * .2), // 20% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .004,
+    energyStepCoef             : .005,
     energyMetabolismCoef       : 10,
     energyCommand              : .0003,
     /**
