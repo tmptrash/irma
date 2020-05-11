@@ -1,8 +1,7 @@
 /**
  * Sun analog. Adds energy to the system by joining small molecules into big.
- * Organisms should use catabolism to obtain energy from these bounds. It do
- * two things: joint small molecules into big and split big chains into separate
- * dots.
+ * Organisms should use catabolism to obtain energy from these bounds. It also
+ * splits big chains into separate dots.
  * 
  *  
  * @plugin
@@ -10,6 +9,7 @@
  */
 const Helper            = require('../../common/Helper');
 const Config            = require('../../Config');
+const Organism          = require('../Organism');
 /**
  * {Array} Array of increments. Using it we may obtain coordinates of the
  * point depending on one of 8 directions. We use these values in any command
@@ -59,9 +59,9 @@ class Sun {
         for (j = 0; j < tries; j++) {
             if (++this._index >= orgsMols.items) {this._index = 0}
             mol = orgsMols.get(this._index);
-            if (mol.code.length <= molSize) {continue}   // Skip small molecules
+            if (mol instanceof Organism) {continue} // Skip organisms
             offset = this._getNearFreePos(mol);
-            if (mol.hasOwnProperty('energy')) {continue} // Skip organisms
+            if (mol.code.length <= molSize + rand(molSize)) {this.incMol(mol); return}
             if (offset === -1) {continue}                // No free near space
             break;
         }
@@ -103,6 +103,12 @@ class Sun {
 
         this._offset = mol.offset;
         return -1;
+    }
+
+    incMol(mol) {
+        const code = mol.code;
+        for (let i = 0, l = code.length; i < l; i++) {code[i] &= MASK8R}
+        code[code.length - 1] |= MASK8;
     }
 }
 

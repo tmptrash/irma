@@ -397,7 +397,7 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
-    orgMaxAge                  : 1000000,
+    orgMaxAge                  : 2000000,
     ORG_MAX_CODE_SIZE          : 1024,
     /**
      * {Array} change,del,period,amount,probs,insert,copy,cut 
@@ -416,9 +416,9 @@ module.exports = {
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .005,
+    energyStepCoef             : .002,
     energyMetabolismCoef       : 10,
-    energyCommand              : .0003,
+    energyCommand              : .0002,
     /**
      * {Number} This value will be used for every LUCA on system start if
      * there is no property "energy" in LUCAS config was specified
