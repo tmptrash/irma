@@ -3,7 +3,7 @@ Welcome to [Digital organisms](https://en.wikipedia.org/wiki/Digital_organism) e
 
 ![irma](https://github.com/tmptrash/irma/blob/language-redesign/images/irma.png)
 
-The image above represents common irma 2D world with organisms (red dots), rocks (yellow dots) and energy (blue dots). To see this world in motion click [here](https://www.youtube.com/watch?v=28hzh-BUzbQ).
+The image above represents common irma 2D world with organisms (red dots) and different molecules (all other dots). To see this world in motion click [here](https://www.youtube.com/watch?v=28hzh-BUzbQ).
 #### Documentation
 - [Detailed description (rus)](https://docs.google.com/document/d/1qTz61YHFw17TLQeiHPI_xKHCWmP0st1fFukv4d9k460)
 
