@@ -60,8 +60,8 @@ class Sun {
             if (++this._index >= orgsMols.items) {this._index = 0}
             mol = orgsMols.get(this._index);
             if (mol instanceof Organism) {continue} // Skip organisms
-            offset = this._getNearFreePos(mol);
             if (mol.code.length <= molSize + rand(molSize)) {this.incMol(mol); return}
+            offset = this._getNearFreePos(mol);
             if (offset === -1) {continue}                // No free near space
             break;
         }
