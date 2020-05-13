@@ -75,7 +75,7 @@ class Mutations {
      * Takes random atom from random molecule in a world and switch it by random one
      * from organism. Keeps @mol separator during switch.
      */
-    static _onChange (vm, code, org) {
+    static _onChange(vm, code, org) {
         const oMols     = vm.orgsMols;
         const items     = oMols.items;
         let srcMol;
@@ -95,7 +95,7 @@ class Mutations {
     /**
      * Takes random atom from organism code and remove it by putting near
      */
-    static _onDel    (vm, code, org) {
+    static _onDel(vm, code, org) {
         if (vm.orgsMols.full) {return}
         let offset      = org.offset + org.dir;
         if (offset < 0) {offset = LINE_OFFS + org.offset}
@@ -105,7 +105,7 @@ class Mutations {
         let idx         = rand(code.length);
         const dstCmd    = code[idx];
         const isMol     = (dstCmd & CODE_8_BIT_MASK) > 0;
-        org.code        = code.splice(idx, 1);
+        org.code        = code.remove(idx, 1);
         if (isMol) {if (idx >= org.code.length) {idx--} org.code[idx] |= CODE_8_BIT_MASK}
         vm.addMol(offset, new Uint8Array([dstCmd | CODE_8_BIT_MASK])); // one atom always final
         if (org.code.length < 1) {vm.delOrg(org); return}
@@ -117,7 +117,7 @@ class Mutations {
      * Takes random atom from random molecule in a world and inserts it into ransom 
      * code position
      */
-    static _onAdd (vm, code, org) {
+    static _onAdd(vm, code, org) {
         if (code.length > ORG_CODE_MAX_SIZE) {return}
         const oMols     = vm.orgsMols;
         const items     = oMols.items;

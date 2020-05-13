@@ -144,97 +144,41 @@ describe('src/irma/Mutations', () => {
         });
     });
 
-    xdescribe('"change" mutation tests', () => {
-        it('Checks mutate() method with "change" mutation 1', () => {
-            Mutations.mutate(org);
-            expect(org.code).toEqual([CMD_OFFS, randCmd]);
-        });
-        it('Checks mutate() method with "change" mutation 2', () => {
-            randVal     = [0,0,2,3,4,5];
-            org.probArr = [0,0,2,3,4,5,6,7];
+    describe('tests of _onDel()', () => {
+        it('Checks _onDel() with two atoms mol',  () => {
+            const org = vm.addOrg(null, 0, new Uint8Array([1,2|M]), 1000);
+            randVal = [1,0,0,0,0,0,0];
+            randI   = 0;
+            Mutations._onDel(vm, org.code, org);
+            const mol = vm.orgsMols.get(1);
 
-            Mutations.mutate(org);
-            expect(org.code).toEqual([randCmd, CMD_OFFS + 1]);
+            expect(vm.orgsMols.items).toBe(2);
+            expect(vm.orgs.items).toBe(1);
+            expect(org.code).toEqual(Uint8Array.from([1|M]));
+            expect(mol.code).toEqual(Uint8Array.from([2|M]));
         });
-        it('Checks mutate() method with "change" mutation 3', () => {
-            org.percent = 1;
-            randVal     = [0,0,0,1];
-            org.probArr = [0,0,2,3,4,5,6,7];
+        it('Checks _onDel() with one atom mol',  () => {
+            const org = vm.addOrg(null, 0, new Uint8Array([1|M]), 1000);
+            randVal = [0,0,0,0,0,0,0];
+            randI   = 0;
+            Mutations._onDel(vm, org.code, org);
+            const mol = vm.orgsMols.get(0);
 
-            Mutations.mutate(org);
-            expect(org.code).toEqual([randCmd, randCmd]);
+            expect(vm.orgsMols.items).toBe(1);
+            expect(vm.orgs.items).toBe(0);
+            expect(mol.code).toEqual(Uint8Array.from([1|M]));
         });
-        it('Checks mutate() method with "change" mutation 4', () => {
-            org.percent = .1;
-            randVal     = [0,0];
+        it('Checks _onDel() with three atoms mol',  () => {
+            const org = vm.addOrg(null, 0, new Uint8Array([1,2,3|M]), 1000);
+            randVal = [2,0,0,0,0,0];
+            randI   = 0;
+            Mutations._onDel(vm, org.code, org);
+            const mol = vm.orgsMols.get(1);
 
-            Mutations.mutate(org);
-            expect(org.code).toEqual([randCmd, CMD_OFFS + 1]);
+            expect(vm.orgsMols.items).toBe(2);
+            expect(vm.orgs.items).toBe(1);
+            expect(org.code).toEqual(Uint8Array.from([1,2|M]));
+            expect(mol.code).toEqual(Uint8Array.from([3|M]));
         });
-    });
-
-    xdescribe('"del" mutation tests', () => {
-        it('Checks mutate() method with "del" mutation 1', () => {
-            org.probArr = [1,1,2,3,4,5,6,7];
-            Mutations.mutate(org);
-            expect(org.code).toEqual([CMD_OFFS]);
-        });
-        it('Checks mutate() method with "del" mutation 2', () => {
-            org.probArr = [1,1,2,3,4,5,6,7];
-            randVal     = [0,0,2,3,4,5];
-            Mutations.mutate(org);
-            expect(org.code).toEqual([CMD_OFFS + 1]);
-        });
-        it('Checks mutate() method with "del" mutation 3', () => {
-            org.probArr = [1,1,2,3,4,5,6,7];
-            randVal     = [0,0,2,3,4,5];
-            org.code    = [];
-            Mutations.mutate(org);
-            expect(org.code).toEqual([]);
-        });
-    });
-
-    xdescribe('"period" mutation tests', () => {
-        it('Checks mutate() method with "period" mutation 1', () => {
-            org.probArr = [2,1,2,3,4,5,6,7];
-            Mutations.mutate(org);
-            expect(org.period).toEqual(2);
-        });
-        it('Checks mutate() method with "period" mutation 2', () => {
-            org.probArr = [2,1,2,3,4,5,6,7];
-            randVal     = [0,0,2,3,4,5];
-            Mutations.mutate(org);
-            expect(org.period).toEqual(1);
-        });
-    });
-
-    xdescribe('"percent" mutation tests', () => {
-        it('Checks mutate() method with "percent" mutation 1', () => {
-            const random = Math.random;
-            Math.random = () => .1;
-            org.probArr = [3,1,2,3,4,5,6,7];
-            Mutations.mutate(org);
-            expect(org.percent).toEqual(.1);
-            Math.random = random;
-        });
-        it('Checks mutate() method with "percent" mutation 2', () => {
-            const random = Math.random;
-            Math.random = () => 0;
-            org.probArr = [3,1,2,3,4,5,6,7];
-            Mutations.mutate(org);
-            expect(org.percent).toEqual(.02);
-            Math.random = random;
-        });
-    });
-
-    xdescribe('"probs" mutation tests', () => {
-        it('Checks mutate() method with "probs" mutation 1', () => {
-            org.probArr = [4,1,2,3,4,5,6,7];
-            randVal     = [0,0,0,3,4,5];
-            const probs = org.probs.slice();
-            probs[0]    = 1;
-            Mutations.mutate(org);
-            expect(org.probs).toEqual(probs);
-        });
-    });
+    })
 });
