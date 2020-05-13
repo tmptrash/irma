@@ -73,7 +73,7 @@ class BioVM extends VM {
         // remove all comments. This is how we obtain real amount of
         // instructions in LUCA's code
         //
-        const bCode = Compiler.toByteCode(Config.LUCAS[0].code);
+        const bCode = Config.LUCAS.length && Compiler.toByteCode(Config.LUCAS[0].code) || [];
         return Math.round(Config.molAmount * Config.molCodeSize / (bCode.length || 1)) + Config.LUCAS.length;
     }
 

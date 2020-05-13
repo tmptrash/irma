@@ -1,7 +1,7 @@
 /**
- * Mutations class. The purpose of this class is to change organisms code a little randomly.
+ * Mutations class. The purpose of this class is to change organisms code a little and randomly.
  * Code change breaks original organism in most cases, but sometimes it brings new effective
- * mutations (features) to organism.
+ * mutations (features).
  * 
  * @author flatline
  */
@@ -80,7 +80,7 @@ class Mutations {
         const items     = oMols.items;
         let srcMol;
         if (!((srcMol   = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule)) {return}
-        if (srcMol.code.length < 2) {return}
+        if (srcMol.code.length < 1) {return}
         const srcCode   = srcMol.code;
         const dstIdx    = rand(code.length);
         const srcIdx    = rand(srcCode.length);
