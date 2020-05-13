@@ -358,8 +358,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : Math.round(WIDTH / 6),
-    WORLD_CANVAS_HEIGHT        : Math.round(HEIGHT / 6),
+    WORLD_CANVAS_WIDTH         : Math.round(WIDTH / 4),
+    WORLD_CANVAS_HEIGHT        : Math.round(HEIGHT / 4),
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -409,7 +409,7 @@ module.exports = {
      * Molecules related configs
      */
     molSunPeriod               : 1,
-    molAmount                  : Math.round(WIDTH * HEIGHT * .2), // 20% of molecules
+    molAmount                  : Math.round(WIDTH * HEIGHT * .03), // 3% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
