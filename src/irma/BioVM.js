@@ -294,7 +294,9 @@ class BioVM extends VM {
                 const offset = this._getOffset(org);
                 const dot = this.world.index(offset);
                 if (dot < 0) {org.re = RE_ERR; return}
-                (org.packet = this.orgsMols.get(dot)) instanceof Organism ? this.delOrg(org.packet) : this.delMol(org.packet);
+                const packet = this.orgsMols.get(dot);
+                if (packet.packet) {org.re = RE_ERR; return}
+                (org.packet = packet) instanceof Organism ? this.delOrg(packet) : this.delMol(packet);
                 return;
             }
             /**
