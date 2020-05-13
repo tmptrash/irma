@@ -90,8 +90,8 @@ module.exports = {
      * Turns on debug mode. In this case special randomizer with specified seed will be set
      * and every time on world reload all evolution will go through the same steps
      */
-    debugMode                  : true,
-    debugSeed                  : 2,
+    debugMode                  : false,
+    debugSeed                  : 1,
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
      * nearest point depending on one of 8 directions. We use these values in any

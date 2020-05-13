@@ -114,24 +114,24 @@ class Mutations {
     }
 
     /**
-     * Takes random atom from random molecule in a world and inserts it into ransom 
+     * Takes random atom from random molecule in a world and inserts it into random 
      * code position
      */
     static _onAdd(vm, code, org) {
-        if (code.length > ORG_CODE_MAX_SIZE) {return}
+        if (code.length + 1 > ORG_CODE_MAX_SIZE) {return}
         const oMols     = vm.orgsMols;
         const items     = oMols.items;
         let srcMol;
         if (!((srcMol   = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule || (srcMol = oMols.get(rand(items))) instanceof Molecule)) {return}
-        if (srcMol.code.length < 2) {return}
+        if (srcMol.code.length < 1) {return}
         const srcCode   = srcMol.code;
         const dstIdx    = rand(code.length);
-        let srcIdx      = rand(srcCode.length);
-        const srcCmd    = srcCode[srcIdx];
-        const isMol     = (srcCmd & CODE_8_BIT_MASK) > 0;
-        org.code        = code.splice(dstIdx, 0, new Uint8Array([srcCmd]));
-        srcMol.code     = srcCode.splice(srcIdx, 1);
-        if (isMol) {if (srcIdx >= srcMol.code.length) {srcIdx--} srcMol.code[srcIdx] |= CODE_8_BIT_MASK}
+        const srcIdx    = rand(srcCode.length);
+        org.code        = code.insert(dstIdx, srcCode.subarray(srcIdx, srcIdx + 1));
+        srcMol.code     = srcCode.remove(srcIdx, 1);
+        if (srcMol.code.length < 1) {vm.delMol(srcMol)}
+        else {srcMol.code[srcMol.code.length - 1] |= CODE_8_BIT_MASK}
+        org.code[org.code.length - 1] |= CODE_8_BIT_MASK;
         Compiler.compile(org, false);                     // Safe recompilation without loosing metadata
         Compiler.updateMetadata(org, dstIdx, dstIdx, 1);
     }
