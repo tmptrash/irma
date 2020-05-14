@@ -1,5 +1,5 @@
 /**
- * {Object} Global configuration of IRMA project.
+ * {Object} Global configuration of irma project.
  * Configuration parameters, which are not constants may be changed during app work in a console
  * Constants should not be changed after app starts. See "@constant" mark in a comments.
  *
@@ -338,6 +338,10 @@ module.exports = {
          */
         energy: 6000 * 1024 + (6000 * 1024) / 3 // 6000 sec * 1024 commands + 30%
     }],
+    /**
+     * {Array} change,del,add,period,percent,probs.
+     */
+    codeProbs                  : Uint8Array.from([10,1,2,1,1,1]),
     codeLinesPerIteration      : 1,
     codeRepeatsPerRun          : 40,
     codeMutateEveryClone       : 5,
@@ -385,7 +389,7 @@ module.exports = {
     DB_CHUNK_SIZE              : 200,
 
     /**
-     * {Number} Maximum value of every element in orgProbs array
+     * {Number} Maximum value of every element in codeProbs array
      * @constant
      */
     ORG_PROB_MAX_VALUE         : 50,
@@ -399,12 +403,6 @@ module.exports = {
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 2000000,
     ORG_MAX_CODE_SIZE          : 1024,
-    /**
-     * {Array} change,del,period,amount,probs,insert,copy,cut 
-     * Is used for new created organisms. During cloning, all
-     * organism properties will be inherited.
-     */
-    orgProbs                   : Uint8Array.from([10,1,2,1,1,1]),
     /**
      * Molecules related configs
      */

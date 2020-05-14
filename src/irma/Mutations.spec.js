@@ -20,7 +20,6 @@ describe('src/irma/Mutations', () => {
     let   getRand;
     let   randVal;
     let   randI;
-    let   randCmd;
     let   vm;
 
     /**
@@ -48,7 +47,7 @@ describe('src/irma/Mutations', () => {
             codeMutationPercent        : .02,
             codeMutationPeriod         : 2000001,
             orgMaxCodeSize             : 50,
-            orgProbs                   : new Uint32Array([10,1,3,1,5,1]),
+            codeProbs                   : new Uint32Array([10,1,3,1,5,1]),
             molSunPeriod               : 1000,
             molDecayDistance           : 60,
             molCodeSize                : 2,

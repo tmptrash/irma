@@ -14,7 +14,7 @@ const rand                  = Helper.rand;
 /**
  * {Number} Amount of mutation probabilities values.
  */
-const ORG_PROBS             = Config.orgProbs.length;
+const ORG_PROBS             = Config.codeProbs.length;
 /**
  * {Number} Maximum probability value for array of probabilities
  */
@@ -140,7 +140,7 @@ class Mutations {
 
     static _onPercent(vm, code, org) {if (!Config.codeMutateMutations) {return} org.percent = Math.random() || CODE_MUTATION_AMOUNT}
 
-    static _onProbs  (vm, code, org) {org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
+    static _onProbs  (vm, code, org) {if (!Config.codeMutateMutations) {return} org.probs[rand(ORG_PROBS)] = rand(ORG_PROB_MAX_VALUE) + 1}
     
     // static _onInsert (vm, code, org) {
     //     if (code.length >= Config.orgMaxCodeSize) {return}
