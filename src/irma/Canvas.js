@@ -88,25 +88,6 @@ class Canvas {
     }
 
     /**
-     * This method is optimized for speed. It contains code duplication
-     * with dot() method.
-     * @param {Number} offs Absolute source dot affset
-     * @param {Number} offs1 Absolute desctination dot affset
-     * @param {Number} color
-     */
-    move(offs, offs1, color) {
-        const data = this._data;
-        offs  <<= 2;
-        offs1 <<= 2;
-
-        data[offs] = data[offs + 1] = data[offs + 2] = 0;
-
-        data[offs1    ] = (color >>> 16) & 0xff;
-        data[offs1 + 1] = (color >>> 8)  & 0xff;
-        data[offs1 + 2] = color & 0xff;
-    }
-
-    /**
      * Clears canvas with black color
      */
     clear() {

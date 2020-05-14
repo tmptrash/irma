@@ -6,18 +6,11 @@
  */
 const Config              = require('./../Config');
 const Canvas              = require('./Canvas');
-const Helper              = require('./../common/Helper');
 
 const WORLD_WIDTH         = Config.WORLD_WIDTH;
 const WORLD_HEIGHT        = Config.WORLD_HEIGHT;
 const WORLD_CANVAS_WIDTH  = Config.WORLD_CANVAS_WIDTH;
 const WORLD_CANVAS_HEIGHT = Config.WORLD_CANVAS_HEIGHT;
-/**
- * {Array} Array of increments. Using it we may obtain coordinates of the
- * point depending on one of 8 directions. We use these values in any command
- * related to sight, moving and so on
- */
-const DIRS                 = Config.DIRS;
 
 class World {
     constructor(options) {
@@ -43,21 +36,6 @@ class World {
 
     get canvas() {
         return this._canvas;
-    }
-
-    /**
-     * Draws a dot in a world and if it's within canvas draws it there. This method
-     * is optimized by speed.
-     * @param {Number} offset Dot offset 
-     * @param {Number} c Dot color
-     */
-    dot(offset, c) {
-        this._data[offset] = c;
-
-        if (offset < this.viewOffs || offset > this.viewOffs1) {return}
-        const x = offset % WORLD_WIDTH;
-        if (x < this.viewX || x > this.viewX1) {return}
-        this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), c);
     }
 
     /**
@@ -92,29 +70,6 @@ class World {
     }
 
     /**
-     * Swaps two dots by offset. Swaps two dots in a world map and do it in a canvas if 
-     * dots are there. If only one dot is inside the canvas then draws only one. This method
-     * is optimized for speed.
-     * @param {Number} offset Source offset
-     * @param {Number} offset1 Destination offset
-     */
-    swap(offset, offset1) {
-        const data = this._data;
-        const dot  = data[offset1];
-
-        data[offset1] = data[offset];
-        let x;
-        if (offset1 >= this.viewOffs && offset1 <= this.viewOffs1 && (x = offset1 % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
-            this._canvas.dot(Math.floor((offset1 - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), data[offset]);
-        }
-
-        data[offset]  = dot;
-        if (offset >= this.viewOffs && offset <= this.viewOffs1 && (x = offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
-            this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), dot);
-        }
-    }
-
-    /**
      * Set dot color to 0x000000 (empty). Sets colot for world's map and if it's within canvas,
      * then sets it there also. This method is optimized for speed.
      * @param {Number} offset Dot offset
@@ -126,23 +81,6 @@ class World {
         const x = offset % WORLD_WIDTH;
         if (x < this.viewX || x > this.viewX1) {return}
         this._canvas.empty(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX));
-    }
-
-    /**
-     * Returns offset of nearest free dot or -1 if no free dot near current
-     * @param {Number} offset Offet of dot, near which we are looking 
-     * @return {Number} Free dot ofset or -1 if no free space
-     */
-    freeDot(offset) {
-        const distance  = Config.molDecayDistance;
-        const distance2 = Math.floor(distance / 2);
-
-        for (let i = 0; i < distance * distance; i++) {
-            const offs = offset + DIRS[Math.floor(Helper.rand(8))] * distance + Math.floor(Math.random() * distance) - distance2;
-            if (this._data[offs] === 0) {return offs}
-        }
-
-        return -1;
     }
 
     setItem(offset, index) {
@@ -177,26 +115,6 @@ class World {
         }
 
         org.offset = offset;
-    }
-
-    /**
-     * The same like moveOrg(), but moves a dot. Optimized by speed.
-     * @param {Number} offset Source dot offset
-     * @param {Number} offset1 Destination dot offset
-     * @param {Number} color Destination dot color
-     */
-    moveDot(offset, offset1, color) {
-        this._data[offset]  = 0;
-        this._data[offset1] = color;
-
-        let x;
-        if (offset >= this.viewOffs && offset <= this.viewOffs1 && (x = offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
-            this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), 0);
-        }
-
-        if (offset1 >= this.viewOffs && offset1 <= this.viewOffs1 && (x = offset1 % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
-            this._canvas.dot(Math.floor((offset1 - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), color);
-        }
     }
 
     title(text) {
