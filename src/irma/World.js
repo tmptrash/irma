@@ -70,6 +70,26 @@ class World {
     }
 
     /**
+     * Moves organism dot from current position to new by offset. This method is optimized by speed.
+     * @param {Organism} org Organism instance
+     * @param {Number} offset New offset
+     */
+    moveOrg(org, offset) {
+        this._data[org.offset] = 0;
+        this._data[offset] = org.molIndex + 1;
+
+        let x;
+        if (org.offset >= this.viewOffs && org.offset <= this.viewOffs1 && (x = org.offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
+            this._canvas.dot(Math.floor((org.offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), 0);
+        }
+        if (offset >= this.viewOffs && offset <= this.viewOffs1 && (x = offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
+            this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color);
+        }
+
+        org.offset = offset;
+    }
+
+    /**
      * Set dot color to 0x000000 (empty). Sets colot for world's map and if it's within canvas,
      * then sets it there also. This method is optimized for speed.
      * @param {Number} offset Dot offset
@@ -95,26 +115,6 @@ class World {
     index(offset) {
         const dot = this._data[offset];
         return !dot ? -1 : dot - 1;
-    }
-
-    /**
-     * Moves organism dot from current position to new by offset. This method is optimized by speed.
-     * @param {Organism} org Organism instance
-     * @param {Number} offset New offset
-     */
-    moveOrg(org, offset) {
-        this._data[org.offset] = 0;
-        this._data[offset] = org.molIndex + 1;
-
-        let x;
-        if (org.offset >= this.viewOffs && org.offset <= this.viewOffs1 && (x = org.offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
-            this._canvas.dot(Math.floor((org.offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), 0);
-        }
-        if (offset >= this.viewOffs && offset <= this.viewOffs1 && (x = offset % WORLD_WIDTH) >= this.viewX && x <= this.viewX1) {
-            this._canvas.dot(Math.floor((offset - this.viewOffs) / WORLD_WIDTH) * WORLD_CANVAS_WIDTH + (x - this.viewX), org.color);
-        }
-
-        org.offset = offset;
     }
 
     title(text) {

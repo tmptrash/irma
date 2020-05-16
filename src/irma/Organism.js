@@ -23,7 +23,7 @@ class Organism {
         this.mem        = new Int32Array(ORG_MAX_MEM_SIZE);            // Organism's memory
         this.mPos       = 0;                                           // Memory cell position
         this.age        = 0;                                           // Organism's age. Increases every iteration. Should be 1, not 0 to prevent mutations on start
-        this.probs      = Config.codeProbs.slice();                     // Probabilities for different types of mutations
+        this.probs      = Config.codeProbs.slice();                    // Probabilities for different types of mutations
         this.period     = Config.codeMutationPeriod;                   // Amount of iterations between mutations
         this.percent    = Config.codeMutationPercent;                  // Percent of mutations
         this.freq       = 0;                                           // Frequency for say, listen commands

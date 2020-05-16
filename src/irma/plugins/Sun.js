@@ -3,7 +3,6 @@
  * Organisms should use catabolism to obtain energy from these bounds. It also
  * splits big chains into separate dots.
  * 
- *  
  * @plugin
  * @author flatline
  */
@@ -62,7 +61,7 @@ class Sun {
             if (mol instanceof Organism) {continue} // Skip organisms
             if (mol.code.length <= molSize + rand(molSize)) {this.incMol(mol); return}
             offset = this._getNearFreePos(mol);
-            if (offset === -1) {continue}                // No free near space
+            if (offset === -1) {continue}           // No free near space
             break;
         }
         if (j === tries) {return}

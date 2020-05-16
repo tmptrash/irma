@@ -10,8 +10,8 @@
  * add an ability to use numbers in a code, just putting them as command
  * @constant
  */
-const WIDTH       = 1920 * 2;
-const HEIGHT      = 1080 * 2;
+const WIDTH       = 1920;
+const HEIGHT      = 1080;
 const CODE_OFFS   = 128 - 64;
 const COMMANDS    = {
     //
@@ -362,8 +362,8 @@ module.exports = {
      * {Number} Size of canvas in pixels
      * @constant
      */
-    WORLD_CANVAS_WIDTH         : Math.round(WIDTH / 4),
-    WORLD_CANVAS_HEIGHT        : Math.round(HEIGHT / 4),
+    WORLD_CANVAS_WIDTH         : Math.round(WIDTH),
+    WORLD_CANVAS_HEIGHT        : Math.round(HEIGHT),
     /**
      * {String} This query is used to put canvas with world in it
      */
@@ -402,19 +402,20 @@ module.exports = {
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
     orgMaxAge                  : 2000000,
-    ORG_MAX_CODE_SIZE          : 1024,
+    ORG_MAX_CODE_SIZE          : 800,
     /**
      * Molecules related configs
      */
     molSunPeriod               : 1,
-    molAmount                  : Math.round(WIDTH * HEIGHT * .03), // 3% of molecules
+    molAmount                  : Math.round(WIDTH * HEIGHT * .4), // 40% of molecules
     molCodeSize                : 6,
     molRandomAtomPercent       : .4,
     molColor                   : 0xff0000,
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : .002,
+    energyStepCoef             : 0.007,
+    energySizeMetter           : false,
     energyMetabolismCoef       : 10,
     energyCommand              : .0002,
     /**

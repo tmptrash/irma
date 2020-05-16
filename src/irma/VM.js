@@ -62,6 +62,13 @@ const CONTINUE = Config.CODE_CMDS.CONTINUE;
 
 class VM {
     /**
+     * Is called in a constructor after plugins initialization. May be used
+     * to run custom plugins code before irma has started
+     * @interface
+     */
+    onInit() {}
+
+    /**
      * Is called before every organism iteration
      * @param {Organism} org
      * @interface
@@ -105,6 +112,10 @@ class VM {
         this.population = 0;
         this.iteration  = 0;
         this.plugins    = new Plugins(Helper.requirePlugins(Config.PLUGINS), this);
+        //
+        // This call should be at the end of method
+        //
+        this.onInit();
     }
 
     /**

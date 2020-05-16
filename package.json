@@ -7,7 +7,8 @@
     "doc": "doc"
   },
   "dependencies": {
-    "panzoom": "^8.4.0"
+    "panzoom": "^8.4.0",
+    "simplex-noise": "^2.4.0"
   },
   "scripts": {
     "test": "run-script-os",

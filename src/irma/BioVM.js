@@ -219,7 +219,8 @@ class BioVM extends VM {
                 org.re = RE_OK; // RE_OK status must be before this._getOffset() call
                 const offset = this._getOffset(org);
                 if (this.world.index(offset) > -1) {org.re = RE_ERR; return}
-                org.energy -= (org.code.length * Config.energyStepCoef + (org.packet ? org.packet.code.length * Config.energyStepCoef : 0));
+                if (Config.energySizeMetter) {org.energy -= (org.code.length * Config.energyStepCoef + (org.packet ? org.packet.code.length * Config.energyStepCoef : 0))}
+                else {org.energy -= Config.energyStepCoef}
                 this.world.moveOrg(org, offset);
                 return;
             }
