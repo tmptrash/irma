@@ -90,8 +90,8 @@ module.exports = {
      * Turns on debug mode. In this case special randomizer with specified seed will be set
      * and every time on world reload all evolution will go through the same steps
      */
-    debugMode                  : false,
-    debugSeed                  : 1,
+    DEBUG_MODE                 : false,
+    DEBUG_SEED                 : 1,
     /**
      * {Array} Array of increments. Using it we may obtain coordinates of the
      * nearest point depending on one of 8 directions. We use these values in any
@@ -401,7 +401,7 @@ module.exports = {
     ORG_MIN_COLOR              : 0x96,
     ORG_MAX_MEM_SIZE           : 32,
     orgColor                   : 0xFF0000,
-    orgMaxAge                  : 2000000,
+    orgMaxAge                  : 0,
     ORG_MAX_CODE_SIZE          : 800,
     /**
      * Molecules related configs
@@ -414,7 +414,7 @@ module.exports = {
     /**
      * {Number} Energy related configuration
      */
-    energyStepCoef             : 0.007,
+    energyStepCoef             : 0.8,
     energySizeMetter           : false,
     energyMetabolismCoef       : 10,
     energyCommand              : .0002,
